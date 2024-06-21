@@ -17,9 +17,11 @@ class Character extends FlxSprite
 {
     public var simple(default, null):SimpleCharacter;
 
+    public var role(default, null):CharacterRole;
+
     public var animationTimer:Float;
 
-    public function new(x:Float = 0.0, y:Float = 0.0, path:String):Void
+    public function new(x:Float = 0.0, y:Float = 0.0, path:String, role:CharacterRole = ARTIFICIAL):Void
     {
         super(x, y);
 
@@ -49,6 +51,8 @@ class Character extends FlxSprite
             );
         }
 
+        this.role = role;
+
         dance(true);
 
         Conductor.current.sectionHit.add(sectionHit);
@@ -62,7 +66,7 @@ class Character extends FlxSprite
     {
         super.update(elapsed);
 
-        if (Binds.bindsJustPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]))
+        if (Binds.bindsJustPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) && role == PLAYER)
         {
             animationTimer = 0.0;
         }
@@ -78,7 +82,7 @@ class Character extends FlxSprite
                 requiredTime *= FlxG.random.float(1.35, 1.85);
             }
 
-            if (animationTimer >= requiredTime && !Binds.bindsPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]))
+            if (animationTimer >= requiredTime && (role == PLAYER ? !Binds.bindsPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) : true))
             {
                 dance(true);
 
@@ -146,6 +150,15 @@ class Character extends FlxSprite
     {
 
     }
+}
+
+enum abstract CharacterRole(String)
+{
+    var OPPONENT:CharacterRole = "OPPONENT";
+
+    var PLAYER:CharacterRole = "PLAYER";
+
+    var ARTIFICIAL:CharacterRole = "ARTIFICIAL";
 }
 
 typedef SimpleCharacter =

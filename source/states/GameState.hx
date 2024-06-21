@@ -183,7 +183,7 @@ class GameState extends State
 
         add(new Stage());
 
-        player = new Character(0.0, 0.0, "assets/characters/BOYFRIEND.json");
+        player = new Character(0.0, 0.0, "assets/characters/BOYFRIEND.json", PLAYER);
 
         player.setPosition(995.5, 385.0);
 
