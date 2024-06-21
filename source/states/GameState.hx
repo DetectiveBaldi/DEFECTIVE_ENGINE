@@ -1,0 +1,637 @@
+package states;
+
+import haxe.ds.ArraySort;
+
+import flixel.FlxCamera;
+import flixel.FlxG;
+import flixel.FlxSprite;
+
+import flixel.group.FlxContainer.FlxTypedContainer;
+
+import flixel.sound.FlxSound;
+
+import flixel.text.FlxBitmapFont;
+import flixel.text.FlxBitmapText;
+
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+
+import core.Binds;
+import core.Conductor;
+import core.Rating;
+import core.Song;
+
+import extendable.State;
+
+import objects.Character;
+import objects.Note;
+import objects.Strum;
+import objects.StrumLine;
+
+import stages.Stage;
+
+import tools.formats.BaseFormat;
+
+class GameState extends State
+{
+    public var gameCamera(get, never):FlxCamera;
+
+    @:noCompletion
+    function get_gameCamera():FlxCamera
+    {
+        return FlxG.camera;
+    }
+
+    public var hudCamera(default, null):FlxCamera;
+
+    public var binds(default, null):Array<String>;
+
+    public var ratings(default, null):Array<Rating>;
+
+    public var ratingTxt(default, null):FlxBitmapText;
+
+    public var strumLines(default, null):FlxTypedContainer<StrumLine>;
+
+    public var opponentStrums(default, null):StrumLine;
+
+    public var playerStrums(default, null):StrumLine;
+
+    public var notes(default, null):FlxTypedContainer<Note>;
+
+    public var downScroll(default, set):Bool;
+
+    @:noCompletion
+    function set_downScroll(downScroll:Bool):Bool
+    {
+        opponentStrums.y = downScroll ? (FlxG.height - opponentStrums.height) - 15 : 15;
+
+        playerStrums.y = downScroll ? (FlxG.height - playerStrums.height) - 15 : 15;
+
+        return this.downScroll = downScroll;
+    }
+
+    public var song(default, null):Song;
+
+    public var instrumental(default, null):FlxSound;
+
+    public var mainVocals(default, null):FlxSound;
+
+    public var opponentVocals(default, null):FlxSound;
+
+    public var playerVocals(default, null):FlxSound;
+
+    public var player(default, null):Character;
+
+    public var countdownStarted(default, null):Bool;
+
+    public var songStarted(default, null):Bool;
+
+    public function new():Void
+    {
+        super();
+    }
+
+    override function create():Void
+    {
+        super.create();
+
+        gameCamera.bgColor = FlxColor.GRAY;
+
+        gameCamera.zoom = 0.65;
+
+        hudCamera = new FlxCamera();
+
+        hudCamera.bgColor.alpha = 0;
+
+        FlxG.cameras.add(hudCamera, false);
+
+        binds = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
+
+        ratings =
+        [
+            new Rating("Epic!", FlxColor.MAGENTA, 15.0, 1, 500, 0),
+
+            new Rating("Sick!", FlxColor.CYAN, 45.0, 1, 350, 0),
+
+            new Rating("Good", FlxColor.GREEN, 75.0, 0.65, 250, 0),
+
+            new Rating("Bad", FlxColor.RED, 125.0, 0.35, 150, 0),
+
+            new Rating("Shit", FlxColor.subtract(FlxColor.RED, FlxColor.BROWN), Math.POSITIVE_INFINITY, 0, 50, 0)
+        ];
+
+        ratingTxt = new FlxBitmapText(0.0, 0.0, "", FlxBitmapFont.getDefaultFont());
+
+        ratingTxt.camera = hudCamera;
+
+        ratingTxt.antialiasing = false;
+
+        ratingTxt.alignment = CENTER;
+
+        ratingTxt.color = FlxColor.BLACK;
+
+        ratingTxt.scale.set(5, 5);
+
+        ratingTxt.updateHitbox();
+
+        ratingTxt.screenCenter();
+
+        add(ratingTxt);
+
+        strumLines = new FlxTypedContainer<StrumLine>();
+
+        strumLines.camera = hudCamera;
+
+        add(strumLines);
+        
+        opponentStrums = new StrumLine();
+
+        opponentStrums.automatic = true;
+
+        opponentStrums.lane = 0;
+
+        opponentStrums.noteHit.add(opponentNoteHit);
+
+        opponentStrums.noteMiss.add(opponentNoteMiss);
+
+        opponentStrums.setPosition(45, 15);
+
+        strumLines.add(opponentStrums);
+        
+        playerStrums = new StrumLine();
+
+        playerStrums.lane = 1;
+
+        playerStrums.noteHit.add(playerNoteHit);
+
+        playerStrums.noteMiss.add(playerNoteMiss);
+
+        playerStrums.setPosition((FlxG.width - playerStrums.width) - 45, 15);
+
+        strumLines.add(playerStrums);
+
+        notes = new FlxTypedContainer<Note>();
+
+        notes.camera = hudCamera;
+
+        add(notes);
+
+        loadSong("DadBattle-Erect");
+
+        add(new Stage());
+
+        player = new Character(0.0, 0.0, "assets/characters/BOYFRIEND.json");
+
+        player.setPosition(995.5, 385.0);
+
+        add(player);
+
+        startCountdown(function():Void
+        {
+            Conductor.current.time = 0.0;
+
+            startSong();
+        });
+    }
+
+    override function update(elapsed:Float):Void
+    {
+        super.update(elapsed);
+        
+        gameCamera.zoom = 0.65 + (gameCamera.zoom - 0.65) * Math.pow(2, -elapsed / 0.05);
+
+        hudCamera.zoom = 1 + (hudCamera.zoom - 1) * Math.pow(2, -elapsed / 0.05);
+
+        for (strumLine in strumLines)
+        {
+            if (strumLine.automatic)
+            {
+                continue;
+            }
+
+            for (i in 0 ... binds.length)
+            {
+                if (Binds.checkStatus(binds[i], JUST_PRESSED))
+                {
+                    var strum:Strum = strumLine.members[i];
+    
+                    strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
+    
+                    var note:Note = notes.members.filter(function(note:Note):Bool {return strum.direction == note.direction && note.lane == strumLine.lane && Math.abs(Conductor.current.time - note.time) <= 166.6;})[0];
+    
+                    if (note != null)
+                    {
+                        strum.animationTimer = 0.0;
+    
+                        strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Confirm", true);
+    
+                        strumLine.noteHit.dispatch(note);
+                    }
+                }
+    
+                if (Binds.checkStatus(binds[i], JUST_RELEASED))
+                {
+                    var strum:Strum = strumLine.members[i];
+    
+                    strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Static");
+                }
+            }
+        }
+
+        while (song.notes[0] != null && song.notes[0].time - Conductor.current.time <= Conductor.current.crotchet * 5)
+        {
+            var note:Note = new Note();
+
+            note.time = song.notes[0].time;
+
+            note.speed = song.notes[0].speed;
+
+            note.direction = song.notes[0].direction;
+
+            note.lane = song.notes[0].lane;
+
+            note.scale.set(0.725, 0.725);
+
+            note.updateHitbox();
+
+            notes.add(note);
+
+            song.notes.shift();
+
+            var strumLine:StrumLine = strumLines.members.filter(function(strumLine:StrumLine):Bool {return strumLine.lane == note.lane;})[0];
+
+            strumLine.noteSpawn.dispatch(note);
+        }
+
+        for (note in notes)
+        {
+            var strumLine:StrumLine = strumLines.members.filter(function(strumLine:StrumLine):Bool {return strumLine.lane == note.lane;})[0];
+
+            var strum:Strum = strumLine.members[note.direction];
+            
+            note.setPosition(strum.getMidpoint().x - note.width / 2, strum.y - ((((Conductor.current.time - note.time) * song.speed) * note.speed) * (downScroll ? -1 : 1)));
+
+            if (strumLine.automatic)
+            {
+                if (note.time - Conductor.current.time <= 1)
+                {
+                    strum.animationTimer = 0.0;
+
+                    strum.animation.play(Strum.directions[note.direction].toLowerCase() + "Confirm", true);
+
+                    strumLine.noteHit.dispatch(note);
+                }
+
+                continue;
+            }
+
+            if (Conductor.current.time - note.time > 166.6)
+            {
+                strumLine.noteMiss.dispatch(note);
+            }
+        }
+
+        if (countdownStarted)
+        {
+            Conductor.current.time += 1000 * elapsed;
+        }
+
+        if (songStarted)
+        {
+            Conductor.current.calculate();
+
+            if (Math.abs(Conductor.current.time - instrumental.time) > 25)
+            {
+                instrumental.time = Conductor.current.time;
+            }
+
+            if (mainVocals != null && Math.abs(instrumental.time - mainVocals.time) > 5)
+            {
+                mainVocals.time = instrumental.time;
+            }
+
+            if (opponentVocals != null && Math.abs(instrumental.time - opponentVocals.time) > 5)
+            {
+                opponentVocals.time = instrumental.time;
+            }
+
+            if (playerVocals != null && Math.abs(instrumental.time - playerVocals.time) > 5)
+            {
+                playerVocals.time = instrumental.time;
+            }
+        }
+
+        if (FlxG.keys.justPressed.ESCAPE)
+        {
+            FlxG.resetState();
+        }
+    }
+
+    override function sectionHit():Void
+    {
+        super.sectionHit();
+
+        gameCamera.zoom += 0.035;
+
+        hudCamera.zoom += 0.015;
+    }
+
+    override function beatHit():Void
+    {
+        super.beatHit();
+
+        var metronome:FlxSound = FlxG.sound.load("assets/sounds/metronome.ogg", 0.75).play();
+    }
+
+    public function loadSong(name:String):Void
+    {
+        song = Song.fromSimple(BaseFormat.build('assets/data/${name}/chart.json'));
+
+        ArraySort.sort(song.notes, function(a:SimpleNote, b:SimpleNote):Int {return Std.int(a.time - b.time);});
+
+        ArraySort.sort(song.events, function(a:SimpleEvent, b:SimpleEvent):Int {return Std.int(a.time - b.time);});
+
+        Conductor.current.tempo = song.tempo;
+
+        Conductor.current.time = -Conductor.current.crotchet * 5;
+
+        instrumental = FlxG.sound.load('assets/music/${name}/Instrumental.ogg');
+
+        instrumental.onComplete = () -> endSong();
+
+        #if sys
+            if (sys.FileSystem.exists('assets/music/${name}/Vocals-Main.ogg'))
+        #else
+            if (openfl.utils.Assets.exists('assets/music/${name}/Vocals-Main.ogg'))
+        #end
+            {
+                mainVocals = FlxG.sound.load('assets/music/${name}/Vocals-Main.ogg');
+            }
+
+        if (mainVocals == null)
+        {
+            #if sys
+                if (sys.FileSystem.exists('assets/music/${name}/Vocals-Opponent.ogg'))
+            #else
+                if (openfl.utils.Assets.exists('assets/music/${name}/Vocals-Opponent.ogg'))
+            #end
+                {
+                    opponentVocals = FlxG.sound.load('assets/music/${name}/Vocals-Opponent.ogg');
+                }
+
+            #if sys
+                if (sys.FileSystem.exists('assets/music/${name}/Vocals-Player.ogg'))
+            #else
+                if (openfl.utils.Assets.exists('assets/music/${name}/Vocals-Player.ogg'))
+            #end
+                {
+                    playerVocals = FlxG.sound.load('assets/music/${name}/Vocals-Player.ogg');
+                }
+        }
+    }
+
+    public function startCountdown(?finishCallback:()->Void):Void
+    {
+        var countdownSprite:FlxSprite = new FlxSprite().loadGraphic("assets/images/countdown.png", true, 1000, 500);
+
+        countdownSprite.animation.add("0", [0], 0.0, false);
+
+        countdownSprite.animation.add("1", [1], 0.0, false);
+
+        countdownSprite.animation.add("2", [2], 0.0, false);
+
+        countdownSprite.camera = hudCamera;
+
+        countdownSprite.alpha = 0.0;
+
+        countdownSprite.scale.set(0.85, 0.85);
+
+        countdownSprite.updateHitbox();
+
+        countdownSprite.screenCenter();
+
+        add(countdownSprite);
+
+        new FlxTimer().start(Conductor.current.crotchet * 0.001, function(timer):Void
+        {
+            switch (timer.elapsedLoops)
+            {
+                case 1:
+                {
+                    var three:FlxSound = FlxG.sound.load("assets/sounds/three.ogg", 0.65);
+
+                    three.play();
+                }
+
+                case 2:
+                {
+                    countdownSprite.animation.play("0");
+
+                    FlxTween.cancelTweensOf(countdownSprite, ["alpha"]);
+
+                    countdownSprite.alpha = 1;
+
+                    FlxTween.tween(countdownSprite, {alpha: 0}, Conductor.current.crotchet * 0.001,
+                    {
+                        ease: FlxEase.circInOut
+                    });
+
+                    var two:FlxSound = FlxG.sound.load("assets/sounds/two.ogg", 0.65);
+
+                    two.play();
+                }
+
+                case 3:
+                {
+                    countdownSprite.animation.play("1");
+
+                    FlxTween.cancelTweensOf(countdownSprite, ["alpha"]);
+
+                    countdownSprite.alpha = 1;
+
+                    FlxTween.tween(countdownSprite, {alpha: 0}, Conductor.current.crotchet * 0.001,
+                    {
+                        ease: FlxEase.circInOut
+                    });
+
+                    var one:FlxSound = FlxG.sound.load("assets/sounds/one.ogg", 0.65);
+
+                    one.play();
+                }
+
+                case 4:
+                {
+                    countdownSprite.animation.play("2");
+
+                    FlxTween.cancelTweensOf(countdownSprite, ["alpha"]);
+
+                    countdownSprite.alpha = 1;
+
+                    FlxTween.tween(countdownSprite, {alpha: 0}, Conductor.current.crotchet * 0.001,
+                    {
+                        ease: FlxEase.circInOut,
+
+                        onComplete: function(tween:FlxTween):Void
+                        {
+                            remove(countdownSprite, true);
+
+                            countdownSprite.destroy();
+                        }
+                    });
+
+                    var go:FlxSound = FlxG.sound.load("assets/sounds/go.ogg", 0.65);
+
+                    go.play();
+                }
+
+                case 5:
+                {
+                    if (finishCallback != null)
+                    {
+                        finishCallback();
+                    }
+                }
+            }
+            
+            if (timer.elapsedLoops % 2 == 0)
+            {
+                player.dance();
+            }
+        }, 5);
+
+        countdownStarted = true;
+    }
+
+    public function startSong():Void
+    {
+        instrumental.play();
+
+        if (mainVocals != null)
+        {
+            mainVocals.play();
+        }
+
+        if (opponentVocals != null)
+        {
+            opponentVocals.play();
+        }
+
+        if (playerVocals != null)
+        {
+            playerVocals.play();
+        }
+
+        songStarted = true;
+    }
+
+    public function endSong():Void
+    {
+        if (mainVocals != null)
+        {
+            mainVocals.stop();
+        }
+
+        if (opponentVocals != null)
+        {
+            opponentVocals.stop();
+        }
+
+        if (playerVocals != null)
+        {
+            playerVocals.stop();
+        }
+
+        FlxG.resetState();
+    }
+
+    public function opponentNoteHit(note:Note):Void
+    {
+        notes.remove(note, true);
+
+        note.destroy();
+    }
+
+    public function opponentNoteMiss(note:Note):Void
+    {
+        notes.remove(note, true);
+
+        note.destroy();
+    }
+
+    public function playerNoteHit(note:Note):Void
+    {
+        var rating:Rating = Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time));
+
+        FlxTween.cancelTweensOf(ratingTxt, ["alpha"]);
+
+        ratingTxt.alpha = 1;
+
+        FlxTween.tween(ratingTxt, {alpha: 0}, Conductor.current.crotchet * 0.001,
+        {
+            ease: FlxEase.sineInOut,
+
+            onComplete: function(tween:FlxTween):Void
+            {
+                ratingTxt.text = "";
+
+                ratingTxt.color = FlxColor.BLACK;
+
+                ratingTxt.screenCenter();
+            }
+        });
+
+        ratingTxt.text = '${rating.name}\n(${Std.string(Math.round(Conductor.current.time - note.time))})';
+
+        ratingTxt.color = rating.color;
+
+        ratingTxt.screenCenter();
+
+        notes.remove(note, true);
+
+        note.destroy();
+
+        player.animationTimer = 0.0;
+
+        player.animation.play('Sing${Note.directions[note.direction]}', true);
+
+        var snap:FlxSound = FlxG.sound.load("assets/sounds/snap.ogg", 0.75).play();
+    }
+
+    public function playerNoteMiss(note:Note):Void
+    {
+        FlxTween.cancelTweensOf(ratingTxt, ["alpha"]);
+
+        ratingTxt.alpha = 1;
+
+        FlxTween.tween(ratingTxt, {alpha: 0}, Conductor.current.crotchet * 0.001,
+        {
+            ease: FlxEase.sineInOut,
+
+            onComplete: function(tween:FlxTween):Void
+            {
+                ratingTxt.text = "";
+
+                ratingTxt.color = FlxColor.BLACK;
+
+                ratingTxt.screenCenter();
+            }
+        });
+
+        ratingTxt.text = 'Miss...';
+
+        ratingTxt.color = FlxColor.subtract(FlxColor.RED, FlxColor.BROWN);
+
+        ratingTxt.screenCenter();
+
+        notes.remove(note, true);
+
+        note.destroy();
+
+        player.animationTimer = 0.0;
+
+        player.animation.play('Sing${Note.directions[note.direction]}MISS', true);
+    }
+}

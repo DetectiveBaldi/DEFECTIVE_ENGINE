@@ -1,0 +1,80 @@
+{
+    "source": "assets/images/characters/BOYFRIEND",
+
+    "animations":
+    [
+        {
+            "offsets": {"x": -5.0, "y": 0.0},
+
+            "name": "dance",
+
+            "prefix": "BF idle dance0"
+        },
+
+        {
+            "offsets": {"x": 12.0, "y": -6.0},
+
+            "name": "SingLEFT",
+
+            "prefix": "BF NOTE LEFT0"
+        },
+
+        {
+            "offsets": {"x": -10.0, "y": -50.0},
+
+            "name": "SingDOWN",
+
+            "prefix": "BF NOTE DOWN0"
+        },
+
+        {
+            "offsets": {"x": -29.0, "y": 27.0},
+
+            "name": "SingUP",
+
+            "prefix": "BF NOTE UP0"
+        },
+
+        {
+            "offsets": {"x": -38.0, "y": -7.0},
+
+            "name": "SingRIGHT",
+
+            "prefix": "BF NOTE RIGHT0"
+        },
+
+        {
+            "offsets": {"x": 12.0, "y": 24.0},
+
+            "name": "SingLEFTMISS",
+
+            "prefix": "BF NOTE LEFT MISS0"
+        },
+
+        {
+            "offsets": {"x": -11.0, "y": -19.0},
+
+            "name": "SingDOWNMISS",
+
+            "prefix": "BF NOTE DOWN MISS0"
+        },
+
+        {
+            "offsets": {"x": -29.0, "y": 27.0},
+
+            "name": "SingUPMISS",
+
+            "prefix": "BF NOTE UP MISS0"
+        },
+
+        {
+            "offsets": {"x": -30.0, "y": 21.0},
+
+            "name": "SingRIGHTMISS",
+
+            "prefix": "BF NOTE RIGHT MISS0"
+        }
+    ],
+
+    "singDuration": 8.15
+}

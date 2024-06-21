@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="classic.png" width="160" height="1920" scale="1" format="RGBA8888">
+	<sprite n="down0000" x="0" y="0" w="160" h="160" pX="0.5" pY="0.5"/>
+	<sprite n="downHoldEnd0000" x="0" y="160" w="160" h="160" pX="0.5" pY="0.5"/>
+	<sprite n="downHoldPiece0000" x="0" y="320" w="160" h="160" pX="0.5" pY="0.5"/>
+	<sprite n="left0000" x="0" y="480" w="160" h="160" pX="0.5" pY="0.5"/>
+	<sprite n="leftHoldEnd0000" x="0" y="640" w="160" h="160" pX="0.5" pY="0.5"/>
+	<sprite n="leftHoldPiece0000" x="0" y="800" w="160" h="160" pX="0.5" pY="0.5"/>
+	<sprite n="right0000" x="0" y="960" w="160" h="160" pX="0.5" pY="0.5"/>
+	<sprite n="rightHoldEnd0000" x="0" y="1120" w="160" h="160" pX="0.5" pY="0.5"/>
+	<sprite n="rightHoldPiece0000" x="0" y="1280" w="160" h="160" pX="0.5" pY="0.5"/>
+	<sprite n="up0000" x="0" y="1440" w="160" h="160" pX="0.5" pY="0.5"/>
+	<sprite n="upHoldEnd0000" x="0" y="1600" w="160" h="160" pX="0.5" pY="0.5"/>
+	<sprite n="upHoldPiece0000" x="0" y="1760" w="160" h="160" pX="0.5" pY="0.5"/>
+</TextureAtlas>
