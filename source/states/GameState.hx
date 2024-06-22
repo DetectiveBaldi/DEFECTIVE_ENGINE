@@ -83,6 +83,8 @@ class GameState extends State
 
     public var playerVocals(default, null):FlxSound;
 
+    public var opponent(default, null):Character;
+
     public var player(default, null):Character;
 
     public var countdownStarted(default, null):Bool;
@@ -100,7 +102,7 @@ class GameState extends State
 
         gameCamera.bgColor = FlxColor.GRAY;
 
-        gameCamera.zoom = 0.65;
+        gameCamera.zoom = 0.75;
 
         hudCamera = new FlxCamera();
 
@@ -183,9 +185,15 @@ class GameState extends State
 
         add(new Stage());
 
+        opponent = new Character(0.0, 0.0, "assets/characters/DAD.json", OPPONENT);
+
+        opponent.setPosition(15.0, 50.0);
+
+        add(opponent);
+
         player = new Character(0.0, 0.0, "assets/characters/BOYFRIEND.json", PLAYER);
 
-        player.setPosition(995.5, 385.0);
+        player.setPosition((FlxG.width - player.width) - 15.0, 405.0);
 
         add(player);
 
@@ -201,9 +209,9 @@ class GameState extends State
     {
         super.update(elapsed);
         
-        gameCamera.zoom = 0.65 + (gameCamera.zoom - 0.65) * Math.pow(2, -elapsed / 0.05);
+        gameCamera.zoom = 0.75 + (gameCamera.zoom - 0.75) * Math.pow(2.0, -elapsed / 0.05);
 
-        hudCamera.zoom = 1 + (hudCamera.zoom - 1) * Math.pow(2, -elapsed / 0.05);
+        hudCamera.zoom = 1.0 + (hudCamera.zoom - 1.0) * Math.pow(2.0, -elapsed / 0.05);
 
         for (strumLine in strumLines)
         {
@@ -276,7 +284,7 @@ class GameState extends State
 
             if (strumLine.automatic)
             {
-                if (note.time - Conductor.current.time <= 1)
+                if (note.time - Conductor.current.time <= 0.05)
                 {
                     strum.animationTimer = 0.0;
 
@@ -498,6 +506,8 @@ class GameState extends State
             
             if (timer.elapsedLoops % 2 == 0)
             {
+                opponent.dance();
+
                 player.dance();
             }
         }, 5);
@@ -552,6 +562,10 @@ class GameState extends State
         notes.remove(note, true);
 
         note.destroy();
+
+        opponent.animationTimer = 0.0;
+
+        opponent.animation.play('Sing${Note.directions[note.direction]}', true);
     }
 
     public function opponentNoteMiss(note:Note):Void
@@ -559,6 +573,10 @@ class GameState extends State
         notes.remove(note, true);
 
         note.destroy();
+
+        opponent.animationTimer = 0.0;
+
+        opponent.animation.play('Sing${Note.directions[note.direction]}MISS', true);
     }
 
     public function playerNoteHit(note:Note):Void

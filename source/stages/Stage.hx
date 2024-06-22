@@ -18,27 +18,27 @@ class Stage extends FlxContainer
 
         background = new FlxSprite(0, 0, "assets/images/stages/stage/background.png");
 
-        background.setPosition(-600.0, -200.0);
+        background.screenCenter();
 
         add(background);
 
         foreground = new FlxSprite(0, 0, "assets/images/stages/stage/foreground.png");
 
-        foreground.scale.set(1.1, 1.1);
+        foreground.scale.set(1.15, 1.15);
 
         foreground.updateHitbox();
 
-        foreground.setPosition(-650.0, 600.0);
+        foreground.setPosition(background.getMidpoint().x - foreground.width / 2, ((background.y + background.height) - foreground.height) + 175.0);
         
         add(foreground);
 
         curtains = new FlxSprite(0, 0, "assets/images/stages/stage/curtains.png");
 
-        curtains.scale.set(0.9, 0.9);
+        curtains.scale.set(0.95, 0.95);
 
         curtains.updateHitbox();
 
-        curtains.setPosition(-500.0, -300.0);
+        curtains.setPosition(background.getMidpoint().x - curtains.width / 2, background.y);
 
         add(curtains);
     }
