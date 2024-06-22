@@ -66,9 +66,9 @@ class GameState extends State
     @:noCompletion
     function set_downScroll(downScroll:Bool):Bool
     {
-        opponentStrums.y = downScroll ? (FlxG.height - opponentStrums.height) - 15 : 15;
+        opponentStrums.y = downScroll ? (FlxG.height - opponentStrums.height) - 15.0 : 15.0;
 
-        playerStrums.y = downScroll ? (FlxG.height - playerStrums.height) - 15 : 15;
+        playerStrums.y = downScroll ? (FlxG.height - playerStrums.height) - 15.0 : 15.0;
 
         return this.downScroll = downScroll;
     }
@@ -280,7 +280,7 @@ class GameState extends State
 
             var strum:Strum = strumLine.members[note.direction];
             
-            note.setPosition(strum.getMidpoint().x - note.width / 2, strum.y - ((((Conductor.current.time - note.time) * song.speed) * note.speed) * (downScroll ? -1 : 1)));
+            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - ((((Conductor.current.time - note.time) * song.speed) * note.speed) * (downScroll ? -1.0 : 1.0)));
 
             if (strumLine.automatic)
             {
@@ -304,29 +304,29 @@ class GameState extends State
 
         if (countdownStarted)
         {
-            Conductor.current.time += 1000 * elapsed;
+            Conductor.current.time += 1000.0 * elapsed;
         }
 
         if (songStarted)
         {
             Conductor.current.calculate();
 
-            if (Math.abs(Conductor.current.time - instrumental.time) > 25)
+            if (Math.abs(Conductor.current.time - instrumental.time) > 25.0)
             {
                 instrumental.time = Conductor.current.time;
             }
 
-            if (mainVocals != null && Math.abs(instrumental.time - mainVocals.time) > 5)
+            if (mainVocals != null && Math.abs(instrumental.time - mainVocals.time) > 5.0)
             {
                 mainVocals.time = instrumental.time;
             }
 
-            if (opponentVocals != null && Math.abs(instrumental.time - opponentVocals.time) > 5)
+            if (opponentVocals != null && Math.abs(instrumental.time - opponentVocals.time) > 5.0)
             {
                 opponentVocals.time = instrumental.time;
             }
 
-            if (playerVocals != null && Math.abs(instrumental.time - playerVocals.time) > 5)
+            if (playerVocals != null && Math.abs(instrumental.time - playerVocals.time) > 5.0)
             {
                 playerVocals.time = instrumental.time;
             }
@@ -364,7 +364,7 @@ class GameState extends State
 
         Conductor.current.tempo = song.tempo;
 
-        Conductor.current.time = -Conductor.current.crotchet * 5;
+        Conductor.current.time = -Conductor.current.crotchet * 5.0;
 
         instrumental = FlxG.sound.load('assets/music/${name}/Instrumental.ogg');
 
@@ -442,7 +442,7 @@ class GameState extends State
 
                     countdownSprite.alpha = 1;
 
-                    FlxTween.tween(countdownSprite, {alpha: 0}, Conductor.current.crotchet * 0.001,
+                    FlxTween.tween(countdownSprite, {alpha: 0.0}, Conductor.current.crotchet * 0.001,
                     {
                         ease: FlxEase.circInOut
                     });
@@ -460,7 +460,7 @@ class GameState extends State
 
                     countdownSprite.alpha = 1;
 
-                    FlxTween.tween(countdownSprite, {alpha: 0}, Conductor.current.crotchet * 0.001,
+                    FlxTween.tween(countdownSprite, {alpha: 0.0}, Conductor.current.crotchet * 0.001,
                     {
                         ease: FlxEase.circInOut
                     });
@@ -478,7 +478,7 @@ class GameState extends State
 
                     countdownSprite.alpha = 1;
 
-                    FlxTween.tween(countdownSprite, {alpha: 0}, Conductor.current.crotchet * 0.001,
+                    FlxTween.tween(countdownSprite, {alpha: 0.0}, Conductor.current.crotchet * 0.001,
                     {
                         ease: FlxEase.circInOut,
 
@@ -585,9 +585,9 @@ class GameState extends State
 
         FlxTween.cancelTweensOf(ratingTxt, ["alpha"]);
 
-        ratingTxt.alpha = 1;
+        ratingTxt.alpha = 1.0;
 
-        FlxTween.tween(ratingTxt, {alpha: 0}, Conductor.current.crotchet * 0.001,
+        FlxTween.tween(ratingTxt, {alpha: 0.0}, Conductor.current.crotchet * 0.001,
         {
             ease: FlxEase.sineInOut,
 
@@ -622,9 +622,9 @@ class GameState extends State
     {
         FlxTween.cancelTweensOf(ratingTxt, ["alpha"]);
 
-        ratingTxt.alpha = 1;
+        ratingTxt.alpha = 1.0;
 
-        FlxTween.tween(ratingTxt, {alpha: 0}, Conductor.current.crotchet * 0.001,
+        FlxTween.tween(ratingTxt, {alpha: 0.0}, Conductor.current.crotchet * 0.001,
         {
             ease: FlxEase.sineInOut,
 

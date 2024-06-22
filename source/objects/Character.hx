@@ -140,7 +140,7 @@ class Character extends FlxSprite
 
     public function beatHit():Void
     {
-        if (Conductor.current.currentBeat % 2 == 0)
+        if (Conductor.current.currentBeat % 2.0 == 0.0)
         {
             dance();
         }

@@ -60,7 +60,7 @@ typedef SimpleEvent =
     var name:String;
 
     var value:Dynamic;
-}
+};
 
 typedef SimpleNote =
 {

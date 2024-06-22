@@ -51,7 +51,7 @@ class FunkFormat
         {
             noteIndex++;
 
-            output.notes.push({time: note.t, speed: 1, direction: note.d % 4, lane: 1 - Math.floor(note.d / 4)});
+            output.notes.push({time: note.t, speed: 1, direction: note.d % 4, lane: 1 - Math.floor(note.d / 4.0)});
 
             note = cast Reflect.field(chart.notes, difficulty)[noteIndex];
         }

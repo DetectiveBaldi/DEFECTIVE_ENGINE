@@ -28,7 +28,7 @@ class Stage extends FlxContainer
 
         foreground.updateHitbox();
 
-        foreground.setPosition(background.getMidpoint().x - foreground.width / 2, ((background.y + background.height) - foreground.height) + 175.0);
+        foreground.setPosition(background.getMidpoint().x - foreground.width * 0.5, ((background.y + background.height) - foreground.height) + 175.0);
         
         add(foreground);
 
@@ -38,7 +38,7 @@ class Stage extends FlxContainer
 
         curtains.updateHitbox();
 
-        curtains.setPosition(background.getMidpoint().x - curtains.width / 2, background.y);
+        curtains.setPosition(background.getMidpoint().x - curtains.width * 0.5, background.y);
 
         add(curtains);
     }
