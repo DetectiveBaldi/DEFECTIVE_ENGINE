@@ -51,8 +51,6 @@ class GameState extends State
 
     public var ratings(default, null):Array<Rating>;
 
-    public var ratingTxt(default, null):FlxBitmapText;
-
     public var strumLines(default, null):FlxTypedContainer<StrumLine>;
 
     public var opponentStrums(default, null):StrumLine;
@@ -124,24 +122,6 @@ class GameState extends State
 
             new Rating("Shit", FlxColor.subtract(FlxColor.RED, FlxColor.BROWN), Math.POSITIVE_INFINITY, 0, 50, 0)
         ];
-
-        ratingTxt = new FlxBitmapText(0.0, 0.0, "", FlxBitmapFont.getDefaultFont());
-
-        ratingTxt.camera = hudCamera;
-
-        ratingTxt.antialiasing = false;
-
-        ratingTxt.alignment = CENTER;
-
-        ratingTxt.color = FlxColor.BLACK;
-
-        ratingTxt.scale.set(5, 5);
-
-        ratingTxt.updateHitbox();
-
-        ratingTxt.screenCenter();
-
-        add(ratingTxt);
 
         strumLines = new FlxTypedContainer<StrumLine>();
 
@@ -637,13 +617,13 @@ class GameState extends State
     {
         if (!playerStrums.automatic)
         {
-            displayRating(note);
+            var ratingTxt:FlxBitmapText = displayRating(note);
 
             ratingTxt.text = "Miss...";
 
-            ratingTxt.screenCenter();
-
             ratingTxt.color = FlxColor.subtract(FlxColor.RED, FlxColor.BROWN);
+
+            ratingTxt.screenCenter();
         }
 
         notes.remove(note, true);
@@ -668,32 +648,42 @@ class GameState extends State
         }
     }
 
-    public function displayRating(note:Note):Void
+    public function displayRating(note:Note):FlxBitmapText
     {
         var rating:Rating = Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time));
 
-        FlxTween.cancelTweensOf(ratingTxt, ["alpha"]);
+        var output:FlxBitmapText = new FlxBitmapText(0.0, 0.0, "", FlxBitmapFont.getDefaultFont());
 
-        ratingTxt.alpha = 1.0;
+        output.camera = hudCamera;
 
-        FlxTween.tween(ratingTxt, {alpha: 0.0}, Conductor.current.crotchet * 0.001,
+        output.text = '${rating.name}\n(${Math.abs(Conductor.current.time - note.time)})';
+
+        output.antialiasing = false;
+
+        output.alignment = CENTER;
+
+        output.color = rating.color;
+
+        output.velocity.set(FlxG.random.bool() ? FlxG.random.int(0, 75) : FlxG.random.int(-0, -75), FlxG.random.bool() ? FlxG.random.int(0, 10) : FlxG.random.int(-0, -10));
+
+        output.acceleration.set(FlxG.random.bool() ? FlxG.random.int(0, 350) : FlxG.random.int(-0, -350), FlxG.random.bool() ? FlxG.random.int(0, 250) : FlxG.random.int(-0, -250));
+
+        output.scale.set(5.0, 5.0);
+
+        output.updateHitbox();
+
+        output.screenCenter();
+
+        add(output);
+
+        FlxTween.tween(output, {alpha: 0.0}, (Conductor.current.crotchet * 4) * 0.001,
         {
-            ease: FlxEase.sineInOut,
-
             onComplete: function(tween:FlxTween):Void
             {
-                ratingTxt.text = "";
-
-                ratingTxt.screenCenter();
-
-                ratingTxt.color = FlxColor.BLACK;
+                output.destroy();
             }
         });
 
-        ratingTxt.text = '${rating.name}\n(${Math.abs(Conductor.current.time - note.time)})';
-
-        ratingTxt.screenCenter();
-
-        ratingTxt.color = rating.color;
+        return output;
     }
 }
