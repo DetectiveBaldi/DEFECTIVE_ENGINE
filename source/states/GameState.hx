@@ -181,7 +181,7 @@ class GameState extends State
 
         add(notes);
 
-        loadSong("DadBattle-Erect");
+        loadSong("Sporting");
 
         add(new Stage());
 
@@ -563,6 +563,16 @@ class GameState extends State
 
         note.destroy();
 
+        if (mainVocals != null)
+        {
+            mainVocals.volume = 1.0;
+        }
+
+        if (opponentVocals != null)
+        {
+            opponentVocals.volume = 1.0;
+        }
+
         opponent.animationTimer = 0.0;
 
         opponent.animation.play('Sing${Note.directions[note.direction]}', true);
@@ -573,6 +583,16 @@ class GameState extends State
         notes.remove(note, true);
 
         note.destroy();
+
+        if (mainVocals != null)
+        {
+            mainVocals.volume = 0.0;
+        }
+
+        if (opponentVocals != null)
+        {
+            opponentVocals.volume = 0.0;
+        }
 
         opponent.animationTimer = 0.0;
 
@@ -611,6 +631,16 @@ class GameState extends State
 
         note.destroy();
 
+        if (mainVocals != null)
+        {
+            mainVocals.volume = 1.0;
+        }
+
+        if (playerVocals != null)
+        {
+            playerVocals.volume = 1.0;
+        }
+
         player.animationTimer = 0.0;
 
         player.animation.play('Sing${Note.directions[note.direction]}', true);
@@ -647,6 +677,16 @@ class GameState extends State
         notes.remove(note, true);
 
         note.destroy();
+
+        if (mainVocals != null)
+        {
+            mainVocals.volume = 0.0;
+        }
+
+        if (playerVocals != null)
+        {
+            playerVocals.volume = 0.0;
+        }
 
         player.animationTimer = 0.0;
 
