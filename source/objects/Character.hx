@@ -66,7 +66,7 @@ class Character extends FlxSprite
     {
         super.update(elapsed);
 
-        if (Binds.bindsJustPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) && role == PLAYER)
+        if (Binds.bindsJustPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) && role == PLAYABLE)
         {
             animationTimer = 0.0;
         }
@@ -82,7 +82,7 @@ class Character extends FlxSprite
                 requiredTime *= FlxG.random.float(1.35, 1.85);
             }
 
-            if (animationTimer >= requiredTime && (role == PLAYER ? !Binds.bindsPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) : true))
+            if (animationTimer >= requiredTime && (role == PLAYABLE ? !Binds.bindsPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) : true))
             {
                 dance(true);
 
@@ -154,11 +154,9 @@ class Character extends FlxSprite
 
 enum abstract CharacterRole(String)
 {
-    var OPPONENT:CharacterRole = "OPPONENT";
-
-    var PLAYER:CharacterRole = "PLAYER";
-
     var ARTIFICIAL:CharacterRole = "ARTIFICIAL";
+
+    var PLAYABLE:CharacterRole = "PLAYABLE";
 }
 
 typedef SimpleCharacter =

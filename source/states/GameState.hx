@@ -165,13 +165,13 @@ class GameState extends State
 
         add(new Stage());
 
-        opponent = new Character(0.0, 0.0, "assets/characters/DAD.json", OPPONENT);
+        opponent = new Character(0.0, 0.0, "assets/characters/DAD.json");
 
         opponent.setPosition(15.0, 50.0);
 
         add(opponent);
 
-        player = new Character(0.0, 0.0, "assets/characters/BOYFRIEND.json", PLAYER);
+        player = new Character(0.0, 0.0, "assets/characters/BOYFRIEND.json", PLAYABLE);
 
         player.setPosition((FlxG.width - player.width) - 15.0, 405.0);
 
