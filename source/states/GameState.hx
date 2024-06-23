@@ -188,6 +188,36 @@ class GameState extends State
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
+
+        if (countdownStarted)
+        {
+            Conductor.current.time += 1000.0 * elapsed;
+        }
+
+        if (songStarted)
+        {
+            Conductor.current.calculate();
+
+            if (Math.abs(Conductor.current.time - instrumental.time) > 25.0)
+            {
+                instrumental.time = Conductor.current.time;
+            }
+
+            if (mainVocals != null && Math.abs(instrumental.time - mainVocals.time) > 5.0)
+            {
+                mainVocals.time = instrumental.time;
+            }
+
+            if (opponentVocals != null && Math.abs(instrumental.time - opponentVocals.time) > 5.0)
+            {
+                opponentVocals.time = instrumental.time;
+            }
+
+            if (playerVocals != null && Math.abs(instrumental.time - playerVocals.time) > 5.0)
+            {
+                playerVocals.time = instrumental.time;
+            }
+        }
         
         gameCamera.zoom = 0.75 + (gameCamera.zoom - 0.75) * Math.pow(2.0, -elapsed / 0.05);
 
@@ -264,7 +294,7 @@ class GameState extends State
 
             if (strumLine.automatic)
             {
-                if (note.time - Conductor.current.time <= 0.05)
+                if (Conductor.current.time - note.time >= 0.0)
                 {
                     strum.animationTimer = 0.0;
 
@@ -279,36 +309,6 @@ class GameState extends State
             if (Conductor.current.time - note.time > 166.6)
             {
                 strumLine.noteMiss.dispatch(note);
-            }
-        }
-
-        if (countdownStarted)
-        {
-            Conductor.current.time += 1000.0 * elapsed;
-        }
-
-        if (songStarted)
-        {
-            Conductor.current.calculate();
-
-            if (Math.abs(Conductor.current.time - instrumental.time) > 25.0)
-            {
-                instrumental.time = Conductor.current.time;
-            }
-
-            if (mainVocals != null && Math.abs(instrumental.time - mainVocals.time) > 5.0)
-            {
-                mainVocals.time = instrumental.time;
-            }
-
-            if (opponentVocals != null && Math.abs(instrumental.time - opponentVocals.time) > 5.0)
-            {
-                opponentVocals.time = instrumental.time;
-            }
-
-            if (playerVocals != null && Math.abs(instrumental.time - playerVocals.time) > 5.0)
-            {
-                playerVocals.time = instrumental.time;
             }
         }
 
