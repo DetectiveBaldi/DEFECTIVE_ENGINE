@@ -690,7 +690,7 @@ class GameState extends State
             }
         });
 
-        ratingTxt.text = rating.name;
+        ratingTxt.text = '${rating.name}\n(${Math.abs(Conductor.current.time - note.time)})';
 
         ratingTxt.screenCenter();
 
