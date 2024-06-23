@@ -596,36 +596,18 @@ class GameState extends State
 
         opponent.animationTimer = 0.0;
 
-        opponent.animation.play('Sing${Note.directions[note.direction]}MISS', true);
+        if (opponent.animation.exists('Sing${Note.directions[note.direction]}MISS'))
+        {
+            opponent.animation.play('Sing${Note.directions[note.direction]}MISS', true);
+        }
     }
 
     public function playerNoteHit(note:Note):Void
     {
-        var rating:Rating = Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time));
-
-        FlxTween.cancelTweensOf(ratingTxt, ["alpha"]);
-
-        ratingTxt.alpha = 1.0;
-
-        FlxTween.tween(ratingTxt, {alpha: 0.0}, Conductor.current.crotchet * 0.001,
+        if (!playerStrums.automatic)
         {
-            ease: FlxEase.sineInOut,
-
-            onComplete: function(tween:FlxTween):Void
-            {
-                ratingTxt.text = "";
-
-                ratingTxt.color = FlxColor.BLACK;
-
-                ratingTxt.screenCenter();
-            }
-        });
-
-        ratingTxt.text = '${rating.name}\n(${Std.string(Math.round(Conductor.current.time - note.time))})';
-
-        ratingTxt.color = rating.color;
-
-        ratingTxt.screenCenter();
+            displayRating(note);
+        }
 
         notes.remove(note, true);
 
@@ -645,34 +627,24 @@ class GameState extends State
 
         player.animation.play('Sing${Note.directions[note.direction]}', true);
 
-        var snap:FlxSound = FlxG.sound.load("assets/sounds/snap.ogg", 0.75).play();
+        if (!playerStrums.automatic)
+        {
+            var snap:FlxSound = FlxG.sound.load("assets/sounds/snap.ogg", 0.75).play();
+        }
     }
 
     public function playerNoteMiss(note:Note):Void
     {
-        FlxTween.cancelTweensOf(ratingTxt, ["alpha"]);
-
-        ratingTxt.alpha = 1.0;
-
-        FlxTween.tween(ratingTxt, {alpha: 0.0}, Conductor.current.crotchet * 0.001,
+        if (!playerStrums.automatic)
         {
-            ease: FlxEase.sineInOut,
+            displayRating(note);
 
-            onComplete: function(tween:FlxTween):Void
-            {
-                ratingTxt.text = "";
+            ratingTxt.text = "Miss...";
 
-                ratingTxt.color = FlxColor.BLACK;
+            ratingTxt.screenCenter();
 
-                ratingTxt.screenCenter();
-            }
-        });
-
-        ratingTxt.text = 'Miss...';
-
-        ratingTxt.color = FlxColor.subtract(FlxColor.RED, FlxColor.BROWN);
-
-        ratingTxt.screenCenter();
+            ratingTxt.color = FlxColor.subtract(FlxColor.RED, FlxColor.BROWN);
+        }
 
         notes.remove(note, true);
 
@@ -690,6 +662,38 @@ class GameState extends State
 
         player.animationTimer = 0.0;
 
-        player.animation.play('Sing${Note.directions[note.direction]}MISS', true);
+        if (player.animation.exists('Sing${Note.directions[note.direction]}MISS'))
+        {
+            player.animation.play('Sing${Note.directions[note.direction]}MISS', true);
+        }
+    }
+
+    public function displayRating(note:Note):Void
+    {
+        var rating:Rating = Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time));
+
+        FlxTween.cancelTweensOf(ratingTxt, ["alpha"]);
+
+        ratingTxt.alpha = 1.0;
+
+        FlxTween.tween(ratingTxt, {alpha: 0.0}, Conductor.current.crotchet * 0.001,
+        {
+            ease: FlxEase.sineInOut,
+
+            onComplete: function(tween:FlxTween):Void
+            {
+                ratingTxt.text = "";
+
+                ratingTxt.screenCenter();
+
+                ratingTxt.color = FlxColor.BLACK;
+            }
+        });
+
+        ratingTxt.text = rating.name;
+
+        ratingTxt.screenCenter();
+
+        ratingTxt.color = rating.color;
     }
 }
