@@ -14,7 +14,7 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
 
     public var noteSpawn(default, null):FlxTypedSignal<(Note)->Void>;
 
-    public var automatic:Bool;
+    public var artificial:Bool;
 
     public function new():Void
     {
@@ -28,7 +28,7 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
 
         noteSpawn = new FlxTypedSignal<(Note)->Void>();
 
-        automatic = false;
+        artificial = false;
 
         for (i in 0 ... 4)
         {

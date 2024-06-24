@@ -131,7 +131,7 @@ class GameState extends State
         
         opponentStrums = new StrumLine();
 
-        opponentStrums.automatic = true;
+        opponentStrums.artificial = true;
 
         opponentStrums.lane = 0;
 
@@ -225,7 +225,7 @@ class GameState extends State
 
         for (strumLine in strumLines)
         {
-            if (strumLine.automatic)
+            if (strumLine.artificial)
             {
                 continue;
             }
@@ -292,7 +292,7 @@ class GameState extends State
             
             note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - ((((Conductor.current.time - note.time) * song.speed) * note.speed) * (downScroll ? -1.0 : 1.0)));
 
-            if (strumLine.automatic)
+            if (strumLine.artificial)
             {
                 if (Conductor.current.time - note.time >= 0.0)
                 {
@@ -584,7 +584,7 @@ class GameState extends State
 
     public function playerNoteHit(note:Note):Void
     {
-        if (!playerStrums.automatic)
+        if (!playerStrums.artificial)
         {
             displayRating(note);
         }
@@ -607,7 +607,7 @@ class GameState extends State
 
         player.animation.play('Sing${Note.directions[note.direction]}', true);
 
-        if (!playerStrums.automatic)
+        if (!playerStrums.artificial)
         {
             var snap:FlxSound = FlxG.sound.load("assets/sounds/snap.ogg", 0.75).play();
         }
@@ -615,7 +615,7 @@ class GameState extends State
 
     public function playerNoteMiss(note:Note):Void
     {
-        if (!playerStrums.automatic)
+        if (!playerStrums.artificial)
         {
             var ratingTxt:FlxBitmapText = displayRating(note);
 

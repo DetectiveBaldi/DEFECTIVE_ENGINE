@@ -60,7 +60,7 @@ class Strum extends FlxSprite
             {
                 animationTimer = 0.0;
                 
-                animation.play(directions[direction].toLowerCase() + (parent.automatic ? "Static" : "Press"));
+                animation.play(directions[direction].toLowerCase() + (parent.artificial ? "Static" : "Press"));
             }
         }
         else
