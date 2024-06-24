@@ -348,7 +348,7 @@ class GameState extends State
 
         instrumental = FlxG.sound.load('assets/music/${name}/Instrumental.ogg');
 
-        instrumental.onComplete = () -> endSong();
+        instrumental.onComplete = endSong;
 
         #if sys
             if (sys.FileSystem.exists('assets/music/${name}/Vocals-Main.ogg'))
