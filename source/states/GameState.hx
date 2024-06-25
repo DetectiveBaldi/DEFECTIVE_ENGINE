@@ -51,6 +51,52 @@ class GameState extends State
 
     public var ratings(default, null):Array<Rating>;
 
+    public var downScroll(default, set):Bool;
+
+    @:noCompletion
+    function set_downScroll(downScroll:Bool):Bool
+    {
+        if (scoreTxt != null)
+        {
+            FlxTween.cancelTweensOf(scoreTxt, ["y"]);
+
+            FlxTween.tween(scoreTxt, {y: downScroll ? 35.0 : (FlxG.height - scoreTxt.height) - 35.0}, Conductor.current.crotchet * 0.001 ?? 1.0,
+            {
+                ease: FlxEase.circInOut
+            });
+        }
+
+        if (opponentStrums != null)
+        {
+            FlxTween.cancelTweensOf(opponentStrums, ["y"]);
+
+            FlxTween.tween(opponentStrums, {y: downScroll ? (FlxG.height - opponentStrums.height) - 15.0 : 15.0}, Conductor.current.crotchet * 0.001 ?? 1.0,
+            {
+                ease: FlxEase.circInOut
+            });
+        }
+
+        if (playerStrums != null)
+        {
+            FlxTween.cancelTweensOf(playerStrums, ["y"]);
+
+            FlxTween.tween(playerStrums, {y: downScroll ? (FlxG.height - playerStrums.height) - 15.0 : 15.0}, Conductor.current.crotchet * 0.001 ?? 1.0,
+            {
+                ease: FlxEase.circInOut
+            });
+        }
+
+        return this.downScroll = downScroll;
+    }
+
+    public var scoreTxt(default, null):FlxBitmapText;
+
+    public var score(default, null):Int;
+
+    public var misses(default, null):Int;
+
+    public var combo(default, null):Int;
+
     public var strumLines(default, null):FlxTypedContainer<StrumLine>;
 
     public var opponentStrums(default, null):StrumLine;
@@ -58,18 +104,6 @@ class GameState extends State
     public var playerStrums(default, null):StrumLine;
 
     public var notes(default, null):FlxTypedContainer<Note>;
-
-    public var downScroll(default, set):Bool;
-
-    @:noCompletion
-    function set_downScroll(downScroll:Bool):Bool
-    {
-        opponentStrums.y = downScroll ? (FlxG.height - opponentStrums.height) - 15.0 : 15.0;
-
-        playerStrums.y = downScroll ? (FlxG.height - playerStrums.height) - 15.0 : 15.0;
-
-        return this.downScroll = downScroll;
-    }
 
     public var song(default, null):Song;
 
@@ -108,6 +142,36 @@ class GameState extends State
 
         FlxG.cameras.add(hudCamera, false);
 
+        scoreTxt = new FlxBitmapText(0.0, 0.0, "", FlxBitmapFont.getDefaultFont());
+
+        scoreTxt.camera = hudCamera;
+
+        scoreTxt.antialiasing = false;
+
+        scoreTxt.text = "Score: 0 | Misses: 0 | Combo: 0";
+
+        scoreTxt.alignment = CENTER;
+
+        scoreTxt.borderStyle = OUTLINE;
+
+        scoreTxt.borderColor = FlxColor.BLACK;
+
+        scoreTxt.borderSize = 1.15;
+
+        scoreTxt.scale.set(3.5, 3.5);
+
+        scoreTxt.updateHitbox();
+
+        scoreTxt.setPosition((FlxG.width - scoreTxt.width) / 2, downScroll ? 35.0 : (FlxG.height - scoreTxt.height) - 35.0);
+
+        add(scoreTxt);
+
+        score = 0;
+
+        misses = 0;
+
+        combo = 0;
+
         binds = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
 
         ratings =
@@ -131,15 +195,15 @@ class GameState extends State
         
         opponentStrums = new StrumLine();
 
-        opponentStrums.artificial = true;
-
         opponentStrums.lane = 0;
+
+        opponentStrums.artificial = true;
 
         opponentStrums.noteHit.add(opponentNoteHit);
 
         opponentStrums.noteMiss.add(opponentNoteMiss);
 
-        opponentStrums.setPosition(45, 15);
+        opponentStrums.setPosition(45.0, downScroll ? (FlxG.height - opponentStrums.height) - 15.0 : 15.0);
 
         strumLines.add(opponentStrums);
         
@@ -151,7 +215,7 @@ class GameState extends State
 
         playerStrums.noteMiss.add(playerNoteMiss);
 
-        playerStrums.setPosition((FlxG.width - playerStrums.width) - 45, 15);
+        playerStrums.setPosition((FlxG.width - playerStrums.width) - 45.0, downScroll ? (FlxG.height - playerStrums.height) - 15.0 : 15.0);
 
         strumLines.add(playerStrums);
 
@@ -242,7 +306,7 @@ class GameState extends State
     
                     if (note != null)
                     {
-                        strum.animationTimer = 0.0;
+                        strum.confirmTimer = 0.0;
     
                         strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Confirm", true);
     
@@ -296,7 +360,7 @@ class GameState extends State
             {
                 if (Conductor.current.time - note.time >= 0.0)
                 {
-                    strum.animationTimer = 0.0;
+                    strum.confirmTimer = 0.0;
 
                     strum.animation.play(Strum.directions[note.direction].toLowerCase() + "Confirm", true);
 
@@ -553,7 +617,7 @@ class GameState extends State
             opponentVocals.volume = 1.0;
         }
 
-        opponent.animationTimer = 0.0;
+        opponent.singTimer = 0.0;
 
         opponent.animation.play('Sing${Note.directions[note.direction]}', true);
     }
@@ -574,7 +638,7 @@ class GameState extends State
             opponentVocals.volume = 0.0;
         }
 
-        opponent.animationTimer = 0.0;
+        opponent.singTimer = 0.0;
 
         if (opponent.animation.exists('Sing${Note.directions[note.direction]}MISS'))
         {
@@ -584,6 +648,14 @@ class GameState extends State
 
     public function playerNoteHit(note:Note):Void
     {
+        score += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).score;
+        
+        combo++;
+
+        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Combo: ${combo}';
+
+        scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
+
         if (!playerStrums.artificial)
         {
             displayRating(note);
@@ -603,7 +675,7 @@ class GameState extends State
             playerVocals.volume = 1.0;
         }
 
-        player.animationTimer = 0.0;
+        player.singTimer = 0.0;
 
         player.animation.play('Sing${Note.directions[note.direction]}', true);
 
@@ -615,6 +687,16 @@ class GameState extends State
 
     public function playerNoteMiss(note:Note):Void
     {
+        score -= 75;
+
+        misses++;
+
+        combo = 0;
+
+        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Combo: ${combo}';
+
+        scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
+
         if (!playerStrums.artificial)
         {
             var ratingTxt:FlxBitmapText = displayRating(note);
@@ -640,7 +722,7 @@ class GameState extends State
             playerVocals.volume = 0.0;
         }
 
-        player.animationTimer = 0.0;
+        player.singTimer = 0.0;
 
         if (player.animation.exists('Sing${Note.directions[note.direction]}MISS'))
         {
@@ -656,9 +738,9 @@ class GameState extends State
 
         output.camera = hudCamera;
 
-        output.text = '${rating.name}\n(${Math.abs(Conductor.current.time - note.time)})';
-
         output.antialiasing = false;
+
+        output.text = '${rating.name}\n(${Math.abs(Conductor.current.time - note.time)})';
 
         output.alignment = CENTER;
 

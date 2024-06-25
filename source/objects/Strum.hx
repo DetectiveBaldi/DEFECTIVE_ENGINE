@@ -35,9 +35,9 @@ class Strum extends FlxSprite
         return this.direction = null;
     }
 
-    public var animationTimer:Float;
+    public var parent(default, null):StrumLine;
 
-    public var parent:StrumLine;
+    public var confirmTimer:Float;
 
     public function new(x:Float = 0.0, y:Float = 0.0):Void
     {
@@ -45,7 +45,7 @@ class Strum extends FlxSprite
 
         direction = -1;
 
-        animationTimer = 0.0;
+        confirmTimer = 0.0;
     }
 
     override function update(elapsed:Float):Void
@@ -54,18 +54,18 @@ class Strum extends FlxSprite
 
         if (StringTools.endsWith(animation.name ?? "", "Confirm"))
         {
-            animationTimer += elapsed;
+            confirmTimer += elapsed;
 
-            if (animationTimer >= (Conductor.current.crotchet * 0.25) * 0.001)
+            if (confirmTimer >= (Conductor.current.crotchet * 0.25) * 0.001)
             {
-                animationTimer = 0.0;
+                confirmTimer = 0.0;
                 
                 animation.play(directions[direction].toLowerCase() + (parent.artificial ? "Static" : "Press"));
             }
         }
         else
         {
-            animationTimer = 0.0;
+            confirmTimer = 0.0;
         }
     }
 }

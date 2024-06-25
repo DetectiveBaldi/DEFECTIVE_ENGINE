@@ -19,7 +19,7 @@ class Character extends FlxSprite
 
     public var role(default, null):CharacterRole;
 
-    public var animationTimer:Float;
+    public var singTimer:Float;
 
     public function new(x:Float = 0.0, y:Float = 0.0, path:String, role:CharacterRole = ARTIFICIAL):Void
     {
@@ -68,12 +68,12 @@ class Character extends FlxSprite
 
         if (Binds.bindsJustPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) && role == PLAYABLE)
         {
-            animationTimer = 0.0;
+            singTimer = 0.0;
         }
 
         if (StringTools.startsWith(animation.name ?? "", "Sing"))
         {
-            animationTimer += elapsed;
+            singTimer += elapsed;
 
             var requiredTime:Float = simple.singDuration * ((Conductor.current.crotchet * 0.25) * 0.001);
 
@@ -82,16 +82,16 @@ class Character extends FlxSprite
                 requiredTime *= FlxG.random.float(1.35, 1.85);
             }
 
-            if (animationTimer >= requiredTime && (role == PLAYABLE ? !Binds.bindsPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) : true))
+            if (singTimer >= requiredTime && (role == PLAYABLE ? !Binds.bindsPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) : true))
             {
                 dance(true);
 
-                animationTimer = 0.0;
+                singTimer = 0.0;
             }
         }
         else
         {
-            animationTimer = 0.0;
+            singTimer = 0.0;
         }
     }
 
