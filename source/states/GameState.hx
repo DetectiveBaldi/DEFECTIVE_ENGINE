@@ -414,10 +414,10 @@ class GameState extends State
 
         instrumental.onComplete = endSong;
 
-        #if sys
-            if (sys.FileSystem.exists('assets/music/${name}/Vocals-Main.ogg'))
-        #else
+        #if html5
             if (openfl.utils.Assets.exists('assets/music/${name}/Vocals-Main.ogg'))
+        #else
+            if (sys.FileSystem.exists('assets/music/${name}/Vocals-Main.ogg'))
         #end
             {
                 mainVocals = FlxG.sound.load('assets/music/${name}/Vocals-Main.ogg');
@@ -425,19 +425,19 @@ class GameState extends State
 
         if (mainVocals == null)
         {
-            #if sys
-                if (sys.FileSystem.exists('assets/music/${name}/Vocals-Opponent.ogg'))
-            #else
+            #if html5
                 if (openfl.utils.Assets.exists('assets/music/${name}/Vocals-Opponent.ogg'))
+            #else
+                if (sys.FileSystem.exists('assets/music/${name}/Vocals-Opponent.ogg'))
             #end
                 {
                     opponentVocals = FlxG.sound.load('assets/music/${name}/Vocals-Opponent.ogg');
                 }
 
-            #if sys
-                if (sys.FileSystem.exists('assets/music/${name}/Vocals-Player.ogg'))
-            #else
+            #if html5
                 if (openfl.utils.Assets.exists('assets/music/${name}/Vocals-Player.ogg'))
+            #else
+                if (sys.FileSystem.exists('assets/music/${name}/Vocals-Player.ogg'))
             #end
                 {
                     playerVocals = FlxG.sound.load('assets/music/${name}/Vocals-Player.ogg');

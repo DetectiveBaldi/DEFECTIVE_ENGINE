@@ -25,16 +25,16 @@ class FunkFormat
             events: new Array<SimpleEvent>()
         };
 
-        #if sys
-            var chart:Dynamic = Json.parse(sys.io.File.getContent(chartPath));
-        #else
+        #if html5
             var chart:Dynamic = Json.parse(openfl.utils.Assets.getText(chartPath));
+        #else
+            var chart:Dynamic = Json.parse(sys.io.File.getContent(chartPath));
         #end
 
-        #if sys
-            var meta:Dynamic = Json.parse(sys.io.File.getContent(metaPath));
-        #else
+        #if html5
             var meta:Dynamic = Json.parse(openfl.utils.Assets.getText(metaPath));
+        #else
+            var meta:Dynamic = Json.parse(sys.io.File.getContent(metaPath));
         #end
 
         output.name = meta.songName;

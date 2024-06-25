@@ -25,10 +25,10 @@ class Character extends FlxSprite
     {
         super(x, y);
 
-        #if sys
-            simple = cast Json.parse(sys.io.File.getContent(path));
-        #else
+        #if html5
             simple = cast Json.parse(openfl.utils.Assets.getText(path));
+        #else
+            simple = cast Json.parse(sys.io.File.getContent(path));
         #end
 
         frames = FlxAtlasFrames.fromSparrow('${simple.source}.png', '${simple.source}.xml');
