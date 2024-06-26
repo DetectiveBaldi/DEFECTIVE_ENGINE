@@ -2,21 +2,47 @@ package core;
 
 import flixel.util.FlxSignal;
 
+import core.Song.SimpleTimeChange;
+
 class Conductor
 {
     public static var current(default, null):Conductor;
 
-    public var currentSection(default, null):Int;
+    public var decimalStep(default, null):Float;
 
-    public var currentBeat(default, null):Int;
+    public var decimalBeat(default, null):Float;
 
-    public var currentStep(default, null):Int;
+    public var decimalSection(default, null):Float;
+    
+    public var step(get, never):Int;
 
-    public var sectionHit:FlxSignal;
+    @:noCompletion
+    function get_step():Int
+    {
+        return Math.floor(decimalStep);
+    }
+
+    public var beat(get, never):Int;
+
+    @:noCompletion
+    function get_beat():Int
+    {
+        return Math.floor(decimalBeat);
+    }
+
+    public var section(get, never):Int;
+
+    @:noCompletion
+    function get_section():Int
+    {
+        return Math.floor(decimalSection);
+    }
+
+    public var stepHit:FlxSignal;
 
     public var beatHit:FlxSignal;
 
-    public var stepHit:FlxSignal;
+    public var sectionHit:FlxSignal;
 
     public var tempo:Float;
 
@@ -30,76 +56,101 @@ class Conductor
 
     public var time:Float;
 
+    public var timeChange:SimpleTimeChange;
+
+    public var timeChanges:Array<SimpleTimeChange>;
+
     public function new():Void
     {
-        currentSection = -1;
+        decimalStep = -1.0;
 
-        currentBeat = -1;
+        decimalBeat = -1.0;
 
-        currentStep = -1;
+        decimalSection = -1.0;
 
-        sectionHit = new FlxSignal();
+        stepHit = new FlxSignal();
 
         beatHit = new FlxSignal();
 
-        stepHit = new FlxSignal();
+        sectionHit = new FlxSignal();
 
         tempo = 100.0;
 
         time = 0.0;
+
+        timeChanges = [{time: 0.0, tempo: 100.0}];
     }
 
-    public static function initiate():Void
+    public static function load():Void
     {
         Conductor.current = new Conductor();
     }
 
     public function calculate():Void
     {
-        var lastSection:Int = currentSection;
+        var lastStep:Int = step;
 
-        var lastBeat:Int = currentBeat;
+        var lastBeat:Int = beat;
 
-        var lastStep:Int = currentStep;
+        var lastSection:Int = section;
 
-        currentSection = Math.floor((time / crotchet) * 0.25);
-
-        currentBeat = Math.floor(time / crotchet);
-
-        currentStep = Math.floor((time / crotchet) * 4);
-
-        if (currentSection != lastSection)
+        while (timeChanges[0] != null && time >= timeChanges[0].time)
         {
-            sectionHit.dispatch();
+            timeChange.step += (timeChanges[0].time - timeChange.time) / (crotchet * 0.25);
+
+            timeChange.beat = timeChange.step * 0.25;
+
+            timeChange.section = timeChange.section * 0.25;
+
+            timeChange.time = timeChanges[0].time;
+
+            tempo = timeChanges[0].tempo;
+            
+            timeChanges.shift();
         }
 
-        if (currentBeat != lastBeat)
+        decimalStep = ((time - timeChange.time) / (crotchet * 0.25)) + timeChange.step;
+
+        decimalBeat = decimalStep * 0.25;
+
+        decimalSection = decimalBeat * 0.25;
+
+        if (step != lastStep)
+        {
+            stepHit.dispatch();
+        }
+
+        if (beat != lastBeat)
         {
             beatHit.dispatch();
         }
 
-        if (currentStep != lastStep)
+        if (section != lastSection)
         {
-            stepHit.dispatch();
+            sectionHit.dispatch();
         }
     }
 
     public function reset():Void
     {
-        currentSection = -1;
+        decimalStep = -1.0;
 
-        currentBeat = -1;
+        decimalBeat = -1.0;
 
-        currentStep = -1;
+        decimalSection = -1.0;
 
-        sectionHit = new FlxSignal();
+        stepHit = new FlxSignal();
 
         beatHit = new FlxSignal();
 
-        stepHit = new FlxSignal();
+        sectionHit = new FlxSignal();
 
         tempo = 100.0;
 
         time = 0.0;
+
+        timeChange = null;
+
+        timeChanges = [{time: 0.0, tempo: 100.0}];
     }
 }

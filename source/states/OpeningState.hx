@@ -40,7 +40,7 @@ class OpeningState extends FlxState
 
         FlxSprite.defaultAntialiasing = true;
 
-        Conductor.initiate();
+        Conductor.load();
 
         #if !html5
             var statistics:Statistics = new Statistics();

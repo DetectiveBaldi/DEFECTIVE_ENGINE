@@ -19,6 +19,8 @@ class Character extends FlxSprite
 
     public var role(default, null):CharacterRole;
 
+    public var skipDance:Bool;
+
     public var singTimer:Float;
 
     public function new(x:Float = 0.0, y:Float = 0.0, path:String, role:CharacterRole = ARTIFICIAL):Void
@@ -32,6 +34,15 @@ class Character extends FlxSprite
         #end
 
         frames = FlxAtlasFrames.fromSparrow('${simple.source}.png', '${simple.source}.xml');
+
+        antialiasing = simple.antialiasing ?? true;
+
+        if (simple.scale != null)
+        {
+            scale.set(simple.scale.x ?? 1.0, simple.scale.y ?? 1.0);
+        }
+
+        updateHitbox();
 
         for (i in 0 ... simple.animations.length)
         {
@@ -55,11 +66,11 @@ class Character extends FlxSprite
 
         dance(true);
 
-        Conductor.current.sectionHit.add(sectionHit);
+        Conductor.current.stepHit.add(stepHit);
 
         Conductor.current.beatHit.add(beatHit);
 
-        Conductor.current.stepHit.add(stepHit);
+        Conductor.current.sectionHit.add(sectionHit);
     }
 
     override function update(elapsed:Float):Void
@@ -99,11 +110,11 @@ class Character extends FlxSprite
     {
         super.destroy();
 
-        Conductor.current.sectionHit.remove(sectionHit);
+        Conductor.current.stepHit.remove(stepHit);
 
         Conductor.current.beatHit.remove(beatHit);
 
-        Conductor.current.stepHit.remove(stepHit);
+        Conductor.current.sectionHit.remove(sectionHit);
     }
 
     override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
@@ -114,7 +125,10 @@ class Character extends FlxSprite
         {
             if (simple.animations[i].name == animation.name)
             {
-                output.subtract(simple.animations[i].offsets.x, simple.animations[i].offsets.y);
+                if (simple.animations[i].offsets != null)
+                {
+                    output.subtract(simple.animations[i].offsets.x ?? 0.0, simple.animations[i].offsets.y ?? 0.0);
+                }
 
                 break;
             }
@@ -125,6 +139,11 @@ class Character extends FlxSprite
 
     public function dance(forceful:Bool = false):Void
     {
+        if (skipDance)
+        {
+            return;
+        }
+        
         if (!forceful && StringTools.startsWith(animation.name ?? "", "Sing"))
         {
             return;
@@ -133,20 +152,20 @@ class Character extends FlxSprite
         animation.play("dance", forceful);
     }
 
-    public function sectionHit():Void
+    public function stepHit():Void
     {
 
     }
 
     public function beatHit():Void
     {
-        if (Conductor.current.currentBeat % 2.0 == 0.0)
+        if (Conductor.current.beat % 2.0 == 0.0)
         {
             dance();
         }
     }
 
-    public function stepHit():Void
+    public function sectionHit():Void
     {
 
     }
@@ -163,7 +182,11 @@ typedef SimpleCharacter =
 {
     var source:String;
 
-    var animations:Array<{offsets:{x:Null<Float>, y:Null<Float>}, name:String, prefix:String, ?frameRate:Float, ?looped:Bool, ?flipX:Bool, ?flipY:Bool}>;
+    var ?antialiasing:Bool;
+
+    var ?scale:{x:Float, y:Float};
+
+    var animations:Array<{?offsets:{x:Null<Float>, y:Null<Float>}, name:String, prefix:String, ?frameRate:Float, ?looped:Bool, ?flipX:Bool, ?flipY:Bool}>;
 
     var singDuration:Float;
 }

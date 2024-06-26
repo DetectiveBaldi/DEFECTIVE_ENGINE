@@ -12,6 +12,8 @@ class Song
 
     public var events:Array<SimpleEvent>;
 
+    public var timeChanges:Array<SimpleTimeChange>;
+
     public function new():Void
     {
 
@@ -31,6 +33,8 @@ class Song
 
         output.events = input.events;
 
+        output.timeChanges = input.timeChanges;
+
         return output;
     }
 
@@ -46,20 +50,28 @@ class Song
             
             notes: input.notes,
 
-            events: input.events
+            events: input.events,
+
+            timeChanges: input.timeChanges
         };
 
         return output;
     }
 }
 
-typedef SimpleEvent =
+typedef SimpleSong =
 {
-    var time:Float;
-
     var name:String;
 
-    var value:Dynamic;
+    var tempo:Float;
+
+    var speed:Float;
+
+    var notes:Array<SimpleNote>;
+
+    var events:Array<SimpleEvent>;
+
+    var timeChanges:Array<SimpleTimeChange>;
 };
 
 typedef SimpleNote =
@@ -73,15 +85,24 @@ typedef SimpleNote =
     var lane:Int;
 };
 
-typedef SimpleSong =
+typedef SimpleEvent =
 {
+    var time:Float;
+
     var name:String;
+
+    var value:Dynamic;
+};
+
+typedef SimpleTimeChange =
+{
+    var time:Float;
 
     var tempo:Float;
 
-    var speed:Float;
+    var ?section:Float;
 
-    var notes:Array<SimpleNote>;
+    var ?beat:Float;
 
-    var events:Array<SimpleEvent>;
+    var ?step:Float;
 };

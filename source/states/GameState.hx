@@ -8,6 +8,8 @@ import flixel.FlxSprite;
 
 import flixel.group.FlxContainer.FlxTypedContainer;
 
+import flixel.math.FlxMath;
+
 import flixel.sound.FlxSound;
 
 import flixel.text.FlxBitmapFont;
@@ -93,7 +95,11 @@ class GameState extends State
 
     public var score(default, null):Int;
 
+    public var hits(default, null):Int;
+
     public var misses(default, null):Int;
+
+    public var bonus(default, null):Float;
 
     public var combo(default, null):Int;
 
@@ -148,7 +154,7 @@ class GameState extends State
 
         scoreTxt.antialiasing = false;
 
-        scoreTxt.text = "Score: 0 | Misses: 0 | Combo: 0";
+        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: 0%';
 
         scoreTxt.alignment = CENTER;
 
@@ -168,7 +174,11 @@ class GameState extends State
 
         score = 0;
 
+        hits = 0;
+
         misses = 0;
+
+        bonus = 0.0;
 
         combo = 0;
 
@@ -225,7 +235,7 @@ class GameState extends State
 
         add(notes);
 
-        loadSong("Sporting");
+        loadSong("...");
 
         add(new Stage());
 
@@ -382,13 +392,9 @@ class GameState extends State
         }
     }
 
-    override function sectionHit():Void
+    override function stepHit():Void
     {
-        super.sectionHit();
-
-        gameCamera.zoom += 0.035;
-
-        hudCamera.zoom += 0.015;
+        super.stepHit();
     }
 
     override function beatHit():Void
@@ -396,6 +402,15 @@ class GameState extends State
         super.beatHit();
 
         var metronome:FlxSound = FlxG.sound.load("assets/sounds/metronome.ogg", 0.75).play();
+    }
+
+    override function sectionHit():Void
+    {
+        super.sectionHit();
+
+        gameCamera.zoom += 0.035;
+
+        hudCamera.zoom += 0.015;
     }
 
     public function loadSong(name:String):Void
@@ -406,9 +421,15 @@ class GameState extends State
 
         ArraySort.sort(song.events, function(a:SimpleEvent, b:SimpleEvent):Int {return Std.int(a.time - b.time);});
 
+        ArraySort.sort(song.timeChanges, function(a:SimpleTimeChange, b:SimpleTimeChange):Int {return Std.int(a.time - b.time);});
+
         Conductor.current.tempo = song.tempo;
 
         Conductor.current.time = -Conductor.current.crotchet * 5.0;
+
+        Conductor.current.timeChange = {time: 0.0, tempo: song.tempo};
+
+        Conductor.current.timeChanges = song.timeChanges;
 
         instrumental = FlxG.sound.load('assets/music/${name}/Instrumental.ogg');
 
@@ -649,10 +670,14 @@ class GameState extends State
     public function playerNoteHit(note:Note):Void
     {
         score += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).score;
+
+        hits++;
+
+        bonus += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).bonus;
         
         combo++;
 
-        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Combo: ${combo}';
+        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
         scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
 
@@ -693,7 +718,7 @@ class GameState extends State
 
         combo = 0;
 
-        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Combo: ${combo}';
+        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
         scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
 
@@ -740,7 +765,7 @@ class GameState extends State
 
         output.antialiasing = false;
 
-        output.text = '${rating.name}\n(${Math.abs(Conductor.current.time - note.time)})';
+        output.text = '${rating.name}\n(${Math.round(Math.abs(Conductor.current.time - note.time))})';
 
         output.alignment = CENTER;
 

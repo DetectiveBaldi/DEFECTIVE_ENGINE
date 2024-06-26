@@ -7,6 +7,7 @@ import openfl.net.FileReference;
 import core.Song.SimpleEvent;
 import core.Song.SimpleNote;
 import core.Song.SimpleSong;
+import core.Song.SimpleTimeChange;
 
 class FunkFormat
 {
@@ -22,7 +23,9 @@ class FunkFormat
 
             notes: new Array<SimpleNote>(),
 
-            events: new Array<SimpleEvent>()
+            events: new Array<SimpleEvent>(),
+
+            timeChanges: new Array<SimpleTimeChange>()
         };
 
         #if html5
@@ -39,34 +42,35 @@ class FunkFormat
 
         output.name = meta.songName;
 
-        output.tempo = meta.timeChanges[0].bpm;
+        output.tempo = meta.timeChanges.shift().bpm;
 
         output.speed = Reflect.field(chart.scrollSpeed, difficulty);
 
-        var noteIndex:Int = 0;
-
-        var note:FunkNote = cast Reflect.field(chart.notes, difficulty)[noteIndex];
-
-        while (note != null)
+        while (Reflect.field(chart.notes, difficulty)[0] != null)
         {
-            noteIndex++;
+            var note:FunkNote = cast Reflect.field(chart.notes, difficulty)[0];
 
-            output.notes.push({time: note.t, speed: 1, direction: note.d % 4, lane: 1 - Math.floor(note.d / 4.0)});
+            output.notes.push({time: note.t, speed: 1, direction: note.d % 4, lane: 1 - Math.floor(note.d * 0.25)});
 
-            note = cast Reflect.field(chart.notes, difficulty)[noteIndex];
+            Reflect.field(chart.notes, difficulty).shift();
         }
 
-        var eventIndex:Int = 0;
-
-        var event:FunkEvent = cast chart.events[eventIndex];
-
-        while (event != null)
+        while (chart.events[0] != null)
         {
-            eventIndex++;
+            var event:FunkEvent = cast chart.events[0];
 
             output.events.push({time: event.t, name: event.e, value: event.v});
 
-            event = cast chart.events[eventIndex];
+            chart.events.shift();
+        }
+
+        while (meta.timeChanges[0] != null)
+        {
+            var timeChange:FunkTimeChange = cast meta.timeChanges[0];
+
+            output.timeChanges.push({time: timeChange.t, tempo: timeChange.bpm});
+
+            meta.timeChanges.shift();
         }
 
         var fileReference:FileReference = new FileReference();
@@ -77,15 +81,6 @@ class FunkFormat
     }
 }
 
-typedef FunkEvent =
-{
-    var t:Float;
-
-    var e:String;
-
-    var v:Dynamic;
-};
-
 typedef FunkNote =
 {
     var t:Float;
@@ -95,4 +90,28 @@ typedef FunkNote =
     var l:Float;
 
     var k:String;
+};
+
+typedef FunkEvent =
+{
+    var t:Float;
+
+    var e:String;
+
+    var v:Dynamic;
+};
+
+typedef FunkTimeChange =
+{
+    var t:Float;
+
+    var b:Float;
+
+    var bpm:Float;
+
+    var n:Int;
+
+    var d:Int;
+
+    var bt:Array<Int>;
 };

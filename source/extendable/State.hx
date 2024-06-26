@@ -15,11 +15,11 @@ class State extends FlxState
     {
         super.create();
 
-        Conductor.current.sectionHit.add(sectionHit);
+        Conductor.current.stepHit.add(stepHit);
 
         Conductor.current.beatHit.add(beatHit);
 
-        Conductor.current.stepHit.add(stepHit);
+        Conductor.current.sectionHit.add(sectionHit);
     }
 
     override function destroy():Void
@@ -29,7 +29,7 @@ class State extends FlxState
         Conductor.current.reset();
     }
 
-    public function sectionHit():Void
+    public function stepHit():Void
     {
 
     }
@@ -39,7 +39,7 @@ class State extends FlxState
 
     }
 
-    public function stepHit():Void
+    public function sectionHit():Void
     {
 
     }
