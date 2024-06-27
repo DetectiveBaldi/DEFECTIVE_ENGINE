@@ -60,6 +60,11 @@ class Conductor
 
     public var timeChanges:Array<SimpleTimeChange>;
 
+    public static function load():Void
+    {
+        Conductor.current = new Conductor();
+    }
+
     public function new():Void
     {
         decimalStep = -1.0;
@@ -74,16 +79,11 @@ class Conductor
 
         sectionHit = new FlxSignal();
 
-        tempo = 100.0;
+        tempo = 150.0;
 
         time = 0.0;
 
-        timeChanges = [{time: 0.0, tempo: 100.0}];
-    }
-
-    public static function load():Void
-    {
-        Conductor.current = new Conductor();
+        timeChanges = new Array<SimpleTimeChange>();
     }
 
     public function calculate():Void
@@ -145,12 +145,12 @@ class Conductor
 
         sectionHit = new FlxSignal();
 
-        tempo = 100.0;
+        tempo = 150.0;
 
         time = 0.0;
 
         timeChange = null;
 
-        timeChanges = [{time: 0.0, tempo: 100.0}];
+        timeChanges = new Array<SimpleTimeChange>();
     }
 }

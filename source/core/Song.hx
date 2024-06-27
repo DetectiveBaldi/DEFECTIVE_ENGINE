@@ -14,11 +14,6 @@ class Song
 
     public var timeChanges:Array<SimpleTimeChange>;
 
-    public function new():Void
-    {
-
-    }
-
     public static function fromSimple(input:SimpleSong):Song
     {
         var output:Song = new Song();
@@ -56,6 +51,11 @@ class Song
         };
 
         return output;
+    }
+
+    public function new():Void
+    {
+
     }
 }
 

@@ -251,12 +251,7 @@ class GameState extends State
 
         add(player);
 
-        startCountdown(function():Void
-        {
-            Conductor.current.time = 0.0;
-
-            startSong();
-        });
+        startCountdown();
     }
 
     override function update(elapsed:Float):Void
@@ -266,12 +261,17 @@ class GameState extends State
         if (countdownStarted)
         {
             Conductor.current.time += 1000.0 * elapsed;
+
+            if (Conductor.current.time >= 0.0 && !songStarted)
+            {
+                startSong();
+            }
         }
 
         if (songStarted)
         {
             Conductor.current.calculate();
-
+            
             if (Math.abs(Conductor.current.time - instrumental.time) > 25.0)
             {
                 instrumental.time = Conductor.current.time;
@@ -333,7 +333,7 @@ class GameState extends State
             }
         }
 
-        while (song.notes[0] != null && song.notes[0].time - Conductor.current.time <= Conductor.current.crotchet * 5)
+        while (song.notes[0] != null && song.notes[0].time - Conductor.current.time <= (Conductor.current.crotchet * 5) / song.notes[0].speed)
         {
             var note:Note = new Note();
 

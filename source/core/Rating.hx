@@ -16,6 +16,19 @@ class Rating
 
     public var hits:Int;
 
+    public static function calculate(ratings:Array<Rating>, timing:Float):Rating
+    {
+        for (i in 0 ... ratings.length)
+        {
+            if (timing <= ratings[i].timing)
+            {
+                return ratings[i];
+            }
+        }
+
+        return null;
+    }
+
     public function new(name:String, color:FlxColor, timing:Float, bonus:Float, score:Int, hits:Int):Void
     {
         this.name = name;
@@ -29,18 +42,5 @@ class Rating
         this.score = score;
 
         this.hits = hits;
-    }
-
-    public static function calculate(ratings:Array<Rating>, timing:Float):Rating
-    {
-        for (i in 0 ... ratings.length)
-        {
-            if (timing <= ratings[i].timing)
-            {
-                return ratings[i];
-            }
-        }
-
-        return null;
     }
 }
