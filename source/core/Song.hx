@@ -33,26 +33,6 @@ class Song
         return output;
     }
 
-    public static function toSimple(input:Song):SimpleSong
-    {
-        var output:SimpleSong =
-        {
-            name: input.name,
-            
-            tempo: input.tempo,
-            
-            speed: input.speed,
-            
-            notes: input.notes,
-
-            events: input.events,
-
-            timeChanges: input.timeChanges
-        };
-
-        return output;
-    }
-
     public function new():Void
     {
 

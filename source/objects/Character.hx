@@ -21,7 +21,11 @@ class Character extends FlxSprite
 
     public var skipDance:Bool;
 
-    public var singTimer:Float;
+    public var danceInterval:Float;
+
+    public var singDuration:Float;
+
+    public var singCount:Float;
 
     public function new(x:Float = 0.0, y:Float = 0.0, path:String, role:CharacterRole = ARTIFICIAL):Void
     {
@@ -33,16 +37,19 @@ class Character extends FlxSprite
             simple = cast Json.parse(sys.io.File.getContent(path));
         #end
 
-        frames = FlxAtlasFrames.fromSparrow('${simple.source}.png', '${simple.source}.xml');
+        this.role = role;
+
+        frames = FlxAtlasFrames.fromSparrow(simple.source, simple.xml);
 
         antialiasing = simple.antialiasing ?? true;
 
-        if (simple.scale != null)
-        {
-            scale.set(simple.scale.x ?? 1.0, simple.scale.y ?? 1.0);
-        }
+        scale.set(simple.scale?.x ?? 1.0, simple.scale?.y ?? 1.0);
 
         updateHitbox();
+
+        flipX = simple.flipX ?? false;
+
+        flipY = simple.flipY ?? false;
 
         for (i in 0 ... simple.animations.length)
         {
@@ -62,7 +69,9 @@ class Character extends FlxSprite
             );
         }
 
-        this.role = role;
+        danceInterval = simple.danceInterval ?? 2.0;
+
+        singDuration = simple.singDuration;
 
         dance(true);
 
@@ -79,30 +88,30 @@ class Character extends FlxSprite
 
         if (Binds.bindsJustPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) && role == PLAYABLE)
         {
-            singTimer = 0.0;
+            singCount = 0.0;
         }
 
         if (StringTools.startsWith(animation.name ?? "", "Sing"))
         {
-            singTimer += elapsed;
+            singCount += elapsed;
 
-            var requiredTime:Float = simple.singDuration * ((Conductor.current.crotchet * 0.25) * 0.001);
+            var requiredTime:Float = singDuration * ((Conductor.current.crotchet * 0.25) * 0.001);
 
             if (StringTools.endsWith(animation.name ?? "", "MISS"))
             {
                 requiredTime *= FlxG.random.float(1.35, 1.85);
             }
 
-            if (singTimer >= requiredTime && (role == PLAYABLE ? !Binds.bindsPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) : true))
+            if (singCount >= requiredTime && (role == PLAYABLE ? !Binds.bindsPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) : true))
             {
                 dance(true);
 
-                singTimer = 0.0;
+                singCount = 0.0;
             }
         }
         else
         {
-            singTimer = 0.0;
+            singCount = 0.0;
         }
     }
 
@@ -125,10 +134,7 @@ class Character extends FlxSprite
         {
             if (simple.animations[i].name == animation.name)
             {
-                if (simple.animations[i].offsets != null)
-                {
-                    output.subtract(simple.animations[i].offsets.x ?? 0.0, simple.animations[i].offsets.y ?? 0.0);
-                }
+                output.subtract(simple.animations[i].offsets?.x ?? 0.0, simple.animations[i].offsets?.y ?? 0.0);
 
                 break;
             }
@@ -159,7 +165,7 @@ class Character extends FlxSprite
 
     public function beatHit():Void
     {
-        if (Conductor.current.beat % 2.0 == 0.0)
+        if (Conductor.current.beat % danceInterval == 0.0)
         {
             dance();
         }
@@ -182,11 +188,19 @@ typedef SimpleCharacter =
 {
     var source:String;
 
+    var xml:String;
+
     var ?antialiasing:Bool;
 
     var ?scale:{x:Float, y:Float};
 
-    var animations:Array<{?offsets:{x:Null<Float>, y:Null<Float>}, name:String, prefix:String, ?frameRate:Float, ?looped:Bool, ?flipX:Bool, ?flipY:Bool}>;
+    var ?flipX:Bool;
+
+    var ?flipY:Bool;
+
+    var animations:Array<{?offsets:{?x:Float, ?y:Float}, name:String, prefix:String, ?frameRate:Float, ?looped:Bool, ?flipX:Bool, ?flipY:Bool}>;
+
+    var ?danceInterval:Float;
 
     var singDuration:Float;
 }
