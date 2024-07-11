@@ -154,7 +154,7 @@ class GameState extends State
 
         scoreTxt.antialiasing = false;
 
-        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: 0%';
+        scoreTxt.text = 'Score: 0 | Misses: 0 | Accuracy: 0%';
 
         scoreTxt.alignment = CENTER;
 
@@ -433,11 +433,29 @@ class GameState extends State
 
         ArraySort.sort(song.timeChanges, function(a:SimpleTimeChange, b:SimpleTimeChange):Int {return Std.int(a.time - b.time);});
 
+        for (i in 0 ... song.timeChanges.length)
+        {
+            if (song.timeChanges[i].step == null)
+            {
+                song.timeChanges[i].step = 0.0;
+            }
+
+            if (song.timeChanges[i].beat == null)
+            {
+                song.timeChanges[i].beat = 0.0;
+            }
+
+            if (song.timeChanges[i].section == null)
+            {
+                song.timeChanges[i].section = 0.0;
+            }
+        }
+
         Conductor.current.tempo = song.tempo;
 
         Conductor.current.time = -Conductor.current.crotchet * 5.0;
 
-        Conductor.current.timeChange = {time: 0.0, tempo: song.tempo};
+        Conductor.current.timeChange = {time: 0.0, tempo: song.tempo, step: 0.0, beat: 0.0, section: 0.0};
 
         Conductor.current.timeChanges = song.timeChanges;
 

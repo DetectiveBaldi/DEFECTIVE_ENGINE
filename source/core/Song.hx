@@ -80,9 +80,9 @@ typedef SimpleTimeChange =
 
     var tempo:Float;
 
-    var ?section:Float;
+    var ?step:Float;
 
     var ?beat:Float;
 
-    var ?step:Float;
+    var ?section:Float;
 };
