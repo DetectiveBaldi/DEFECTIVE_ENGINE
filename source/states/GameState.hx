@@ -189,8 +189,6 @@ class GameState extends State
 
         playerStrums.noteMiss.add(playerNoteMiss);
 
-        playerStrums.artificial = true;
-
         playerStrums.setPosition((FlxG.width - playerStrums.width) - 45.0, downScroll ? (FlxG.height - playerStrums.height) - 15.0 : 15.0);
 
         strumLines.add(playerStrums);
@@ -213,7 +211,7 @@ class GameState extends State
 
         add(opponent);
 
-        player = new Character(0.0, 0.0, "assets/characters/BOYFRIEND.json", ARTIFICIAL);
+        player = new Character(0.0, 0.0, "assets/characters/BOYFRIEND.json", PLAYABLE);
 
         player.setPosition((FlxG.width - player.width) - 15.0, 385.0);
 
@@ -725,7 +723,7 @@ class GameState extends State
             
             combo++;
 
-            scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${Math.round((bonus / (hits + misses)) * 100)}%';
+            scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${Math.floor((bonus / (hits + misses)) * 100)}%';
 
             scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
 
@@ -770,7 +768,7 @@ class GameState extends State
 
         combo = 0;
 
-        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${Math.round((bonus / (hits + misses)) * 100)}%';
+        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${Math.floor((bonus / (hits + misses)) * 100)}%';
 
         scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
 
