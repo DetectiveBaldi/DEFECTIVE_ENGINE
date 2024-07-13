@@ -8,6 +8,8 @@ import flixel.FlxSprite;
 
 import flixel.group.FlxContainer.FlxTypedContainer;
 
+import flixel.math.FlxMath;
+
 import flixel.sound.FlxSound;
 
 import flixel.text.FlxBitmapFont;
@@ -668,6 +670,26 @@ class GameState extends State
 
     public function opponentNoteHit(note:Note):Void
     {
+        if (!opponentStrums.artificial)
+        {
+            if (note.length == 0.0)
+            {
+                score += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).score;
+
+                hits++;
+
+                bonus += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).bonus;
+                
+                combo++;
+
+                scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+
+                scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
+                
+                ratingPopUp(Math.abs(Conductor.current.time - note.time));
+            }
+        }
+
         if (mainVocals != null)
         {
             mainVocals.volume = 1.0;
@@ -682,6 +704,14 @@ class GameState extends State
 
         opponent.animation.play('Sing${Note.directions[note.direction]}', true);
 
+        if (!opponentStrums.artificial)
+        {
+            if (note.length == 0.0)
+            {
+                var snap:FlxSound = FlxG.sound.load("assets/sounds/snap.ogg", 0.75).play();
+            }
+        }
+
         notes.remove(note, true);
 
         note.destroy();
@@ -689,6 +719,24 @@ class GameState extends State
 
     public function opponentNoteMiss(note:Note):Void
     {
+        score -= 75;
+
+        misses++;
+
+        combo = 0;
+
+        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+
+        scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
+
+        var ratingTxt:FlxBitmapText = ratingPopUp(Math.abs(Conductor.current.time - note.time));
+
+        ratingTxt.text = "Miss...";
+
+        ratingTxt.color = FlxColor.subtract(FlxColor.RED, FlxColor.BROWN);
+
+        ratingTxt.screenCenter();
+
         if (mainVocals != null)
         {
             mainVocals.volume = 0.0;
@@ -713,22 +761,22 @@ class GameState extends State
 
     public function playerNoteHit(note:Note):Void
     {
-        if (note.length == 0.0)
+        if (!playerStrums.artificial)
         {
-            score += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).score;
-
-            hits++;
-
-            bonus += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).bonus;
-            
-            combo++;
-
-            scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${Math.floor((bonus / (hits + misses)) * 100)}%';
-
-            scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
-
-            if (!playerStrums.artificial)
+            if (note.length == 0.0)
             {
+                score += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).score;
+
+                hits++;
+
+                bonus += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).bonus;
+                
+                combo++;
+
+                scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+
+                scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
+                
                 ratingPopUp(Math.abs(Conductor.current.time - note.time));
             }
         }
@@ -747,9 +795,9 @@ class GameState extends State
 
         player.animation.play('Sing${Note.directions[note.direction]}', true);
 
-        if (note.length == 0.0)
+        if (!playerStrums.artificial)
         {
-            if (!playerStrums.artificial)
+            if (note.length == 0.0)
             {
                 var snap:FlxSound = FlxG.sound.load("assets/sounds/snap.ogg", 0.75).play();
             }
@@ -768,20 +816,17 @@ class GameState extends State
 
         combo = 0;
 
-        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${Math.floor((bonus / (hits + misses)) * 100)}%';
+        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
         scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
 
-        if (!playerStrums.artificial)
-        {
-            var ratingTxt:FlxBitmapText = ratingPopUp(Math.abs(Conductor.current.time - note.time));
+        var ratingTxt:FlxBitmapText = ratingPopUp(Math.abs(Conductor.current.time - note.time));
 
-            ratingTxt.text = "Miss...";
+        ratingTxt.text = "Miss...";
 
-            ratingTxt.color = FlxColor.subtract(FlxColor.RED, FlxColor.BROWN);
+        ratingTxt.color = FlxColor.subtract(FlxColor.RED, FlxColor.BROWN);
 
-            ratingTxt.screenCenter();
-        }
+        ratingTxt.screenCenter();
 
         if (mainVocals != null)
         {
@@ -815,7 +860,7 @@ class GameState extends State
 
         output.antialiasing = false;
 
-        output.text = '${rating.name}\n(${Math.floor(time)})';
+        output.text = '${rating.name}\n(${FlxMath.roundDecimal(time, 2)})';
 
         output.alignment = CENTER;
 

@@ -17,7 +17,7 @@ class Character extends FlxSprite
 {
     public var simple(default, null):SimpleCharacter;
 
-    public var role(default, null):CharacterRole;
+    public var role:CharacterRole;
 
     public var skipDance:Bool;
 
