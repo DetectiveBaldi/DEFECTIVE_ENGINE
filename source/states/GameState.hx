@@ -8,8 +8,6 @@ import flixel.FlxSprite;
 
 import flixel.group.FlxContainer.FlxTypedContainer;
 
-import flixel.math.FlxMath;
-
 import flixel.sound.FlxSound;
 
 import flixel.text.FlxBitmapFont;
@@ -53,43 +51,7 @@ class GameState extends State
 
     public var ratings(default, null):Array<Rating>;
 
-    public var downScroll(default, set):Bool;
-
-    @:noCompletion
-    function set_downScroll(downScroll:Bool):Bool
-    {
-        if (scoreTxt != null)
-        {
-            FlxTween.cancelTweensOf(scoreTxt, ["y"]);
-
-            FlxTween.tween(scoreTxt, {y: downScroll ? 35.0 : (FlxG.height - scoreTxt.height) - 35.0}, Conductor.current.crotchet * 0.001 ?? 1.0,
-            {
-                ease: FlxEase.circInOut
-            });
-        }
-
-        if (opponentStrums != null)
-        {
-            FlxTween.cancelTweensOf(opponentStrums, ["y"]);
-
-            FlxTween.tween(opponentStrums, {y: downScroll ? (FlxG.height - opponentStrums.height) - 15.0 : 15.0}, Conductor.current.crotchet * 0.001 ?? 1.0,
-            {
-                ease: FlxEase.circInOut
-            });
-        }
-
-        if (playerStrums != null)
-        {
-            FlxTween.cancelTweensOf(playerStrums, ["y"]);
-
-            FlxTween.tween(playerStrums, {y: downScroll ? (FlxG.height - playerStrums.height) - 15.0 : 15.0}, Conductor.current.crotchet * 0.001 ?? 1.0,
-            {
-                ease: FlxEase.circInOut
-            });
-        }
-
-        return this.downScroll = downScroll;
-    }
+    public var downScroll:Bool;
 
     public var scoreTxt(default, null):FlxBitmapText;
 
@@ -108,6 +70,8 @@ class GameState extends State
     public var opponentStrums(default, null):StrumLine;
 
     public var playerStrums(default, null):StrumLine;
+
+    public var pending(default, null):{notes:Array<Note>};
 
     public var notes(default, null):FlxTypedContainer<Note>;
 
@@ -207,11 +171,11 @@ class GameState extends State
 
         opponentStrums.lane = 0;
 
-        opponentStrums.artificial = true;
-
         opponentStrums.noteHit.add(opponentNoteHit);
 
         opponentStrums.noteMiss.add(opponentNoteMiss);
+
+        opponentStrums.artificial = true;
 
         opponentStrums.setPosition(45.0, downScroll ? (FlxG.height - opponentStrums.height) - 15.0 : 15.0);
 
@@ -225,9 +189,13 @@ class GameState extends State
 
         playerStrums.noteMiss.add(playerNoteMiss);
 
+        playerStrums.artificial = true;
+
         playerStrums.setPosition((FlxG.width - playerStrums.width) - 45.0, downScroll ? (FlxG.height - playerStrums.height) - 15.0 : 15.0);
 
         strumLines.add(playerStrums);
+
+        pending = {notes: new Array<Note>()};
 
         notes = new FlxTypedContainer<Note>();
 
@@ -239,13 +207,13 @@ class GameState extends State
 
         add(new Stage());
 
-        opponent = new Character(0.0, 0.0, "assets/characters/BOYFRIEND_PIXEL.json");
+        opponent = new Character(0.0, 0.0, "assets/characters/BOYFRIEND_PIXEL.json", ARTIFICIAL);
 
         opponent.setPosition(15.0, 50.0);
 
         add(opponent);
 
-        player = new Character(0.0, 0.0, "assets/characters/BOYFRIEND.json", PLAYABLE);
+        player = new Character(0.0, 0.0, "assets/characters/BOYFRIEND.json", ARTIFICIAL);
 
         player.setPosition((FlxG.width - player.width) - 15.0, 385.0);
 
@@ -301,7 +269,7 @@ class GameState extends State
         {
             var strumLine:StrumLine = strumLines.members[i];
 
-            var note:Note = notes.members.filter((n:Note) -> return Conductor.current.time - n.time > 166.6 && strumLine.lane == n.lane)[0];
+            var note:Note = notes.members.filter((n:Note) -> Conductor.current.time - n.time > 166.6 && strumLine.lane == n.lane)[0];
 
             if (note != null)
             {
@@ -310,11 +278,13 @@ class GameState extends State
 
             if (strumLine.artificial)
             {
-                note = notes.members.filter((n:Note) -> return Conductor.current.time - n.time >= 0.0 && strumLine.lane == n.lane)[0];
+                var note:Note = notes.members.filter((n:Note) -> Conductor.current.time - n.time >= 0.0 && strumLine.lane == n.lane)[0];
 
                 if (note != null)
                 {
-                    var strum:Strum = strumLine.members.filter((s:Strum) -> return note.direction == s.direction)[0];
+                    var strum:Strum = strumLine.members.filter((s:Strum) -> note.direction == s.direction)[0];
+
+                    strum.confirmCount = 0.0;
 
                     strum.animation.play(Strum.directions[note.direction].toLowerCase() + "Confirm", true);
 
@@ -332,7 +302,7 @@ class GameState extends State
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
 
-                    var note:Note = notes.members.filter((n:Note) -> return Math.abs(Conductor.current.time - n.time) <= 166.6 && strum.direction == n.direction && strumLine.lane == n.lane)[0];
+                    var note:Note = notes.members.filter((n:Note) -> Math.abs(Conductor.current.time - n.time) <= 166.6 && strum.direction == n.direction && strumLine.lane == n.lane && n.length == 0.0)[0];
 
                     if (note != null)
                     {
@@ -344,10 +314,26 @@ class GameState extends State
                     }
                 }
 
+                if (Binds.checkStatus(binds[j], PRESSED))
+                {
+                    var strum:Strum = strumLine.members[j];
+
+                    var note:Note = notes.members.filter((n:Note) -> Conductor.current.time - n.time >= 0.0 && strum.direction == n.direction && strumLine.lane == n.lane && n.length != 0.0)[0];
+
+                    if (note != null)
+                    {
+                        strum.confirmCount = 0.0;
+
+                        strum.animation.play(Strum.directions[note.direction].toLowerCase() + "Confirm", true);
+
+                        strumLine.noteHit.dispatch(note);
+                    }
+                }
+
                 if (Binds.checkStatus(binds[j], JUST_RELEASED))
                 {
                     var strum:Strum = strumLine.members[j];
-    
+
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Static");
                 }
             }
@@ -357,42 +343,26 @@ class GameState extends State
         {
             var note:Note = notes.members[i];
 
-            var strumLine:StrumLine = strumLines.members.filter((s:StrumLine) -> return note.lane == s.lane)[0];
+            var strumLine:StrumLine = strumLines.members.filter((s:StrumLine) -> note.lane == s.lane)[0];
 
-            var strum:Strum = strumLine.members.filter((s:Strum) -> return note.direction == s.direction)[0];
+            var strum:Strum = strumLine.members.filter((s:Strum) -> note.direction == s.direction)[0];
 
             note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - ((((Conductor.current.time - note.time) * song.speed) * note.speed) * (downScroll ? -1.0 : 1.0)));
         }
 
-        if (song.notes[0] != null)
+        if (pending.notes.length != 0)
         {
-            if (song.notes[0].time - Conductor.current.time <= (Conductor.current.crotchet * 5) / song.notes[0].speed)
+            if (pending.notes[0].time - Conductor.current.time <= (Conductor.current.crotchet * 5) / pending.notes[0].speed)
             {
-                var n:SimpleNote = song.notes[0];
-
-                var note:Note = new Note();
-
-                note.time = n.time;
-
-                note.speed = n.speed;
-
-                note.direction = n.direction;
-
-                note.lane = n.lane;
-
-                note.scale.set(0.725, 0.725);
-
-                note.updateHitbox();
-
-                note.setPosition((FlxG.width - note.width) * 0.5, (FlxG.height - note.height) * 5);
+                var note:Note = pending.notes[0];
 
                 notes.add(note);
 
-                var strumLine:StrumLine = strumLines.members.filter((s:StrumLine) -> return note.lane == s.lane)[0];
+                var strumLine:StrumLine = strumLines.members.filter((s:StrumLine) -> note.lane == s.lane)[0];
 
                 strumLine.noteSpawn.dispatch(note);
 
-                song.notes.shift();
+                pending.notes.shift();
             }
         }
 
@@ -427,35 +397,83 @@ class GameState extends State
     {
         song = Song.fromSimple(BaseFormat.build('assets/data/${name}/chart.json'));
 
-        ArraySort.sort(song.notes, function(a:SimpleNote, b:SimpleNote):Int {return Std.int(a.time - b.time);});
+        ArraySort.sort(song.notes, (a:SimpleNote, b:SimpleNote) -> Std.int(a.time - b.time));
 
-        ArraySort.sort(song.events, function(a:SimpleEvent, b:SimpleEvent):Int {return Std.int(a.time - b.time);});
-
-        ArraySort.sort(song.timeChanges, function(a:SimpleTimeChange, b:SimpleTimeChange):Int {return Std.int(a.time - b.time);});
-
-        for (i in 0 ... song.timeChanges.length)
+        for (i in 0 ... song.notes.length)
         {
-            if (song.timeChanges[i].step == null)
-            {
-                song.timeChanges[i].step = 0.0;
-            }
+            var n:SimpleNote = song.notes[i];
 
-            if (song.timeChanges[i].beat == null)
-            {
-                song.timeChanges[i].beat = 0.0;
-            }
+            var note:Note = new Note();
 
-            if (song.timeChanges[i].section == null)
+            note.time = n.time;
+
+            note.speed = n.speed;
+
+            note.direction = n.direction;
+
+            note.lane = n.lane;
+
+            note.length = 0.0;
+
+            note.animation.play(Note.directions[note.direction].toLowerCase());
+
+            note.scale.set(0.725, 0.725);
+
+            note.updateHitbox();
+
+            note.setPosition((FlxG.width - note.width) * 0.5, (FlxG.height - note.height) * 5);
+
+            pending.notes.push(note);
+
+            if (n.length > 0)
             {
-                song.timeChanges[i].section = 0.0;
+                for (j in 0 ... Math.floor(n.length / (Conductor.current.crotchet * 0.25)))
+                {
+                    var sustain:Note = new Note();
+
+                    sustain.time = note.time + ((Conductor.current.crotchet * 0.25) * (j + 1));
+
+                    sustain.speed = note.speed;
+
+                    sustain.direction = note.direction;
+
+                    sustain.lane = note.lane;
+
+                    sustain.length = (Conductor.current.crotchet * 0.25);
+
+                    sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
+
+                    if (j >= Math.floor(n.length / (Conductor.current.crotchet * 0.25)) - 1)
+                    {
+                        sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
+                    }
+
+                    sustain.flipX = sustain.flipX;
+
+                    sustain.flipY = downScroll;
+
+                    sustain.scale.set(0.725, 0.725);
+
+                    sustain.updateHitbox();
+
+                    sustain.setPosition((FlxG.width - sustain.width) * 0.5, (FlxG.height - sustain.height) * 5);
+
+                    pending.notes.push(sustain);
+                }
             }
         }
+
+        ArraySort.sort(pending.notes, (a:Note, b:Note) -> Std.int(a.time - b.time));
+
+        ArraySort.sort(song.events, (a:SimpleEvent, b:SimpleEvent) -> Std.int(a.time - b.time));
+
+        ArraySort.sort(song.timeChanges, (a:SimpleTimeChange, b:SimpleTimeChange) -> Std.int(a.time - b.time));
 
         Conductor.current.tempo = song.tempo;
 
         Conductor.current.time = -Conductor.current.crotchet * 5.0;
 
-        Conductor.current.timeChange = {time: 0.0, tempo: song.tempo, step: 0.0, beat: 0.0, section: 0.0};
+        Conductor.current.timeChange = song.timeChanges[0];
 
         Conductor.current.timeChanges = song.timeChanges;
 
@@ -652,10 +670,6 @@ class GameState extends State
 
     public function opponentNoteHit(note:Note):Void
     {
-        notes.remove(note, true);
-
-        note.destroy();
-
         if (mainVocals != null)
         {
             mainVocals.volume = 1.0;
@@ -669,14 +683,14 @@ class GameState extends State
         opponent.singCount = 0.0;
 
         opponent.animation.play('Sing${Note.directions[note.direction]}', true);
+
+        notes.remove(note, true);
+
+        note.destroy();
     }
 
     public function opponentNoteMiss(note:Note):Void
     {
-        notes.remove(note, true);
-
-        note.destroy();
-
         if (mainVocals != null)
         {
             mainVocals.volume = 0.0;
@@ -693,30 +707,33 @@ class GameState extends State
         {
             opponent.animation.play('Sing${Note.directions[note.direction]}MISS', true);
         }
-    }
-
-    public function playerNoteHit(note:Note):Void
-    {
-        score += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).score;
-
-        hits++;
-
-        bonus += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).bonus;
-        
-        combo++;
-
-        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
-
-        scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
-
-        if (!playerStrums.artificial)
-        {
-            ratingPopUp(Math.abs(Conductor.current.time - note.time));
-        }
 
         notes.remove(note, true);
 
         note.destroy();
+    }
+
+    public function playerNoteHit(note:Note):Void
+    {
+        if (note.length == 0.0)
+        {
+            score += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).score;
+
+            hits++;
+
+            bonus += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).bonus;
+            
+            combo++;
+
+            scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${Math.round((bonus / (hits + misses)) * 100)}%';
+
+            scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
+
+            if (!playerStrums.artificial)
+            {
+                ratingPopUp(Math.abs(Conductor.current.time - note.time));
+            }
+        }
 
         if (mainVocals != null)
         {
@@ -732,10 +749,17 @@ class GameState extends State
 
         player.animation.play('Sing${Note.directions[note.direction]}', true);
 
-        if (!playerStrums.artificial)
+        if (note.length == 0.0)
         {
-            var snap:FlxSound = FlxG.sound.load("assets/sounds/snap.ogg", 0.75).play();
+            if (!playerStrums.artificial)
+            {
+                var snap:FlxSound = FlxG.sound.load("assets/sounds/snap.ogg", 0.75).play();
+            }
         }
+
+        notes.remove(note, true);
+
+        note.destroy();
     }
 
     public function playerNoteMiss(note:Note):Void
@@ -746,7 +770,7 @@ class GameState extends State
 
         combo = 0;
 
-        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${Math.round((bonus / (hits + misses)) * 100)}%';
 
         scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
 
@@ -760,10 +784,6 @@ class GameState extends State
 
             ratingTxt.screenCenter();
         }
-
-        notes.remove(note, true);
-
-        note.destroy();
 
         if (mainVocals != null)
         {
@@ -781,6 +801,10 @@ class GameState extends State
         {
             player.animation.play('Sing${Note.directions[note.direction]}MISS', true);
         }
+
+        notes.remove(note, true);
+
+        note.destroy();
     }
 
     public function ratingPopUp(time:Float):FlxBitmapText
@@ -793,7 +817,7 @@ class GameState extends State
 
         output.antialiasing = false;
 
-        output.text = '${rating.name}\n(${Math.round(time)})';
+        output.text = '${rating.name}\n(${Math.floor(time)})';
 
         output.alignment = CENTER;
 

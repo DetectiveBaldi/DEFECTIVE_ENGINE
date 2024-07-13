@@ -36,10 +36,9 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
 
             strum.direction = i;
 
-            @:privateAccess
-            {
-                strum.parent = this;
-            }
+            strum.parent = this;
+
+            strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Static");
 
             strum.scale.set(0.725, 0.725);
 

@@ -63,6 +63,8 @@ typedef SimpleNote =
     var direction:Int;
 
     var lane:Int;
+
+    var length:Float;
 };
 
 typedef SimpleEvent =

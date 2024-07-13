@@ -104,9 +104,9 @@ class Character extends FlxSprite
 
             if (singCount >= requiredTime && (role == PLAYABLE ? !Binds.bindsPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) : true))
             {
-                dance(true);
-
                 singCount = 0.0;
+                
+                dance(true);
             }
         }
         else
@@ -177,11 +177,11 @@ class Character extends FlxSprite
     }
 }
 
-enum abstract CharacterRole(String)
+enum CharacterRole
 {
-    var ARTIFICIAL:CharacterRole = "ARTIFICIAL";
+    ARTIFICIAL;
 
-    var PLAYABLE:CharacterRole = "PLAYABLE";
+    PLAYABLE;
 }
 
 typedef SimpleCharacter =

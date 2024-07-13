@@ -1,5 +1,7 @@
 package objects;
 
+import haxe.Json;
+
 import flixel.FlxSprite;
 
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -10,38 +12,51 @@ class Strum extends FlxSprite
 {
     public static var directions(default, null):Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 
-    public var direction(default, set):Null<Int>;
+    public var skin(default, set):StrumSkin;
 
     @:noCompletion
-    function set_direction(direction:Null<Int>):Null<Int>
+    function set_skin(skin:StrumSkin):StrumSkin
     {
-        if (directions.indexOf(directions[direction]) != -1)
+        switch (skin.format.toLowerCase():String)
         {
-            frames = FlxAtlasFrames.fromTexturePackerXml("assets/images/strums/classic.png", "assets/images/strums/classic.xml");
+            case "texturepackerxml":
+            {
+                frames = FlxAtlasFrames.fromTexturePackerXml(skin.source, skin.xml);
+            }
 
-            animation.addByPrefix(directions[direction].toLowerCase() + "Static", directions[direction].toLowerCase() + "Static0", 24, false);
-
-            animation.addByPrefix(directions[direction].toLowerCase() + "Press", directions[direction].toLowerCase() + "Press0", 24, false);
-
-            animation.addByPrefix(directions[direction].toLowerCase() + "Confirm", directions[direction].toLowerCase() + "Confirm0", 24, false);
-
-            animation.play(directions[direction].toLowerCase() + "Static");
-
-            return this.direction = direction;
+            default:
+            {
+                frames = FlxAtlasFrames.fromSparrow(skin.source, skin.xml);
+            }
         }
 
-        loadGraphic("flixel/images/logo/default.png");
+        for (i in 0 ... Strum.directions.length)
+        {
+            animation.addByPrefix(Strum.directions[i].toLowerCase() + "Static", Strum.directions[i].toLowerCase() + "Static0", 24, false);
 
-        return this.direction = null;
+            animation.addByPrefix(Strum.directions[i].toLowerCase() + "Press", Strum.directions[i].toLowerCase() + "Press0", 24, false);
+
+            animation.addByPrefix(Strum.directions[i].toLowerCase() + "Confirm", Strum.directions[i].toLowerCase() + "Confirm0", 24, false);
+        }
+
+        return this.skin = skin;
     }
 
-    public var parent(default, null):StrumLine;
+    public var direction:Int;
+
+    public var parent:StrumLine;
 
     public var confirmCount:Float;
 
     public function new(x:Float = 0.0, y:Float = 0.0):Void
     {
         super(x, y);
+
+        #if html5
+            skin = cast Json.parse(openfl.utils.Assets.getText("assets/images/strums/classic.json"));
+        #else
+            skin = cast Json.parse(sys.io.File.getContent("assets/images/strums/classic.json"));
+        #end
 
         direction = -1;
 
@@ -59,7 +74,7 @@ class Strum extends FlxSprite
             if (confirmCount >= (Conductor.current.crotchet * 0.25) * 0.001)
             {
                 confirmCount = 0.0;
-                
+
                 animation.play(directions[direction].toLowerCase() + (parent.artificial ? "Static" : "Press"));
             }
         }
@@ -68,4 +83,29 @@ class Strum extends FlxSprite
             confirmCount = 0.0;
         }
     }
+
+    override function destroy():Void
+    {
+        super.destroy();
+
+        @:bypassAccessor
+        {
+            skin = null;
+        }
+
+        direction = -1;
+
+        parent = null;
+
+        confirmCount = 0.0;
+    }
 }
+
+typedef StrumSkin =
+{
+    var ?format:String;
+
+    var source:String;
+
+    var xml:String;
+};

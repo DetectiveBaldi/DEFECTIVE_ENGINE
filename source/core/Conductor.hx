@@ -83,6 +83,8 @@ class Conductor
 
         time = 0.0;
 
+        timeChange = {time: 0.0, tempo: 150.0, step: 0.0, beat: 0.0, section: 0.0};
+
         timeChanges = new Array<SimpleTimeChange>();
     }
 
@@ -94,19 +96,22 @@ class Conductor
 
         var lastSection:Int = section;
 
-        while (timeChanges[0] != null && time >= timeChanges[0].time)
+        if (timeChanges.length != 0)
         {
-            timeChange.step += (timeChanges[0].time - timeChange.time) / (crotchet * 0.25);
+            if (timeChanges[0] != null && time >= timeChanges[0].time)
+            {
+                timeChange.step += (timeChanges[0].time - timeChange.time) / (crotchet * 0.25);
 
-            timeChange.beat = timeChange.step * 0.25;
+                timeChange.beat = timeChange.step * 0.25;
 
-            timeChange.section = timeChange.section * 0.25;
+                timeChange.section = timeChange.section * 0.25;
 
-            timeChange.time = timeChanges[0].time;
+                timeChange.time = timeChanges[0].time;
 
-            tempo = timeChanges[0].tempo;
-            
-            timeChanges.shift();
+                tempo = timeChanges[0].tempo;
+                
+                timeChanges.shift();
+            }
         }
 
         decimalStep = ((time - timeChange.time) / (crotchet * 0.25)) + timeChange.step;
@@ -149,7 +154,7 @@ class Conductor
 
         time = 0.0;
 
-        timeChange = null;
+        timeChange = {time: 0.0, tempo: 150.0, step: 0.0, beat: 0.0, section: 0.0};
 
         timeChanges = new Array<SimpleTimeChange>();
     }

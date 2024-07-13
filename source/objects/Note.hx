@@ -1,5 +1,7 @@
 package objects;
 
+import haxe.Json;
+
 import flixel.FlxSprite;
 
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -8,40 +10,55 @@ class Note extends FlxSprite
 {
     public static var directions(default, null):Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 
+    public var skin(default, set):NoteSkin;
+
+    @:noCompletion
+    function set_skin(skin:NoteSkin):NoteSkin
+    {
+        switch (skin.format.toLowerCase():String)
+        {
+            case "texturepackerxml":
+            {
+                frames = FlxAtlasFrames.fromTexturePackerXml(skin.source, skin.xml);
+            }
+
+            default:
+            {
+                frames = FlxAtlasFrames.fromSparrow(skin.source, skin.xml);
+            }
+        }
+
+        for (i in 0 ... Note.directions.length)
+        {
+            animation.addByPrefix(Note.directions[i].toLowerCase(), Note.directions[i].toLowerCase() + "0", 24, false);
+
+            animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldPiece", Note.directions[i].toLowerCase() + "HoldPiece0", 24, false);
+
+            animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldTail", Note.directions[i].toLowerCase() + "HoldTail0", 24, false);
+        }
+
+        return this.skin = skin;
+    }
+
     public var time:Float;
 
     public var speed:Float;
 
-    public var direction(default, set):Null<Int>;
-
-    @:noCompletion
-    function set_direction(direction:Null<Int>):Null<Int>
-    {
-        if (directions.indexOf(directions[direction]) != -1)
-        {
-            frames = FlxAtlasFrames.fromTexturePackerXml("assets/images/notes/classic.png", "assets/images/notes/classic.xml");
-
-            animation.addByPrefix(directions[direction].toLowerCase(), directions[direction].toLowerCase() + "0", 24, false);
-
-            animation.addByPrefix(directions[direction].toLowerCase() + "HoldPiece", directions[direction].toLowerCase() + "HoldPiece0", 24, false);
-
-            animation.addByPrefix(directions[direction].toLowerCase() + "HoldEnd", directions[direction].toLowerCase() + "HoldEnd0", 24, false);
-
-            animation.play(directions[direction].toLowerCase());
-
-            return this.direction = direction;
-        }
-
-        loadGraphic("flixel/images/logo/default.png");
-
-        return this.direction = null;
-    }
+    public var direction:Int;
 
     public var lane:Int;
+
+    public var length:Float;
 
     public function new(x:Float = 0.0, y:Float = 0.0):Void
     {
         super(x, y);
+
+        #if html5
+            skin = cast Json.parse(openfl.utils.Assets.getText("assets/images/notes/classic.json"));
+        #else
+            skin = cast Json.parse(sys.io.File.getContent("assets/images/notes/classic.json"));
+        #end
 
         time = 0.0;
 
@@ -50,5 +67,31 @@ class Note extends FlxSprite
         direction = -1;
 
         lane = 0;
+
+        length = 0.0;
+    }
+
+    override function destroy():Void
+    {
+        super.destroy();
+
+        time = 0.0;
+
+        speed = 1.0;
+
+        direction = -1;
+
+        lane = 0;
+
+        length = 0.0;
     }
 }
+
+typedef NoteSkin =
+{
+    var ?format:String;
+
+    var source:String;
+
+    var xml:String;
+};

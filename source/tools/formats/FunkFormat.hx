@@ -11,7 +11,7 @@ import core.Song.SimpleTimeChange;
 
 class FunkFormat
 {
-    public static function build(chartPath:String, metaPath:String, ?difficulty:String = "normal"):SimpleSong
+    public static function build(chartPath:String, metaPath:String, ?level:String = "normal"):SimpleSong
     {
         var output:SimpleSong =
         {
@@ -42,35 +42,29 @@ class FunkFormat
 
         output.name = meta.songName;
 
-        output.tempo = meta.timeChanges.shift().bpm;
+        output.tempo = meta.timeChanges[0].bpm;
 
-        output.speed = Reflect.field(chart.scrollSpeed, difficulty);
+        output.speed = Reflect.field(chart.scrollSpeed, level);
 
-        while (Reflect.field(chart.notes, difficulty)[0] != null)
+        for (i in 0 ... Reflect.field(chart.notes, level).length)
         {
-            var note:FunkNote = cast Reflect.field(chart.notes, difficulty)[0];
+            var note:FunkNote = cast Reflect.field(chart.notes, level)[i];
 
-            output.notes.push({time: note.t, speed: 1, direction: note.d % 4, lane: 1 - Math.floor(note.d * 0.25)});
-
-            Reflect.field(chart.notes, difficulty).shift();
+            output.notes.push({time: note.t, speed: 1, direction: note.d % 4, lane: 1 - Math.floor(note.d * 0.25), length: note.l});
         }
 
-        while (chart.events[0] != null)
+        for (i in 0 ... chart.events.length)
         {
-            var event:FunkEvent = cast chart.events[0];
+            var event:FunkEvent = cast chart.events[i];
 
             output.events.push({time: event.t, name: event.e, value: event.v});
-
-            chart.events.shift();
         }
 
-        while (meta.timeChanges[0] != null)
+        for (i in 0 ... meta.timeChanges.length)
         {
-            var timeChange:FunkTimeChange = cast meta.timeChanges[0];
+            var timeChange:FunkTimeChange = cast meta.timeChanges[i];
 
-            output.timeChanges.push({time: timeChange.t, tempo: timeChange.bpm});
-
-            meta.timeChanges.shift();
+            output.timeChanges.push({time: timeChange.t, tempo: timeChange.bpm, step: 0.0, beat: 0.0, section: 0.0});
         }
 
         var fileReference:FileReference = new FileReference();
