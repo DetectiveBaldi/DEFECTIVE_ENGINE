@@ -11,4 +11,14 @@ class Paths
     {
         return '${key}.ogg';
     }
+
+    public static function png(key:String):String
+    {
+        return '${key}.png';
+    }
+
+    public static function xml(key:String):String
+    {
+        return '${key}.xml';
+    }
 }

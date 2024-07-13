@@ -404,6 +404,14 @@ class GameState extends State
     {
         song = Song.fromSimple(BaseFormat.build('assets/data/${name}/chart.json'));
 
+        Conductor.current.tempo = song.tempo;
+
+        Conductor.current.time = -Conductor.current.crotchet * 5.0;
+
+        Conductor.current.timeChange = song.timeChanges[0];
+
+        Conductor.current.timeChanges = song.timeChanges;
+
         ArraySort.sort(song.notes, (a:SimpleNote, b:SimpleNote) -> Std.int(a.time - b.time));
 
         for (i in 0 ... song.notes.length)
@@ -476,14 +484,6 @@ class GameState extends State
 
         ArraySort.sort(song.timeChanges, (a:SimpleTimeChange, b:SimpleTimeChange) -> Std.int(a.time - b.time));
 
-        Conductor.current.tempo = song.tempo;
-
-        Conductor.current.time = -Conductor.current.crotchet * 5.0;
-
-        Conductor.current.timeChange = song.timeChanges[0];
-
-        Conductor.current.timeChanges = song.timeChanges;
-
         instrumental = FlxG.sound.load(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Instrumental'));
 
         instrumental.onComplete = endSong;
@@ -509,7 +509,7 @@ class GameState extends State
 
     public function startCountdown(?finishCallback:()->Void):Void
     {
-        var countdownSprite:FlxSprite = new FlxSprite().loadGraphic("assets/images/countdown.png", true, 1000, 500);
+        var countdownSprite:FlxSprite = new FlxSprite().loadGraphic(Paths.png("assets/images/countdown"), true, 1000, 500);
 
         countdownSprite.animation.add("0", [0], 0.0, false);
 

@@ -4,6 +4,8 @@ import flixel.FlxSprite;
 
 import flixel.group.FlxContainer;
 
+import core.Paths;
+
 class Stage extends FlxContainer
 {
     public var background(default, null):FlxSprite;
@@ -16,13 +18,13 @@ class Stage extends FlxContainer
     {
         super();
 
-        background = new FlxSprite(0, 0, "assets/images/stages/stage/background.png");
+        background = new FlxSprite(0, 0, Paths.png("assets/images/stages/stage/background"));
 
         background.screenCenter();
 
         add(background);
 
-        foreground = new FlxSprite(0, 0, "assets/images/stages/stage/foreground.png");
+        foreground = new FlxSprite(0, 0, Paths.png("assets/images/stages/stage/foreground"));
 
         foreground.scale.set(1.15, 1.15);
 
@@ -32,7 +34,7 @@ class Stage extends FlxContainer
         
         add(foreground);
 
-        curtains = new FlxSprite(0, 0, "assets/images/stages/stage/curtains.png");
+        curtains = new FlxSprite(0, 0, Paths.png("assets/images/stages/stage/curtains"));
 
         curtains.scale.set(0.95, 0.95);
 

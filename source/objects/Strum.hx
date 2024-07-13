@@ -7,6 +7,7 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 
 import core.Conductor;
+import core.Paths;
 
 class Strum extends FlxSprite
 {
@@ -17,16 +18,16 @@ class Strum extends FlxSprite
     @:noCompletion
     function set_skin(skin:StrumSkin):StrumSkin
     {
-        switch (skin.format.toLowerCase():String)
+        switch (skin.format ?? "".toLowerCase():String)
         {
             case "texturepackerxml":
             {
-                frames = FlxAtlasFrames.fromTexturePackerXml(skin.source, skin.xml);
+                frames = FlxAtlasFrames.fromTexturePackerXml(Paths.png(skin.png), Paths.xml(skin.xml));
             }
 
             default:
             {
-                frames = FlxAtlasFrames.fromSparrow(skin.source, skin.xml);
+                frames = FlxAtlasFrames.fromSparrow(Paths.png(skin.png), Paths.xml(skin.xml));
             }
         }
 
@@ -101,7 +102,7 @@ typedef StrumSkin =
 {
     var ?format:String;
 
-    var source:String;
+    var png:String;
 
     var xml:String;
 };

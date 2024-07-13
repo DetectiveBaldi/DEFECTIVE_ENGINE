@@ -1,7 +1,7 @@
 {
-    "source": "assets/images/characters/BOYFRIEND_PIXEL.png",
+    "png": "assets/images/characters/BOYFRIEND_PIXEL",
 
-    "xml": "assets/images/characters/BOYFRIEND_PIXEL.xml",
+    "xml": "assets/images/characters/BOYFRIEND_PIXEL",
 
     "antialiasing": false,
 

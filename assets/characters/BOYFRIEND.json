@@ -1,7 +1,7 @@
 {
-    "source": "assets/images/characters/BOYFRIEND.png",
+    "png": "assets/images/characters/BOYFRIEND",
 
-    "xml": "assets/images/characters/BOYFRIEND.xml",
+    "xml": "assets/images/characters/BOYFRIEND",
 
     "animations":
     [

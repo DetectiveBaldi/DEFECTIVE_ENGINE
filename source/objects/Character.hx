@@ -12,6 +12,7 @@ import flixel.math.FlxPoint;
 
 import core.Binds;
 import core.Conductor;
+import core.Paths;
 
 class Character extends FlxSprite
 {
@@ -35,7 +36,18 @@ class Character extends FlxSprite
 
         this.role = role;
 
-        frames = FlxAtlasFrames.fromSparrow(simple.source, simple.xml);
+        switch (simple.format ?? "".toLowerCase():String)
+        {
+            case "texturepackerxml":
+            {
+                frames = FlxAtlasFrames.fromTexturePackerXml(Paths.png(simple.png), Paths.xml(simple.xml));
+            }
+
+            default:
+            {
+                frames = FlxAtlasFrames.fromSparrow(Paths.png(simple.png), Paths.xml(simple.xml));
+            }
+        }
 
         antialiasing = simple.antialiasing ?? true;
 
@@ -182,7 +194,9 @@ enum CharacterRole
 
 typedef SimpleCharacter =
 {
-    var source:String;
+    var ?format:String;
+
+    var png:String;
 
     var xml:String;
 

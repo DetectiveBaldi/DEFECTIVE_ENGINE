@@ -1,7 +1,7 @@
 {
     "format": "texturepackerxml",
 
-    "source": "assets/images/notes/classic.png",
+    "png": "assets/images/notes/classic",
 
-    "xml": "assets/images/notes/classic.xml"
+    "xml": "assets/images/notes/classic"
 }
