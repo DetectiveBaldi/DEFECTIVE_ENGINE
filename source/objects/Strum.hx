@@ -51,12 +51,8 @@ class Strum extends FlxSprite
     public function new(x:Float = 0.0, y:Float = 0.0):Void
     {
         super(x, y);
-
-        #if html5
-            skin = cast Json.parse(openfl.utils.Assets.getText("assets/images/strums/classic.json"));
-        #else
-            skin = cast Json.parse(sys.io.File.getContent("assets/images/strums/classic.json"));
-        #end
+        
+        skin = cast Json.parse(#if html5 openfl.utils.Assets.getText("assets/images/strums/classic.json") #else sys.io.File.getContent("assets/images/strums/classic.json") #end);
 
         direction = -1;
 

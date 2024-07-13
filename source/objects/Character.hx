@@ -30,12 +30,8 @@ class Character extends FlxSprite
     public function new(x:Float = 0.0, y:Float = 0.0, path:String, role:CharacterRole = ARTIFICIAL):Void
     {
         super(x, y);
-
-        #if html5
-            simple = cast Json.parse(openfl.utils.Assets.getText(path));
-        #else
-            simple = cast Json.parse(sys.io.File.getContent(path));
-        #end
+        
+        simple = cast Json.parse(#if html5 openfl.utils.Assets.getText(path) #else sys.io.File.getContent(path) #end);
 
         this.role = role;
 

@@ -28,17 +28,9 @@ class FunkFormat
             timeChanges: new Array<SimpleTimeChange>()
         };
 
-        #if html5
-            var chart:Dynamic = Json.parse(openfl.utils.Assets.getText(chartPath));
-        #else
-            var chart:Dynamic = Json.parse(sys.io.File.getContent(chartPath));
-        #end
+        var chart:Dynamic = Json.parse(#if html5 openfl.utils.Assets.getText(chartPath) #else sys.io.File.getContent(chartPath) #end);
 
-        #if html5
-            var meta:Dynamic = Json.parse(openfl.utils.Assets.getText(metaPath));
-        #else
-            var meta:Dynamic = Json.parse(sys.io.File.getContent(metaPath));
-        #end
+        var meta:Dynamic = Json.parse(#if html5 openfl.utils.Assets.getText(metaPath) #else sys.io.File.getContent(metaPath) #end);
 
         output.name = meta.songName;
 
