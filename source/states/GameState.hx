@@ -206,7 +206,7 @@ class GameState extends State
 
         add(notes);
 
-        loadSong("Test");
+        loadSong("Taimuresu");
 
         add(new Stage());
 
@@ -714,23 +714,26 @@ class GameState extends State
 
     public function opponentNoteMiss(note:Note):Void
     {
-        score -= 75;
+        if (!opponentStrums.artificial)
+        {
+            score -= 75;
 
-        misses++;
+            misses++;
 
-        combo = 0;
+            combo = 0;
 
-        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+            scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
-        scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
+            scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
 
-        var ratingTxt:FlxBitmapText = ratingPopUp(Math.abs(Conductor.current.time - note.time));
+            var ratingTxt:FlxBitmapText = ratingPopUp(Math.abs(Conductor.current.time - note.time));
 
-        ratingTxt.text = "Miss...";
+            ratingTxt.text = "Miss...";
 
-        ratingTxt.color = FlxColor.subtract(FlxColor.RED, FlxColor.BROWN);
+            ratingTxt.color = FlxColor.subtract(FlxColor.RED, FlxColor.BROWN);
 
-        ratingTxt.screenCenter();
+            ratingTxt.screenCenter();
+        }
 
         if (mainVocals != null)
         {
@@ -805,23 +808,26 @@ class GameState extends State
 
     public function playerNoteMiss(note:Note):Void
     {
-        score -= 75;
+        if (!playerStrums.artificial)
+        {
+            score -= 75;
 
-        misses++;
+            misses++;
 
-        combo = 0;
+            combo = 0;
 
-        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+            scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
-        scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
+            scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
 
-        var ratingTxt:FlxBitmapText = ratingPopUp(Math.abs(Conductor.current.time - note.time));
+            var ratingTxt:FlxBitmapText = ratingPopUp(Math.abs(Conductor.current.time - note.time));
 
-        ratingTxt.text = "Miss...";
+            ratingTxt.text = "Miss...";
 
-        ratingTxt.color = FlxColor.subtract(FlxColor.RED, FlxColor.BROWN);
+            ratingTxt.color = FlxColor.subtract(FlxColor.RED, FlxColor.BROWN);
 
-        ratingTxt.screenCenter();
+            ratingTxt.screenCenter();
+        }
 
         if (mainVocals != null)
         {
