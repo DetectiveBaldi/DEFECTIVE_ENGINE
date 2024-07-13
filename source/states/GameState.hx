@@ -206,7 +206,7 @@ class GameState extends State
 
         add(notes);
 
-        loadSong("Taimuresu");
+        loadSong("Test");
 
         add(new Stage());
 
