@@ -194,6 +194,8 @@ enum CharacterRole
 
 typedef SimpleCharacter =
 {
+    var name:String;
+    
     var ?format:String;
 
     var png:String;

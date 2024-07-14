@@ -35,6 +35,7 @@ import objects.Strum;
 import objects.StrumLine;
 
 import stages.Stage;
+import stages.Week1;
 
 import tools.formats.BaseFormat;
 
@@ -48,7 +49,11 @@ class GameState extends State
         return FlxG.camera;
     }
 
+    public var gameCameraZoom(default, null):Float;
+
     public var hudCamera(default, null):FlxCamera;
+
+    public var hudCameraZoom(default, null):Float;
 
     public var binds(default, null):Array<String>;
 
@@ -88,7 +93,13 @@ class GameState extends State
 
     public var playerVocals(default, null):FlxSound;
 
+    public var stage(default, null):Stage;
+
+    public var opponentGroup(default, null):FlxTypedContainer<Character>;
+
     public var opponent(default, null):Character;
+
+    public var playerGroup(default, null):FlxTypedContainer<Character>;
 
     public var player(default, null):Character;
 
@@ -105,15 +116,17 @@ class GameState extends State
     {
         super.create();
 
-        gameCamera.bgColor = FlxColor.GRAY;
-
         gameCamera.zoom = 0.75;
+
+        gameCameraZoom = gameCamera.zoom;
 
         hudCamera = new FlxCamera();
 
         hudCamera.bgColor.alpha = 0;
 
         FlxG.cameras.add(hudCamera, false);
+
+        hudCameraZoom = hudCamera.zoom;
 
         scoreTxt = new FlxBitmapText(0.0, 0.0, "", FlxBitmapFont.getDefaultFont());
 
@@ -208,19 +221,29 @@ class GameState extends State
 
         loadSong("Test");
 
-        add(new Stage());
+        stage = new Week1();
+
+        add(stage);
+
+        opponentGroup = new FlxTypedContainer<Character>();
+
+        add(opponentGroup);
 
         opponent = new Character(0.0, 0.0, "assets/characters/BOYFRIEND_PIXEL.json", ARTIFICIAL);
 
         opponent.setPosition(15.0, 50.0);
 
-        add(opponent);
+        opponentGroup.add(opponent);
+
+        playerGroup = new FlxTypedContainer<Character>();
+
+        add(playerGroup);
 
         player = new Character(0.0, 0.0, "assets/characters/BOYFRIEND.json", PLAYABLE);
 
         player.setPosition((FlxG.width - player.width) - 15.0, 385.0);
 
-        add(player);
+        playerGroup.add(player);
 
         countdownStarted = false;
 
@@ -233,9 +256,9 @@ class GameState extends State
     {
         super.update(elapsed);
 
-        gameCamera.zoom = 0.75 + (gameCamera.zoom - 0.75) * Math.pow(2.0, -elapsed / 0.05);
+        gameCamera.zoom = gameCameraZoom + (gameCamera.zoom - gameCameraZoom) * Math.pow(2.0, -elapsed / 0.05);
 
-        hudCamera.zoom = 1.0 + (hudCamera.zoom - 1.0) * Math.pow(2.0, -elapsed / 0.05);
+        hudCamera.zoom = hudCameraZoom + (hudCamera.zoom - hudCameraZoom) * Math.pow(2.0, -elapsed / 0.05);
 
         if (countdownStarted)
         {
