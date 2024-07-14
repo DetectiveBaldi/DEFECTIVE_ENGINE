@@ -98,17 +98,21 @@ class Conductor
 
         if (timeChanges.length != 0)
         {
-            if (timeChanges[0] != null && time >= timeChanges[0].time)
+            var timeChange:SimpleTimeChange = timeChanges[0];
+
+            if (time >= timeChange.time)
             {
-                timeChange.step += (timeChanges[0].time - timeChange.time) / (crotchet * 0.25);
+                this.timeChange.step += (timeChange.time - this.timeChange.time) / (crotchet * 0.25);
 
-                timeChange.beat = timeChange.step * 0.25;
+                this.timeChange.beat = this.timeChange.step * 0.25;
 
-                timeChange.section = timeChange.section * 0.25;
+                this.timeChange.section = this.timeChange.section * 0.25;
 
-                timeChange.time = timeChanges[0].time;
+                this.timeChange.tempo = timeChange.tempo;
 
-                tempo = timeChanges[0].tempo;
+                this.timeChange.time = timeChange.time;
+
+                tempo = timeChange.tempo;
                 
                 timeChanges.shift();
             }

@@ -359,10 +359,10 @@ class GameState extends State
 
         if (pending.notes.length != 0)
         {
-            if (pending.notes[0].time - Conductor.current.time <= (Conductor.current.crotchet * 5) / pending.notes[0].speed)
-            {
-                var note:Note = pending.notes[0];
+            var note:Note = pending.notes[0];
 
+            if (note.time - Conductor.current.time <= (Conductor.current.crotchet * 5) / note.speed)
+            {
                 notes.add(note);
 
                 var strumLine:StrumLine = strumLines.members.filter((s:StrumLine) -> note.lane == s.lane)[0];
@@ -414,6 +414,10 @@ class GameState extends State
 
         ArraySort.sort(song.notes, (a:SimpleNote, b:SimpleNote) -> Std.int(a.time - b.time));
 
+        ArraySort.sort(song.events, (a:SimpleEvent, b:SimpleEvent) -> Std.int(a.time - b.time));
+
+        ArraySort.sort(song.timeChanges, (a:SimpleTimeChange, b:SimpleTimeChange) -> Std.int(a.time - b.time));
+
         for (i in 0 ... song.notes.length)
         {
             var n:SimpleNote = song.notes[i];
@@ -454,7 +458,7 @@ class GameState extends State
 
                     sustain.lane = note.lane;
 
-                    sustain.length = (Conductor.current.crotchet * 0.25);
+                    sustain.length = Conductor.current.crotchet * 0.25;
 
                     sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
 
@@ -479,10 +483,6 @@ class GameState extends State
         }
 
         ArraySort.sort(pending.notes, (a:Note, b:Note) -> Std.int(a.time - b.time));
-
-        ArraySort.sort(song.events, (a:SimpleEvent, b:SimpleEvent) -> Std.int(a.time - b.time));
-
-        ArraySort.sort(song.timeChanges, (a:SimpleTimeChange, b:SimpleTimeChange) -> Std.int(a.time - b.time));
 
         instrumental = FlxG.sound.load(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Instrumental'));
 
