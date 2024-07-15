@@ -56,7 +56,27 @@ class Note extends FlxSprite
     {
         super(x, y);
 
-        skin = cast Json.parse(#if html5 openfl.utils.Assets.getText("assets/images/notes/classic.json") #else sys.io.File.getContent("assets/images/notes/classic.json") #end);
+        skin = Json.parse(#if html5 openfl.utils.Assets.getText("assets/images/notes/classic.json") #else sys.io.File.getContent("assets/images/notes/classic.json") #end);
+
+        time = 0.0;
+
+        speed = 1.0;
+
+        direction = -1;
+
+        lane = 0;
+
+        length = 0.0;
+    }
+
+    override function destroy():Void
+    {
+        super.destroy();
+
+        @:bypassAccessor
+        {
+            skin = null;
+        }
 
         time = 0.0;
 

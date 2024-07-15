@@ -32,7 +32,7 @@ class Character extends FlxSprite
     {
         super(x, y);
         
-        simple = cast Json.parse(#if html5 openfl.utils.Assets.getText(path) #else sys.io.File.getContent(path) #end);
+        simple = Json.parse(#if html5 openfl.utils.Assets.getText(path) #else sys.io.File.getContent(path) #end);
 
         this.role = role;
 

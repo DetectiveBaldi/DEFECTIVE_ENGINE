@@ -53,7 +53,7 @@ class Strum extends FlxSprite
     {
         super(x, y);
         
-        skin = cast Json.parse(#if html5 openfl.utils.Assets.getText("assets/images/strums/classic.json") #else sys.io.File.getContent("assets/images/strums/classic.json") #end);
+        skin = Json.parse(#if html5 openfl.utils.Assets.getText("assets/images/strums/classic.json") #else sys.io.File.getContent("assets/images/strums/classic.json") #end);
 
         direction = -1;
 
@@ -79,6 +79,22 @@ class Strum extends FlxSprite
         {
             confirmCount = 0.0;
         }
+    }
+
+    override function destroy():Void
+    {
+        super.destroy();
+
+        @:bypassAccessor
+        {
+            skin = null;
+        }
+
+        direction = -1;
+
+        parent = null;
+
+        confirmCount = 0.0;
     }
 }
 

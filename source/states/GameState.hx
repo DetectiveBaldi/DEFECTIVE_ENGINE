@@ -128,6 +128,23 @@ class GameState extends State
 
         hudCameraZoom = hudCamera.zoom;
 
+        binds = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
+
+        ratings =
+        [
+            new Rating("Epic!", FlxColor.MAGENTA, 15.0, 1, 500, 0),
+
+            new Rating("Sick!", FlxColor.CYAN, 45.0, 1, 350, 0),
+
+            new Rating("Good", FlxColor.GREEN, 75.0, 0.65, 250, 0),
+
+            new Rating("Bad", FlxColor.RED, 125.0, 0.35, 150, 0),
+
+            new Rating("Shit", FlxColor.subtract(FlxColor.RED, FlxColor.BROWN), Math.POSITIVE_INFINITY, 0, 50, 0)
+        ];
+
+        downScroll = false;
+
         scoreTxt = new FlxBitmapText(0.0, 0.0, "", FlxBitmapFont.getDefaultFont());
 
         scoreTxt.camera = hudCamera;
@@ -162,23 +179,6 @@ class GameState extends State
 
         combo = 0;
 
-        binds = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
-
-        ratings =
-        [
-            new Rating("Epic!", FlxColor.MAGENTA, 15.0, 1, 500, 0),
-
-            new Rating("Sick!", FlxColor.CYAN, 45.0, 1, 350, 0),
-
-            new Rating("Good", FlxColor.GREEN, 75.0, 0.65, 250, 0),
-
-            new Rating("Bad", FlxColor.RED, 125.0, 0.35, 150, 0),
-
-            new Rating("Shit", FlxColor.subtract(FlxColor.RED, FlxColor.BROWN), Math.POSITIVE_INFINITY, 0, 50, 0)
-        ];
-
-        downScroll = false;
-
         strumLines = new FlxTypedContainer<StrumLine>();
 
         strumLines.camera = hudCamera;
@@ -189,13 +189,13 @@ class GameState extends State
 
         opponentStrums.lane = 0;
 
-        opponentStrums.noteHit.add(noteHit);
-
         opponentStrums.noteHit.add(opponentNoteHit);
 
-        opponentStrums.noteMiss.add(noteMiss);
+        opponentStrums.noteHit.add(noteHit);
 
         opponentStrums.noteMiss.add(opponentNoteMiss);
+
+        opponentStrums.noteMiss.add(noteMiss);
 
         opponentStrums.artificial = true;
 
@@ -207,13 +207,13 @@ class GameState extends State
 
         playerStrums.lane = 1;
 
-        playerStrums.noteHit.add(noteHit);
-
         playerStrums.noteHit.add(playerNoteHit);
 
-        playerStrums.noteMiss.add(noteMiss);
+        playerStrums.noteHit.add(noteHit);
 
         playerStrums.noteMiss.add(playerNoteMiss);
+
+        playerStrums.noteMiss.add(noteMiss);
 
         playerStrums.setPosition((FlxG.width - playerStrums.width) - 45.0, downScroll ? (FlxG.height - playerStrums.height) - 15.0 : 15.0);
 
@@ -694,6 +694,86 @@ class GameState extends State
         FlxG.resetState();
     }
 
+    public function opponentNoteHit(note:Note):Void
+    {
+        if (opponentVocals != null)
+        {
+            opponentVocals.volume = 1.0;
+        }
+
+        for (i in 0 ... opponentGroup.members.length)
+        {
+            var character:Character = opponentGroup.members[i];
+
+            character.singCount = 0.0;
+
+            if (character.animation.exists('Sing${Note.directions[note.direction]}'))
+            {
+                character.animation.play('Sing${Note.directions[note.direction]}', true);
+            }
+        }
+    }
+
+    public function opponentNoteMiss(note:Note):Void
+    {
+        if (opponentVocals != null)
+        {
+            opponentVocals.volume = 0.0;
+        }
+
+        for (i in 0 ... opponentGroup.members.length)
+        {
+            var character:Character = opponentGroup.members[i];
+
+            character.singCount = 0.0;
+
+            if (character.animation.exists('Sing${Note.directions[note.direction]}MISS'))
+            {
+                character.animation.play('Sing${Note.directions[note.direction]}MISS', true);
+            }
+        }
+    }
+
+    public function playerNoteHit(note:Note):Void
+    {
+        if (playerVocals != null)
+        {
+            playerVocals.volume = 1.0;
+        }
+
+        for (i in 0 ... playerGroup.members.length)
+        {
+            var character:Character = playerGroup.members[i];
+
+            character.singCount = 0.0;
+
+            if (character.animation.exists('Sing${Note.directions[note.direction]}'))
+            {
+                character.animation.play('Sing${Note.directions[note.direction]}', true);
+            }
+        }
+    }
+
+    public function playerNoteMiss(note:Note):Void
+    {
+        if (playerVocals != null)
+        {
+            playerVocals.volume = 0.0;
+        }
+
+        for (i in 0 ... playerGroup.members.length)
+        {
+            var character:Character = playerGroup.members[i];
+
+            character.singCount = 0.0;
+
+            if (character.animation.exists('Sing${Note.directions[note.direction]}MISS'))
+            {
+                character.animation.play('Sing${Note.directions[note.direction]}MISS', true);
+            }
+        }
+    }
+
     public function noteHit(note:Note):Void
     {
         if (mainVocals != null)
@@ -763,60 +843,6 @@ class GameState extends State
         notes.remove(note, true);
 
         note.destroy();
-    }
-
-    public function opponentNoteHit(note:Note):Void
-    {
-        if (opponentVocals != null)
-        {
-            opponentVocals.volume = 1.0;
-        }
-
-        opponent.singCount = 0.0;
-
-        opponent.animation.play('Sing${Note.directions[note.direction]}', true);
-    }
-
-    public function opponentNoteMiss(note:Note):Void
-    {
-        if (opponentVocals != null)
-        {
-            opponentVocals.volume = 0.0;
-        }
-
-        opponent.singCount = 0.0;
-
-        if (opponent.animation.exists('Sing${Note.directions[note.direction]}MISS'))
-        {
-            opponent.animation.play('Sing${Note.directions[note.direction]}MISS', true);
-        }
-    }
-
-    public function playerNoteHit(note:Note):Void
-    {
-        if (playerVocals != null)
-        {
-            playerVocals.volume = 1.0;
-        }
-
-        player.singCount = 0.0;
-
-        player.animation.play('Sing${Note.directions[note.direction]}', true);
-    }
-
-    public function playerNoteMiss(note:Note):Void
-    {
-        if (playerVocals != null)
-        {
-            playerVocals.volume = 0.0;
-        }
-
-        player.singCount = 0.0;
-
-        if (player.animation.exists('Sing${Note.directions[note.direction]}MISS'))
-        {
-            player.animation.play('Sing${Note.directions[note.direction]}MISS', true);
-        }
     }
 
     public function ratingPopUp(time:Float):FlxBitmapText

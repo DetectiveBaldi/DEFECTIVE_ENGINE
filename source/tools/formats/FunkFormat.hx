@@ -38,23 +38,29 @@ class FunkFormat
 
         output.speed = Reflect.field(chart.scrollSpeed, level);
 
-        for (i in 0 ... Reflect.field(chart.notes, level).length)
+        var notes:Array<FunkNote> = Reflect.field(chart.notes, level);
+
+        for (i in 0 ... notes.length)
         {
-            var note:FunkNote = cast Reflect.field(chart.notes, level)[i];
+            var note:FunkNote = notes[i];
 
             output.notes.push({time: note.t, speed: 1, direction: note.d % 4, lane: 1 - Math.floor(note.d * 0.25), length: note.l});
         }
 
-        for (i in 0 ... chart.events.length)
+        var events:Array<FunkEvent> = chart.events;
+
+        for (i in 0 ... events.length)
         {
-            var event:FunkEvent = cast chart.events[i];
+            var event:FunkEvent = events[i];
 
             output.events.push({time: event.t, name: event.e, value: event.v});
         }
 
-        for (i in 0 ... meta.timeChanges.length)
+        var timeChanges:Array<FunkTimeChange> = meta.timeChanges;
+
+        for (i in 0 ... timeChanges.length)
         {
-            var timeChange:FunkTimeChange = cast meta.timeChanges[i];
+            var timeChange:FunkTimeChange = timeChanges[i];
 
             output.timeChanges.push({time: timeChange.t, tempo: timeChange.bpm, step: 0.0, beat: 0.0, section: 0.0});
         }
