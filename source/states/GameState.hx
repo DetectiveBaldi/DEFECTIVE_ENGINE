@@ -189,7 +189,11 @@ class GameState extends State
 
         opponentStrums.lane = 0;
 
+        opponentStrums.noteHit.add(noteHit);
+
         opponentStrums.noteHit.add(opponentNoteHit);
+
+        opponentStrums.noteMiss.add(noteMiss);
 
         opponentStrums.noteMiss.add(opponentNoteMiss);
 
@@ -203,7 +207,11 @@ class GameState extends State
 
         playerStrums.lane = 1;
 
+        playerStrums.noteHit.add(noteHit);
+
         playerStrums.noteHit.add(playerNoteHit);
+
+        playerStrums.noteMiss.add(noteMiss);
 
         playerStrums.noteMiss.add(playerNoteMiss);
 
@@ -686,9 +694,16 @@ class GameState extends State
         FlxG.resetState();
     }
 
-    public function opponentNoteHit(note:Note):Void
+    public function noteHit(note:Note):Void
     {
-        if (!opponentStrums.artificial)
+        if (mainVocals != null)
+        {
+            mainVocals.volume = 1.0;
+        }
+
+        var strumLine:StrumLine = strumLines.members.filter((s:StrumLine) -> note.lane == s.lane)[0];
+
+        if (!strumLine.artificial)
         {
             if (note.length == 0.0)
             {
@@ -705,27 +720,7 @@ class GameState extends State
                 scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
                 
                 ratingPopUp(Math.abs(Conductor.current.time - note.time));
-            }
-        }
 
-        if (mainVocals != null)
-        {
-            mainVocals.volume = 1.0;
-        }
-
-        if (opponentVocals != null)
-        {
-            opponentVocals.volume = 1.0;
-        }
-
-        opponent.singCount = 0.0;
-
-        opponent.animation.play('Sing${Note.directions[note.direction]}', true);
-
-        if (!opponentStrums.artificial)
-        {
-            if (note.length == 0.0)
-            {
                 var snap:FlxSound = FlxG.sound.load(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/snap"), 0.75).play();
             }
         }
@@ -735,9 +730,16 @@ class GameState extends State
         note.destroy();
     }
 
-    public function opponentNoteMiss(note:Note):Void
+    public function noteMiss(note:Note):Void
     {
-        if (!opponentStrums.artificial)
+        if (mainVocals != null)
+        {
+            mainVocals.volume = 0.0;
+        }
+
+        var strumLine:StrumLine = strumLines.members.filter((s:StrumLine) -> note.lane == s.lane)[0];
+
+        if (!strumLine.artificial)
         {
             score -= 75;
 
@@ -758,11 +760,25 @@ class GameState extends State
             ratingTxt.screenCenter();
         }
 
-        if (mainVocals != null)
+        notes.remove(note, true);
+
+        note.destroy();
+    }
+
+    public function opponentNoteHit(note:Note):Void
+    {
+        if (opponentVocals != null)
         {
-            mainVocals.volume = 0.0;
+            opponentVocals.volume = 1.0;
         }
 
+        opponent.singCount = 0.0;
+
+        opponent.animation.play('Sing${Note.directions[note.direction]}', true);
+    }
+
+    public function opponentNoteMiss(note:Note):Void
+    {
         if (opponentVocals != null)
         {
             opponentVocals.volume = 0.0;
@@ -774,39 +790,10 @@ class GameState extends State
         {
             opponent.animation.play('Sing${Note.directions[note.direction]}MISS', true);
         }
-
-        notes.remove(note, true);
-
-        note.destroy();
     }
 
     public function playerNoteHit(note:Note):Void
     {
-        if (!playerStrums.artificial)
-        {
-            if (note.length == 0.0)
-            {
-                score += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).score;
-
-                hits++;
-
-                bonus += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).bonus;
-                
-                combo++;
-
-                scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
-
-                scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
-                
-                ratingPopUp(Math.abs(Conductor.current.time - note.time));
-            }
-        }
-
-        if (mainVocals != null)
-        {
-            mainVocals.volume = 1.0;
-        }
-
         if (playerVocals != null)
         {
             playerVocals.volume = 1.0;
@@ -815,48 +802,10 @@ class GameState extends State
         player.singCount = 0.0;
 
         player.animation.play('Sing${Note.directions[note.direction]}', true);
-
-        if (!playerStrums.artificial)
-        {
-            if (note.length == 0.0)
-            {
-                var snap:FlxSound = FlxG.sound.load(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/snap"), 0.75).play();
-            }
-        }
-
-        notes.remove(note, true);
-
-        note.destroy();
     }
 
     public function playerNoteMiss(note:Note):Void
     {
-        if (!playerStrums.artificial)
-        {
-            score -= 75;
-
-            misses++;
-
-            combo = 0;
-
-            scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
-
-            scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
-
-            var ratingTxt:FlxBitmapText = ratingPopUp(Math.abs(Conductor.current.time - note.time));
-
-            ratingTxt.text = "Miss...";
-
-            ratingTxt.color = FlxColor.subtract(FlxColor.RED, FlxColor.BROWN);
-
-            ratingTxt.screenCenter();
-        }
-
-        if (mainVocals != null)
-        {
-            mainVocals.volume = 0.0;
-        }
-
         if (playerVocals != null)
         {
             playerVocals.volume = 0.0;
@@ -868,10 +817,6 @@ class GameState extends State
         {
             player.animation.play('Sing${Note.directions[note.direction]}MISS', true);
         }
-
-        notes.remove(note, true);
-
-        note.destroy();
     }
 
     public function ratingPopUp(time:Float):FlxBitmapText

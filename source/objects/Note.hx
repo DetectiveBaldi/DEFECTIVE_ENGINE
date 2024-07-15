@@ -68,21 +68,6 @@ class Note extends FlxSprite
 
         length = 0.0;
     }
-
-    override function destroy():Void
-    {
-        super.destroy();
-
-        time = 0.0;
-
-        speed = 1.0;
-
-        direction = -1;
-
-        lane = 0;
-
-        length = 0.0;
-    }
 }
 
 typedef NoteSkin =
