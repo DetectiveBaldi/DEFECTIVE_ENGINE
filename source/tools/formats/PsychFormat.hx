@@ -112,12 +112,12 @@ class PsychFormat
 
             if (section.changeBPM)
             {
-                tempo = section.bpm;
+                output.timeChanges.push({time: time, tempo: section.bpm, step: 0.0, beat: 0.0, section: 0.0});
 
-                output.timeChanges.push({time: time, tempo: tempo, step: 0.0, beat: 0.0, section: 0.0});
+                tempo = section.bpm;
             }
 
-            time += ((60.0 / tempo) * 1000.0) * ((Math.round(4.0 * section.sectionBeats)) * 0.25);
+            time += ((60.0 / tempo) * 1000.0) * ((Math.round(section.sectionBeats * 4.0)) * 0.25);
         }
 
         var fileReference:FileReference = new FileReference();
