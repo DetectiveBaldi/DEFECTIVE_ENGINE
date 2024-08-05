@@ -37,9 +37,9 @@ import objects.StrumLine;
 import stages.Stage;
 import stages.Week1;
 
-import tools.formats.BaseFormat;
-import tools.formats.FunkFormat;
-import tools.formats.PsychFormat;
+import tools.formats.charts.BaseFormat;
+import tools.formats.charts.FunkFormat;
+import tools.formats.charts.PsychFormat;
 
 class GameState extends State
 {

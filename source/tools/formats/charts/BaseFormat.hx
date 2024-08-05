@@ -1,4 +1,4 @@
-package tools.formats;
+package tools.formats.charts;
 
 import haxe.Json;
 
