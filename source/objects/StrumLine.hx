@@ -56,14 +56,8 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
 
         noteHit.destroy();
 
-        noteHit = null;
-
         noteMiss.destroy();
 
-        noteMiss = null;
-
         noteSpawn.destroy();
-
-        noteSpawn = null;
     }
 }

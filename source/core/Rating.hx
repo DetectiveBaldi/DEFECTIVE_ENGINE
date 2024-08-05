@@ -2,6 +2,7 @@ package core;
 
 import flixel.util.FlxColor;
 
+@:structInit
 class Rating
 {
     public var name:String;
@@ -27,20 +28,5 @@ class Rating
         }
 
         return null;
-    }
-
-    public function new(name:String, color:FlxColor, timing:Float, bonus:Float, score:Int, hits:Int):Void
-    {
-        this.name = name;
-
-        this.color = color;
-
-        this.timing = timing;
-
-        this.bonus = bonus;
-
-        this.score = score;
-
-        this.hits = hits;
     }
 }

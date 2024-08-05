@@ -37,8 +37,6 @@ import objects.StrumLine;
 import stages.Stage;
 import stages.Week1;
 
-import tools.formats.BaseFormat;
-
 class GameState extends State
 {
     public var gameCamera(get, never):FlxCamera;
@@ -132,15 +130,15 @@ class GameState extends State
 
         ratings =
         [
-            new Rating("Epic!", FlxColor.MAGENTA, 15.0, 1, 500, 0),
+            {name: "Epic!", color: FlxColor.MAGENTA, timing: 15.0, bonus: 1.0, score: 500, hits: 0},
 
-            new Rating("Sick!", FlxColor.CYAN, 45.0, 1, 350, 0),
+            {name: "Sick!", color: FlxColor.CYAN, timing: 45.0, bonus: 1.0, score: 350, hits: 0},
 
-            new Rating("Good", FlxColor.GREEN, 75.0, 0.65, 250, 0),
+            {name: "Good", color: FlxColor.GREEN, timing: 75.0, bonus: 0.65, score: 250, hits: 0},
 
-            new Rating("Bad", FlxColor.RED, 125.0, 0.35, 150, 0),
+            {name: "Bad", color: FlxColor.RED, timing: 125.0, bonus: 0.35, score: 150, hits: 0},
 
-            new Rating("Shit", FlxColor.subtract(FlxColor.RED, FlxColor.BROWN), Math.POSITIVE_INFINITY, 0, 50, 0)
+            {name: "Shit", color: FlxColor.subtract(FlxColor.RED, FlxColor.BROWN), timing: Math.POSITIVE_INFINITY, bonus: 0.0, score: 50, hits: 0}
         ];
 
         downScroll = false;
@@ -433,15 +431,7 @@ class GameState extends State
 
     public function loadSong(name:String):Void
     {
-        song = Song.fromSimple(BaseFormat.build('assets/data/${name}/chart.json'));
-
-        Conductor.current.tempo = song.tempo;
-
-        Conductor.current.time = -Conductor.current.crotchet * 5.0;
-
-        Conductor.current.timeChange = song.timeChanges[0];
-
-        Conductor.current.timeChanges = song.timeChanges;
+        song = Song.fromSimple(tools.formats.BaseFormat.build('assets/data/${name}/chart.json'));
 
         ArraySort.sort(song.notes, (a:SimpleNote, b:SimpleNote) -> Std.int(a.time - b.time));
 
@@ -449,9 +439,46 @@ class GameState extends State
 
         ArraySort.sort(song.timeChanges, (a:SimpleTimeChange, b:SimpleTimeChange) -> Std.int(a.time - b.time));
 
+        Conductor.current.tempo = song.tempo;
+
+        Conductor.current.timeChange = song.timeChanges[0];
+
+        Conductor.current.timeChanges = song.timeChanges;
+
+        Conductor.current.time = -Conductor.current.crotchet * 5.0;
+
         for (i in 0 ... song.notes.length)
         {
             var n:SimpleNote = song.notes[i];
+
+            var j:Int = pending.notes.length - 1;
+
+            while (j >= 0)
+            {
+                var note:Note = pending.notes[j];
+
+                if (n.time == note.time && n.direction == note.direction && n.lane == note.lane)
+                {
+                    pending.notes.splice(j, 1);
+
+                    note.destroy();
+
+                    var k:Int = note.tails.length - 1;
+
+                    while (k >= 0)
+                    {
+                        var sustain:Note = note.tails[k];
+
+                        note.tails.splice(k, 1);
+
+                        sustain.destroy();
+
+                        k--;
+                    }
+                }
+
+                j--;
+            }
 
             var note:Note = new Note();
 
@@ -490,6 +517,10 @@ class GameState extends State
                     sustain.lane = note.lane;
 
                     sustain.length = Conductor.current.crotchet * 0.25;
+
+                    note.tails.push(sustain);
+
+                    sustain.parent = note;
 
                     sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
 
@@ -643,9 +674,19 @@ class GameState extends State
             
             if (timer.elapsedLoops % 2 == 0)
             {
-                opponent.dance();
+                for (i in 0 ... opponentGroup.members.length)
+                {
+                    var character:Character = opponentGroup.members[i];
 
-                player.dance();
+                    character.dance();
+                }
+
+                for (i in 0 ... playerGroup.members.length)
+                {
+                    var character:Character = playerGroup.members[i];
+
+                    character.dance();
+                }
             }
         }, 5);
 

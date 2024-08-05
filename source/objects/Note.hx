@@ -52,6 +52,10 @@ class Note extends FlxSprite
 
     public var length:Float;
 
+    public var parent:Note;
+
+    public var tails:Array<Note>;
+
     public function new(x:Float = 0.0, y:Float = 0.0):Void
     {
         super(x, y);
@@ -67,26 +71,8 @@ class Note extends FlxSprite
         lane = 0;
 
         length = 0.0;
-    }
 
-    override function destroy():Void
-    {
-        super.destroy();
-
-        @:bypassAccessor
-        {
-            skin = null;
-        }
-
-        time = 0.0;
-
-        speed = 1.0;
-
-        direction = -1;
-
-        lane = 0;
-
-        length = 0.0;
+        tails = new Array<Note>();
     }
 }
 

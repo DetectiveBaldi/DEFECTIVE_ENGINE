@@ -80,22 +80,6 @@ class Strum extends FlxSprite
             confirmCount = 0.0;
         }
     }
-
-    override function destroy():Void
-    {
-        super.destroy();
-
-        @:bypassAccessor
-        {
-            skin = null;
-        }
-
-        direction = -1;
-
-        parent = null;
-
-        confirmCount = 0.0;
-    }
 }
 
 typedef StrumSkin =
