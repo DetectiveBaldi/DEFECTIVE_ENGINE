@@ -32,35 +32,29 @@ class FunkFormat
 
         var meta:Dynamic = Json.parse(#if html5 openfl.utils.Assets.getText(metaPath) #else sys.io.File.getContent(metaPath) #end);
 
-        output.name = meta.songName;
+        output.name = cast (meta.songName, String);
 
-        output.tempo = meta.timeChanges[0].bpm;
+        output.tempo = cast (meta.timeChanges[0].bpm, Float);
 
-        output.speed = Reflect.field(chart.scrollSpeed, level);
+        output.speed = cast (Reflect.field(chart.scrollSpeed, level), Float);
 
-        var notes:Array<FunkNote> = Reflect.field(chart.notes, level);
-
-        for (i in 0 ... notes.length)
+        for (i in 0 ... Reflect.field(chart.notes, level).length)
         {
-            var note:FunkNote = notes[i];
+            var note:FunkNote = Reflect.field(chart.notes, level)[i];
 
             output.notes.push({time: note.t, speed: 1, direction: note.d % 4, lane: 1 - Math.floor(note.d * 0.25), length: note.l});
         }
 
-        var events:Array<FunkEvent> = chart.events;
-
-        for (i in 0 ... events.length)
+        for (i in 0 ... chart.events.length)
         {
-            var event:FunkEvent = events[i];
+            var event:FunkEvent = chart.events[i];
 
             output.events.push({time: event.t, name: event.e, value: event.v});
         }
 
-        var timeChanges:Array<FunkTimeChange> = meta.timeChanges;
-
-        for (i in 0 ... timeChanges.length)
+        for (i in 0 ... meta.timeChanges.length)
         {
-            var timeChange:FunkTimeChange = timeChanges[i];
+            var timeChange:FunkTimeChange = meta.timeChanges[i];
 
             output.timeChanges.push({time: timeChange.t, tempo: timeChange.bpm, step: 0.0, beat: 0.0, section: 0.0});
         }

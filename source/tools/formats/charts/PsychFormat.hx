@@ -30,35 +30,31 @@ class PsychFormat
 
         var chart:Dynamic = Json.parse(#if html5 openfl.utils.Assets.getText(chartPath) #else sys.io.File.getContent(chartPath) #end);
 
-        output.name = chart.song.song;
+        output.name = cast (chart.song.song, String);
 
-        output.tempo = chart.song.bpm;
+        output.tempo = cast (chart.song.bpm, Float);
 
-        output.speed = chart.song.speed;
+        output.speed = cast (chart.song.speed, Float);
 
         for (i in 0 ... chart.song.notes.length)
         {
-            var section:Dynamic = chart.song.notes[i];
-
             var section:PsychSection =
             {
                 sectionNotes:
                 [
-                    for (j in 0 ... section.sectionNotes.length)
+                    for (j in 0 ... cast chart.song.notes[i].sectionNotes.length)
                     {
-                        var note:Array<Dynamic> = section.sectionNotes[j];
-
-                        {time: note[0], direction: note[1], length: note[2] > 0.0 ? note[2] : 0.0};
+                        {time: cast (chart.song.notes[i].sectionNotes[j][0], Float), direction: cast (chart.song.notes[i].sectionNotes[j][1], Int), length: cast (chart.song.notes[i].sectionNotes[j][2], Float)};
                     }
                 ],
 
-                sectionBeats: section.sectionBeats,
+                sectionBeats: cast (chart.song.notes[i].sectionBeats, Float),
 
-                mustHitSection: section.mustHitSection,
+                mustHitSection: cast (chart.song.notes[i].mustHitSection, Bool),
 
-                changeBPM: section.changeBPM,
+                changeBPM: cast (chart.song.notes[i].changeBPM, Bool),
 
-                bpm: section.bpm
+                bpm: cast (chart.song.notes[i].bpm, Float)
             };
 
             for (j in 0 ... section.sectionNotes.length)
@@ -71,11 +67,9 @@ class PsychFormat
 
         for (i in 0 ... chart.song.events.length)
         {
-            var event:Array<Dynamic> = chart.song.events[i];
-
-            for (j in 0 ... event[1].length)
+            for (j in 0 ... chart.song.events[i][1].length)
             {
-                output.events.push({time: event[0], name: event[1][j][0], value: {value1: event[1][j][1], value2: event[1][j][2]}});
+                output.events.push({time: cast (chart.song.events[i][0], Float), name: cast (chart.song.events[i][1][j][0], String), value: {value1: chart.song.events[i][1][j][1], value2: chart.song.events[i][1][j][2]}});
             }
         }
         
@@ -83,31 +77,27 @@ class PsychFormat
 
         var time:Float = 0.0;
 
-        var tempo:Float = chart.song.bpm;
+        var tempo:Float = output.tempo;
 
         for (i in 0 ... chart.song.notes.length)
         {
-            var section:Dynamic = chart.song.notes[i];
-
             var section:PsychSection =
             {
                 sectionNotes:
                 [
-                    for (j in 0 ... section.sectionNotes.length)
+                    for (j in 0 ... cast chart.song.notes[i].sectionNotes.length)
                     {
-                        var note:Array<Dynamic> = section.sectionNotes[j];
-
-                        {time: note[0], direction: note[1], length: note[2] > 0.0 ? note[2] : 0.0};
+                        {time: cast (chart.song.notes[i].sectionNotes[j][0], Float), direction: cast (chart.song.notes[i].sectionNotes[j][1], Int), length: cast (chart.song.notes[i].sectionNotes[j][2], Float)};
                     }
                 ],
 
-                sectionBeats: section.sectionBeats,
+                sectionBeats: cast (chart.song.notes[i].sectionBeats, Float),
 
-                mustHitSection: section.mustHitSection,
+                mustHitSection: cast (chart.song.notes[i].mustHitSection, Bool),
 
-                changeBPM: section.changeBPM,
+                changeBPM: cast (chart.song.notes[i].changeBPM, Bool),
 
-                bpm: section.bpm
+                bpm: cast (chart.song.notes[i].bpm, Float)
             };
 
             if (section.changeBPM)
@@ -117,7 +107,7 @@ class PsychFormat
                 tempo = section.bpm;
             }
 
-            time += ((60.0 / tempo) * 1000.0) * ((Math.round(section.sectionBeats * 4.0)) * 0.25);
+            time += (((1 / 150) * 60) * 1000.0) * (Math.round(section.sectionBeats * 4.0) * 0.25);
         }
 
         var fileReference:FileReference = new FileReference();

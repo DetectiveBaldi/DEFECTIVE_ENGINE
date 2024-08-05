@@ -9,7 +9,6 @@ To compile, complete the following steps:
   - openfl (`haxelib install openfl`)
   - flixel (`haxelib install flixel`)
   - flixel-addons (`haxelib install flixel-addons`)
-  - flixel-ui (`haxelib install flixel-ui`)
 - Finally, build the game using `haxelib run lime build :target:`.
 
 Defective Engine currently supports the following targets:
@@ -19,4 +18,4 @@ Defective Engine currently supports the following targets:
 - Windows
 
 ### Chart Formats
-The `tools.formats` package contains some helpful classes for converting charts to the Defective format.
+The `tools.formats.charts` package contains some helpful classes for converting charts to the Defective Engine format.
