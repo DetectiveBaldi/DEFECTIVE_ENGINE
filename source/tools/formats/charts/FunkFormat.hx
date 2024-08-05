@@ -32,11 +32,11 @@ class FunkFormat
 
         var meta:Dynamic = Json.parse(#if html5 openfl.utils.Assets.getText(metaPath) #else sys.io.File.getContent(metaPath) #end);
 
-        output.name = cast (meta.songName, String);
+        output.name = meta.songName;
 
-        output.tempo = cast (meta.timeChanges[0].bpm, Float);
+        output.tempo = meta.timeChanges[0].bpm;
 
-        output.speed = cast (Reflect.field(chart.scrollSpeed, level), Float);
+        output.speed = Reflect.field(chart.scrollSpeed, level);
 
         for (i in 0 ... Reflect.field(chart.notes, level).length)
         {

@@ -97,9 +97,19 @@ class GameState extends State
 
     public var stage(default, null):Stage;
 
+    public var spectatorMap(default, null):Map<String, Character>;
+
+    public var spectatorGroup(default, null):FlxTypedContainer<Character>;
+
+    public var spectator(default, null):Character;
+
+    public var opponentMap(default, null):Map<String, Character>;
+
     public var opponentGroup(default, null):FlxTypedContainer<Character>;
 
     public var opponent(default, null):Character;
+
+    public var playerMap(default, null):Map<String, Character>;
 
     public var playerGroup(default, null):FlxTypedContainer<Character>;
 
@@ -235,15 +245,37 @@ class GameState extends State
 
         add(stage);
 
+        opponentMap = new Map<String, Character>();
+
         opponentGroup = new FlxTypedContainer<Character>();
 
         add(opponentGroup);
+
+        spectatorMap = new Map<String, Character>();
+
+        spectatorGroup = new FlxTypedContainer<Character>();
+
+        add(spectatorGroup);
+
+        spectator = new Character(0.0, 0.0, "assets/characters/GIRLFRIEND.json", ARTIFICIAL);
+
+        spectator.skipSing = true;
+
+        spectator.setPosition((FlxG.width - spectator.width) * 0.5, 35.0);
+
+        spectatorMap[spectator.simple.name] = spectator;
+
+        spectatorGroup.add(spectator);
 
         opponent = new Character(0.0, 0.0, "assets/characters/BOYFRIEND_PIXEL.json", ARTIFICIAL);
 
         opponent.setPosition(15.0, 50.0);
 
+        opponentMap[opponent.simple.name] = opponent;
+
         opponentGroup.add(opponent);
+
+        playerMap = new Map<String, Character>();
 
         playerGroup = new FlxTypedContainer<Character>();
 
@@ -252,6 +284,8 @@ class GameState extends State
         player = new Character(0.0, 0.0, "assets/characters/BOYFRIEND.json", PLAYABLE);
 
         player.setPosition((FlxG.width - player.width) - 15.0, 385.0);
+
+        playerMap[player.simple.name] = player;
 
         playerGroup.add(player);
 
@@ -679,16 +713,36 @@ class GameState extends State
                 }
             }
             
-            if (timer.elapsedLoops % 2 == 0)
+            if (timer.elapsedLoops < 5.0)
             {
+                for (i in 0 ... spectatorGroup.members.length)
+                {
+                    var character:Character = spectatorGroup.members[i];
+
+                    if (timer.elapsedLoops % character.danceInterval == 0.0)
+                    {
+                        character.dance();
+                    }
+                }
+
                 for (i in 0 ... opponentGroup.members.length)
                 {
-                    opponentGroup.members[i].dance();
+                    var character:Character = opponentGroup.members[i];
+
+                    if (timer.elapsedLoops % character.danceInterval == 0.0)
+                    {
+                        character.dance();
+                    }
                 }
 
                 for (i in 0 ... playerGroup.members.length)
                 {
-                    playerGroup.members[i].dance();
+                    var character:Character = playerGroup.members[i];
+
+                    if (timer.elapsedLoops % character.danceInterval == 0.0)
+                    {
+                        character.dance();
+                    }
                 }
             }
         }, 5);

@@ -12,7 +12,9 @@
 
             "name": "dance",
 
-            "prefix": "BF idle dance0"
+            "prefix": "BF idle dance0",
+
+            "indices": []
         },
 
         {
@@ -20,7 +22,9 @@
 
             "name": "SingLEFT",
 
-            "prefix": "BF NOTE LEFT0"
+            "prefix": "BF NOTE LEFT0",
+
+            "indices": []
         },
 
         {
@@ -28,7 +32,9 @@
 
             "name": "SingDOWN",
 
-            "prefix": "BF NOTE DOWN0"
+            "prefix": "BF NOTE DOWN0",
+
+            "indices": []
         },
 
         {
@@ -36,7 +42,9 @@
 
             "name": "SingUP",
 
-            "prefix": "BF NOTE UP0"
+            "prefix": "BF NOTE UP0",
+
+            "indices": []
         },
 
         {
@@ -44,7 +52,9 @@
 
             "name": "SingRIGHT",
 
-            "prefix": "BF NOTE RIGHT0"
+            "prefix": "BF NOTE RIGHT0",
+
+            "indices": []
         },
 
         {
@@ -52,7 +62,9 @@
 
             "name": "SingLEFTMISS",
 
-            "prefix": "BF NOTE LEFT MISS0"
+            "prefix": "BF NOTE LEFT MISS0",
+
+            "indices": []
         },
 
         {
@@ -60,7 +72,9 @@
 
             "name": "SingDOWNMISS",
 
-            "prefix": "BF NOTE DOWN MISS0"
+            "prefix": "BF NOTE DOWN MISS0",
+
+            "indices": []
         },
 
         {
@@ -68,7 +82,9 @@
 
             "name": "SingUPMISS",
 
-            "prefix": "BF NOTE UP MISS0"
+            "prefix": "BF NOTE UP MISS0",
+
+            "indices": []
         },
 
         {
@@ -76,9 +92,15 @@
 
             "name": "SingRIGHTMISS",
 
-            "prefix": "BF NOTE RIGHT MISS0"
+            "prefix": "BF NOTE RIGHT MISS0",
+
+            "indices": []
         }
     ],
+
+    "danceSteps": ["dance"],
+
+    "danceInterval": 2.0,
 
     "singDuration": 8.15
 }

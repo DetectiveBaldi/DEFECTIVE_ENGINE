@@ -30,11 +30,11 @@ class PsychFormat
 
         var chart:Dynamic = Json.parse(#if html5 openfl.utils.Assets.getText(chartPath) #else sys.io.File.getContent(chartPath) #end);
 
-        output.name = cast (chart.song.song, String);
+        output.name = chart.song.song;
 
-        output.tempo = cast (chart.song.bpm, Float);
+        output.tempo = chart.song.bpm;
 
-        output.speed = cast (chart.song.speed, Float);
+        output.speed = chart.song.speed;
 
         for (i in 0 ... chart.song.notes.length)
         {
@@ -42,19 +42,19 @@ class PsychFormat
             {
                 sectionNotes:
                 [
-                    for (j in 0 ... cast chart.song.notes[i].sectionNotes.length)
+                    for (j in 0 ... chart.song.notes[i].sectionNotes.length)
                     {
                         {time: cast (chart.song.notes[i].sectionNotes[j][0], Float), direction: cast (chart.song.notes[i].sectionNotes[j][1], Int), length: cast (chart.song.notes[i].sectionNotes[j][2], Float)};
                     }
                 ],
 
-                sectionBeats: cast (chart.song.notes[i].sectionBeats, Float),
+                sectionBeats: chart.song.notes[i].sectionBeats,
 
-                mustHitSection: cast (chart.song.notes[i].mustHitSection, Bool),
+                mustHitSection: chart.song.notes[i].mustHitSection,
 
-                changeBPM: cast (chart.song.notes[i].changeBPM, Bool),
+                changeBPM: chart.song.notes[i].changeBPM,
 
-                bpm: cast (chart.song.notes[i].bpm, Float)
+                bpm: chart.song.notes[i].bpm
             };
 
             for (j in 0 ... section.sectionNotes.length)
@@ -85,19 +85,19 @@ class PsychFormat
             {
                 sectionNotes:
                 [
-                    for (j in 0 ... cast chart.song.notes[i].sectionNotes.length)
+                    for (j in 0 ... chart.song.notes[i].sectionNotes.length)
                     {
                         {time: cast (chart.song.notes[i].sectionNotes[j][0], Float), direction: cast (chart.song.notes[i].sectionNotes[j][1], Int), length: cast (chart.song.notes[i].sectionNotes[j][2], Float)};
                     }
                 ],
 
-                sectionBeats: cast (chart.song.notes[i].sectionBeats, Float),
+                sectionBeats: chart.song.notes[i].sectionBeats,
 
-                mustHitSection: cast (chart.song.notes[i].mustHitSection, Bool),
+                mustHitSection: chart.song.notes[i].mustHitSection,
 
-                changeBPM: cast (chart.song.notes[i].changeBPM, Bool),
+                changeBPM: chart.song.notes[i].changeBPM,
 
-                bpm: cast (chart.song.notes[i].bpm, Float)
+                bpm: chart.song.notes[i].bpm
             };
 
             if (section.changeBPM)

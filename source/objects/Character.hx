@@ -16,25 +16,31 @@ import core.Paths;
 
 class Character extends FlxSprite
 {
-    public var simple(default, null):SimpleCharacter;
-
     public var role:CharacterRole;
 
-    public var skipDance:Bool;
+    public var simple(default, null):SimpleCharacter;
 
     public var danceInterval:Float;
 
     public var singDuration:Float;
+
+    public var danceSteps:Array<String>;
+
+    public var danceStep:Int;
+
+    public var skipDance:Bool;
+
+    public var skipSing:Bool;
 
     public var singCount:Float;
 
     public function new(x:Float = 0.0, y:Float = 0.0, path:String, role:CharacterRole = ARTIFICIAL):Void
     {
         super(x, y);
-        
-        simple = Json.parse(#if html5 openfl.utils.Assets.getText(path) #else sys.io.File.getContent(path) #end);
 
         this.role = role;
+        
+        simple = Json.parse(#if html5 openfl.utils.Assets.getText(path) #else sys.io.File.getContent(path) #end);
 
         switch (simple.format ?? "".toLowerCase():String)
         {
@@ -61,27 +67,61 @@ class Character extends FlxSprite
 
         for (i in 0 ... simple.animations.length)
         {
-            animation.addByPrefix
-            (
-                simple.animations[i].name,
+            if ((simple.animations[i].indices ?? []).length > 0)
+            {
+                animation.addByIndices
+                (
+                    simple.animations[i].name,
 
-                simple.animations[i].prefix,
+                    simple.animations[i].prefix,
 
-                simple.animations[i].frameRate ?? 24.0,
+                    simple.animations[i].indices,
 
-                simple.animations[i].looped ?? false,
+                    "",
 
-                simple.animations[i].flipX ?? false,
+                    simple.animations[i].frameRate ?? 24.0,
 
-                simple.animations[i].flipY ?? false
-            );
+                    simple.animations[i].looped ?? false,
+
+                    simple.animations[i].flipX ?? false,
+
+                    simple.animations[i].flipY ?? false
+                );
+            }
+            else
+            {
+                animation.addByPrefix
+                (
+                    simple.animations[i].name,
+
+                    simple.animations[i].prefix,
+
+                    simple.animations[i].frameRate ?? 24.0,
+
+                    simple.animations[i].looped ?? false,
+
+                    simple.animations[i].flipX ?? false,
+
+                    simple.animations[i].flipY ?? false
+                );
+            }
         }
 
-        danceInterval = simple.danceInterval ?? 2.0;
+        danceInterval = simple.danceInterval ?? 1.0;
 
-        singDuration = simple.singDuration;
+        singDuration = simple.singDuration ?? 8.0;
 
-        dance(true);
+        danceSteps = simple.danceSteps ?? ["dance"];
+
+        danceStep = 0;
+
+        skipDance = false;
+
+        skipSing = false;
+
+        singCount = 0.0;
+
+        dance();
 
         Conductor.current.stepHit.add(stepHit);
 
@@ -127,6 +167,18 @@ class Character extends FlxSprite
     {
         super.destroy();
 
+        role = ARTIFICIAL;
+
+        simple = null;
+
+        danceInterval = 1.0;
+
+        singDuration = 8.0;
+
+        skipDance = false;
+
+        skipSing = false;
+
         Conductor.current.stepHit.remove(stepHit);
 
         Conductor.current.beatHit.remove(beatHit);
@@ -140,11 +192,9 @@ class Character extends FlxSprite
 
         for (i in 0 ... simple.animations.length)
         {
-            if (simple.animations[i].name == animation.name)
+            if (animation.name ?? "" == simple.animations[i].name)
             {
                 output.subtract(simple.animations[i].offsets?.x ?? 0.0, simple.animations[i].offsets?.y ?? 0.0);
-
-                break;
             }
         }
         
@@ -163,7 +213,14 @@ class Character extends FlxSprite
             return;
         }
 
-        animation.play("dance", forceful);
+        danceStep++;
+
+        if (danceStep > danceSteps.length - 1.0)
+        {
+            danceStep = 0;
+        }
+
+        animation.play(danceSteps[danceStep], forceful);
     }
 
     public function stepHit():Void
@@ -204,15 +261,17 @@ typedef SimpleCharacter =
 
     var ?antialiasing:Bool;
 
-    var ?scale:{x:Float, y:Float};
+    var ?scale:{?x:Float, ?y:Float};
 
     var ?flipX:Bool;
 
     var ?flipY:Bool;
 
-    var animations:Array<{?offsets:{?x:Float, ?y:Float}, name:String, prefix:String, ?frameRate:Float, ?looped:Bool, ?flipX:Bool, ?flipY:Bool}>;
+    var animations:Array<{?offsets:{?x:Float, ?y:Float}, name:String, prefix:String, indices:Array<Int>, ?frameRate:Float, ?looped:Bool, ?flipX:Bool, ?flipY:Bool}>;
+
+    var ?danceSteps:Array<String>;
 
     var ?danceInterval:Float;
 
-    var singDuration:Float;
+    var ?singDuration:Float;
 }
