@@ -68,6 +68,16 @@ class PsychFormat
                 output.notes.push({time: note.time, speed: 1, direction: note.direction % 4, lane: 1 - Math.floor((section.mustHitSection ? note.direction : (note.direction >= 4) ? note.direction - 4 : note.direction + 4) * 0.25), length: note.length});
             }
         }
+
+        for (i in 0 ... chart.song.events.length)
+        {
+            var event:Array<Dynamic> = chart.song.events[i];
+
+            for (j in 0 ... event[1].length)
+            {
+                output.events.push({time: event[0], name: event[1][j][0], value: {value1: event[1][j][1], value2: event[1][j][2]}});
+            }
+        }
         
         output.timeChanges.push({time: 0.0, tempo: output.tempo, step: 0.0, beat: 0.0, section: 0.0});
 
@@ -104,7 +114,7 @@ class PsychFormat
             {
                 tempo = section.bpm;
 
-                output.timeChanges.push({time: time, tempo: tempo});
+                output.timeChanges.push({time: time, tempo: tempo, step: 0.0, beat: 0.0, section: 0.0});
             }
 
             time += ((60.0 / tempo) * 1000.0) * ((Math.round(4.0 * section.sectionBeats)) * 0.25);
