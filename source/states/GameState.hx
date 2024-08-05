@@ -676,16 +676,12 @@ class GameState extends State
             {
                 for (i in 0 ... opponentGroup.members.length)
                 {
-                    var character:Character = opponentGroup.members[i];
-
-                    character.dance();
+                    opponentGroup.members[i].dance();
                 }
 
                 for (i in 0 ... playerGroup.members.length)
                 {
-                    var character:Character = playerGroup.members[i];
-
-                    character.dance();
+                    playerGroup.members[i].dance();
                 }
             }
         }, 5);
