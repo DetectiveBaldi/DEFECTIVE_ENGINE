@@ -88,7 +88,7 @@ class Conductor
         timeChanges = new Array<SimpleTimeChange>();
     }
 
-    public function calculate():Void
+    public function guage():Void
     {
         var lastStep:Int = step;
 
@@ -96,7 +96,7 @@ class Conductor
 
         var lastSection:Int = section;
 
-        if (timeChanges.length != 0)
+        if (timeChanges.length > 0)
         {
             var timeChange:SimpleTimeChange = timeChanges[0];
 

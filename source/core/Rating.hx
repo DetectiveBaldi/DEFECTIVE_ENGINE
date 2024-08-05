@@ -17,7 +17,7 @@ class Rating
 
     public var hits:Int;
 
-    public static function calculate(ratings:Array<Rating>, timing:Float):Rating
+    public static function guage(ratings:Array<Rating>, timing:Float):Rating
     {
         for (i in 0 ... ratings.length)
         {

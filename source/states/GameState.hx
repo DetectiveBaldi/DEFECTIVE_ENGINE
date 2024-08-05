@@ -37,6 +37,10 @@ import objects.StrumLine;
 import stages.Stage;
 import stages.Week1;
 
+import tools.formats.BaseFormat;
+import tools.formats.FunkFormat;
+import tools.formats.PsychFormat;
+
 class GameState extends State
 {
     public var gameCamera(get, never):FlxCamera;
@@ -278,7 +282,7 @@ class GameState extends State
 
         if (songStarted)
         {
-            Conductor.current.calculate();
+            Conductor.current.guage();
             
             if (Math.abs(Conductor.current.time - instrumental.time) > 25.0)
             {
@@ -338,7 +342,7 @@ class GameState extends State
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
 
-                    var note:Note = notes.members.filter((n:Note) -> Math.abs(Conductor.current.time - n.time) <= 166.6 && strum.direction == n.direction && strumLine.lane == n.lane && n.length == 0.0)[0];
+                    var note:Note = notes.members.filter((n:Note) -> Math.abs(Conductor.current.time - n.time) <= 166.6 && strum.direction == n.direction && strumLine.lane == n.lane && n.length <= 0.0)[0];
 
                     if (note != null)
                     {
@@ -354,7 +358,7 @@ class GameState extends State
                 {
                     var strum:Strum = strumLine.members[j];
 
-                    var note:Note = notes.members.filter((n:Note) -> Conductor.current.time - n.time >= 0.0 && strum.direction == n.direction && strumLine.lane == n.lane && n.length != 0.0)[0];
+                    var note:Note = notes.members.filter((n:Note) -> Conductor.current.time - n.time >= 0.0 && strum.direction == n.direction && strumLine.lane == n.lane && n.length > 0.0)[0];
 
                     if (note != null)
                     {
@@ -386,11 +390,11 @@ class GameState extends State
             note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - ((((Conductor.current.time - note.time) * song.speed) * note.speed) * (downScroll ? -1.0 : 1.0)));
         }
 
-        if (pending.notes.length != 0)
+        if (pending.notes.length > 0.0)
         {
             var note:Note = pending.notes[0];
 
-            if (note.time - Conductor.current.time <= (Conductor.current.crotchet * 5) / note.speed)
+            if (note.time - Conductor.current.time <= (Conductor.current.crotchet * 5.0) / note.speed)
             {
                 notes.add(note);
 
@@ -431,7 +435,7 @@ class GameState extends State
 
     public function loadSong(name:String):Void
     {
-        song = Song.fromSimple(tools.formats.BaseFormat.build('assets/data/${name}/chart.json'));
+        song = Song.fromSimple(BaseFormat.build('assets/data/${name}/chart.json'));
 
         ArraySort.sort(song.notes, (a:SimpleNote, b:SimpleNote) -> Std.int(a.time - b.time));
 
@@ -451,33 +455,36 @@ class GameState extends State
         {
             var n:SimpleNote = song.notes[i];
 
-            var j:Int = pending.notes.length - 1;
-
-            while (j >= 0)
+            if (pending.notes.length > 0.0)
             {
-                var note:Note = pending.notes[j];
+                var j:Int = pending.notes.length - 1;
 
-                if (n.time == note.time && n.direction == note.direction && n.lane == note.lane)
+                while (j >= 0.0)
                 {
-                    pending.notes.splice(j, 1);
+                    var note:Note = pending.notes[j];
 
-                    note.destroy();
-
-                    var k:Int = note.tails.length - 1;
-
-                    while (k >= 0)
+                    if (n.time == note.time && n.direction == note.direction && n.lane == note.lane)
                     {
-                        var sustain:Note = note.tails[k];
+                        pending.notes.splice(j, 1);
 
-                        note.tails.splice(k, 1);
+                        note.destroy();
 
-                        sustain.destroy();
+                        var k:Int = note.tails.length - 1;
 
-                        k--;
+                        while (k >= 0.0)
+                        {
+                            var sustain:Note = note.tails[k];
+
+                            note.tails.splice(k, 1);
+
+                            sustain.destroy();
+
+                            k--;
+                        }
                     }
-                }
 
-                j--;
+                    j--;
+                }
             }
 
             var note:Note = new Note();
@@ -824,11 +831,11 @@ class GameState extends State
         {
             if (note.length == 0.0)
             {
-                score += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).score;
+                score += Rating.guage(ratings, Math.abs(Conductor.current.time - note.time)).score;
 
                 hits++;
 
-                bonus += Rating.calculate(ratings, Math.abs(Conductor.current.time - note.time)).bonus;
+                bonus += Rating.guage(ratings, Math.abs(Conductor.current.time - note.time)).bonus;
                 
                 combo++;
 
@@ -884,7 +891,7 @@ class GameState extends State
 
     public function ratingPopUp(time:Float):FlxBitmapText
     {
-        var rating:Rating = Rating.calculate(ratings, time);
+        var rating:Rating = Rating.guage(ratings, time);
 
         var output:FlxBitmapText = new FlxBitmapText(0.0, 0.0, "", FlxBitmapFont.getDefaultFont());
 
