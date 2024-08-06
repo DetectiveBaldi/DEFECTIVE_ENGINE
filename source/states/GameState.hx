@@ -245,12 +245,6 @@ class GameState extends State
 
         add(stage);
 
-        opponentMap = new Map<String, Character>();
-
-        opponentGroup = new FlxTypedContainer<Character>();
-
-        add(opponentGroup);
-
         spectatorMap = new Map<String, Character>();
 
         spectatorGroup = new FlxTypedContainer<Character>();
@@ -266,6 +260,12 @@ class GameState extends State
         spectatorMap[spectator.simple.name] = spectator;
 
         spectatorGroup.add(spectator);
+
+        opponentMap = new Map<String, Character>();
+
+        opponentGroup = new FlxTypedContainer<Character>();
+
+        add(opponentGroup);
 
         opponent = new Character(0.0, 0.0, "assets/characters/BOYFRIEND_PIXEL.json", ARTIFICIAL);
 
