@@ -104,8 +104,8 @@ class PsychFormat
 
                 tempo = section.bpm;
             }
-
-            time += (((1 / 150) * 60) * 1000.0) * (Math.round(section.sectionBeats * 4.0) * 0.25);
+            
+            time += (((1 / tempo) * 60) * 1000.0) * (Math.round(section.sectionBeats * 4.0) * 0.25);
         }
 
         return output;

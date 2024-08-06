@@ -712,7 +712,7 @@ class GameState extends State
                     }
                 }
             }
-            
+
             if (timer.elapsedLoops < 5.0)
             {
                 for (i in 0 ... spectatorGroup.members.length)
