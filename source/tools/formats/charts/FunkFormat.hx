@@ -2,8 +2,6 @@ package tools.formats.charts;
 
 import haxe.Json;
 
-import openfl.net.FileReference;
-
 import core.Song.SimpleEvent;
 import core.Song.SimpleNote;
 import core.Song.SimpleSong;
@@ -58,10 +56,6 @@ class FunkFormat
 
             output.timeChanges.push({time: timeChange.t, tempo: timeChange.bpm, step: 0.0, beat: 0.0, section: 0.0});
         }
-
-        var fileReference:FileReference = new FileReference();
-
-        fileReference.save(Json.stringify(output), "chart.json");
 
         return output;
     }

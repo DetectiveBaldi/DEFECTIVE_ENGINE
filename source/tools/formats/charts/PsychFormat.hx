@@ -2,8 +2,6 @@ package tools.formats.charts;
 
 import haxe.Json;
 
-import openfl.net.FileReference;
-
 import core.Song.SimpleEvent;
 import core.Song.SimpleNote;
 import core.Song.SimpleSong;
@@ -109,10 +107,6 @@ class PsychFormat
 
             time += (((1 / 150) * 60) * 1000.0) * (Math.round(section.sectionBeats * 4.0) * 0.25);
         }
-
-        var fileReference:FileReference = new FileReference();
-
-        fileReference.save(Json.stringify(output), "chart.json");
 
         return output;
     }
