@@ -919,7 +919,7 @@ class GameState extends State
 
         if (!strumLine.artificial)
         {
-            score -= 75;
+            score -= 650;
 
             misses++;
 
