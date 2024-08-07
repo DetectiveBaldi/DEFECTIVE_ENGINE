@@ -2,6 +2,7 @@ package states;
 
 import haxe.ds.ArraySort;
 
+import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -95,7 +96,7 @@ class GameState extends State
 
     public var playerVocals(default, null):FlxSound;
 
-    public var stage(default, null):Stage;
+    public var stage(default, null):Stage<FlxBasic>;
 
     public var spectatorMap(default, null):Map<String, Character>;
 
@@ -243,7 +244,10 @@ class GameState extends State
 
         stage = new Week1();
 
-        add(stage);
+        for (i in 0 ... stage.members.length)
+        {
+            add(stage.members[i]);
+        }
 
         spectatorMap = new Map<String, Character>();
 
@@ -634,7 +638,7 @@ class GameState extends State
 
         new FlxTimer().start(Conductor.current.crotchet * 0.001, function(timer):Void
         {
-            switch (timer.elapsedLoops)
+            switch (timer.elapsedLoops:Int)
             {
                 case 1:
                 {

@@ -84,7 +84,7 @@ class Strum extends FlxSprite
 
 typedef StrumSkin =
 {
-    var ?format:String;
+    var format:String;
 
     var png:String;
 

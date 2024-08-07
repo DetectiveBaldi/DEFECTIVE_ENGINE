@@ -16,8 +16,6 @@ import core.Paths;
 
 class Character extends FlxSprite
 {
-    public var role:CharacterRole;
-
     public var simple(default, null):SimpleCharacter;
 
     public var danceInterval:Float;
@@ -34,24 +32,24 @@ class Character extends FlxSprite
 
     public var singCount:Float;
 
-    public function new(x:Float = 0.0, y:Float = 0.0, path:String, role:CharacterRole = ARTIFICIAL):Void
+    public var role:CharacterRole;
+
+    public function new(x:Float = 0.0, y:Float = 0.0, path:String, role:CharacterRole):Void
     {
         super(x, y);
-
-        this.role = role;
         
         simple = Json.parse(#if html5 openfl.utils.Assets.getText(path) #else sys.io.File.getContent(path) #end);
 
         switch (simple.format ?? "".toLowerCase():String)
         {
+            case "sparrow":
+            {
+                frames = FlxAtlasFrames.fromSparrow(Paths.png(simple.png), Paths.xml(simple.xml));
+            }
+
             case "texturepackerxml":
             {
                 frames = FlxAtlasFrames.fromTexturePackerXml(Paths.png(simple.png), Paths.xml(simple.xml));
-            }
-
-            default:
-            {
-                frames = FlxAtlasFrames.fromSparrow(Paths.png(simple.png), Paths.xml(simple.xml));
             }
         }
 
@@ -67,7 +65,7 @@ class Character extends FlxSprite
 
         for (i in 0 ... simple.animations.length)
         {
-            if ((simple.animations[i].indices ?? []).length > 0)
+            if (simple.animations[i].indices.length > 0)
             {
                 animation.addByIndices
                 (
@@ -121,6 +119,8 @@ class Character extends FlxSprite
 
         singCount = 0.0;
 
+        this.role = role;
+
         dance();
 
         Conductor.current.stepHit.add(stepHit);
@@ -167,17 +167,23 @@ class Character extends FlxSprite
     {
         super.destroy();
 
-        role = ARTIFICIAL;
-
         simple = null;
 
         danceInterval = 1.0;
 
         singDuration = 8.0;
 
+        danceSteps = null;
+
+        danceStep = 0;
+
         skipDance = false;
 
         skipSing = false;
+
+        singCount = 0.0;
+
+        role = OTHER;
 
         Conductor.current.stepHit.remove(stepHit);
 
@@ -244,16 +250,18 @@ class Character extends FlxSprite
 
 enum CharacterRole
 {
-    ARTIFICIAL;
+    ARTIFICIAL:CharacterRole;
 
-    PLAYABLE;
+    PLAYABLE:CharacterRole;
+
+    OTHER:CharacterRole;
 }
 
 typedef SimpleCharacter =
 {
     var name:String;
     
-    var ?format:String;
+    var format:String;
 
     var png:String;
 

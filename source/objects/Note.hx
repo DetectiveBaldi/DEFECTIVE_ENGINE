@@ -78,7 +78,7 @@ class Note extends FlxSprite
 
 typedef NoteSkin =
 {
-    var ?format:String;
+    var format:String;
 
     var png:String;
 

@@ -1,5 +1,13 @@
 package stages;
 
-import flixel.group.FlxContainer;
+import flixel.FlxBasic;
 
-class Stage extends FlxContainer {}
+class Stage<T:FlxBasic>
+{
+    public var members(default, null):Array<T>;
+
+    public function new():Void
+    {
+        members = new Array<T>();
+    }
+}

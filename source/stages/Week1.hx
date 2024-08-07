@@ -1,10 +1,11 @@
 package stages;
 
+import flixel.FlxBasic;
 import flixel.FlxSprite;
 
 import core.Paths;
 
-class Week1 extends Stage
+class Week1 extends Stage<FlxBasic>
 {
     public var background(default, null):FlxSprite;
 
@@ -20,7 +21,7 @@ class Week1 extends Stage
 
         background.screenCenter();
 
-        add(background);
+        members.push(background);
 
         foreground = new FlxSprite(0, 0, Paths.png("assets/images/stages/week1/foreground"));
 
@@ -30,7 +31,7 @@ class Week1 extends Stage
 
         foreground.setPosition(background.getMidpoint().x - foreground.width * 0.5, ((background.height * 0.75) - foreground.height) + 175.0);
         
-        add(foreground);
+        members.push(foreground);
 
         curtains = new FlxSprite(0, 0, Paths.png("assets/images/stages/week1/curtains"));
 
@@ -40,6 +41,6 @@ class Week1 extends Stage
 
         curtains.setPosition(background.getMidpoint().x - curtains.width * 0.5, background.getMidpoint().y - curtains.height * 0.5);
 
-        add(curtains);
+        members.push(curtains);
     }
 }
