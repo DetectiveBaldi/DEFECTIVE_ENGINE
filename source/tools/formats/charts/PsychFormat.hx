@@ -73,9 +73,9 @@ class PsychFormat
         
         output.timeChanges.push({time: 0.0, tempo: output.tempo, step: 0.0, beat: 0.0, section: 0.0});
 
-        var time:Float = 0.0;
-
         var tempo:Float = output.tempo;
+
+        var time:Float = 0.0;
 
         for (i in 0 ... chart.song.notes.length)
         {
@@ -100,9 +100,9 @@ class PsychFormat
 
             if (section.changeBPM)
             {
-                output.timeChanges.push({time: time, tempo: section.bpm, step: 0.0, beat: 0.0, section: 0.0});
-
                 tempo = section.bpm;
+
+                output.timeChanges.push({tempo: tempo, time: time, step: 0.0, beat: 0.0, section: 0.0});
             }
             
             time += (((1 / tempo) * 60) * 1000.0) * (Math.round(section.sectionBeats * 4.0) * 0.25);

@@ -54,11 +54,11 @@ class Conductor
         return (60.0 / tempo) * 1000.0;
     }
 
-    public var time:Float;
-
     public var timeChange:SimpleTimeChange;
 
     public var timeChanges:Array<SimpleTimeChange>;
+
+    public var time:Float;
 
     public static function load():Void
     {
@@ -81,11 +81,11 @@ class Conductor
 
         tempo = 150.0;
 
-        time = 0.0;
-
-        timeChange = {time: 0.0, tempo: 150.0, step: 0.0, beat: 0.0, section: 0.0};
+        timeChange = {tempo: 150.0, time: 0.0, step: 0.0, beat: 0.0, section: 0.0};
 
         timeChanges = new Array<SimpleTimeChange>();
+
+        time = 0.0;
     }
 
     public function guage():Void
@@ -96,21 +96,19 @@ class Conductor
 
         var lastSection:Int = section;
 
-        if (timeChanges.length > 0)
+        if (timeChanges.length > 0.0)
         {
-            var timeChange:SimpleTimeChange = timeChanges[0];
-
-            if (time >= timeChange.time)
+            if (time >= timeChanges[0].time)
             {
-                this.timeChange.step += (timeChange.time - this.timeChange.time) / (crotchet * 0.25);
+                timeChange.step += (timeChanges[0].time - timeChange.time) / (crotchet * 0.25);
 
-                this.timeChange.beat = this.timeChange.step * 0.25;
+                timeChange.beat = timeChange.step * 0.25;
 
-                this.timeChange.section = this.timeChange.section * 0.25;
+                timeChange.section = timeChange.section * 0.25;
 
-                this.timeChange.tempo = timeChange.tempo;
+                timeChange.tempo = timeChanges[0].tempo;
 
-                this.timeChange.time = timeChange.time;
+                timeChange.time = timeChanges[0].time;
 
                 tempo = timeChange.tempo;
                 
@@ -156,10 +154,10 @@ class Conductor
 
         tempo = 150.0;
 
-        time = 0.0;
-
-        timeChange = {time: 0.0, tempo: 150.0, step: 0.0, beat: 0.0, section: 0.0};
+        timeChange = {tempo: 150.0, time: 0.0, step: 0.0, beat: 0.0, section: 0.0};
 
         timeChanges = new Array<SimpleTimeChange>();
+
+        time = 0.0;
     }
 }

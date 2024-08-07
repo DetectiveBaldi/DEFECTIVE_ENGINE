@@ -78,9 +78,9 @@ typedef SimpleEvent =
 
 typedef SimpleTimeChange =
 {
-    var time:Float;
-
     var tempo:Float;
+    
+    var time:Float;
 
     var ?step:Float;
 

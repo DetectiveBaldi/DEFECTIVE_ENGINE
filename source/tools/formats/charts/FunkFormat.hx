@@ -54,7 +54,7 @@ class FunkFormat
         {
             var timeChange:FunkTimeChange = meta.timeChanges[i];
 
-            output.timeChanges.push({time: timeChange.t, tempo: timeChange.bpm, step: 0.0, beat: 0.0, section: 0.0});
+            output.timeChanges.push({tempo: timeChange.bpm, time: timeChange.t, step: 0.0, beat: 0.0, section: 0.0});
         }
 
         return output;

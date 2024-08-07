@@ -38,6 +38,8 @@ class OpeningState extends FlxState
             FlxG.drawFramerate = FlxG.stage.window.displayMode.refreshRate;
         #end
 
+        FlxG.mouse.visible = false;
+
         FlxSprite.defaultAntialiasing = true;
 
         Conductor.load();
