@@ -36,8 +36,6 @@
 
 	<haxelib name="flixel" />
 
-	<haxelib name="flixel-addons" />
-
 	<!-- ______________________________ Defines _____________________________ -->
 	
 	<!-- Enable the Flixel core recording system -->
