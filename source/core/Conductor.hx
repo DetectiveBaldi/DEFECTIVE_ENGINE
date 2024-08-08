@@ -2,7 +2,7 @@ package core;
 
 import flixel.util.FlxSignal;
 
-import core.Song.SimpleTimeChange;
+import tools.formats.charts.BasicFormat.BasicTimeChange;
 
 class Conductor
 {
@@ -54,9 +54,9 @@ class Conductor
         return (60.0 / tempo) * 1000.0;
     }
 
-    public var timeChange:SimpleTimeChange;
+    public var timeChange:BasicTimeChange;
 
-    public var timeChanges:Array<SimpleTimeChange>;
+    public var timeChanges:Array<BasicTimeChange>;
 
     public var time:Float;
 
@@ -83,7 +83,7 @@ class Conductor
 
         timeChange = {tempo: 150.0, time: 0.0, step: 0.0, beat: 0.0, section: 0.0};
 
-        timeChanges = new Array<SimpleTimeChange>();
+        timeChanges = new Array<BasicTimeChange>();
 
         time = 0.0;
     }
@@ -156,7 +156,7 @@ class Conductor
 
         timeChange = {tempo: 150.0, time: 0.0, step: 0.0, beat: 0.0, section: 0.0};
 
-        timeChanges = new Array<SimpleTimeChange>();
+        timeChanges = new Array<BasicTimeChange>();
 
         time = 0.0;
     }

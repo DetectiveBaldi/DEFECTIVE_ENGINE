@@ -2,16 +2,16 @@ package tools.formats.charts;
 
 import haxe.Json;
 
-import core.Song.SimpleEvent;
-import core.Song.SimpleNote;
-import core.Song.SimpleSong;
-import core.Song.SimpleTimeChange;
+import tools.formats.charts.BasicFormat.BasicEvent;
+import tools.formats.charts.BasicFormat.BasicNote;
+import tools.formats.charts.BasicFormat.BasicSong;
+import tools.formats.charts.BasicFormat.BasicTimeChange;
 
 class PsychFormat
 {
-    public static function build(chartPath:String):SimpleSong
+    public static function build(chartPath:String):BasicSong
     {
-        var output:SimpleSong =
+        var output:BasicSong =
         {
             name: "Test",
 
@@ -19,11 +19,11 @@ class PsychFormat
 
             speed: 1.0,
 
-            notes: new Array<SimpleNote>(),
+            notes: new Array<BasicNote>(),
 
-            events: new Array<SimpleEvent>(),
+            events: new Array<BasicEvent>(),
 
-            timeChanges: new Array<SimpleTimeChange>()
+            timeChanges: new Array<BasicTimeChange>()
         };
 
         var chart:Dynamic = Json.parse(#if html5 openfl.utils.Assets.getText(chartPath) #else sys.io.File.getContent(chartPath) #end);
@@ -67,7 +67,9 @@ class PsychFormat
         {
             for (j in 0 ... chart.song.events[i][1].length)
             {
-                output.events.push({time: cast (chart.song.events[i][0], Float), name: cast (chart.song.events[i][1][j][0], String), value: {value1: chart.song.events[i][1][j][1], value2: chart.song.events[i][1][j][2]}});
+                var event:PsychEvent = {time: cast (chart.song.events[i][0], Float), name: cast (chart.song.events[i][1][j][0], String), value1: cast (chart.song.events[i][1][j][1], String), value2: cast (chart.song.events[i][1][j][2], String)};
+
+                output.events.push({time: event.time, name: event.name, value: {value1: event.value1, value2: event.value2}});
             }
         }
         
@@ -132,4 +134,15 @@ typedef PsychNote =
     var direction:Int;
 
     var length:Float;
+};
+
+typedef PsychEvent =
+{
+    var time:Float;
+
+    var name:String;
+
+    var value1:String;
+
+    var value2:String;
 };

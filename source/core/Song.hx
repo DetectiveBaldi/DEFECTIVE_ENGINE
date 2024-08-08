@@ -1,5 +1,10 @@
 package core;
 
+import tools.formats.charts.BasicFormat.BasicEvent;
+import tools.formats.charts.BasicFormat.BasicNote;
+import tools.formats.charts.BasicFormat.BasicSong;
+import tools.formats.charts.BasicFormat.BasicTimeChange;
+
 class Song
 {
     public var name:String;
@@ -8,13 +13,13 @@ class Song
 
     public var speed:Float;
 
-    public var notes:Array<SimpleNote>;
+    public var notes:Array<BasicNote>;
 
-    public var events:Array<SimpleEvent>;
+    public var events:Array<BasicEvent>;
 
-    public var timeChanges:Array<SimpleTimeChange>;
+    public var timeChanges:Array<BasicTimeChange>;
 
-    public static function fromSimple(input:SimpleSong):Song
+    public static function fromBasic(input:BasicSong):Song
     {
         var output:Song = new Song();
 
@@ -38,53 +43,3 @@ class Song
 
     }
 }
-
-typedef SimpleSong =
-{
-    var name:String;
-
-    var tempo:Float;
-
-    var speed:Float;
-
-    var notes:Array<SimpleNote>;
-
-    var events:Array<SimpleEvent>;
-
-    var timeChanges:Array<SimpleTimeChange>;
-};
-
-typedef SimpleNote =
-{
-    var time:Float;
-
-    var speed:Float;
-
-    var direction:Int;
-
-    var lane:Int;
-
-    var length:Float;
-};
-
-typedef SimpleEvent =
-{
-    var time:Float;
-
-    var name:String;
-
-    var value:Dynamic;
-};
-
-typedef SimpleTimeChange =
-{
-    var tempo:Float;
-    
-    var time:Float;
-
-    var ?step:Float;
-
-    var ?beat:Float;
-
-    var ?section:Float;
-};

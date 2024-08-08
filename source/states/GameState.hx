@@ -13,8 +13,7 @@ import flixel.math.FlxMath;
 
 import flixel.sound.FlxSound;
 
-import flixel.text.FlxBitmapFont;
-import flixel.text.FlxBitmapText;
+import flixel.text.FlxText;
 
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -38,7 +37,7 @@ import objects.StrumLine;
 import stages.Stage;
 import stages.Week1;
 
-import tools.formats.charts.BaseFormat;
+import tools.formats.charts.BasicFormat;
 import tools.formats.charts.FunkFormat;
 import tools.formats.charts.PsychFormat;
 
@@ -64,7 +63,7 @@ class GameState extends State
 
     public var downScroll(default, null):Bool;
 
-    public var scoreTxt(default, null):FlxBitmapText;
+    public var scoreTxt(default, null):FlxText;
 
     public var score(default, null):Int;
 
@@ -158,7 +157,7 @@ class GameState extends State
 
         downScroll = false;
 
-        scoreTxt = new FlxBitmapText(0.0, 0.0, "", FlxBitmapFont.getDefaultFont());
+        scoreTxt = new FlxText(0.0, 0.0, 0.0, "", 24);
 
         scoreTxt.camera = hudCamera;
 
@@ -172,11 +171,7 @@ class GameState extends State
 
         scoreTxt.borderColor = FlxColor.BLACK;
 
-        scoreTxt.borderSize = 1.15;
-
-        scoreTxt.scale.set(3.5, 3.5);
-
-        scoreTxt.updateHitbox();
+        scoreTxt.borderSize = 2.5;
 
         scoreTxt.setPosition((FlxG.width - scoreTxt.width) * 0.5, downScroll ? 35.0 : (FlxG.height - scoreTxt.height) - 35.0);
 
@@ -473,13 +468,13 @@ class GameState extends State
 
     public function loadSong(name:String):Void
     {
-        song = Song.fromSimple(BaseFormat.build('assets/data/${name}/chart.json'));
+        song = Song.fromBasic(BasicFormat.build('assets/data/${name}/chart.json'));
 
-        ArraySort.sort(song.notes, (a:SimpleNote, b:SimpleNote) -> Std.int(a.time - b.time));
+        ArraySort.sort(song.notes, (a:BasicNote, b:BasicNote) -> Std.int(a.time - b.time));
 
-        ArraySort.sort(song.events, (a:SimpleEvent, b:SimpleEvent) -> Std.int(a.time - b.time));
+        ArraySort.sort(song.events, (a:BasicEvent, b:BasicEvent) -> Std.int(a.time - b.time));
 
-        ArraySort.sort(song.timeChanges, (a:SimpleTimeChange, b:SimpleTimeChange) -> Std.int(a.time - b.time));
+        ArraySort.sort(song.timeChanges, (a:BasicTimeChange, b:BasicTimeChange) -> Std.int(a.time - b.time));
 
         Conductor.current.tempo = song.tempo;
 
@@ -491,7 +486,7 @@ class GameState extends State
 
         for (i in 0 ... song.notes.length)
         {
-            var n:SimpleNote = song.notes[i];
+            var n:BasicNote = song.notes[i];
 
             if (pending.notes.length > 0.0)
             {
@@ -933,7 +928,7 @@ class GameState extends State
 
             scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
 
-            var ratingTxt:FlxBitmapText = ratingPopUp(Math.abs(Conductor.current.time - note.time));
+            var ratingTxt:FlxText = ratingPopUp(Math.abs(Conductor.current.time - note.time));
 
             ratingTxt.text = "Miss...";
 
@@ -947,13 +942,15 @@ class GameState extends State
         note.destroy();
     }
 
-    public function ratingPopUp(time:Float):FlxBitmapText
+    public function ratingPopUp(time:Float):FlxText
     {
         var rating:Rating = Rating.guage(ratings, time);
 
-        var output:FlxBitmapText = new FlxBitmapText(0.0, 0.0, "", FlxBitmapFont.getDefaultFont());
+        var output:FlxText = new FlxText(0.0, 0.0, 0.0, "", 28);
 
         output.camera = hudCamera;
+
+        output.moves = true;
 
         output.antialiasing = false;
 
@@ -961,15 +958,17 @@ class GameState extends State
 
         output.alignment = CENTER;
 
+        output.borderStyle = OUTLINE;
+
+        output.borderColor = FlxColor.BLACK;
+
+        output.borderSize = 1.85;
+
         output.color = rating.color;
 
         output.velocity.set(FlxG.random.bool() ? FlxG.random.int(0, 75) : FlxG.random.int(-0, -75), FlxG.random.bool() ? FlxG.random.int(0, 10) : FlxG.random.int(-0, -10));
 
         output.acceleration.set(FlxG.random.bool() ? FlxG.random.int(0, 350) : FlxG.random.int(-0, -350), FlxG.random.bool() ? FlxG.random.int(0, 250) : FlxG.random.int(-0, -250));
-
-        output.scale.set(5.0, 5.0);
-
-        output.updateHitbox();
 
         output.screenCenter();
 

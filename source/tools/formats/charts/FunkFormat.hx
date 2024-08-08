@@ -2,16 +2,16 @@ package tools.formats.charts;
 
 import haxe.Json;
 
-import core.Song.SimpleEvent;
-import core.Song.SimpleNote;
-import core.Song.SimpleSong;
-import core.Song.SimpleTimeChange;
+import tools.formats.charts.BasicFormat.BasicEvent;
+import tools.formats.charts.BasicFormat.BasicNote;
+import tools.formats.charts.BasicFormat.BasicSong;
+import tools.formats.charts.BasicFormat.BasicTimeChange;
 
 class FunkFormat
 {
-    public static function build(chartPath:String, metaPath:String, ?level:String = "normal"):SimpleSong
+    public static function build(chartPath:String, metaPath:String, ?level:String = "normal"):BasicSong
     {
-        var output:SimpleSong =
+        var output:BasicSong =
         {
             name: "Test",
 
@@ -19,11 +19,11 @@ class FunkFormat
 
             speed: 1.0,
 
-            notes: new Array<SimpleNote>(),
+            notes: new Array<BasicNote>(),
 
-            events: new Array<SimpleEvent>(),
+            events: new Array<BasicEvent>(),
 
-            timeChanges: new Array<SimpleTimeChange>()
+            timeChanges: new Array<BasicTimeChange>()
         };
 
         var chart:Dynamic = Json.parse(#if html5 openfl.utils.Assets.getText(chartPath) #else sys.io.File.getContent(chartPath) #end);
