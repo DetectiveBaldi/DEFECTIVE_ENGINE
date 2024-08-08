@@ -36,8 +36,6 @@ class Statistics extends TextField
 
         current["-"] = 0;
 
-        current["+"] = 0;
-
         times = new Array<Float>();
     }
 
@@ -60,11 +58,6 @@ class Statistics extends TextField
 
         current["-"] = System.totalMemory;
 
-        if (current["-"] > current["+"])
-        {
-            current["+"] = current["-"];
-        }
-
-        text = 'FPS: ${Math.min(current["*"], FlxG.updateFramerate)}\nMemory: ${FlxMath.roundDecimal(current["-"] / Math.pow(1024, 2), 2)} MB (${FlxMath.roundDecimal(current["+"] / Math.pow(1024, 2), 2)} MB)';
+        text = 'FPS: ${Math.min(current["*"], FlxG.updateFramerate)}\nMemory: ${FlxMath.roundDecimal(current["-"] / Math.pow(1024, 2), 2)} MB';
     }
 }
