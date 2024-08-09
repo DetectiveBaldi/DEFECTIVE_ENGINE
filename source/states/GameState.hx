@@ -167,11 +167,11 @@ class GameState extends State
 
         scoreTxt.alignment = CENTER;
 
-        scoreTxt.borderStyle = OUTLINE;
+        scoreTxt.borderStyle = SHADOW;
 
         scoreTxt.borderColor = FlxColor.BLACK;
 
-        scoreTxt.borderSize = 2.5;
+        scoreTxt.borderSize = 5.0;
 
         scoreTxt.setPosition((FlxG.width - scoreTxt.width) * 0.5, downScroll ? 35.0 : (FlxG.height - scoreTxt.height) - 35.0);
 
@@ -958,11 +958,11 @@ class GameState extends State
 
         output.alignment = CENTER;
 
-        output.borderStyle = OUTLINE;
+        output.borderStyle = SHADOW;
 
         output.borderColor = FlxColor.BLACK;
 
-        output.borderSize = 1.85;
+        output.borderSize = 3.65;
 
         output.color = rating.color;
 
