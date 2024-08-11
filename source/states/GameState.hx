@@ -544,7 +544,7 @@ class GameState extends State
 
             if (n.length > 0)
             {
-                for (j in 0 ... Math.floor(n.length / (Conductor.current.crotchet * 0.25)))
+                for (j in 0 ... Math.round(n.length / (Conductor.current.crotchet * 0.25)))
                 {
                     var sustain:Note = new Note();
 
