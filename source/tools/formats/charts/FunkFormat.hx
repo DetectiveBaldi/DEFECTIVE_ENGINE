@@ -40,7 +40,7 @@ class FunkFormat
         {
             var note:FunkNote = Reflect.field(chart.notes, level)[i];
 
-            output.notes.push({time: note.t, speed: 1, direction: note.d % 4, lane: 1 - Math.floor(note.d * 0.25), length: note.l});
+            output.notes.push({time: note.t, speed: 1.0, direction: note.d % 4, lane: 1 - Math.floor(note.d * 0.25), length: note.l});
         }
 
         for (i in 0 ... chart.events.length)

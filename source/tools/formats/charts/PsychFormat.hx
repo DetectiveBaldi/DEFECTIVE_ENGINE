@@ -59,7 +59,7 @@ class PsychFormat
             {
                 var note:PsychNote = section.sectionNotes[j];
 
-                output.notes.push({time: note.time, speed: 1, direction: note.direction % 4, lane: 1 - Math.floor((section.mustHitSection ? note.direction : (note.direction >= 4) ? note.direction - 4 : note.direction + 4) * 0.25), length: note.length});
+                output.notes.push({time: note.time, speed: 1.0, direction: note.direction % 4, lane: 1 - Math.floor((section.mustHitSection ? note.direction : (note.direction >= 4.0) ? note.direction - 4.0 : note.direction + 4.0) * 0.25), length: note.length});
             }
         }
 
@@ -107,7 +107,7 @@ class PsychFormat
                 output.timeChanges.push({tempo: tempo, time: time, step: 0.0, beat: 0.0, section: 0.0});
             }
             
-            time += (((1 / tempo) * 60) * 1000.0) * (Math.round(section.sectionBeats * 4.0) * 0.25);
+            time += (((1.0 / tempo) * 60.0) * 1000.0) * (Math.round(section.sectionBeats * 4.0) * 0.25);
         }
 
         return output;

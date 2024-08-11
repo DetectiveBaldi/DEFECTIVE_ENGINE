@@ -958,7 +958,7 @@ class GameState extends State
 
         output.antialiasing = false;
 
-        output.text = '${rating.name}\n(${FlxMath.roundDecimal(time, 2)})';
+        output.text = '${rating.name}';
 
         output.alignment = CENTER;
 
@@ -978,7 +978,7 @@ class GameState extends State
 
         add(output);
 
-        FlxTween.tween(output, {alpha: 0.0}, (Conductor.current.crotchet * 4) * 0.001,
+        FlxTween.tween(output, {alpha: 0.0}, (Conductor.current.crotchet * 4.0) * 0.001,
         {
             onComplete: function(tween:FlxTween):Void
             {
