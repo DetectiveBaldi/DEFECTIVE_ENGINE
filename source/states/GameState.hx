@@ -41,6 +41,10 @@ import tools.formats.charts.BasicFormat;
 import tools.formats.charts.FunkFormat;
 import tools.formats.charts.PsychFormat;
 
+import tools.formats.charts.BasicFormat.BasicEvent;
+import tools.formats.charts.BasicFormat.BasicNote;
+import tools.formats.charts.BasicFormat.BasicTimeChange;
+
 class GameState extends State
 {
     public var gameCamera(get, never):FlxCamera;
