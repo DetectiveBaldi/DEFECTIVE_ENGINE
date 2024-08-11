@@ -355,7 +355,7 @@ class GameState extends State
 
             if (strumLine.artificial)
             {
-                var note:Note = notes.members.filter((n:Note) -> Conductor.current.time - n.time >= 0.0 && strumLine.lane == n.lane)[0];
+                var note:Note = notes.members.filter((n:Note) -> Conductor.current.time >= n.time && strumLine.lane == n.lane)[0];
 
                 if (note != null)
                 {
@@ -395,7 +395,7 @@ class GameState extends State
                 {
                     var strum:Strum = strumLine.members[j];
 
-                    var note:Note = notes.members.filter((n:Note) -> Conductor.current.time - n.time >= 0.0 && strum.direction == n.direction && strumLine.lane == n.lane && n.length > 0.0)[0];
+                    var note:Note = notes.members.filter((n:Note) -> Conductor.current.time >= n.time && strum.direction == n.direction && strumLine.lane == n.lane && n.length > 0.0)[0];
 
                     if (note != null)
                     {

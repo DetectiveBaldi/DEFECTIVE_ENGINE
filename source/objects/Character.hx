@@ -224,15 +224,6 @@ class Character extends FlxSprite
     }
 }
 
-enum CharacterRole
-{
-    ARTIFICIAL:CharacterRole;
-
-    PLAYABLE:CharacterRole;
-
-    OTHER:CharacterRole;
-}
-
 typedef SimpleCharacter =
 {
     var name:String;
@@ -258,4 +249,13 @@ typedef SimpleCharacter =
     var ?danceInterval:Float;
 
     var ?singDuration:Float;
+};
+
+enum CharacterRole
+{
+    ARTIFICIAL:CharacterRole;
+
+    PLAYABLE:CharacterRole;
+
+    OTHER:CharacterRole;
 }
