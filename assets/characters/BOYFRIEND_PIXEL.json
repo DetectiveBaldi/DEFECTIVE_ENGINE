@@ -9,7 +9,7 @@
 
     "antialiasing": false,
 
-    "scale": {"x": 6.15, "y": 6.15},
+    "scale": {"x": 6.0, "y": 6.0},
 
     "flipX": true,
 
@@ -110,5 +110,5 @@
 
     "danceInterval": 2.0,
 
-    "singDuration": 8.15
+    "singDuration": 8.0
 }

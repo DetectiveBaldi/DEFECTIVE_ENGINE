@@ -478,7 +478,7 @@ class GameState extends State
 
         Conductor.current.tempo = song.tempo;
 
-        Conductor.current.timeChange = song.timeChanges[0];
+        Conductor.current.timeChange = {tempo: Conductor.current.tempo, time: 0.0, step: 0.0, beat: 0.0, section: 0.0};
 
         Conductor.current.timeChanges = song.timeChanges;
 

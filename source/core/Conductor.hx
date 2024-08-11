@@ -81,9 +81,9 @@ class Conductor
 
         tempo = 150.0;
 
-        timeChange = {tempo: 150.0, time: 0.0, step: 0.0, beat: 0.0, section: 0.0};
+        timeChange = {tempo: tempo, time: 0.0, step: 0.0, beat: 0.0, section: 0.0};
 
-        timeChanges = new Array<BasicTimeChange>();
+        timeChanges = [{tempo: tempo, time: 0.0, step: 0.0, beat: 0.0, section: 0.0}];
 
         time = 0.0;
     }
@@ -154,9 +154,9 @@ class Conductor
 
         tempo = 150.0;
 
-        timeChange = {tempo: 150.0, time: 0.0, step: 0.0, beat: 0.0, section: 0.0};
+        timeChange = {tempo: tempo, time: 0.0, step: 0.0, beat: 0.0, section: 0.0};
 
-        timeChanges = new Array<BasicTimeChange>();
+        timeChanges = [{tempo: tempo, time: 0.0, step: 0.0, beat: 0.0, section: 0.0}];
 
         time = 0.0;
     }

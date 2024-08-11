@@ -8,6 +8,7 @@ import flixel.FlxSprite;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 
+import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 
 import core.Binds;
@@ -18,13 +19,13 @@ class Character extends FlxSprite
 {
     public var simple(default, null):SimpleCharacter;
 
-    public var danceInterval:Float;
-
-    public var singDuration:Float;
-
     public var danceSteps:Array<String>;
 
     public var danceStep:Int;
+
+    public var danceInterval:Float;
+
+    public var singDuration:Float;
 
     public var skipDance:Bool;
 
@@ -105,13 +106,13 @@ class Character extends FlxSprite
             }
         }
 
+        danceSteps = simple.danceSteps;
+
+        danceStep = 0;
+
         danceInterval = simple.danceInterval ?? 1.0;
 
         singDuration = simple.singDuration ?? 8.0;
-
-        danceSteps = simple.danceSteps ?? ["dance"];
-
-        danceStep = 0;
 
         skipDance = false;
 
@@ -167,24 +168,6 @@ class Character extends FlxSprite
     {
         super.destroy();
 
-        simple = null;
-
-        danceInterval = 1.0;
-
-        singDuration = 8.0;
-
-        danceSteps = null;
-
-        danceStep = 0;
-
-        skipDance = false;
-
-        skipSing = false;
-
-        singCount = 0.0;
-
-        role = OTHER;
-
         Conductor.current.stepHit.remove(stepHit);
 
         Conductor.current.beatHit.remove(beatHit);
@@ -219,14 +202,7 @@ class Character extends FlxSprite
             return;
         }
 
-        danceStep++;
-
-        if (danceStep > danceSteps.length - 1.0)
-        {
-            danceStep = 0;
-        }
-
-        animation.play(danceSteps[danceStep], forceful);
+        animation.play(danceSteps[danceStep = FlxMath.wrap(danceStep + 1, 0, danceSteps.length - 1)], forceful);
     }
 
     public function stepHit():Void
@@ -277,7 +253,7 @@ typedef SimpleCharacter =
 
     var animations:Array<{?offsets:{?x:Float, ?y:Float}, name:String, prefix:String, indices:Array<Int>, ?frameRate:Float, ?looped:Bool, ?flipX:Bool, ?flipY:Bool}>;
 
-    var ?danceSteps:Array<String>;
+    var danceSteps:Array<String>;
 
     var ?danceInterval:Float;
 
