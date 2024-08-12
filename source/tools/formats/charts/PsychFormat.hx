@@ -2,16 +2,16 @@ package tools.formats.charts;
 
 import haxe.Json;
 
-import tools.formats.charts.BasicFormat.BasicEvent;
-import tools.formats.charts.BasicFormat.BasicNote;
-import tools.formats.charts.BasicFormat.BasicSong;
-import tools.formats.charts.BasicFormat.BasicTimeChange;
+import tools.formats.charts.ClassicFormat.ClassicEvent;
+import tools.formats.charts.ClassicFormat.ClassicNote;
+import tools.formats.charts.ClassicFormat.ClassicSong;
+import tools.formats.charts.ClassicFormat.ClassicTimeChange;
 
 class PsychFormat
 {
-    public static function build(chartPath:String):BasicSong
+    public static function build(chartPath:String):ClassicSong
     {
-        var output:BasicSong =
+        var output:ClassicSong =
         {
             name: "Test",
 
@@ -19,11 +19,11 @@ class PsychFormat
 
             speed: 1.0,
 
-            notes: new Array<BasicNote>(),
+            notes: new Array<ClassicNote>(),
 
-            events: new Array<BasicEvent>(),
+            events: new Array<ClassicEvent>(),
 
-            timeChanges: new Array<BasicTimeChange>()
+            timeChanges: new Array<ClassicTimeChange>()
         };
 
         var chart:Dynamic = Json.parse(#if html5 openfl.utils.Assets.getText(chartPath) #else sys.io.File.getContent(chartPath) #end);

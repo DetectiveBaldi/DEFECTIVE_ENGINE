@@ -37,13 +37,13 @@ import objects.StrumLine;
 import stages.Stage;
 import stages.Week1;
 
-import tools.formats.charts.BasicFormat;
+import tools.formats.charts.ClassicFormat;
 import tools.formats.charts.FunkFormat;
 import tools.formats.charts.PsychFormat;
 
-import tools.formats.charts.BasicFormat.BasicEvent;
-import tools.formats.charts.BasicFormat.BasicNote;
-import tools.formats.charts.BasicFormat.BasicTimeChange;
+import tools.formats.charts.ClassicFormat.ClassicEvent;
+import tools.formats.charts.ClassicFormat.ClassicNote;
+import tools.formats.charts.ClassicFormat.ClassicTimeChange;
 
 class GameState extends State
 {
@@ -472,13 +472,13 @@ class GameState extends State
 
     public function loadSong(name:String):Void
     {
-        song = Song.fromBasic(BasicFormat.build('assets/data/${name}/chart.json'));
+        song = Song.fromClassic(ClassicFormat.build('assets/data/${name}/chart.json'));
 
-        ArraySort.sort(song.notes, (a:BasicNote, b:BasicNote) -> Std.int(a.time - b.time));
+        ArraySort.sort(song.notes, (a:ClassicNote, b:ClassicNote) -> Std.int(a.time - b.time));
 
-        ArraySort.sort(song.events, (a:BasicEvent, b:BasicEvent) -> Std.int(a.time - b.time));
+        ArraySort.sort(song.events, (a:ClassicEvent, b:ClassicEvent) -> Std.int(a.time - b.time));
 
-        ArraySort.sort(song.timeChanges, (a:BasicTimeChange, b:BasicTimeChange) -> Std.int(a.time - b.time));
+        ArraySort.sort(song.timeChanges, (a:ClassicTimeChange, b:ClassicTimeChange) -> Std.int(a.time - b.time));
 
         Conductor.current.tempo = song.tempo;
 
@@ -490,7 +490,7 @@ class GameState extends State
 
         for (i in 0 ... song.notes.length)
         {
-            var n:BasicNote = song.notes[i];
+            var n:ClassicNote = song.notes[i];
 
             if (pending.notes.length > 0.0)
             {
