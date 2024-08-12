@@ -431,7 +431,7 @@ class GameState extends State
         {
             var note:Note = pending.notes[0];
 
-            if (note.time - Conductor.current.time <= (Conductor.current.crotchet * 5.0) / note.speed)
+            if (note.time - Conductor.current.time <= ((Conductor.current.crotchet * 5.0) / song.speed) / note.speed)
             {
                 notes.add(note);
 
