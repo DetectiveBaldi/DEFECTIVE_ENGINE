@@ -1,9 +1,9 @@
 package core;
 
-import tools.formats.charts.ClassicFormat.ClassicEvent;
-import tools.formats.charts.ClassicFormat.ClassicNote;
-import tools.formats.charts.ClassicFormat.ClassicSong;
-import tools.formats.charts.ClassicFormat.ClassicTimeChange;
+import tools.formats.charts.StandardFormat.StandardEvent;
+import tools.formats.charts.StandardFormat.StandardNote;
+import tools.formats.charts.StandardFormat.StandardSong;
+import tools.formats.charts.StandardFormat.StandardTimeChange;
 
 class Song
 {
@@ -13,13 +13,13 @@ class Song
 
     public var speed:Float;
 
-    public var notes:Array<ClassicNote>;
+    public var notes:Array<StandardNote>;
 
-    public var events:Array<ClassicEvent>;
+    public var events:Array<StandardEvent>;
 
-    public var timeChanges:Array<ClassicTimeChange>;
+    public var timeChanges:Array<StandardTimeChange>;
 
-    public static function fromClassic(input:ClassicSong):Song
+    public static function fromStandard(input:StandardSong):Song
     {
         var output:Song = new Song();
 

@@ -2,7 +2,7 @@ package core;
 
 import flixel.util.FlxSignal;
 
-import tools.formats.charts.ClassicFormat.ClassicTimeChange;
+import tools.formats.charts.StandardFormat.StandardTimeChange;
 
 class Conductor
 {
@@ -54,9 +54,9 @@ class Conductor
         return (60.0 / tempo) * 1000.0;
     }
 
-    public var timeChange:ClassicTimeChange;
+    public var timeChange:StandardTimeChange;
 
-    public var timeChanges:Array<ClassicTimeChange>;
+    public var timeChanges:Array<StandardTimeChange>;
 
     public var time:Float;
 

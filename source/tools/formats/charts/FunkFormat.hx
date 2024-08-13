@@ -2,16 +2,16 @@ package tools.formats.charts;
 
 import haxe.Json;
 
-import tools.formats.charts.ClassicFormat.ClassicEvent;
-import tools.formats.charts.ClassicFormat.ClassicNote;
-import tools.formats.charts.ClassicFormat.ClassicSong;
-import tools.formats.charts.ClassicFormat.ClassicTimeChange;
+import tools.formats.charts.StandardFormat.StandardEvent;
+import tools.formats.charts.StandardFormat.StandardNote;
+import tools.formats.charts.StandardFormat.StandardSong;
+import tools.formats.charts.StandardFormat.StandardTimeChange;
 
 class FunkFormat
 {
-    public static function build(chartPath:String, metaPath:String, ?level:String = "normal"):ClassicSong
+    public static function build(chartPath:String, metaPath:String, ?level:String = "normal"):StandardSong
     {
-        var output:ClassicSong =
+        var output:StandardSong =
         {
             name: "Test",
 
@@ -19,11 +19,11 @@ class FunkFormat
 
             speed: 1.0,
 
-            notes: new Array<ClassicNote>(),
+            notes: new Array<StandardNote>(),
 
-            events: new Array<ClassicEvent>(),
+            events: new Array<StandardEvent>(),
 
-            timeChanges: new Array<ClassicTimeChange>()
+            timeChanges: new Array<StandardTimeChange>()
         };
 
         var chart:Dynamic = Json.parse(#if html5 openfl.utils.Assets.getText(chartPath) #else sys.io.File.getContent(chartPath) #end);

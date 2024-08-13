@@ -2,17 +2,17 @@ package tools.formats.charts;
 
 import haxe.Json;
 
-class ClassicFormat
+class StandardFormat
 {
-    public static function build(chartPath:String):ClassicSong
+    public static function build(chartPath:String):StandardSong
     {
-        var output:ClassicSong = Json.parse(#if html5 openfl.utils.Assets.getText(chartPath) #else sys.io.File.getContent(chartPath) #end);
+        var output:StandardSong = Json.parse(#if html5 openfl.utils.Assets.getText(chartPath) #else sys.io.File.getContent(chartPath) #end);
         
         return output;
     }
 }
 
-typedef ClassicSong =
+typedef StandardSong =
 {
     var name:String;
 
@@ -20,14 +20,14 @@ typedef ClassicSong =
 
     var speed:Float;
 
-    var notes:Array<ClassicNote>;
+    var notes:Array<StandardNote>;
 
-    var events:Array<ClassicEvent>;
+    var events:Array<StandardEvent>;
 
-    var timeChanges:Array<ClassicTimeChange>;
+    var timeChanges:Array<StandardTimeChange>;
 };
 
-typedef ClassicNote =
+typedef StandardNote =
 {
     var time:Float;
 
@@ -40,7 +40,7 @@ typedef ClassicNote =
     var length:Float;
 };
 
-typedef ClassicEvent =
+typedef StandardEvent =
 {
     var time:Float;
 
@@ -49,7 +49,7 @@ typedef ClassicEvent =
     var value:Dynamic;
 };
 
-typedef ClassicTimeChange =
+typedef StandardTimeChange =
 {
     var tempo:Float;
     
