@@ -346,7 +346,7 @@ class GameState extends State
         {
             var strumLine:StrumLine = strumLines.members[i];
 
-            var note:Note = notes.members.filter((n:Note) -> Conductor.current.time - n.time > 166.6 && strumLine.lane == n.lane)[0];
+            var note:Note = notes.members.filter((n:Note) -> Conductor.current.time - n.time > (166.6 / song.speed) / n.speed && strumLine.lane == n.lane)[0];
 
             if (note != null)
             {
@@ -379,7 +379,7 @@ class GameState extends State
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
 
-                    var note:Note = notes.members.filter((n:Note) -> Math.abs(Conductor.current.time - n.time) <= 166.6 && strum.direction == n.direction && strumLine.lane == n.lane && n.length <= 0.0)[0];
+                    var note:Note = notes.members.filter((n:Note) -> Math.abs(Conductor.current.time - n.time) <= (166.6 / song.speed) / n.speed && strum.direction == n.direction && strumLine.lane == n.lane && n.length <= 0.0)[0];
 
                     if (note != null)
                     {

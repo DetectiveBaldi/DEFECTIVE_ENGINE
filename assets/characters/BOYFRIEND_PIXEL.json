@@ -15,95 +15,15 @@
 
     "animations":
     [
-        {
-            "offsets": {"x": 0.0, "y": 0.0},
+        {"offsets": {"x": 0.0, "y": 0.0}, "name": "dance", "prefix": "BF IDLE0", "indices": []},
 
-            "name": "dance",
+        {"offsets": {"x": 0.0, "y": 0.0}, "name": "SingLEFT", "prefix": "BF LEFT NOTE0", "indices": []},
 
-            "prefix": "BF IDLE0",
+        {"offsets": {"x": 0.0, "y": 0.0}, "name": "SingDOWN", "prefix": "BF DOWN NOTE0", "indices": []},
 
-            "indices": []
-        },
+        {"offsets": {"x": 0.0, "y": 0.0}, "name": "SingUP", "prefix": "BF UP NOTE0", "indices": []},
 
-        {
-            "offsets": {"x": 0.0, "y": 0.0},
-
-            "name": "SingLEFT",
-
-            "prefix": "BF LEFT NOTE0",
-
-            "indices": []
-        },
-
-        {
-            "offsets": {"x": 0.0, "y": 0.0},
-
-            "name": "SingDOWN",
-
-            "prefix": "BF DOWN NOTE0",
-
-            "indices": []
-        },
-
-        {
-            "offsets": {"x": 0.0, "y": 0.0},
-
-            "name": "SingUP",
-
-            "prefix": "BF UP NOTE0",
-
-            "indices": []
-        },
-
-        {
-            "offsets": {"x": 0.0, "y": 0.0},
-
-            "name": "SingRIGHT",
-
-            "prefix": "BF RIGHT NOTE0",
-
-            "indices": []
-        },
-
-        {
-            "offsets": {"x": 0.0, "y": 0.0},
-
-            "name": "SingLEFTMISS",
-
-            "prefix": "BF LEFT MISS0",
-
-            "indices": []
-        },
-
-        {
-            "offsets": {"x": 0.0, "y": 0.0},
-
-            "name": "SingDOWNMISS",
-
-            "prefix": "BF DOWN MISS0",
-
-            "indices": []
-        },
-
-        {
-            "offsets": {"x": 0.0, "y": 0.0},
-
-            "name": "SingUPMISS",
-
-            "prefix": "BF UP MISS0",
-
-            "indices": []
-        },
-
-        {
-            "offsets": {"x": 0.0, "y": 0.0},
-
-            "name": "SingRIGHTMISS",
-
-            "prefix": "BF RIGHT MISS0",
-
-            "indices": []
-        }
+        {"offsets": {"x": 0.0, "y": 0.0}, "name": "SingRIGHT", "prefix": "BF RIGHT NOTE0", "indices": []}
     ],
 
     "danceSteps": ["dance"],
