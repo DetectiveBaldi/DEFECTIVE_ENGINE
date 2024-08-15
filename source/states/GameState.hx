@@ -346,7 +346,7 @@ class GameState extends State
         {
             var strumLine:StrumLine = strumLines.members[i];
 
-            var note:Note = notes.members.filter((n:Note) -> Conductor.current.time - n.time > (166.6 / song.speed) / n.speed && strumLine.lane == n.lane)[0];
+            var note:Note = notes.members.filter((n:Note) -> Conductor.current.time - n.time > 166.6 && strumLine.lane == n.lane)[0];
 
             if (note != null)
             {
@@ -379,7 +379,7 @@ class GameState extends State
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
 
-                    var note:Note = notes.members.filter((n:Note) -> Math.abs(Conductor.current.time - n.time) <= (166.6 / song.speed) / n.speed && strum.direction == n.direction && strumLine.lane == n.lane && n.length <= 0.0)[0];
+                    var note:Note = notes.members.filter((n:Note) -> Math.abs(Conductor.current.time - n.time) <= 166.6 && strum.direction == n.direction && strumLine.lane == n.lane && n.length <= 0.0)[0];
 
                     if (note != null)
                     {
@@ -506,13 +506,13 @@ class GameState extends State
 
                         note.destroy();
 
-                        var k:Int = note.tails.length - 1;
+                        var k:Int = note.children.length - 1;
 
                         while (k >= 0.0)
                         {
-                            var sustain:Note = note.tails[k];
+                            var sustain:Note = note.children[k];
 
-                            note.tails.splice(k, 1);
+                            note.children.splice(k, 1);
 
                             sustain.destroy();
 
@@ -562,7 +562,7 @@ class GameState extends State
 
                     sustain.length = Conductor.current.crotchet * 0.25;
 
-                    note.tails.push(sustain);
+                    note.children.push(sustain);
 
                     sustain.parent = note;
 

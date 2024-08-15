@@ -54,7 +54,7 @@ class Note extends FlxSprite
 
     public var parent:Note;
 
-    public var tails:Array<Note>;
+    public var children:Array<Note>;
 
     public function new(x:Float = 0.0, y:Float = 0.0):Void
     {
@@ -72,7 +72,7 @@ class Note extends FlxSprite
 
         length = 0.0;
 
-        tails = new Array<Note>();
+        children = new Array<Note>();
     }
 }
 
