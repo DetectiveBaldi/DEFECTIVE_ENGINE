@@ -595,19 +595,19 @@ class GameState extends State
 
         instrumental.onComplete = endSong;
 
-        if (AssetManager.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Main')))
+        if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Main')))
         {
             mainVocals = FlxG.sound.load(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Main')));
         }
 
         if (mainVocals == null)
         {
-            if (AssetManager.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Opponent')))
+            if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Opponent')))
             {
                 opponentVocals = FlxG.sound.load(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Opponent')));
             }
 
-            if (AssetManager.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Player')))
+            if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Player')))
             {
                 playerVocals = FlxG.sound.load(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Player')));
             }

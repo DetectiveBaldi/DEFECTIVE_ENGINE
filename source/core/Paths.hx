@@ -1,34 +1,87 @@
 package core;
 
+#if html5
+    import openfl.utils.Assets;
+
+    using StringTools;
+#else
+    import sys.FileSystem;
+#end
+
 class Paths
 {
-    public static function json(key:String):String
+    public static function exists(path:String):Bool
     {
-        return '${key}.json';
+        return #if html5 Assets.exists #else FileSystem.exists #end (path);
     }
 
-    public static function mp3(key:String):String
+    public static function readDirectory(path:String):Array<String>
     {
-        return '${key}.mp3';
+        #if html5
+            var output:Array<String> = new Array<String>();
+
+            for (i in 0 ... Assets.list().length)
+            {
+                var file:String = Assets.list()[i];
+
+                if (file.startsWith(path))
+                {
+                    file = file.replace(path.endsWith("/") ? path : '${path}/', "");
+
+                    if (file.contains("/"))
+                    {
+                        file = file.replace(file.substring(file.indexOf("/"), file.length), "");
+                    }
+
+                    if (!output.contains(file))
+                    {
+                        output.push(file);
+                    }
+                }
+            }
+
+            output.sort((a:String, b:String) -> 
+            {
+                a = a.toLowerCase();
+
+                b = b.toLowerCase();
+                
+                return (a < b) ? -1 : (a > b) ? 1 : 0;
+            });
+
+            return output;
+        #else
+            return FileSystem.readDirectory(path);
+        #end
     }
 
-    public static function ogg(key:String):String
+    public static function png(path:String):String
     {
-        return '${key}.ogg';
+        return '${path}.png';
     }
 
-    public static function png(key:String):String
+    public static function mp3(path:String):String
     {
-        return '${key}.png';
+        return '${path}.mp3';
     }
 
-    public static function txt(key:String):String
+    public static function ogg(path:String):String
     {
-        return '${key}.txt';
+        return '${path}.ogg';
     }
 
-    public static function xml(key:String):String
+    public static function txt(path:String):String
     {
-        return '${key}.xml';
+        return '${path}.txt';
+    }
+
+    public static function json(path:String):String
+    {
+        return '${path}.json';
+    }
+
+    public static function xml(path:String):String
+    {
+        return '${path}.xml';
     }
 }

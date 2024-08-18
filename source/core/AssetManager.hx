@@ -3,43 +3,56 @@ package core;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.system.FlxAssets.FlxSoundAsset;
 
+#if html5
+    import openfl.utils.Assets;
+#else
+    import sys.io.File;
+
+    import openfl.display.BitmapData;
+
+    import openfl.media.Sound;
+
+    import flixel.graphics.FlxGraphic;
+#end
+
 class AssetManager
 {
     public static var graphics(default, null):Map<String, FlxGraphicAsset> = new Map<String, FlxGraphicAsset>();
 
     public static var sounds(default, null):Map<String, FlxSoundAsset> = new Map<String, FlxSoundAsset>();
 
-    public static function exists(key:String):Bool
+    public static function graphic(path:String):FlxGraphicAsset
     {
-        return #if html5 openfl.utils.Assets.exists #else sys.FileSystem.exists #end (key);
-    }
-
-    public static function graphic(key:String):FlxGraphicAsset
-    {
-        if (graphics.exists(key))
+        if (graphics.exists(path))
         {
-            return graphics[key];
+            return graphics[path];
         }
 
-        graphics[key] = #if html5 key #else openfl.display.BitmapData.fromFile(key) #end ;
+        var graphic:FlxGraphic = FlxGraphic.fromBitmapData(BitmapData.fromFile(path));
 
-        return graphics[key];
+        graphic.persist = true;
+
+        graphic.destroyOnNoUse = false;
+
+        graphics[path] = graphic;
+
+        return graphics[path];
     }
 
-    public static function sound(key:String):FlxSoundAsset
+    public static function sound(path:String):FlxSoundAsset
     {
-        if (sounds.exists(key))
+        if (sounds.exists(path))
         {
-            return sounds[key];
+            return sounds[path];
         }
 
-        sounds[key] = #if html5 key #else openfl.media.Sound.fromFile(key) #end ;
+        sounds[path] = #if html5 path #else Sound.fromFile(path) #end ;
 
-        return sounds[key];
+        return sounds[path];
     }
 
-    public static function text(key:String):String
+    public static function text(path:String):String
     {
-        return #if html5 openfl.utils.Assets.getText #else sys.io.File.getContent #end (key);
+        return #if html5 Assets.getText #else File.getContent #end (path);
     }
 }
