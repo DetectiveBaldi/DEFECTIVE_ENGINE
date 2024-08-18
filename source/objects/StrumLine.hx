@@ -40,7 +40,7 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
 
             strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Static");
 
-            strum.scale.set(0.725, 0.725);
+            strum.scale.set(0.685, 0.685);
 
             strum.updateHitbox();
 
