@@ -539,7 +539,7 @@ class GameState extends State
 
             note.animation.play(Note.directions[note.direction].toLowerCase());
 
-            note.scale.set(0.725, 0.725);
+            note.scale.set(0.685, 0.685);
 
             note.updateHitbox();
 
@@ -578,7 +578,7 @@ class GameState extends State
 
                     sustain.flipY = downScroll;
 
-                    sustain.scale.set(0.725, 0.725);
+                    sustain.scale.set(0.685, 0.685);
 
                     sustain.updateHitbox();
 
