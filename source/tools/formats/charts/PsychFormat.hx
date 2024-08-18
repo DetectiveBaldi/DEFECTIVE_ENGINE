@@ -34,7 +34,7 @@ class PsychFormat
 
         output.tempo = chart.song.bpm;
 
-        output.speed = chart.song.speed;
+        output.speed = chart.song.speed * 0.55;
 
         for (i in 0 ... chart.song.notes.length)
         {
