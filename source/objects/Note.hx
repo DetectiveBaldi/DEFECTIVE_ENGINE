@@ -6,7 +6,7 @@ import flixel.FlxSprite;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 
-import core.AssetManagement;
+import core.AssetManager;
 import core.Paths;
 
 class Note extends FlxSprite
@@ -22,12 +22,12 @@ class Note extends FlxSprite
         {
             case "texturepackerxml":
             {
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetManagement.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetManager.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
             }
 
             default:
             {
-                frames = FlxAtlasFrames.fromSparrow(AssetManagement.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetManager.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
             }
         }
 
@@ -61,7 +61,7 @@ class Note extends FlxSprite
     {
         super(x, y);
 
-        skin = Json.parse(AssetManagement.text(Paths.json("assets/images/notes/classic")));
+        skin = Json.parse(AssetManager.text(Paths.json("assets/images/notes/classic")));
 
         time = 0.0;
 

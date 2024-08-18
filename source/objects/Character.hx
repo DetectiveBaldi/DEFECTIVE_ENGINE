@@ -11,7 +11,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 
-import core.AssetManagement;
+import core.AssetManager;
 import core.Binds;
 import core.Conductor;
 import core.Paths;
@@ -40,18 +40,18 @@ class Character extends FlxSprite
     {
         super(x, y);
         
-        simple = Json.parse(AssetManagement.text(path));
+        simple = Json.parse(AssetManager.text(path));
 
         switch (simple.format ?? "".toLowerCase():String)
         {
             case "sparrow":
             {
-                frames = FlxAtlasFrames.fromSparrow(AssetManagement.graphic(Paths.png(simple.png)), Paths.xml(simple.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetManager.graphic(Paths.png(simple.png)), Paths.xml(simple.xml));
             }
 
             case "texturepackerxml":
             {
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetManagement.graphic(Paths.png(simple.png)), Paths.xml(simple.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetManager.graphic(Paths.png(simple.png)), Paths.xml(simple.xml));
             }
         }
 

@@ -3,7 +3,7 @@ package core;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.system.FlxAssets.FlxSoundAsset;
 
-class AssetManagement
+class AssetManager
 {
     public static var graphics(default, null):Map<String, FlxGraphicAsset> = new Map<String, FlxGraphicAsset>();
 
