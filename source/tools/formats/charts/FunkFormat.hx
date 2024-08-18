@@ -2,6 +2,8 @@ package tools.formats.charts;
 
 import haxe.Json;
 
+import core.AssetManagement;
+
 import tools.formats.charts.StandardFormat.StandardEvent;
 import tools.formats.charts.StandardFormat.StandardNote;
 import tools.formats.charts.StandardFormat.StandardSong;
@@ -26,9 +28,9 @@ class FunkFormat
             timeChanges: new Array<StandardTimeChange>()
         };
 
-        var chart:Dynamic = Json.parse(#if html5 openfl.utils.Assets.getText(chartPath) #else sys.io.File.getContent(chartPath) #end);
+        var chart:Dynamic = Json.parse(AssetManagement.text(chartPath));
 
-        var meta:Dynamic = Json.parse(#if html5 openfl.utils.Assets.getText(metaPath) #else sys.io.File.getContent(metaPath) #end);
+        var meta:Dynamic = Json.parse(AssetManagement.text(metaPath));
 
         output.name = meta.songName;
 

@@ -1,12 +1,14 @@
 package tools.formats.charts;
 
+import core.AssetManagement;
+
 import haxe.Json;
 
 class StandardFormat
 {
     public static function build(chartPath:String):StandardSong
     {
-        var output:StandardSong = Json.parse(#if html5 openfl.utils.Assets.getText(chartPath) #else sys.io.File.getContent(chartPath) #end);
+        var output:StandardSong = Json.parse(AssetManagement.text(chartPath));
         
         return output;
     }

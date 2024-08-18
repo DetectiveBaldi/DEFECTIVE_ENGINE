@@ -3,6 +3,7 @@ package stages;
 import flixel.FlxBasic;
 import flixel.FlxSprite;
 
+import core.AssetManagement;
 import core.Paths;
 
 class Week1 extends Stage<FlxBasic>
@@ -17,13 +18,13 @@ class Week1 extends Stage<FlxBasic>
     {
         super();
 
-        background = new FlxSprite(0, 0, Paths.png("assets/images/stages/week1/background"));
+        background = new FlxSprite(0, 0, AssetManagement.graphic(Paths.png("assets/images/stages/week1/background")));
 
         background.screenCenter();
 
         members.push(background);
 
-        foreground = new FlxSprite(0, 0, Paths.png("assets/images/stages/week1/foreground"));
+        foreground = new FlxSprite(0, 0, AssetManagement.graphic(Paths.png("assets/images/stages/week1/foreground")));
 
         foreground.scale.set(1.15, 1.15);
 
@@ -33,7 +34,7 @@ class Week1 extends Stage<FlxBasic>
         
         members.push(foreground);
 
-        curtains = new FlxSprite(0, 0, Paths.png("assets/images/stages/week1/curtains"));
+        curtains = new FlxSprite(0, 0, AssetManagement.graphic(Paths.png("assets/images/stages/week1/curtains")));
 
         curtains.scale.set(0.95, 0.95);
 

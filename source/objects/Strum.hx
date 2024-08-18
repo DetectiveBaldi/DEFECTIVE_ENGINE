@@ -6,6 +6,7 @@ import flixel.FlxSprite;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 
+import core.AssetManagement;
 import core.Conductor;
 import core.Paths;
 
@@ -22,12 +23,12 @@ class Strum extends FlxSprite
         {
             case "texturepackerxml":
             {
-                frames = FlxAtlasFrames.fromTexturePackerXml(Paths.png(skin.png), Paths.xml(skin.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetManagement.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
             }
 
             default:
             {
-                frames = FlxAtlasFrames.fromSparrow(Paths.png(skin.png), Paths.xml(skin.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetManagement.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
             }
         }
 
@@ -53,7 +54,7 @@ class Strum extends FlxSprite
     {
         super(x, y);
         
-        skin = Json.parse(#if html5 openfl.utils.Assets.getText("assets/images/strums/classic.json") #else sys.io.File.getContent("assets/images/strums/classic.json") #end);
+        skin = Json.parse(AssetManagement.text(Paths.json("assets/images/strums/classic")));
 
         direction = -1;
 

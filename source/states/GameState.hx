@@ -21,6 +21,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 
+import core.AssetManagement;
 import core.Binds;
 import core.Conductor;
 import core.Paths;
@@ -254,7 +255,7 @@ class GameState extends State
 
         add(spectatorGroup);
 
-        spectator = new Character(0.0, 0.0, "assets/characters/GIRLFRIEND.json", ARTIFICIAL);
+        spectator = new Character(0.0, 0.0, Paths.json("assets/characters/GIRLFRIEND"), ARTIFICIAL);
 
         spectator.skipSing = true;
 
@@ -270,7 +271,7 @@ class GameState extends State
 
         add(opponentGroup);
 
-        opponent = new Character(0.0, 0.0, "assets/characters/BOYFRIEND_PIXEL.json", ARTIFICIAL);
+        opponent = new Character(0.0, 0.0, Paths.json("assets/characters/BOYFRIEND_PIXEL"), ARTIFICIAL);
 
         opponent.setPosition(15.0, 50.0);
 
@@ -284,7 +285,7 @@ class GameState extends State
 
         add(playerGroup);
 
-        player = new Character(0.0, 0.0, "assets/characters/BOYFRIEND.json", PLAYABLE);
+        player = new Character(0.0, 0.0, Paths.json("assets/characters/BOYFRIEND"), PLAYABLE);
 
         player.setPosition((FlxG.width - player.width) - 15.0, 385.0);
 
@@ -458,7 +459,7 @@ class GameState extends State
     {
         super.beatHit();
 
-        var metronome:FlxSound = FlxG.sound.load(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/metronome"), 0.75).play();
+        var metronome:FlxSound = FlxG.sound.load(AssetManagement.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/metronome")), 0.75).play();
     }
 
     override function sectionHit():Void
@@ -472,7 +473,7 @@ class GameState extends State
 
     public function loadSong(name:String):Void
     {
-        song = Song.fromStandard(StandardFormat.build('assets/data/${name}/chart.json'));
+        song = Song.fromStandard(StandardFormat.build(Paths.json('assets/data/${name}/chart')));
 
         ArraySort.sort(song.notes, (a:StandardNote, b:StandardNote) -> Std.int(a.time - b.time));
 
@@ -590,32 +591,32 @@ class GameState extends State
 
         ArraySort.sort(pending.notes, (a:Note, b:Note) -> Std.int(a.time - b.time));
 
-        instrumental = FlxG.sound.load(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Instrumental'));
+        instrumental = FlxG.sound.load(AssetManagement.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Instrumental')));
 
         instrumental.onComplete = endSong;
 
-        if (#if html5 openfl.utils.Assets.exists(Paths.mp3('assets/music/${name}/Vocals-Main')) #else sys.FileSystem.exists(Paths.ogg('assets/music/${name}/Vocals-Main')) #end)
+        if (AssetManagement.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Main')))
         {
-            mainVocals = FlxG.sound.load(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Main'));
+            mainVocals = FlxG.sound.load(AssetManagement.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Main')));
         }
 
         if (mainVocals == null)
         {
-            if (#if html5 openfl.utils.Assets.exists(Paths.mp3('assets/music/${name}/Vocals-Opponent')) #else sys.FileSystem.exists(Paths.ogg('assets/music/${name}/Vocals-Opponent')) #end)
+            if (AssetManagement.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Opponent')))
             {
-                opponentVocals = FlxG.sound.load(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Opponent'));
+                opponentVocals = FlxG.sound.load(AssetManagement.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Opponent')));
             }
 
-            if (#if html5 openfl.utils.Assets.exists(Paths.mp3('assets/music/${name}/Vocals-Player')) #else sys.FileSystem.exists(Paths.ogg('assets/music/${name}/Vocals-Player')) #end)
+            if (AssetManagement.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Player')))
             {
-                playerVocals = FlxG.sound.load(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Player'));
+                playerVocals = FlxG.sound.load(AssetManagement.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Player')));
             }
         }
     }
 
     public function startCountdown(?finishCallback:()->Void):Void
     {
-        var countdownSprite:FlxSprite = new FlxSprite().loadGraphic(Paths.png("assets/images/countdown"), true, 1000, 500);
+        var countdownSprite:FlxSprite = new FlxSprite().loadGraphic(AssetManagement.graphic(Paths.png("assets/images/countdown")), true, 1000, 500);
 
         countdownSprite.animation.add("0", [0], 0.0, false);
 
@@ -641,7 +642,7 @@ class GameState extends State
             {
                 case 1:
                 {
-                    var three:FlxSound = FlxG.sound.load(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/three"), 0.65);
+                    var three:FlxSound = FlxG.sound.load(AssetManagement.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/three")), 0.65);
 
                     three.play();
                 }
@@ -659,7 +660,7 @@ class GameState extends State
                         ease: FlxEase.circInOut
                     });
 
-                    var two:FlxSound = FlxG.sound.load(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/two"), 0.65);
+                    var two:FlxSound = FlxG.sound.load(AssetManagement.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/two")), 0.65);
 
                     two.play();
                 }
@@ -677,7 +678,7 @@ class GameState extends State
                         ease: FlxEase.circInOut
                     });
 
-                    var one:FlxSound = FlxG.sound.load(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/one"), 0.65);
+                    var one:FlxSound = FlxG.sound.load(AssetManagement.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/one")), 0.65);
 
                     one.play();
                 }
@@ -702,7 +703,7 @@ class GameState extends State
                         }
                     });
 
-                    var go:FlxSound = FlxG.sound.load(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/go"), 0.65);
+                    var go:FlxSound = FlxG.sound.load(AssetManagement.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/go")), 0.65);
 
                     go.play();
                 }
@@ -902,7 +903,7 @@ class GameState extends State
                 
                 ratingPopUp(Math.abs(Conductor.current.time - note.time));
 
-                var snap:FlxSound = FlxG.sound.load(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/snap"), 0.75).play();
+                var snap:FlxSound = FlxG.sound.load(AssetManagement.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/snap")), 0.75).play();
             }
         }
 

@@ -2,6 +2,11 @@ package core;
 
 class Paths
 {
+    public static function json(key:String):String
+    {
+        return '${key}.json';
+    }
+
     public static function mp3(key:String):String
     {
         return '${key}.mp3';
@@ -15,6 +20,11 @@ class Paths
     public static function png(key:String):String
     {
         return '${key}.png';
+    }
+
+    public static function txt(key:String):String
+    {
+        return '${key}.txt';
     }
 
     public static function xml(key:String):String
