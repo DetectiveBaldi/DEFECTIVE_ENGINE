@@ -11,8 +11,6 @@ import flixel.system.FlxAssets.FlxSoundAsset;
     import openfl.display.BitmapData;
 
     import openfl.media.Sound;
-
-    import flixel.graphics.FlxGraphic;
 #end
 
 class AssetManager
@@ -23,29 +21,13 @@ class AssetManager
 
     public static function graphic(path:String):FlxGraphicAsset
     {
-        if (graphics.exists(path))
-        {
-            return graphics[path];
-        }
-
-        var graphic:FlxGraphic = FlxGraphic.fromBitmapData(BitmapData.fromFile(path));
-
-        graphic.persist = true;
-
-        graphic.destroyOnNoUse = false;
-
-        graphics[path] = graphic;
+        graphics[path] = #if html5 path #else BitmapData.fromFile(path) #end ;
 
         return graphics[path];
     }
 
     public static function sound(path:String):FlxSoundAsset
     {
-        if (sounds.exists(path))
-        {
-            return sounds[path];
-        }
-
         sounds[path] = #if html5 path #else Sound.fromFile(path) #end ;
 
         return sounds[path];
