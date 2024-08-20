@@ -86,8 +86,6 @@ class GameState extends State
 
     public var playerStrums(default, null):StrumLine;
 
-    public var pending(default, null):{notes:Array<Note>};
-
     public var notes(default, null):FlxTypedContainer<Note>;
 
     public var song(default, null):Song;
@@ -232,8 +230,6 @@ class GameState extends State
 
         strumLines.add(playerStrums);
 
-        pending = {notes: new Array<Note>()};
-
         notes = new FlxTypedContainer<Note>();
 
         notes.camera = hudCamera;
@@ -347,7 +343,7 @@ class GameState extends State
         {
             var strumLine:StrumLine = strumLines.members[i];
 
-            var note:Note = notes.members.filter((n:Note) -> Conductor.current.time - n.time > 166.6 && strumLine.lane == n.lane)[0];
+            var note:Note = notes.members.filter((n:Note) -> n.alive && Conductor.current.time - n.time > 166.6 && strumLine.lane == n.lane)[0];
 
             if (note != null)
             {
@@ -356,7 +352,7 @@ class GameState extends State
 
             if (strumLine.artificial)
             {
-                var note:Note = notes.members.filter((n:Note) -> Conductor.current.time >= n.time && strumLine.lane == n.lane)[0];
+                var note:Note = notes.members.filter((n:Note) -> n.alive && Conductor.current.time >= n.time && strumLine.lane == n.lane)[0];
 
                 if (note != null)
                 {
@@ -380,7 +376,7 @@ class GameState extends State
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
 
-                    var note:Note = notes.members.filter((n:Note) -> Math.abs(Conductor.current.time - n.time) <= 166.6 && strum.direction == n.direction && strumLine.lane == n.lane && n.length <= 0.0)[0];
+                    var note:Note = notes.members.filter((n:Note) -> n.alive && Math.abs(Conductor.current.time - n.time) <= 166.6 && strum.direction == n.direction && strumLine.lane == n.lane && n.length <= 0.0)[0];
 
                     if (note != null)
                     {
@@ -396,7 +392,7 @@ class GameState extends State
                 {
                     var strum:Strum = strumLine.members[j];
 
-                    var note:Note = notes.members.filter((n:Note) -> Conductor.current.time >= n.time && strum.direction == n.direction && strumLine.lane == n.lane && n.length > 0.0)[0];
+                    var note:Note = notes.members.filter((n:Note) -> n.alive && Conductor.current.time >= n.time && strum.direction == n.direction && strumLine.lane == n.lane && n.length > 0.0)[0];
 
                     if (note != null)
                     {
@@ -428,19 +424,110 @@ class GameState extends State
             note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - ((((Conductor.current.time - note.time) * song.speed) * note.speed) * (downScroll ? -1.0 : 1.0)));
         }
 
-        if (pending.notes.length > 0.0)
+        if (song.notes.length > 0.0)
         {
-            var note:Note = pending.notes[0];
+            var n:StandardNote = song.notes[0];
 
-            if (note.time - Conductor.current.time <= ((Conductor.current.crotchet * 5.0) / song.speed) / note.speed)
+            if (n.time - Conductor.current.time <= ((Conductor.current.crotchet * 5.0) / song.speed) / n.speed)
             {
+                if (notes.members.length > 0.0)
+                {
+                    var i:Int = notes.members.length - 1;
+
+                    while (i >= 0.0)
+                    {
+                        var note:Note = notes.members[i];
+
+                        if (n.time == note.time && n.direction == note.direction && n.lane == note.lane)
+                        {
+                            note.kill();
+
+                            var j:Int = note.children.length - 1;
+                            
+                            while (j >= 0.0)
+                            {
+                                var sustain:Note = note.children[j];
+
+                                note.kill();
+
+                                j--;
+                            }
+                        }
+
+                        i--;
+                    }
+                }
+
+                var note:Note = notes.recycle(Note, () -> new Note());
+
+                note.time = n.time;
+
+                note.speed = n.speed;
+
+                note.direction = n.direction;
+
+                note.lane = n.lane;
+
+                note.length = 0.0;
+
+                note.animation.play(Note.directions[note.direction].toLowerCase());
+
+                note.scale.set(0.685, 0.685);
+
+                note.updateHitbox();
+
+                note.setPosition((FlxG.width - note.width) * 0.5, (FlxG.height - note.height) * 5);
+
                 notes.add(note);
+
+                if (n.length > 0)
+                {
+                    for (i in 0 ... Math.round(n.length / (Conductor.current.crotchet * 0.25)))
+                    {
+                        var sustain:Note = notes.recycle(Note, () -> new Note());
+    
+                        sustain.time = note.time + ((Conductor.current.crotchet * 0.25) * (i + 1));
+    
+                        sustain.speed = note.speed;
+    
+                        sustain.direction = note.direction;
+    
+                        sustain.lane = note.lane;
+    
+                        sustain.length = Conductor.current.crotchet * 0.25;
+    
+                        note.children.push(sustain);
+    
+                        sustain.parent = note;
+    
+                        sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
+    
+                        if (i >= Math.round(n.length / (Conductor.current.crotchet * 0.25)) - 1)
+                        {
+                            sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
+                        }
+    
+                        sustain.flipX = sustain.flipX;
+    
+                        sustain.flipY = downScroll;
+    
+                        sustain.scale.set(0.685, 0.685);
+    
+                        sustain.updateHitbox();
+    
+                        sustain.setPosition((FlxG.width - sustain.width) * 0.5, (FlxG.height - sustain.height) * 5);
+    
+                        notes.add(sustain);
+                    }
+                }
 
                 var strumLine:StrumLine = strumLines.members.filter((s:StrumLine) -> note.lane == s.lane)[0];
 
                 strumLine.noteSpawn.dispatch(note);
 
-                pending.notes.shift();
+                song.notes.shift();
+
+                ArraySort.sort(notes.members, (a:Note, b:Note) -> Std.int(a.time - b.time));
             }
         }
 
@@ -488,108 +575,6 @@ class GameState extends State
         Conductor.current.timeChanges = song.timeChanges;
 
         Conductor.current.time = -Conductor.current.crotchet * 5.0;
-
-        for (i in 0 ... song.notes.length)
-        {
-            var n:StandardNote = song.notes[i];
-
-            if (pending.notes.length > 0.0)
-            {
-                var j:Int = pending.notes.length - 1;
-
-                while (j >= 0.0)
-                {
-                    var note:Note = pending.notes[j];
-
-                    if (n.time == note.time && n.direction == note.direction && n.lane == note.lane)
-                    {
-                        pending.notes.splice(j, 1);
-
-                        note.destroy();
-
-                        var k:Int = note.children.length - 1;
-
-                        while (k >= 0.0)
-                        {
-                            var sustain:Note = note.children[k];
-
-                            note.children.splice(k, 1);
-
-                            sustain.destroy();
-
-                            k--;
-                        }
-                    }
-
-                    j--;
-                }
-            }
-
-            var note:Note = new Note();
-
-            note.time = n.time;
-
-            note.speed = n.speed;
-
-            note.direction = n.direction;
-
-            note.lane = n.lane;
-
-            note.length = 0.0;
-
-            note.animation.play(Note.directions[note.direction].toLowerCase());
-
-            note.scale.set(0.685, 0.685);
-
-            note.updateHitbox();
-
-            note.setPosition((FlxG.width - note.width) * 0.5, (FlxG.height - note.height) * 5);
-
-            pending.notes.push(note);
-
-            if (n.length > 0)
-            {
-                for (j in 0 ... Math.round(n.length / (Conductor.current.crotchet * 0.25)))
-                {
-                    var sustain:Note = new Note();
-
-                    sustain.time = note.time + ((Conductor.current.crotchet * 0.25) * (j + 1));
-
-                    sustain.speed = note.speed;
-
-                    sustain.direction = note.direction;
-
-                    sustain.lane = note.lane;
-
-                    sustain.length = Conductor.current.crotchet * 0.25;
-
-                    note.children.push(sustain);
-
-                    sustain.parent = note;
-
-                    sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
-
-                    if (j >= Math.round(n.length / (Conductor.current.crotchet * 0.25)) - 1)
-                    {
-                        sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
-                    }
-
-                    sustain.flipX = sustain.flipX;
-
-                    sustain.flipY = downScroll;
-
-                    sustain.scale.set(0.685, 0.685);
-
-                    sustain.updateHitbox();
-
-                    sustain.setPosition((FlxG.width - sustain.width) * 0.5, (FlxG.height - sustain.height) * 5);
-
-                    pending.notes.push(sustain);
-                }
-            }
-        }
-
-        ArraySort.sort(pending.notes, (a:Note, b:Note) -> Std.int(a.time - b.time));
 
         instrumental = FlxG.sound.load(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Instrumental')));
 
@@ -907,9 +892,7 @@ class GameState extends State
             }
         }
 
-        notes.remove(note, true);
-
-        note.destroy();
+        note.kill();
     }
 
     public function noteMiss(note:Note):Void
@@ -942,9 +925,7 @@ class GameState extends State
             ratingTxt.screenCenter();
         }
 
-        notes.remove(note, true);
-
-        note.destroy();
+        note.kill();
     }
 
     public function ratingPopUp(time:Float):FlxText
