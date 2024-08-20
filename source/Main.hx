@@ -7,6 +7,8 @@ import flixel.FlxGame;
 import flixel.FlxSprite;
 import flixel.FlxState;
 
+import flixel.graphics.FlxGraphic;
+
 import flixel.util.typeLimit.NextState;
 
 import core.Conductor;
@@ -56,6 +58,8 @@ class Main extends Sprite
         FlxG.mouse.visible = false;
 
         FlxSprite.defaultAntialiasing = true;
+
+        FlxGraphic.defaultPersist = true;
 
         Conductor.load();
 
