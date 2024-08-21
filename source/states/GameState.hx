@@ -898,8 +898,6 @@ class GameState extends State
 
                 scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
 
-                ratingPopUp(Math.abs(Conductor.current.time - note.time));
-
                 var snap:FlxSound = FlxG.sound.load(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/snap")), 0.75).play();
             }
         }
@@ -927,59 +925,8 @@ class GameState extends State
             scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
             scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
-
-            var ratingTxt:FlxText = ratingPopUp(Math.abs(Conductor.current.time - note.time));
-
-            ratingTxt.text = "Miss...";
-
-            ratingTxt.color = FlxColor.subtract(FlxColor.RED, FlxColor.BROWN);
-
-            ratingTxt.screenCenter();
         }
 
         note.kill();
-    }
-
-    public function ratingPopUp(time:Float):FlxText
-    {
-        var rating:Rating = Rating.guage(ratings, time);
-
-        var output:FlxText = new FlxText(0.0, 0.0, 0.0, "", 28);
-
-        output.camera = hudCamera;
-
-        output.moves = true;
-
-        output.antialiasing = false;
-
-        output.text = '${rating.name}';
-
-        output.alignment = CENTER;
-
-        output.borderStyle = SHADOW;
-
-        output.borderColor = FlxColor.BLACK;
-
-        output.borderSize = 3.65;
-
-        output.color = rating.color;
-
-        output.velocity.set(FlxG.random.bool() ? FlxG.random.int(0, 75) : FlxG.random.int(-0, -75), FlxG.random.bool() ? FlxG.random.int(0, 10) : FlxG.random.int(-0, -10));
-
-        output.acceleration.set(FlxG.random.bool() ? FlxG.random.int(0, 350) : FlxG.random.int(-0, -350), FlxG.random.bool() ? FlxG.random.int(0, 250) : FlxG.random.int(-0, -250));
-
-        output.screenCenter();
-
-        add(output);
-
-        FlxTween.tween(output, {alpha: 0.0}, (Conductor.current.crotchet * 4.0) * 0.001,
-        {
-            onComplete: function(tween:FlxTween):Void
-            {
-                output.destroy();
-            }
-        });
-
-        return output;
     }
 }
