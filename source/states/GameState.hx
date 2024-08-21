@@ -351,7 +351,7 @@ class GameState extends State
             {
                 var note:Note = notes.members[i];
 
-                if (note.alive && Conductor.current.time - note.time > 166.6 && strumLine.lane == note.lane)
+                if (note.alive && Conductor.current.time > note.time + 166.6 && strumLine.lane == note.lane)
                 {
                     strumLine.noteMiss.dispatch(note);
                 }
