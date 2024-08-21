@@ -228,8 +228,6 @@ class GameState extends State
 
         playerStrums.noteMiss.add(noteMiss);
 
-        playerStrums.artificial = true;
-
         playerStrums.setPosition((FlxG.width - playerStrums.width) - 45.0, downScroll ? (FlxG.height - playerStrums.height) - 15.0 : 15.0);
 
         strumLines.add(playerStrums);
@@ -287,7 +285,7 @@ class GameState extends State
 
         add(playerGroup);
 
-        player = new Character(0.0, 0.0, Paths.json("assets/characters/BOYFRIEND"), ARTIFICIAL);
+        player = new Character(0.0, 0.0, Paths.json("assets/characters/BOYFRIEND"), PLAYABLE);
 
         player.setPosition((FlxG.width - player.width) - 15.0, 385.0);
 
@@ -899,7 +897,7 @@ class GameState extends State
                 scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
                 scoreTxt.x = (FlxG.width - scoreTxt.width) * 0.5;
-                
+
                 ratingPopUp(Math.abs(Conductor.current.time - note.time));
 
                 var snap:FlxSound = FlxG.sound.load(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/snap")), 0.75).play();
