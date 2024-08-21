@@ -88,6 +88,8 @@ class GameState extends State
 
     public var notes(default, null):FlxTypedContainer<Note>;
 
+    public var noteIndex(default, null):Int;
+
     public var song(default, null):Song;
 
     public var instrumental(default, null):FlxSound;
@@ -226,6 +228,8 @@ class GameState extends State
 
         playerStrums.noteMiss.add(noteMiss);
 
+        playerStrums.artificial = true;
+
         playerStrums.setPosition((FlxG.width - playerStrums.width) - 45.0, downScroll ? (FlxG.height - playerStrums.height) - 15.0 : 15.0);
 
         strumLines.add(playerStrums);
@@ -235,6 +239,8 @@ class GameState extends State
         notes.camera = hudCamera;
 
         add(notes);
+
+        noteIndex = 0;
 
         loadSong("Test");
 
@@ -281,7 +287,7 @@ class GameState extends State
 
         add(playerGroup);
 
-        player = new Character(0.0, 0.0, Paths.json("assets/characters/BOYFRIEND"), PLAYABLE);
+        player = new Character(0.0, 0.0, Paths.json("assets/characters/BOYFRIEND"), ARTIFICIAL);
 
         player.setPosition((FlxG.width - player.width) - 15.0, 385.0);
 
@@ -343,26 +349,32 @@ class GameState extends State
         {
             var strumLine:StrumLine = strumLines.members[i];
 
-            var note:Note = notes.members.filter((n:Note) -> n.alive && Conductor.current.time - n.time > 166.6 && strumLine.lane == n.lane)[0];
-
-            if (note != null)
+            for (i in 0 ... notes.members.length)
             {
-                strumLine.noteMiss.dispatch(note);
+                var note:Note = notes.members[i];
+
+                if (note.alive && Conductor.current.time - note.time > 166.6 && strumLine.lane == note.lane)
+                {
+                    strumLine.noteMiss.dispatch(note);
+                }
             }
 
             if (strumLine.artificial)
             {
-                var note:Note = notes.members.filter((n:Note) -> n.alive && Conductor.current.time >= n.time && strumLine.lane == n.lane)[0];
-
-                if (note != null)
+                for (i in 0 ... notes.members.length)
                 {
-                    var strum:Strum = strumLine.members.filter((s:Strum) -> note.direction == s.direction)[0];
+                    var note:Note = notes.members[i];
 
-                    strum.confirmCount = 0.0;
+                    if (note.alive && Conductor.current.time >= note.time && strumLine.lane == note.lane)
+                    {
+                        var strum:Strum = strumLine.group.getFirst((s:Strum) -> note.direction == s.direction);
 
-                    strum.animation.play(Strum.directions[note.direction].toLowerCase() + "Confirm", true);
+                        strum.confirmCount = 0.0;
 
-                    strumLine.noteHit.dispatch(note);
+                        strum.animation.play(Strum.directions[note.direction].toLowerCase() + "Confirm", true);
+
+                        strumLine.noteHit.dispatch(note);
+                    }
                 }
 
                 continue;
@@ -376,7 +388,7 @@ class GameState extends State
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
 
-                    var note:Note = notes.members.filter((n:Note) -> n.alive && Math.abs(Conductor.current.time - n.time) <= 166.6 && strum.direction == n.direction && strumLine.lane == n.lane && n.length <= 0.0)[0];
+                    var note:Note = notes.getFirst((n:Note) -> n.alive && Math.abs(Conductor.current.time - n.time) <= 166.6 && strum.direction == n.direction && strumLine.lane == n.lane && n.length <= 0.0);
 
                     if (note != null)
                     {
@@ -392,7 +404,7 @@ class GameState extends State
                 {
                     var strum:Strum = strumLine.members[j];
 
-                    var note:Note = notes.members.filter((n:Note) -> n.alive && Conductor.current.time >= n.time && strum.direction == n.direction && strumLine.lane == n.lane && n.length > 0.0)[0];
+                    var note:Note = notes.getFirst((n:Note) -> n.alive && Conductor.current.time >= n.time && strum.direction == n.direction && strumLine.lane == n.lane && n.length > 0.0);
 
                     if (note != null)
                     {
@@ -417,118 +429,120 @@ class GameState extends State
         {
             var note:Note = notes.members[i];
 
-            var strumLine:StrumLine = strumLines.members.filter((s:StrumLine) -> note.lane == s.lane)[0];
+            var strumLine:StrumLine = strumLines.getFirst((s:StrumLine) -> note.lane == s.lane);
 
-            var strum:Strum = strumLine.members.filter((s:Strum) -> note.direction == s.direction)[0];
+            var strum:Strum = strumLine.group.getFirst((s:Strum) -> note.direction == s.direction);
 
             note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - ((((Conductor.current.time - note.time) * song.speed) * note.speed) * (downScroll ? -1.0 : 1.0)));
         }
 
-        if (song.notes.length > 0.0)
+        while (noteIndex < song.notes.length)
         {
-            var n:StandardNote = song.notes[0];
+            var n:StandardNote = song.notes[noteIndex];
 
-            if (n.time - Conductor.current.time <= ((Conductor.current.crotchet * 5.0) / song.speed) / n.speed)
+            if (n.time - Conductor.current.time > (FlxG.height / song.speed) / n.speed)
             {
-                if (notes.members.length > 0.0)
+                break;
+            }
+
+            if (notes.members.length > 0.0)
+            {
+                var i:Int = notes.members.length - 1;
+
+                while (i >= 0.0)
                 {
-                    var i:Int = notes.members.length - 1;
+                    var note:Note = notes.members[i];
 
-                    while (i >= 0.0)
+                    if (n.time == note.time && n.direction == note.direction && n.lane == note.lane)
                     {
-                        var note:Note = notes.members[i];
+                        note.kill();
 
-                        if (n.time == note.time && n.direction == note.direction && n.lane == note.lane)
+                        var j:Int = note.children.length - 1;
+                        
+                        while (j >= 0.0)
                         {
+                            var sustain:Note = note.children[j];
+
                             note.kill();
 
-                            var j:Int = note.children.length - 1;
-                            
-                            while (j >= 0.0)
-                            {
-                                var sustain:Note = note.children[j];
-
-                                note.kill();
-
-                                j--;
-                            }
+                            j--;
                         }
-
-                        i--;
                     }
+
+                    i--;
                 }
-
-                var note:Note = notes.recycle(Note, () -> new Note());
-
-                note.time = n.time;
-
-                note.speed = n.speed;
-
-                note.direction = n.direction;
-
-                note.lane = n.lane;
-
-                note.length = 0.0;
-
-                note.animation.play(Note.directions[note.direction].toLowerCase());
-
-                note.scale.set(0.685, 0.685);
-
-                note.updateHitbox();
-
-                note.setPosition((FlxG.width - note.width) * 0.5, (FlxG.height - note.height) * 5);
-
-                notes.add(note);
-
-                if (n.length > 0)
-                {
-                    for (i in 0 ... Math.round(n.length / (Conductor.current.crotchet * 0.25)))
-                    {
-                        var sustain:Note = notes.recycle(Note, () -> new Note());
-    
-                        sustain.time = note.time + ((Conductor.current.crotchet * 0.25) * (i + 1));
-    
-                        sustain.speed = note.speed;
-    
-                        sustain.direction = note.direction;
-    
-                        sustain.lane = note.lane;
-    
-                        sustain.length = Conductor.current.crotchet * 0.25;
-    
-                        note.children.push(sustain);
-    
-                        sustain.parent = note;
-    
-                        sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
-    
-                        if (i >= Math.round(n.length / (Conductor.current.crotchet * 0.25)) - 1)
-                        {
-                            sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
-                        }
-    
-                        sustain.flipX = sustain.flipX;
-    
-                        sustain.flipY = downScroll;
-    
-                        sustain.scale.set(0.685, 0.685);
-    
-                        sustain.updateHitbox();
-    
-                        sustain.setPosition((FlxG.width - sustain.width) * 0.5, (FlxG.height - sustain.height) * 5);
-    
-                        notes.add(sustain);
-                    }
-                }
-
-                var strumLine:StrumLine = strumLines.members.filter((s:StrumLine) -> note.lane == s.lane)[0];
-
-                strumLine.noteSpawn.dispatch(note);
-
-                song.notes.shift();
-
-                ArraySort.sort(notes.members, (a:Note, b:Note) -> Std.int(a.time - b.time));
             }
+
+            var note:Note = notes.recycle(Note, () -> new Note());
+
+            note.time = n.time;
+
+            note.speed = n.speed;
+
+            note.direction = n.direction;
+
+            note.lane = n.lane;
+
+            note.length = 0.0;
+
+            note.animation.play(Note.directions[note.direction].toLowerCase());
+
+            note.scale.set(0.685, 0.685);
+
+            note.updateHitbox();
+
+            note.setPosition((FlxG.width - note.width) * 0.5, (FlxG.height - note.height) * 5);
+
+            notes.add(note);
+
+            noteIndex++;
+
+            if (n.length > 0)
+            {
+                for (i in 0 ... Math.round(n.length / (Conductor.current.crotchet * 0.25)))
+                {
+                    var sustain:Note = notes.recycle(Note, () -> new Note());
+
+                    sustain.time = note.time + ((Conductor.current.crotchet * 0.25) * (i + 1));
+
+                    sustain.speed = note.speed;
+
+                    sustain.direction = note.direction;
+
+                    sustain.lane = note.lane;
+
+                    sustain.length = Conductor.current.crotchet * 0.25;
+
+                    note.children.push(sustain);
+
+                    sustain.parent = note;
+
+                    sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
+
+                    if (i >= Math.round(n.length / (Conductor.current.crotchet * 0.25)) - 1)
+                    {
+                        sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
+                    }
+
+                    sustain.flipX = sustain.flipX;
+
+                    sustain.flipY = downScroll;
+
+                    sustain.scale.set(0.685, 0.685);
+
+                    sustain.updateHitbox();
+
+                    sustain.setPosition((FlxG.width - sustain.width) * 0.5, (FlxG.height - sustain.height) * 5);
+
+                    notes.add(sustain);
+                }
+            }
+
+            var strumLine:StrumLine = strumLines.getFirst((s:StrumLine) -> note.lane == s.lane);
+
+            strumLine.noteSpawn.dispatch(note);
+
+            ArraySort.sort(notes.members, (a:Note, b:Note) -> Std.int(a.time - b.time));
         }
 
         if (FlxG.keys.justPressed.ESCAPE)
@@ -868,7 +882,7 @@ class GameState extends State
             mainVocals.volume = 1.0;
         }
 
-        var strumLine:StrumLine = strumLines.members.filter((s:StrumLine) -> note.lane == s.lane)[0];
+        var strumLine:StrumLine = strumLines.getFirst((s:StrumLine) -> note.lane == s.lane);
 
         if (!strumLine.artificial)
         {
@@ -902,7 +916,7 @@ class GameState extends State
             mainVocals.volume = 0.0;
         }
 
-        var strumLine:StrumLine = strumLines.members.filter((s:StrumLine) -> note.lane == s.lane)[0];
+        var strumLine:StrumLine = strumLines.getFirst((s:StrumLine) -> note.lane == s.lane);
 
         if (!strumLine.artificial)
         {

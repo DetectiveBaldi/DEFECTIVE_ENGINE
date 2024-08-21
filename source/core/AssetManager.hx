@@ -16,7 +16,15 @@ class AssetManager
             return graphics[path];
         }
 
-        graphics[path] = #if html5 path #else openfl.display.BitmapData.fromFile(path) #end ;
+        #if !html5
+            var graphic:flixel.graphics.FlxGraphic = flixel.graphics.FlxGraphic.fromBitmapData(openfl.display.BitmapData.fromFile(path));
+
+            graphic.persist = true;
+
+            graphic.destroyOnNoUse = false;
+        #end
+
+        graphics[path] = #if html5 path #else graphic #end ;
 
         return graphics[path];
     }
