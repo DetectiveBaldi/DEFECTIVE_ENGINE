@@ -23,9 +23,9 @@ class Main extends Sprite
 
 			nextState: () -> new GameState(),
 
-			updateFramerate: 60,
+			updateFramerate: 30,
 
-			drawFramerate: 60,
+			drawFramerate: 30,
 
 			skipSplash: false,
 

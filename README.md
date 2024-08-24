@@ -7,8 +7,7 @@ To compile, complete the following steps:
 - Then, install the following libraries:
   - lime (`haxelib install lime`)
   - openfl (`haxelib install openfl`)
-  - flixel (`haxelib install flixel`)
-  - flixel-addons (`haxelib install flixel-addons`)
+  - flixel (`haxelib git flixel https://github.com/HaxeFlixel/flixel`)
 - Finally, build the game using `haxelib run lime build :target:`.
 
 Defective Engine currently supports the following targets:
