@@ -467,7 +467,7 @@ class GameState extends State
 
                     sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
 
-                    if (i >= Math.round(n.length / (Conductor.current.crotchet * 0.25)) - 1)
+                    if (i >= Math.round(n.length / (((60 / Conductor.current.timeChanges[0].tempo) * 1000.0) * 0.25)) - 1)
                     {
                         sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
                     }
