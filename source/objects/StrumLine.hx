@@ -6,7 +6,7 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 
 class StrumLine extends FlxTypedSpriteContainer<Strum>
 {
-    public var binds:Array<String>;
+    public var inputs:Array<String>;
 
     public var lane:Int;
 
@@ -22,7 +22,7 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
     {
         super();
 
-        binds = new Array<String>();
+        inputs = new Array<String>();
 
         lane = -1;
 

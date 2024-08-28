@@ -6,7 +6,7 @@ import flixel.input.FlxInput.FlxInputState;
 
 import flixel.input.keyboard.FlxKey;
 
-class Binds
+class Inputs
 {
     public static var list:Map<String, Array<FlxKey>> =
     [
@@ -25,16 +25,16 @@ class Binds
         "DEBUG:0" => [FlxKey.EIGHT]
     ];
 
-    public static function checkStatus(bind:String, status:FlxInputState):Null<Bool>
+    public static function checkStatus(input:String, status:FlxInputState):Null<Bool>
     {
-        if (!list.exists(bind))
+        if (!list.exists(input))
         {
             return null;
         }
 
-        for (i in 0 ... list[bind].length)
+        for (i in 0 ... list[input].length)
         {
-            if (FlxG.keys.checkStatus(list[bind][i], status))
+            if (FlxG.keys.checkStatus(list[input][i], status))
             {
                 return true;
             }
@@ -43,16 +43,16 @@ class Binds
         return false;
     }
 
-    public static function bindsJustPressed(binds:Array<String>):Null<Bool>
+    public static function inputsJustPressed(inputs:Array<String>):Null<Bool>
     {
-        for (i in 0 ... binds.length)
+        for (i in 0 ... inputs.length)
         {
-            if (!list.exists(binds[i]))
+            if (!list.exists(inputs[i]))
             {
                 return null;
             }
 
-            if (checkStatus(binds[i], JUST_PRESSED))
+            if (checkStatus(inputs[i], JUST_PRESSED))
             {
                 return true;
             }
@@ -61,16 +61,16 @@ class Binds
         return false;
     }
 
-    public static function bindsPressed(binds:Array<String>):Null<Bool>
+    public static function inputsPressed(inputs:Array<String>):Null<Bool>
     {
-        for (i in 0 ... binds.length)
+        for (i in 0 ... inputs.length)
         {
-            if (!list.exists(binds[i]))
+            if (!list.exists(inputs[i]))
             {
                 return null;
             }
 
-            if (checkStatus(binds[i], PRESSED))
+            if (checkStatus(inputs[i], PRESSED))
             {
                 return true;
             }
@@ -79,16 +79,16 @@ class Binds
         return false;
     }
 
-    public static function bindsJustReleased(binds:Array<String>):Null<Bool>
+    public static function inputsJustReleased(inputs:Array<String>):Null<Bool>
     {
-        for (i in 0 ... binds.length)
+        for (i in 0 ... inputs.length)
         {
-            if (!list.exists(binds[i]))
+            if (!list.exists(inputs[i]))
             {
                 return null;
             }
 
-            if (checkStatus(binds[i], JUST_RELEASED))
+            if (checkStatus(inputs[i], JUST_RELEASED))
             {
                 return true;
             }
@@ -97,16 +97,16 @@ class Binds
         return false;
     }
 
-    public static function bindsReleased(binds:Array<String>):Null<Bool>
+    public static function inputsReleased(inputs:Array<String>):Null<Bool>
     {
-        for (i in 0 ... binds.length)
+        for (i in 0 ... inputs.length)
         {
-            if (!list.exists(binds[i]))
+            if (!list.exists(inputs[i]))
             {
                 return null;
             }
 
-            if (checkStatus(binds[i], RELEASED))
+            if (checkStatus(inputs[i], RELEASED))
             {
                 return true;
             }

@@ -96,24 +96,28 @@ class Conductor
 
         var lastSection:Int = section;
 
-        if (timeChanges.length > 0.0)
+        var i:Int = timeChanges.length - 1;
+
+        while (i > 0.0)
         {
-            if (time >= timeChanges[0].time)
+            if (time >= timeChanges[i].time)
             {
-                timeChange.step += (timeChanges[0].time - timeChange.time) / (crotchet * 0.25);
+                timeChange.step += (timeChanges[i].time - timeChange.time) / (crotchet * 0.25);
 
                 timeChange.beat = timeChange.step * 0.25;
 
                 timeChange.section = timeChange.section * 0.25;
 
-                timeChange.tempo = timeChanges[0].tempo;
+                timeChange.tempo = timeChanges[i].tempo;
 
-                timeChange.time = timeChanges[0].time;
+                timeChange.time = timeChanges[i].time;
 
                 tempo = timeChange.tempo;
-                
-                timeChanges.shift();
+
+                break;
             }
+
+            i--;
         }
 
         decimalStep = ((time - timeChange.time) / (crotchet * 0.25)) + timeChange.step;

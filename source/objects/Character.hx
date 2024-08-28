@@ -12,8 +12,8 @@ import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 
 import core.AssetManager;
-import core.Binds;
 import core.Conductor;
+import core.Inputs;
 import core.Paths;
 
 class Character extends FlxSprite
@@ -136,7 +136,7 @@ class Character extends FlxSprite
     {
         super.update(elapsed);
 
-        if (Binds.bindsJustPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) && role == PLAYABLE)
+        if (Inputs.inputsJustPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) && role == PLAYABLE)
         {
             singCount = 0.0;
         }
@@ -152,7 +152,7 @@ class Character extends FlxSprite
                 requiredTime *= FlxG.random.float(1.35, 1.85);
             }
 
-            if (singCount >= requiredTime && (role == PLAYABLE ? !Binds.bindsPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) : true))
+            if (singCount >= requiredTime && (role == PLAYABLE ? !Inputs.inputsPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) : true))
             {
                 singCount = 0.0;
                 
