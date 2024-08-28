@@ -31,7 +31,7 @@ import extendable.State;
 import objects.Character;
 import objects.Note;
 import objects.Strum;
-import objects.StrumLine;
+import objects.Strumline;
 
 import stages.Stage;
 import stages.Week1;
