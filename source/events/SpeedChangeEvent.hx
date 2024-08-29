@@ -10,8 +10,6 @@ class SpeedChangeEvent
 {
     public static function dispatch(speed:Float, duration:Float):Void
     {
-        trace(speed, duration);
-        
         if (Type.getClass(FlxG.state) != GameState)
         {
             return;
