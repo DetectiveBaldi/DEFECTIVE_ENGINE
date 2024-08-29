@@ -71,7 +71,18 @@ class PsychFormat
             {
                 var event:PsychEvent = {time: cast (chart.song.events[i][0], Float), name: cast (chart.song.events[i][1][j][0], String), value1: cast (chart.song.events[i][1][j][1], String), value2: cast (chart.song.events[i][1][j][2], String)};
 
-                output.events.push({time: event.time, name: event.name, value: {value1: event.value1, value2: event.value2}});
+                switch (event.name:String)
+                {
+                    case "Change Scroll Speed":
+                    {
+                        output.events.push({time: event.time, name: "Speed Change", value: {speed: Std.parseFloat(event.value1) * 0.55, duration: Std.parseFloat(event.value2)}});
+                    }
+
+                    default:
+                    {
+                        output.events.push({time: event.time, name: event.name, value: {value1: event.value1, value2: event.value2}});
+                    }
+                }
             }
         }
         

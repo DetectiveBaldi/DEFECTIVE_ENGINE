@@ -26,6 +26,8 @@ import core.Paths;
 import core.Rating;
 import core.Song;
 
+import events.SpeedChangeEvent;
+
 import extendable.State;
 
 import objects.Character;
@@ -98,17 +100,19 @@ class GameState extends State
 
     public var healthBar(default, null):FlxBar;
 
-    public var strumLines(default, null):FlxTypedContainer<StrumLine>;
+    public var strumLines(default, null):FlxTypedContainer<Strumline>;
 
-    public var opponentStrums(default, null):StrumLine;
+    public var opponentStrums(default, null):Strumline;
 
-    public var playerStrums(default, null):StrumLine;
+    public var playerStrums(default, null):Strumline;
+
+    public var song(default, null):Song;
 
     public var notes(default, null):FlxTypedContainer<Note>;
 
     public var noteIndex(default, null):Int;
 
-    public var song(default, null):Song;
+    public var eventIndex(default, null):Int;
 
     public var instrumental(default, null):FlxSound;
 
@@ -233,13 +237,13 @@ class GameState extends State
 
         add(healthBar);
 
-        strumLines = new FlxTypedContainer<StrumLine>();
+        strumLines = new FlxTypedContainer<Strumline>();
 
         strumLines.camera = hudCamera;
 
         add(strumLines);
         
-        opponentStrums = new StrumLine();
+        opponentStrums = new Strumline();
 
         opponentStrums.inputs = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
 
@@ -259,7 +263,7 @@ class GameState extends State
 
         strumLines.add(opponentStrums);
         
-        playerStrums = new StrumLine();
+        playerStrums = new Strumline();
 
         playerStrums.inputs = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
 
@@ -276,14 +280,6 @@ class GameState extends State
         playerStrums.setPosition((FlxG.width - playerStrums.width) - 45.0, downScroll ? (FlxG.height - playerStrums.height) - 15.0 : 15.0);
 
         strumLines.add(playerStrums);
-
-        notes = new FlxTypedContainer<Note>();
-
-        notes.camera = hudCamera;
-
-        add(notes);
-
-        noteIndex = 0;
 
         loadSong("Test");
 
@@ -304,7 +300,7 @@ class GameState extends State
 
         for (i in 0 ... strumLines.members.length)
         {
-            var strumLine:StrumLine = strumLines.members[i];
+            var strumLine:Strumline = strumLines.members[i];
 
             for (i in 0 ... notes.members.length)
             {
@@ -375,7 +371,7 @@ class GameState extends State
         {
             var note:Note = notes.members[i];
 
-            var strumLine:StrumLine = strumLines.getFirst((s:StrumLine) -> note.lane == s.lane);
+            var strumLine:Strumline = strumLines.getFirst((s:Strumline) -> note.lane == s.lane);
 
             var strum:Strum = strumLine.group.getFirst((s:Strum) -> note.direction == s.direction);
 
@@ -441,8 +437,6 @@ class GameState extends State
 
             notes.add(note);
 
-            noteIndex++;
-
             if (n.length > 0)
             {
                 for (i in 0 ... Math.round(n.length / (((60 / Conductor.current.timeChanges[0].tempo) * 1000.0) * 0.25)))
@@ -484,11 +478,33 @@ class GameState extends State
                 }
             }
 
-            var strumLine:StrumLine = strumLines.getFirst((s:StrumLine) -> note.lane == s.lane);
+            noteIndex++;
+
+            var strumLine:Strumline = strumLines.getFirst((s:Strumline) -> note.lane == s.lane);
 
             strumLine.noteSpawn.dispatch(note);
 
             notes.members.sort((a:Note, b:Note) -> Std.int(a.time - b.time));
+        }
+
+        while (eventIndex < song.events.length)
+        {
+            var e:StandardEvent = song.events[eventIndex];
+
+            if (Conductor.current.time < e.time)
+            {
+                break;
+            }
+
+            switch (e.name:String)
+            {
+                case "Speed Change":
+                {
+                    SpeedChangeEvent.dispatch(e.value.speed, e.value.duration);
+                }
+            }
+
+            eventIndex++;
         }
 
         if (countdownStarted)
@@ -570,6 +586,16 @@ class GameState extends State
         Conductor.current.timeChanges = song.timeChanges;
 
         Conductor.current.time = -Conductor.current.crotchet * 5.0;
+
+        notes = new FlxTypedContainer<Note>();
+
+        notes.camera = hudCamera;
+
+        add(notes);
+
+        noteIndex = 0;
+
+        eventIndex = 0;
 
         instrumental = FlxG.sound.load(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Instrumental')));
 
@@ -863,7 +889,7 @@ class GameState extends State
             mainVocals.volume = 1.0;
         }
 
-        var strumLine:StrumLine = strumLines.getFirst((s:StrumLine) -> note.lane == s.lane);
+        var strumLine:Strumline = strumLines.getFirst((s:Strumline) -> note.lane == s.lane);
 
         if (!strumLine.artificial)
         {
@@ -899,7 +925,7 @@ class GameState extends State
             mainVocals.volume = 0.0;
         }
 
-        var strumLine:StrumLine = strumLines.getFirst((s:StrumLine) -> note.lane == s.lane);
+        var strumLine:Strumline = strumLines.getFirst((s:Strumline) -> note.lane == s.lane);
 
         if (!strumLine.artificial)
         {

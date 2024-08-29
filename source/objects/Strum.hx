@@ -46,7 +46,7 @@ class Strum extends FlxSprite
 
     public var direction:Int;
 
-    public var parent:StrumLine;
+    public var parent:Strumline;
 
     public var confirmCount:Float;
 
