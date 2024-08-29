@@ -56,75 +56,77 @@ class GameState extends State
         return FlxG.camera;
     }
 
-    public var gameCameraZoom(default, null):Float;
+    public var gameCameraZoom:Float;
 
-    public var hudCamera(default, null):FlxCamera;
+    public var hudCamera:FlxCamera;
 
-    public var hudCameraZoom(default, null):Float;
+    public var hudCameraZoom:Float;
 
-    public var stage(default, null):Stage<FlxBasic>;
+    public var stage:Stage<FlxBasic>;
 
-    public var spectatorMap(default, null):Map<String, Character>;
+    public var spectatorMap:Map<String, Character>;
 
-    public var spectatorGroup(default, null):FlxTypedContainer<Character>;
+    public var spectatorGroup:FlxTypedContainer<Character>;
 
-    public var spectator(default, null):Character;
+    public var spectator:Character;
 
-    public var opponentMap(default, null):Map<String, Character>;
+    public var opponentMap:Map<String, Character>;
 
-    public var opponentGroup(default, null):FlxTypedContainer<Character>;
+    public var opponentGroup:FlxTypedContainer<Character>;
 
-    public var opponent(default, null):Character;
+    public var opponent:Character;
 
-    public var playerMap(default, null):Map<String, Character>;
+    public var playerMap:Map<String, Character>;
 
-    public var playerGroup(default, null):FlxTypedContainer<Character>;
+    public var playerGroup:FlxTypedContainer<Character>;
 
-    public var player(default, null):Character;
+    public var player:Character;
 
-    public var ratings(default, null):Array<Rating>;
+    public var ratings:Array<Rating>;
 
-    public var downScroll(default, null):Bool;
+    public var downScroll:Bool;
 
-    public var score(default, null):Int;
+    public var score:Int;
 
-    public var hits(default, null):Int;
+    public var hits:Int;
 
-    public var misses(default, null):Int;
+    public var misses:Int;
 
-    public var bonus(default, null):Float;
+    public var bonus:Float;
 
-    public var combo(default, null):Int;
+    public var combo:Int;
 
-    public var health(default, null):Float;
+    public var health:Float;
 
-    public var healthBar(default, null):FlxBar;
+    public var healthBar:FlxBar;
 
-    public var strumLines(default, null):FlxTypedContainer<Strumline>;
+    public var strumLines:FlxTypedContainer<Strumline>;
 
-    public var opponentStrums(default, null):Strumline;
+    public var opponentStrums:Strumline;
 
-    public var playerStrums(default, null):Strumline;
+    public var playerStrums:Strumline;
 
-    public var song(default, null):Song;
+    public var song:Song;
 
-    public var notes(default, null):FlxTypedContainer<Note>;
+    public var songSpeed:Float;
 
-    public var noteIndex(default, null):Int;
+    public var notes:FlxTypedContainer<Note>;
 
-    public var eventIndex(default, null):Int;
+    public var noteIndex:Int;
 
-    public var instrumental(default, null):FlxSound;
+    public var eventIndex:Int;
 
-    public var mainVocals(default, null):FlxSound;
+    public var instrumental:FlxSound;
 
-    public var opponentVocals(default, null):FlxSound;
+    public var mainVocals:FlxSound;
 
-    public var playerVocals(default, null):FlxSound;
+    public var opponentVocals:FlxSound;
 
-    public var countdownStarted(default, null):Bool;
+    public var playerVocals:FlxSound;
 
-    public var songStarted(default, null):Bool;
+    public var countdownStarted:Bool;
+
+    public var songStarted:Bool;
 
     public function new():Void
     {
@@ -375,14 +377,14 @@ class GameState extends State
 
             var strum:Strum = strumLine.group.getFirst((s:Strum) -> note.direction == s.direction);
 
-            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - ((((Conductor.current.time - note.time) * song.speed) * note.speed) * (downScroll ? -1.0 : 1.0)));
+            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (Conductor.current.time - note.time) * songSpeed * note.speed * 0.45 * (downScroll ? -1.0 : 1.0));
         }
 
         while (noteIndex < song.notes.length)
         {
             var n:StandardNote = song.notes[noteIndex];
 
-            if (n.time - Conductor.current.time > (FlxG.height / song.speed) / n.speed)
+            if (n.time > Conductor.current.time + FlxG.height / 0.45)
             {
                 break;
             }
@@ -586,6 +588,8 @@ class GameState extends State
         Conductor.current.timeChanges = song.timeChanges;
 
         Conductor.current.time = -Conductor.current.crotchet * 5.0;
+
+        songSpeed = song.speed;
 
         notes = new FlxTypedContainer<Note>();
 

@@ -34,7 +34,7 @@ class PsychFormat
 
         output.tempo = chart.song.bpm;
 
-        output.speed = chart.song.speed * 0.55;
+        output.speed = chart.song.speed;
 
         for (i in 0 ... chart.song.notes.length)
         {
@@ -75,7 +75,7 @@ class PsychFormat
                 {
                     case "Change Scroll Speed":
                     {
-                        output.events.push({time: event.time, name: "Speed Change", value: {speed: Std.parseFloat(event.value1) * 0.55, duration: Std.parseFloat(event.value2)}});
+                        output.events.push({time: event.time, name: "Speed Change", value: {speed: Std.parseFloat(event.value1), duration: Std.parseFloat(event.value2)}});
                     }
 
                     default:

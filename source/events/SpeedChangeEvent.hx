@@ -10,6 +10,8 @@ class SpeedChangeEvent
 {
     public static function dispatch(speed:Float, duration:Float):Void
     {
+        trace(speed, duration);
+        
         if (Type.getClass(FlxG.state) != GameState)
         {
             return;
@@ -19,11 +21,11 @@ class SpeedChangeEvent
 
         if (duration > 0.0)
         {
-            FlxTween.tween(game.song, {speed: speed}, duration);
+            FlxTween.tween(game, {songSpeed: game.song.speed * speed}, duration);
         }
         else
         {
-            game.song.speed = speed;
+            game.songSpeed = game.song.speed * speed;
         }
     }
 }

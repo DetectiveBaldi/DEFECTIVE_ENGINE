@@ -36,7 +36,7 @@ class FunkFormat
 
         output.tempo = meta.timeChanges[0].bpm;
 
-        output.speed = Reflect.field(chart.scrollSpeed, level) * 0.55;
+        output.speed = Reflect.field(chart.scrollSpeed, level);
 
         for (i in 0 ... Reflect.field(chart.notes, level).length)
         {
