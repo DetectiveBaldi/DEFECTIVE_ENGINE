@@ -252,11 +252,11 @@ typedef SimpleCharacter =
     var ?singDuration:Float;
 };
 
-enum CharacterRole
+enum abstract CharacterRole(String) from String to String
 {
-    ARTIFICIAL:CharacterRole;
+    var ARTIFICIAL:CharacterRole = "ARTIFICIAL";
 
-    PLAYABLE:CharacterRole;
+    var PLAYABLE:CharacterRole = "PLAYABLE";
 
-    OTHER:CharacterRole;
+    var OTHER:CharacterRole = "OTHER";
 }
