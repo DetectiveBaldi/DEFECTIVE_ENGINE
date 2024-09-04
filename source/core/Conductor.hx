@@ -98,7 +98,7 @@ class Conductor
 
         var i:Int = timeChanges.length - 1;
 
-        while (i > 0.0)
+        while (i >= 0.0)
         {
             if (time >= timeChanges[i].time)
             {

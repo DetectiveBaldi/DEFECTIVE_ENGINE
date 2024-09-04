@@ -6,33 +6,50 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 
 class Strumline extends FlxTypedSpriteContainer<Strum>
 {
+    public var lane:Int;
+
+    public var spacing(default, set):Float;
+
+    @:noCompletion
+    function set_spacing(spacing:Float):Float
+    {
+        for (i in 0 ... members.length)
+        {
+            var member:Strum = members[i];
+
+            member.x = x + spacing * i;
+        }
+
+        return this.spacing = spacing;
+    }
+
     public var inputs:Array<String>;
 
-    public var lane:Int;
+    public var artificial:Bool;
+
+    public var noteSpawn(default, null):FlxTypedSignal<(Note)->Void>;
 
     public var noteHit(default, null):FlxTypedSignal<(Note)->Void>;
 
     public var noteMiss(default, null):FlxTypedSignal<(Note)->Void>;
 
-    public var noteSpawn(default, null):FlxTypedSignal<(Note)->Void>;
-
-    public var artificial:Bool;
-
     public function new():Void
     {
         super();
 
+        lane = -1;
+
+        spacing = 116.0;
+
         inputs = new Array<String>();
 
-        lane = -1;
+        artificial = false;
+
+        noteSpawn = new FlxTypedSignal<(Note)->Void>();
 
         noteHit = new FlxTypedSignal<(Note)->Void>();
 
         noteMiss = new FlxTypedSignal<(Note)->Void>();
-
-        noteSpawn = new FlxTypedSignal<(Note)->Void>();
-
-        artificial = false;
 
         for (i in 0 ... 4)
         {
@@ -48,7 +65,7 @@ class Strumline extends FlxTypedSpriteContainer<Strum>
 
             strum.updateHitbox();
 
-            strum.setPosition(strum.x + ((strum.width * 0.725) * i), 0);
+            strum.x = x + spacing * i;
 
             add(strum);
         }

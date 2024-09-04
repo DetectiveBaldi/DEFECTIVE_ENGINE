@@ -3,6 +3,7 @@ package states;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 
 import flixel.group.FlxContainer.FlxTypedContainer;
@@ -10,6 +11,8 @@ import flixel.group.FlxContainer.FlxTypedContainer;
 import flixel.math.FlxMath;
 
 import flixel.sound.FlxSound;
+
+import flixel.text.FlxText;
 
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -26,6 +29,7 @@ import core.Paths;
 import core.Rating;
 import core.Song;
 
+import events.CameraFollowEvent;
 import events.SpeedChangeEvent;
 
 import extendable.State;
@@ -56,6 +60,8 @@ class GameState extends State
         return FlxG.camera;
     }
 
+    public var gameCameraTarget:FlxObject;
+
     public var gameCameraZoom:Float;
 
     public var hudCamera:FlxCamera;
@@ -82,8 +88,6 @@ class GameState extends State
 
     public var player:Character;
 
-    public var ratings:Array<Rating>;
-
     public var downScroll:Bool;
 
     public var score:Int;
@@ -96,9 +100,13 @@ class GameState extends State
 
     public var combo:Int;
 
+    public var scoreTxt:FlxText;
+
     public var health:Float;
 
     public var healthBar:FlxBar;
+
+    public var ratings:Array<Rating>;
 
     public var strumLines:FlxTypedContainer<Strumline>;
 
@@ -138,6 +146,14 @@ class GameState extends State
         super.create();
 
         gameCamera.zoom = 0.75;
+
+        gameCameraTarget = new FlxObject();
+
+        gameCameraTarget.screenCenter();
+
+        add(gameCameraTarget);
+
+        gameCamera.follow(gameCameraTarget, LOCKON, 0.05);
 
         gameCameraZoom = gameCamera.zoom;
 
@@ -200,19 +216,6 @@ class GameState extends State
 
         playerGroup.add(player);
 
-        ratings =
-        [
-            {name: "Epic!", color: FlxColor.MAGENTA, timing: 15.0, bonus: 1.0, score: 500, hits: 0},
-
-            {name: "Sick!", color: FlxColor.CYAN, timing: 45.0, bonus: 1.0, score: 350, hits: 0},
-
-            {name: "Good", color: FlxColor.GREEN, timing: 75.0, bonus: 0.65, score: 250, hits: 0},
-
-            {name: "Bad", color: FlxColor.RED, timing: 125.0, bonus: 0.35, score: 150, hits: 0},
-
-            {name: "Shit", color: FlxColor.subtract(FlxColor.RED, FlxColor.BROWN), timing: Math.POSITIVE_INFINITY, bonus: 0.0, score: 50, hits: 0}
-        ];
-
         downScroll = false;
 
         score = 0;
@@ -224,6 +227,24 @@ class GameState extends State
         bonus = 0.0;
 
         combo = 0;
+
+        scoreTxt = new FlxText(0.0, 0.0, FlxG.width, "Score: 0 | Misses: 0 | Accuracy: 0.0%", 24);
+
+        scoreTxt.camera = hudCamera;
+
+        scoreTxt.antialiasing = false;
+
+        scoreTxt.alignment = CENTER;
+
+        scoreTxt.borderStyle = SHADOW;
+
+        scoreTxt.borderColor = FlxColor.BLACK;
+
+        scoreTxt.borderSize = 5.0;
+
+        scoreTxt.setPosition((FlxG.width - scoreTxt.width) * 0.5, downScroll ? 35.0 : (FlxG.height - scoreTxt.height) - 35.0);
+
+        add(scoreTxt);
 
         health = 50.0;
 
@@ -239,6 +260,19 @@ class GameState extends State
 
         add(healthBar);
 
+        ratings =
+        [
+            {name: "Epic!", color: FlxColor.MAGENTA, timing: 15.0, bonus: 1.0, score: 500, hits: 0},
+
+            {name: "Sick!", color: FlxColor.CYAN, timing: 45.0, bonus: 1.0, score: 350, hits: 0},
+
+            {name: "Good", color: FlxColor.GREEN, timing: 75.0, bonus: 0.65, score: 250, hits: 0},
+
+            {name: "Bad", color: FlxColor.RED, timing: 125.0, bonus: 0.35, score: 150, hits: 0},
+
+            {name: "Shit", color: FlxColor.subtract(FlxColor.RED, FlxColor.BROWN), timing: Math.POSITIVE_INFINITY, bonus: 0.0, score: 50, hits: 0}
+        ];
+
         strumLines = new FlxTypedContainer<Strumline>();
 
         strumLines.camera = hudCamera;
@@ -247,9 +281,13 @@ class GameState extends State
         
         opponentStrums = new Strumline();
 
+        opponentStrums.lane = 0;
+
+        opponentStrums.spacing = 116.0;
+
         opponentStrums.inputs = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
 
-        opponentStrums.lane = 0;
+        opponentStrums.artificial = true;
 
         opponentStrums.noteHit.add(opponentNoteHit);
 
@@ -259,17 +297,17 @@ class GameState extends State
 
         opponentStrums.noteMiss.add(noteMiss);
 
-        opponentStrums.artificial = true;
-
         opponentStrums.setPosition(45.0, downScroll ? (FlxG.height - opponentStrums.height) - 15.0 : 15.0);
 
         strumLines.add(opponentStrums);
         
         playerStrums = new Strumline();
 
-        playerStrums.inputs = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
-
         playerStrums.lane = 1;
+
+        playerStrums.spacing = 116.0;
+
+        playerStrums.inputs = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
 
         playerStrums.noteHit.add(playerNoteHit);
 
@@ -453,7 +491,7 @@ class GameState extends State
 
                     sustain.lane = note.lane;
 
-                    sustain.length = Conductor.current.crotchet * 0.25;
+                    sustain.length = (60 / Conductor.current.timeChanges[0].tempo) * 1000.0;
 
                     note.children.push(sustain);
 
@@ -500,6 +538,11 @@ class GameState extends State
 
             switch (e.name:String)
             {
+                case "Camera Follow":
+                {
+                    CameraFollowEvent.dispatch(e.value.x, e.value.y, e.value.duration, e.value.ease);
+                }
+
                 case "Speed Change":
                 {
                     SpeedChangeEvent.dispatch(e.value.speed, e.value.duration);
@@ -528,19 +571,28 @@ class GameState extends State
                 instrumental.time = Conductor.current.time;
             }
 
-            if (mainVocals != null && Math.abs(instrumental.time - mainVocals.time) > 5.0)
+            if (mainVocals != null)
             {
-                mainVocals.time = instrumental.time;
+                if (Math.abs(instrumental.time - mainVocals.time) > 5.0)
+                {
+                    mainVocals.time = instrumental.time;
+                }
             }
 
-            if (opponentVocals != null && Math.abs(instrumental.time - opponentVocals.time) > 5.0)
+            if (opponentVocals != null)
             {
-                opponentVocals.time = instrumental.time;
+                if (Math.abs(instrumental.time - opponentVocals.time) > 5.0)
+                {
+                    opponentVocals.time = instrumental.time;
+                }
             }
 
-            if (playerVocals != null && Math.abs(instrumental.time - playerVocals.time) > 5.0)
+            if (playerVocals != null)
             {
-                playerVocals.time = instrumental.time;
+                if (Math.abs(instrumental.time - playerVocals.time) > 5.0)
+                {
+                    playerVocals.time = instrumental.time;
+                }
             }
         }
 
@@ -559,7 +611,7 @@ class GameState extends State
     {
         super.beatHit();
 
-        var metronome:FlxSound = FlxG.sound.load(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/metronome")), 0.75).play();
+        var metronome:FlxSound = FlxG.sound.load(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/metronome")), 0.5).play();
     }
 
     override function sectionHit():Void
@@ -907,6 +959,8 @@ class GameState extends State
                 
                 combo++;
 
+                scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+
                 health = FlxMath.bound(health + 1.15, 0.0, 100.0);
 
                 var snap:FlxSound = FlxG.sound.load(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/snap")), 0.75).play();
@@ -938,6 +992,8 @@ class GameState extends State
             misses++;
 
             combo = 0;
+
+            scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
             health = FlxMath.bound(health - 2.375, 0.0, 100.0);
         }

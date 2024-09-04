@@ -39,11 +39,9 @@ class Statistics extends TextField
         times = new Array<Float>();
     }
 
-    #if !flash override #end function __enterFrame(deltaTime:Int):Void
+    override function __enterFrame(deltaTime:Int):Void
     {
-        #if !flash
-            super.__enterFrame(deltaTime);
-        #end
+        super.__enterFrame(deltaTime);
 
         var now:Float = Timer.stamp();
 
