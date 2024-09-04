@@ -422,7 +422,7 @@ class GameState extends State
         {
             var n:StandardNote = song.notes[noteIndex];
 
-            if (n.time > Conductor.current.time + FlxG.height / 0.45)
+            if (n.time > Conductor.current.time + FlxG.height / 0.45 / songSpeed / n.speed)
             {
                 break;
             }
