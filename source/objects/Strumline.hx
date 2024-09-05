@@ -14,11 +14,7 @@ class Strumline extends FlxTypedSpriteContainer<Strum>
     function set_spacing(spacing:Float):Float
     {
         for (i in 0 ... members.length)
-        {
-            var member:Strum = members[i];
-
-            member.x = x + spacing * i;
-        }
+            members[i].x = x + spacing * i;
 
         return this.spacing = spacing;
     }
@@ -54,19 +50,12 @@ class Strumline extends FlxTypedSpriteContainer<Strum>
         for (i in 0 ... 4)
         {
             var strum:Strum = new Strum();
-
             strum.direction = i;
-
             strum.parent = this;
-
             strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Static");
-
             strum.scale.set(0.685, 0.685);
-
             strum.updateHitbox();
-
             strum.x = x + spacing * i;
-
             add(strum);
         }
     }

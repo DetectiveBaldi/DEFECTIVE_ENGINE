@@ -21,22 +21,16 @@ class Note extends FlxSprite
         switch (skin.format ?? "".toLowerCase():String)
         {
             case "texturepackerxml":
-            {
                 frames = FlxAtlasFrames.fromTexturePackerXml(AssetManager.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
-            }
 
             default:
-            {
                 frames = FlxAtlasFrames.fromSparrow(AssetManager.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
-            }
         }
 
         for (i in 0 ... Note.directions.length)
         {
             animation.addByPrefix(Note.directions[i].toLowerCase(), Note.directions[i].toLowerCase() + "0", 24, false);
-
             animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldPiece", Note.directions[i].toLowerCase() + "HoldPiece0", 24, false);
-
             animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldTail", Note.directions[i].toLowerCase() + "HoldTail0", 24, false);
         }
 
