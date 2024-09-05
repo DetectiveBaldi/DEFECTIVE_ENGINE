@@ -8,6 +8,10 @@ import flixel.util.typeLimit.NextState;
 
 import core.Conductor;
 
+#if !html5
+    import core.Statistics;
+#end
+
 class OpeningState extends FlxState
 {
     public var nextState(default, null):NextState;
@@ -42,7 +46,7 @@ class OpeningState extends FlxState
         Conductor.load();
 
         #if !html5
-            var statistics:core.Statistics = new core.Statistics();
+            var statistics:Statistics = new Statistics();
 
             statistics.x = 10;
 
