@@ -24,9 +24,7 @@ class AssetManager
     public static function graphic(path:String):FlxGraphicAsset
     {
         if (graphics.exists(path))
-        {
             return graphics[path];
-        }
 
         #if !html5
             var graphic:FlxGraphic = FlxGraphic.fromBitmapData(BitmapData.fromFile(path));
@@ -44,9 +42,7 @@ class AssetManager
     public static function sound(path:String):FlxSoundAsset
     {
         if (sounds.exists(path))
-        {
             return sounds[path];
-        }
 
         sounds[path] = #if html5 path #else Sound.fromFile(path) #end ;
 

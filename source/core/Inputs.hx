@@ -28,16 +28,12 @@ class Inputs
     public static function checkStatus(input:String, status:FlxInputState):Null<Bool>
     {
         if (!list.exists(input))
-        {
             return null;
-        }
 
         for (i in 0 ... list[input].length)
         {
             if (FlxG.keys.checkStatus(list[input][i], status))
-            {
                 return true;
-            }
         }
 
         return false;
@@ -48,14 +44,10 @@ class Inputs
         for (i in 0 ... inputs.length)
         {
             if (!list.exists(inputs[i]))
-            {
                 return null;
-            }
 
             if (checkStatus(inputs[i], JUST_PRESSED))
-            {
                 return true;
-            }
         }
 
         return false;
@@ -66,14 +58,10 @@ class Inputs
         for (i in 0 ... inputs.length)
         {
             if (!list.exists(inputs[i]))
-            {
                 return null;
-            }
 
             if (checkStatus(inputs[i], PRESSED))
-            {
                 return true;
-            }
         }
 
         return false;
@@ -84,14 +72,10 @@ class Inputs
         for (i in 0 ... inputs.length)
         {
             if (!list.exists(inputs[i]))
-            {
                 return null;
-            }
 
             if (checkStatus(inputs[i], JUST_RELEASED))
-            {
                 return true;
-            }
         }
 
         return false;
@@ -102,14 +86,10 @@ class Inputs
         for (i in 0 ... inputs.length)
         {
             if (!list.exists(inputs[i]))
-            {
                 return null;
-            }
 
             if (checkStatus(inputs[i], RELEASED))
-            {
                 return true;
-            }
         }
 
         return false;

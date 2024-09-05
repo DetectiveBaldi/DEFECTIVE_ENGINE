@@ -6,21 +6,13 @@ import core.Conductor;
 
 class State extends FlxState
 {
-    public function new():Void
-    {
-        super();
-    }
-
     override function create():Void
     {
         super.create();
 
         Conductor.current.reset();
-
         Conductor.current.stepHit.add(stepHit);
-
         Conductor.current.beatHit.add(beatHit);
-
         Conductor.current.sectionHit.add(sectionHit);
     }
 

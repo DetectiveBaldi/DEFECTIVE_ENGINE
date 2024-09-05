@@ -20,12 +20,8 @@ class Rating
     public static function guage(ratings:Array<Rating>, timing:Float):Rating
     {
         for (i in 0 ... ratings.length)
-        {
             if (timing <= ratings[i].timing)
-            {
                 return ratings[i];
-            }
-        }
 
         return null;
     }

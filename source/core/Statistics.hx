@@ -13,8 +13,6 @@ import flixel.math.FlxMath;
 
 class Statistics extends TextField
 {
-    public var current(default, null):Map<String, Int>;
-
     @:noCompletion
         var times:Array<Float>;
 
@@ -30,12 +28,6 @@ class Statistics extends TextField
 
         defaultTextFormat = new TextFormat("_sans", 12, 0xFFFFFFFF, true);
 
-        current = new Map<String, Int>();
-
-        current["*"] = 0;
-
-        current["-"] = 0;
-
         times = new Array<Float>();
     }
 
@@ -48,14 +40,8 @@ class Statistics extends TextField
         times.push(now);
 
         while (times[0] < now - 1)
-        {
             times.shift();
-        }
 
-        current["*"] = times.length;
-
-        current["-"] = System.totalMemory;
-
-        text = 'FPS: ${Math.min(current["*"], FlxG.updateFramerate)}\nMemory: ${FlxMath.roundDecimal(current["-"] / Math.pow(1024, 2), 2)} MB';
+        text = 'FPS: ${Math.min(times.length, FlxG.updateFramerate)}\nMemory: ${FlxMath.roundDecimal(System.totalMemory / Math.pow(1024, 2), 2)} MB';
     }
 }

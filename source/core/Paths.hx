@@ -29,14 +29,10 @@ class Paths
                     file = file.replace(path.endsWith("/") ? path : '${path}/', "");
 
                     if (file.contains("/"))
-                    {
                         file = file.replace(file.substring(file.indexOf("/"), file.length), "");
-                    }
 
                     if (!output.contains(file))
-                    {
                         output.push(file);
-                    }
                 }
             }
 
