@@ -103,9 +103,13 @@ class Conductor
             if (time >= timeChanges[i].time)
             {
                 timeChange.step += (timeChanges[i].time - timeChange.time) / (crotchet * 0.25);
+
                 timeChange.beat = timeChange.step * 0.25;
+
                 timeChange.section = timeChange.section * 0.25;
+
                 timeChange.tempo = timeChanges[i].tempo;
+                
                 timeChange.time = timeChanges[i].time;
 
                 tempo = timeChange.tempo;

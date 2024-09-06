@@ -22,12 +22,19 @@ class Song
     public static function fromStandard(input:StandardSong):Song
     {
         var output:Song = new Song();
+
         output.name = input.name;
+
         output.tempo = input.tempo;
+
         output.speed = input.speed;
+
         output.notes = input.notes;
+
         output.events = input.events;
+
         output.timeChanges = input.timeChanges;
+        
         return output;
     }
 

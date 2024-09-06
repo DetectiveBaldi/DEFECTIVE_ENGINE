@@ -50,12 +50,19 @@ class Strumline extends FlxTypedSpriteContainer<Strum>
         for (i in 0 ... 4)
         {
             var strum:Strum = new Strum();
+
             strum.direction = i;
+
             strum.parent = this;
+
             strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Static");
+
             strum.scale.set(0.685, 0.685);
+
             strum.updateHitbox();
+
             strum.x = x + spacing * i;
+            
             add(strum);
         }
     }

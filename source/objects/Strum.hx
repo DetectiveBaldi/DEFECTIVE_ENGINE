@@ -31,7 +31,9 @@ class Strum extends FlxSprite
         for (i in 0 ... Strum.directions.length)
         {
             animation.addByPrefix(Strum.directions[i].toLowerCase() + "Static", Strum.directions[i].toLowerCase() + "Static0", 24, false);
+
             animation.addByPrefix(Strum.directions[i].toLowerCase() + "Press", Strum.directions[i].toLowerCase() + "Press0", 24, false);
+            
             animation.addByPrefix(Strum.directions[i].toLowerCase() + "Confirm", Strum.directions[i].toLowerCase() + "Confirm0", 24, false);
         }
 

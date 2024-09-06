@@ -11,8 +11,11 @@ class State extends FlxState
         super.create();
 
         Conductor.current.reset();
+
         Conductor.current.stepHit.add(stepHit);
+
         Conductor.current.beatHit.add(beatHit);
+        
         Conductor.current.sectionHit.add(sectionHit);
     }
 
