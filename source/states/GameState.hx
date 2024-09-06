@@ -138,11 +138,6 @@ class GameState extends State
 
     public var songStarted:Bool;
 
-    public function new():Void
-    {
-        super();
-    }
-
     override function create():Void
     {
         super.create();
