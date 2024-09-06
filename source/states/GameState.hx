@@ -433,7 +433,7 @@ class GameState extends State
                         {
                             var sustain:Note = note.children[j];
 
-                            note.kill();
+                            sustain.kill();
 
                             j--;
                         }
