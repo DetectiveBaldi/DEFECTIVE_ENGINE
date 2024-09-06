@@ -1,5 +1,7 @@
 package states;
 
+import haxe.ds.ArraySort;
+
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -508,7 +510,7 @@ class GameState extends State
 
             strumLines.getFirst((s:Strumline) -> note.lane == s.lane).noteSpawn.dispatch(note);
 
-            notes.members.sort((a:Note, b:Note) -> Std.int(a.time - b.time));
+            ArraySort.sort(notes.members, (a:Note, b:Note) -> Std.int(a.time - b.time));
         }
 
         while (eventIndex < song.events.length)
@@ -587,11 +589,11 @@ class GameState extends State
     {
         song = Song.fromStandard(StandardFormat.build(Paths.json('assets/data/${name}/chart')));
 
-        song.notes.sort((a:StandardNote, b:StandardNote) -> Std.int(a.time - b.time));
+        ArraySort.sort(song.notes, (a:StandardNote, b:StandardNote) -> Std.int(a.time - b.time));
 
-        song.events.sort((a:StandardEvent, b:StandardEvent) -> Std.int(a.time - b.time));
+        ArraySort.sort(song.events, (a:StandardEvent, b:StandardEvent) -> Std.int(a.time - b.time));
 
-        song.timeChanges.sort((a:StandardTimeChange, b:StandardTimeChange) -> Std.int(a.time - b.time));
+        ArraySort.sort(song.timeChanges, (a:StandardTimeChange, b:StandardTimeChange) -> Std.int(a.time - b.time));
 
         Conductor.current.tempo = song.tempo;
 

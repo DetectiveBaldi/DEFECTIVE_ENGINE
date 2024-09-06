@@ -1,6 +1,8 @@
 package core;
 
 #if html5
+    import haxe.ds.ArraySort;
+
     import openfl.utils.Assets;
 
     using StringTools;
@@ -36,13 +38,13 @@ class Paths
                 }
             }
 
-            output.sort((a:String, b:String) -> 
+            ArraySort.sort(output, (a:String, b:String) -> 
             {
                 a = a.toLowerCase();
 
                 b = b.toLowerCase();
                 
-                return (a < b) ? -1 : (a > b) ? 1 : 0;
+                return a > b ? 1 : a < b ? -1 : 0;
             });
 
             return output;
