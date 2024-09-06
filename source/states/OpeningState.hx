@@ -9,7 +9,7 @@ import flixel.util.typeLimit.NextState;
 import core.Conductor;
 
 #if !html5
-    import core.Statistics;
+    import objects.PerformanceStats;
 #end
 
 class OpeningState extends FlxState
@@ -46,13 +46,13 @@ class OpeningState extends FlxState
         Conductor.load();
 
         #if !html5
-            var statistics:Statistics = new Statistics();
+            var performanceStats:PerformanceStats = new PerformanceStats();
 
-            statistics.x = 10;
+            performanceStats.x = 10;
 
-            statistics.y = 5;
+            performanceStats.y = 5;
             
-            FlxG.game.addChild(statistics);
+            FlxG.game.addChild(performanceStats);
         #end
 
         FlxG.switchState(nextState);

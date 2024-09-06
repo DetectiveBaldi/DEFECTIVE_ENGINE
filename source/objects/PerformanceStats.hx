@@ -1,4 +1,4 @@
-package core;
+package objects;
 
 import haxe.Timer;
 
@@ -11,7 +11,7 @@ import flixel.FlxG;
 
 import flixel.math.FlxMath;
 
-class Statistics extends TextField
+class PerformanceStats extends TextField
 {
     @:noCompletion
         var times:Array<Float>;
