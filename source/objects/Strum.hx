@@ -21,11 +21,11 @@ class Strum extends FlxSprite
     {
         switch (skin.format ?? "".toLowerCase():String)
         {
+            case "sparrow":
+                frames = FlxAtlasFrames.fromSparrow(AssetManager.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
+            
             case "texturepackerxml":
                 frames = FlxAtlasFrames.fromTexturePackerXml(AssetManager.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
-
-            default:
-                frames = FlxAtlasFrames.fromSparrow(AssetManager.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
         }
 
         for (i in 0 ... Strum.directions.length)

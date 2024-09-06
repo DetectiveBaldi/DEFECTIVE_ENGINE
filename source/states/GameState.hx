@@ -845,6 +845,12 @@ class GameState extends State
 
         var strumLine:Strumline = strumLines.getFirst((s:Strumline) -> note.lane == s.lane);
 
+        var strum:Strum = strumLine.group.getFirst((s:Strum) -> note.direction == s.direction);
+
+        strum.confirmCount = 0.0;
+        
+        strum.animation.play(Strum.directions[note.direction].toLowerCase() + "Confirm", true);
+
         if (!strumLine.artificial)
         {
             if (note.length == 0.0)
@@ -864,12 +870,6 @@ class GameState extends State
                 FlxG.sound.play(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/snap")), 0.75);
             }
         }
-
-        var strum:Strum = strumLine.group.getFirst((s:Strum) -> note.direction == s.direction);
-
-        strum.confirmCount = 0.0;
-        
-        strum.animation.play(Strum.directions[note.direction].toLowerCase() + "Confirm", true);
 
         note.kill();
     }
