@@ -45,14 +45,10 @@ class Character extends FlxSprite
         switch (simple.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-            {
                 frames = FlxAtlasFrames.fromSparrow(AssetManager.graphic(Paths.png(simple.png)), Paths.xml(simple.xml));
-            }
 
             case "texturepackerxml":
-            {
                 frames = FlxAtlasFrames.fromTexturePackerXml(AssetManager.graphic(Paths.png(simple.png)), Paths.xml(simple.xml));
-            }
         }
 
         antialiasing = simple.antialiasing ?? true;
@@ -137,9 +133,7 @@ class Character extends FlxSprite
         super.update(elapsed);
 
         if (Inputs.inputsJustPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) && role == PLAYABLE)
-        {
             singCount = 0.0;
-        }
 
         if (StringTools.startsWith(animation.name ?? "", "Sing"))
         {
@@ -148,9 +142,7 @@ class Character extends FlxSprite
             var requiredTime:Float = singDuration * ((Conductor.current.crotchet * 0.25) * 0.001);
 
             if (StringTools.endsWith(animation.name ?? "", "MISS"))
-            {
                 requiredTime *= FlxG.random.float(1.35, 1.85);
-            }
 
             if (singCount >= requiredTime && (role == PLAYABLE ? !Inputs.inputsPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) : true))
             {
@@ -160,9 +152,7 @@ class Character extends FlxSprite
             }
         }
         else
-        {
             singCount = 0.0;
-        }
     }
 
     override function destroy():Void
@@ -181,27 +171,19 @@ class Character extends FlxSprite
         var output:FlxPoint = super.getScreenPosition(result, camera);
 
         for (i in 0 ... simple.animations.length)
-        {
             if (animation.name ?? "" == simple.animations[i].name)
-            {
                 output.subtract(simple.animations[i].offsets?.x ?? 0.0, simple.animations[i].offsets?.y ?? 0.0);
-            }
-        }
-        
+
         return output;
     }
 
     public function dance(forceful:Bool = false):Void
     {
         if (skipDance)
-        {
             return;
-        }
         
         if (!forceful && StringTools.startsWith(animation.name ?? "", "Sing"))
-        {
             return;
-        }
 
         animation.play(danceSteps[danceStep = FlxMath.wrap(danceStep + 1, 0, danceSteps.length - 1)], forceful);
     }
@@ -214,9 +196,7 @@ class Character extends FlxSprite
     public function beatHit():Void
     {
         if (Conductor.current.beat % danceInterval == 0.0)
-        {
             dance();
-        }
     }
 
     public function sectionHit():Void

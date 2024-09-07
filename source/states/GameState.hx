@@ -11,6 +11,7 @@ import flixel.FlxSprite;
 import flixel.group.FlxContainer.FlxTypedContainer;
 
 import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
 
 import flixel.sound.FlxSound;
 
@@ -110,11 +111,11 @@ class GameState extends State
 
     public var ratings:Array<Rating>;
 
-    public var strumLines:FlxTypedContainer<Strumline>;
+    public var strumlines:FlxTypedContainer<Strumline>;
 
-    public var opponentStrums:Strumline;
+    public var opponentStrumline:Strumline;
 
-    public var playerStrums:Strumline;
+    public var playerStrumline:Strumline;
 
     public var song:Song;
 
@@ -268,53 +269,53 @@ class GameState extends State
             {name: "Shit", color: FlxColor.subtract(FlxColor.RED, FlxColor.BROWN), timing: Math.POSITIVE_INFINITY, bonus: 0.0, score: 50, hits: 0}
         ];
 
-        strumLines = new FlxTypedContainer<Strumline>();
+        strumlines = new FlxTypedContainer<Strumline>();
 
-        strumLines.camera = hudCamera;
+        strumlines.camera = hudCamera;
 
-        add(strumLines);
+        add(strumlines);
         
-        opponentStrums = new Strumline();
+        opponentStrumline = new Strumline();
 
-        opponentStrums.lane = 0;
+        opponentStrumline.lane = 0;
         
-        opponentStrums.spacing = 116.0;
+        opponentStrumline.spacing = 116.0;
 
-        opponentStrums.inputs = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
+        opponentStrumline.inputs = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
 
-        opponentStrums.artificial = true;
+        opponentStrumline.artificial = true;
 
-        opponentStrums.noteHit.add(opponentNoteHit);
+        opponentStrumline.noteHit.add(opponentNoteHit);
 
-        opponentStrums.noteHit.add(noteHit);
+        opponentStrumline.noteHit.add(noteHit);
 
-        opponentStrums.noteMiss.add(opponentNoteMiss);
+        opponentStrumline.noteMiss.add(opponentNoteMiss);
 
-        opponentStrums.noteMiss.add(noteMiss);
+        opponentStrumline.noteMiss.add(noteMiss);
 
-        opponentStrums.setPosition(45.0, downScroll ? (FlxG.height - opponentStrums.height) - 15.0 : 15.0);
+        opponentStrumline.setPosition(45.0, downScroll ? (FlxG.height - opponentStrumline.height) - 15.0 : 15.0);
 
-        strumLines.add(opponentStrums);
+        strumlines.add(opponentStrumline);
         
-        playerStrums = new Strumline();
+        playerStrumline = new Strumline();
 
-        playerStrums.lane = 1;
+        playerStrumline.lane = 1;
 
-        playerStrums.spacing = 116.0;
+        playerStrumline.spacing = 116.0;
 
-        playerStrums.inputs = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
+        playerStrumline.inputs = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
         
-        playerStrums.noteHit.add(playerNoteHit);
+        playerStrumline.noteHit.add(playerNoteHit);
 
-        playerStrums.noteHit.add(noteHit);
+        playerStrumline.noteHit.add(noteHit);
 
-        playerStrums.noteMiss.add(playerNoteMiss);
+        playerStrumline.noteMiss.add(playerNoteMiss);
 
-        playerStrums.noteMiss.add(noteMiss);
+        playerStrumline.noteMiss.add(noteMiss);
 
-        playerStrums.setPosition((FlxG.width - playerStrums.width) - 45.0, downScroll ? (FlxG.height - playerStrums.height) - 15.0 : 15.0);
+        playerStrumline.setPosition((FlxG.width - playerStrumline.width) - 45.0, downScroll ? (FlxG.height - playerStrumline.height) - 15.0 : 15.0);
 
-        strumLines.add(playerStrums);
+        strumlines.add(playerStrumline);
 
         loadSong("Test");
 
@@ -333,9 +334,9 @@ class GameState extends State
 
         hudCamera.zoom = hudCameraZoom + (hudCamera.zoom - hudCameraZoom) * Math.pow(2.0, -elapsed / 0.05);
 
-        for (i in 0 ... strumLines.members.length)
+        for (i in 0 ... strumlines.members.length)
         {
-            var strumLine:Strumline = strumLines.members[i];
+            var strumLine:Strumline = strumlines.members[i];
 
             for (i in 0 ... notes.members.length)
             {
@@ -398,7 +399,7 @@ class GameState extends State
         {
             var note:Note = notes.members[i];
 
-            var strumLine:Strumline = strumLines.getFirst((s:Strumline) -> note.lane == s.lane);
+            var strumLine:Strumline = strumlines.getFirst((s:Strumline) -> note.lane == s.lane);
 
             var strum:Strum = strumLine.group.getFirst((s:Strum) -> note.direction == s.direction);
 
@@ -503,7 +504,7 @@ class GameState extends State
 
             noteIndex++;
 
-            strumLines.getFirst((s:Strumline) -> note.lane == s.lane).noteSpawn.dispatch(note);
+            strumlines.getFirst((s:Strumline) -> note.lane == s.lane).noteSpawn.dispatch(note);
 
             ArraySort.sort(notes.members, (a:Note, b:Note) -> Std.int(a.time - b.time));
         }
@@ -518,7 +519,7 @@ class GameState extends State
             switch (e.name:String)
             {
                 case "Camera Follow":
-                    CameraFollowEvent.dispatch(e.value.x, e.value.y, e.value.duration, e.value.ease);
+                    CameraFollowEvent.dispatch(FlxPoint.get(e.value.x, e.value.y), e.value.duration, e.value.ease);
 
                 case "Speed Change":
                     SpeedChangeEvent.dispatch(e.value.speed, e.value.duration);
@@ -840,7 +841,7 @@ class GameState extends State
         if (mainVocals != null)
             mainVocals.volume = 1.0;
 
-        var strumLine:Strumline = strumLines.getFirst((s:Strumline) -> note.lane == s.lane);
+        var strumLine:Strumline = strumlines.getFirst((s:Strumline) -> note.lane == s.lane);
 
         var strum:Strum = strumLine.group.getFirst((s:Strum) -> note.direction == s.direction);
 
@@ -876,7 +877,7 @@ class GameState extends State
         if (mainVocals != null)
             mainVocals.volume = 0.0;
 
-        var strumLine:Strumline = strumLines.getFirst((s:Strumline) -> note.lane == s.lane);
+        var strumLine:Strumline = strumlines.getFirst((s:Strumline) -> note.lane == s.lane);
 
         if (!strumLine.artificial)
         {

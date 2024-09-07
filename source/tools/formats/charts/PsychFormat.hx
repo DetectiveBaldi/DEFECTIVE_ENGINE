@@ -43,9 +43,7 @@ class PsychFormat
                 sectionNotes:
                 [
                     for (j in 0 ... chart.song.notes[i].sectionNotes.length)
-                    {
-                        {time: cast (chart.song.notes[i].sectionNotes[j][0], Float), direction: cast (chart.song.notes[i].sectionNotes[j][1], Int), length: cast (chart.song.notes[i].sectionNotes[j][2], Float)};
-                    }
+                        {time: cast (chart.song.notes[i].sectionNotes[j][0], Float), direction: cast (chart.song.notes[i].sectionNotes[j][1], Int), length: cast (chart.song.notes[i].sectionNotes[j][2], Float)}
                 ],
 
                 sectionBeats: chart.song.notes[i].sectionBeats,
@@ -88,9 +86,7 @@ class PsychFormat
                 sectionNotes:
                 [
                     for (j in 0 ... chart.song.notes[i].sectionNotes.length)
-                    {
-                        {time: cast (chart.song.notes[i].sectionNotes[j][0], Float), direction: cast (chart.song.notes[i].sectionNotes[j][1], Int), length: cast (chart.song.notes[i].sectionNotes[j][2], Float)};
-                    }
+                        {time: cast (chart.song.notes[i].sectionNotes[j][0], Float), direction: cast (chart.song.notes[i].sectionNotes[j][1], Int), length: cast (chart.song.notes[i].sectionNotes[j][2], Float)}
                 ],
 
                 sectionBeats: chart.song.notes[i].sectionBeats,
