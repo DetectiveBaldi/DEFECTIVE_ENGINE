@@ -4,12 +4,14 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 
+import flixel.math.FlxMath;
+
 import flixel.util.typeLimit.NextState;
 
 import core.Conductor;
 
 #if !html5
-    import objects.PerformanceStats;
+    import objects.PerfTracker;
 #end
 
 class OpeningState extends FlxState
@@ -34,9 +36,9 @@ class OpeningState extends FlxState
         FlxG.fixedTimestep = false;
 
         #if !html5
-            FlxG.updateFramerate = FlxG.stage.window.displayMode.refreshRate;
+            FlxG.updateFramerate = FlxMath.minInt(FlxG.stage.window.displayMode.refreshRate, 144);
 
-            FlxG.drawFramerate = FlxG.stage.window.displayMode.refreshRate;
+            FlxG.drawFramerate = FlxMath.minInt(FlxG.stage.window.displayMode.refreshRate, 144);
         #end
 
         FlxG.mouse.visible = false;
@@ -46,13 +48,13 @@ class OpeningState extends FlxState
         Conductor.load();
 
         #if !html5
-            var performanceStats:PerformanceStats = new PerformanceStats();
+            var perfTracker:PerfTracker = new PerfTracker();
 
-            performanceStats.x = 10;
+            perfTracker.x = 10;
 
-            performanceStats.y = 5;
+            perfTracker.y = 5;
             
-            FlxG.game.addChild(performanceStats);
+            FlxG.game.addChild(perfTracker);
         #end
 
         FlxG.switchState(nextState);

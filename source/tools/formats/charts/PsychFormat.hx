@@ -2,7 +2,7 @@ package tools.formats.charts;
 
 import haxe.Json;
 
-import core.AssetManager;
+import core.AssetMan;
 
 import tools.formats.charts.StandardFormat.StandardEvent;
 import tools.formats.charts.StandardFormat.StandardNote;
@@ -28,7 +28,7 @@ class PsychFormat
             timeChanges: new Array<StandardTimeChange>()
         };
 
-        var chart:Dynamic = Json.parse(AssetManager.text(chartPath));
+        var chart:Dynamic = Json.parse(AssetMan.text(chartPath));
 
         output.name = chart.song.song;
 

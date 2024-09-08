@@ -15,7 +15,7 @@ import flixel.system.FlxAssets.FlxSoundAsset;
     import flixel.graphics.FlxGraphic;
 #end
 
-class AssetManager
+class AssetMan
 {
     public static var graphics(default, null):Map<String, FlxGraphicAsset> = new Map<String, FlxGraphicAsset>();
 

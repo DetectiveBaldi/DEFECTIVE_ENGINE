@@ -1,6 +1,6 @@
 package tools.formats.charts;
 
-import core.AssetManager;
+import core.AssetMan;
 
 import haxe.Json;
 
@@ -8,7 +8,7 @@ class StandardFormat
 {
     public static function build(chartPath:String):StandardSong
     {
-        var output:StandardSong = Json.parse(AssetManager.text(chartPath));
+        var output:StandardSong = Json.parse(AssetMan.text(chartPath));
         
         return output;
     }

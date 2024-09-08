@@ -25,7 +25,7 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 
-import core.AssetManager;
+import core.AssetMan;
 import core.Conductor;
 import core.Inputs;
 import core.Paths;
@@ -569,7 +569,7 @@ class GameState extends State
     {
         super.beatHit();
 
-        FlxG.sound.play(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/metronome")), 0.5);
+        FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/metronome")), 0.5);
     }
 
     override function sectionHit():Void
@@ -611,26 +611,26 @@ class GameState extends State
 
         eventIndex = 0;
 
-        instrumental = FlxG.sound.load(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Instrumental')));
+        instrumental = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Instrumental')));
 
         instrumental.onComplete = endSong;
 
         if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Main')))
-            mainVocals = FlxG.sound.load(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Main')));
+            mainVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Main')));
 
         if (mainVocals == null)
         {
             if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Opponent')))
-                opponentVocals = FlxG.sound.load(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Opponent')));
+                opponentVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Opponent')));
 
             if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Player')))
-                playerVocals = FlxG.sound.load(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Player')));
+                playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Player')));
         }
     }
 
     public function startCountdown(?finishCallback:()->Void):Void
     {
-        var countdownSprite:FlxSprite = new FlxSprite().loadGraphic(AssetManager.graphic(Paths.png("assets/images/countdown")), true, 1000, 500);
+        var countdownSprite:FlxSprite = new FlxSprite().loadGraphic(AssetMan.graphic(Paths.png("assets/images/countdown")), true, 1000, 500);
 
         countdownSprite.animation.add("0", [0], 0.0, false);
 
@@ -655,7 +655,7 @@ class GameState extends State
             switch (timer.elapsedLoops:Int)
             {
                 case 1:
-                    FlxG.sound.play(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/three")), 0.65);
+                    FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/three")), 0.65);
 
                 case 2:
                 {
@@ -667,7 +667,7 @@ class GameState extends State
 
                     FlxTween.tween(countdownSprite, {alpha: 0.0}, Conductor.current.crotchet * 0.001, {ease: FlxEase.circInOut});
 
-                    FlxG.sound.play(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/two")), 0.65);
+                    FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/two")), 0.65);
                 }
 
                 case 3:
@@ -680,7 +680,7 @@ class GameState extends State
 
                     FlxTween.tween(countdownSprite, {alpha: 0.0}, Conductor.current.crotchet * 0.001, {ease: FlxEase.circInOut});
 
-                    FlxG.sound.play(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/one")), 0.65);
+                    FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/one")), 0.65);
                 }
 
                 case 4:
@@ -703,7 +703,7 @@ class GameState extends State
                         }
                     });
 
-                    FlxG.sound.play(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/go")), 0.65);
+                    FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/go")), 0.65);
                 }
 
                 case 5:
@@ -865,7 +865,7 @@ class GameState extends State
 
                 health = FlxMath.bound(health + 1.15, 0.0, 100.0);
 
-                FlxG.sound.play(AssetManager.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/snap")), 0.75);
+                FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/snap")), 0.75);
             }
         }
 

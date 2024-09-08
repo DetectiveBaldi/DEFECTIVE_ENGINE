@@ -6,7 +6,7 @@ import flixel.FlxSprite;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 
-import core.AssetManager;
+import core.AssetMan;
 import core.Paths;
 
 class Note extends FlxSprite
@@ -21,10 +21,10 @@ class Note extends FlxSprite
         switch (skin.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetManager.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
             
             case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetManager.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
         }
 
         for (i in 0 ... Note.directions.length)
@@ -57,7 +57,7 @@ class Note extends FlxSprite
     {
         super(x, y);
 
-        skin = Json.parse(AssetManager.text(Paths.json("assets/images/notes/classic")));
+        skin = Json.parse(AssetMan.text(Paths.json("assets/images/notes/classic")));
 
         time = 0.0;
 
