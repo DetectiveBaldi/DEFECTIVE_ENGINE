@@ -413,31 +413,26 @@ class GameState extends State
             if (n.time > Conductor.current.time + FlxG.height / 0.45 / songSpeed / n.speed)
                 break;
 
-            if (notes.members.length > 0.0)
+            for (i in 0 ... notes.members.length)
             {
-                var i:Int = notes.members.length - 1;
+                var note:Note = notes.members[i];
 
-                while (i >= 0.0)
+                if (n.time == note.time && n.direction == note.direction && n.lane == note.lane)
                 {
-                    var note:Note = notes.members[i];
+                    note.kill();
 
-                    if (n.time == note.time && n.direction == note.direction && n.lane == note.lane)
+                    var j:Int = note.children.length - 1;
+
+                    while (j >= 0.0)
                     {
-                        note.kill();
+                        var sustain:Note = note.children[j];
 
-                        var j:Int = note.children.length - 1;
-                        
-                        while (j >= 0.0)
-                        {
-                            var sustain:Note = note.children[j];
+                        note.children.remove(sustain);
 
-                            sustain.kill();
+                        sustain.kill();
 
-                            j--;
-                        }
+                        j--;
                     }
-
-                    i--;
                 }
             }
 
@@ -463,43 +458,40 @@ class GameState extends State
 
             notes.add(note);
 
-            if (n.length > 0)
+            for (i in 0 ... Math.round(n.length / (((60 / Conductor.current.timeChanges[0].tempo) * 1000.0) * 0.25)))
             {
-                for (i in 0 ... Math.round(n.length / (((60 / Conductor.current.timeChanges[0].tempo) * 1000.0) * 0.25)))
+                var sustain:Note = notes.recycle(Note, () -> new Note());
+
+                sustain.time = note.time + ((((60 / Conductor.current.timeChanges[0].tempo) * 1000.0) * 0.25) * (i + 1));
+
+                sustain.speed = note.speed;
+
+                sustain.direction = note.direction;
+                
+                sustain.lane = note.lane;
+
+                sustain.length = (60 / Conductor.current.timeChanges[0].tempo) * 1000.0;
+
+                note.children.push(sustain);
+
+                sustain.parent = note;
+
+                sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
+
+                if (i >= Math.round(n.length / (((60 / Conductor.current.timeChanges[0].tempo) * 1000.0) * 0.25)) - 1)
                 {
-                    var sustain:Note = notes.recycle(Note, () -> new Note());
-
-                    sustain.time = note.time + ((((60 / Conductor.current.timeChanges[0].tempo) * 1000.0) * 0.25) * (i + 1));
-
-                    sustain.speed = note.speed;
-
-                    sustain.direction = note.direction;
-                    
-                    sustain.lane = note.lane;
-
-                    sustain.length = (60 / Conductor.current.timeChanges[0].tempo) * 1000.0;
-
-                    note.children.push(sustain);
-
-                    sustain.parent = note;
-
-                    sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
-
-                    if (i >= Math.round(n.length / (((60 / Conductor.current.timeChanges[0].tempo) * 1000.0) * 0.25)) - 1)
-                    {
-                        sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
-                    }
-
-                    sustain.flipY = downScroll;
-
-                    sustain.scale.set(0.685, 0.685);
-
-                    sustain.updateHitbox();
-
-                    sustain.setPosition((FlxG.width - sustain.width) * 0.5, (FlxG.height - sustain.height) * 5);
-
-                    notes.add(sustain);
+                    sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
                 }
+
+                sustain.flipY = downScroll;
+
+                sustain.scale.set(0.685, 0.685);
+
+                sustain.updateHitbox();
+
+                sustain.setPosition((FlxG.width - sustain.width) * 0.5, (FlxG.height - sustain.height) * 5);
+
+                notes.add(sustain);
             }
 
             noteIndex++;

@@ -43,6 +43,10 @@ class OpeningState extends FlxState
 
         FlxG.mouse.visible = false;
 
+        #if FLX_DEBUG
+            FlxG.console.registerClass(Conductor);
+        #end
+
         FlxSprite.defaultAntialiasing = true;
 
         Conductor.load();
