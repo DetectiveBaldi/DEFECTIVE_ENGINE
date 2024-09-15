@@ -16,13 +16,7 @@ class Inputs
 
         "NOTE:UP" => [FlxKey.PERIOD, FlxKey.UP],
 
-        "NOTE:RIGHT" => [FlxKey.SLASH, FlxKey.RIGHT],
-
-        "UI:ACCEPT" => [FlxKey.ENTER],
-
-        "UI:CANCEL" => [FlxKey.BACKSPACE],
-
-        "DEBUG:0" => [FlxKey.EIGHT]
+        "NOTE:RIGHT" => [FlxKey.SLASH, FlxKey.RIGHT]
     ];
 
     public static function checkStatus(input:String, status:FlxInputState):Null<Bool>

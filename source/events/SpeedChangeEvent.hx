@@ -16,8 +16,8 @@ class SpeedChangeEvent
         var game:GameState = cast (FlxG.state, GameState);
 
         if (duration > 0.0)
-            FlxTween.tween(game, {songSpeed: game.song.speed * speed}, duration);
+            FlxTween.tween(game, {songSpeed: game.chart.speed * speed}, duration);
         else
-            game.songSpeed = game.song.speed * speed;
+            game.chartSpeed = game.chart.speed * speed;
     }
 }

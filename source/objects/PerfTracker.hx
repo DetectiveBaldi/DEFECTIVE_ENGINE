@@ -11,6 +11,8 @@ import flixel.FlxG;
 
 import flixel.math.FlxMath;
 
+import util.MathUtil;
+
 class PerfTracker extends TextField
 {
     @:noCompletion
@@ -42,6 +44,6 @@ class PerfTracker extends TextField
         while (times[0] < now - 1)
             times.shift();
 
-        text = 'FPS: ${Math.min(FlxG.updateFramerate, times.length)}\nMemory: ${FlxMath.roundDecimal(System.totalMemory / Math.pow(1024, 2), 2)} MB';
+        text = 'FPS: ${MathUtil.minInt(FlxG.updateFramerate, times.length)}\nMemory: ${FlxMath.roundDecimal(System.totalMemory / Math.pow(1024, 2), 2)} MB';
     }
 }

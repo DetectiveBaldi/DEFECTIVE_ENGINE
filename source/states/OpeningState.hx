@@ -14,6 +14,8 @@ import core.Conductor;
     import objects.PerfTracker;
 #end
 
+import util.MathUtil;
+
 class OpeningState extends FlxState
 {
     public var nextState(default, null):NextState;
@@ -36,9 +38,9 @@ class OpeningState extends FlxState
         FlxG.fixedTimestep = false;
 
         #if !html5
-            FlxG.updateFramerate = FlxMath.minInt(FlxG.stage.window.displayMode.refreshRate, 144);
+            FlxG.updateFramerate = MathUtil.minInt(FlxG.stage.window.displayMode.refreshRate, 144);
 
-            FlxG.drawFramerate = FlxMath.minInt(FlxG.stage.window.displayMode.refreshRate, 144);
+            FlxG.drawFramerate = MathUtil.minInt(FlxG.stage.window.displayMode.refreshRate, 144);
         #end
 
         FlxG.mouse.visible = false;

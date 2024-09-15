@@ -17,4 +17,4 @@ Defective Engine currently supports the following targets:
 - Windows
 
 ### Chart Formats
-The `tools.formats.charts` package contains some helpful classes for converting charts to the Defective Engine format.
+The `util.formats.charts` package contains some helpful classes for converting charts to the Defective Engine format.
