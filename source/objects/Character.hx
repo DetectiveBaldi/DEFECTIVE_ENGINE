@@ -16,6 +16,8 @@ import core.Conductor;
 import core.Inputs;
 import core.Paths;
 
+using StringTools;
+
 class Character extends FlxSprite
 {
     public var simple(default, null):SimpleCharacter;
@@ -135,13 +137,13 @@ class Character extends FlxSprite
         if (Inputs.inputsJustPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) && role == PLAYABLE)
             singCount = 0.0;
 
-        if (StringTools.startsWith(animation.name ?? "", "Sing"))
+        if (animation.name?.startsWith("Sing"))
         {
             singCount += elapsed;
 
             var requiredTime:Float = singDuration * ((Conductor.current.crotchet * 0.25) * 0.001);
 
-            if (StringTools.endsWith(animation.name ?? "", "MISS"))
+            if (animation.name?.endsWith("MISS"))
                 requiredTime *= FlxG.random.float(1.35, 1.85);
 
             if (singCount >= requiredTime && (role == PLAYABLE ? !Inputs.inputsPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) : true))
@@ -182,7 +184,7 @@ class Character extends FlxSprite
         if (skipDance)
             return;
         
-        if (!forceful && StringTools.startsWith(animation.name ?? "", "Sing"))
+        if (!forceful && animation.name?.startsWith("Sing"))
             return;
 
         animation.play(danceSteps[danceStep = FlxMath.wrap(danceStep + 1, 0, danceSteps.length - 1)], forceful);

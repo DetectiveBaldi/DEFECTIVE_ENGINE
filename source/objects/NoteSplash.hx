@@ -70,7 +70,7 @@ class NoteSplash extends FlxSprite
         var output:FlxPoint = super.getScreenPosition(result, camera);
 
         for (i in 0 ... skin.animations.length)
-            if ((animation.name ?? "").contains(skin.animations[i].prefix))
+            if (animation.name?.startsWith(skin.animations[i].prefix))
                 output.subtract(skin.animations[i].offsets?.x ?? 0.0, skin.animations[i].offsets?.y ?? 0.0);
 
         return output;

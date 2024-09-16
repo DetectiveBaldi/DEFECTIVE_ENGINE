@@ -10,6 +10,8 @@ import core.AssetMan;
 import core.Conductor;
 import core.Paths;
 
+using StringTools;
+
 class Strum extends FlxSprite
 {
     public static var directions(default, null):Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
@@ -61,7 +63,7 @@ class Strum extends FlxSprite
     {
         super.update(elapsed);
 
-        if (StringTools.endsWith(animation.name ?? "", "Confirm"))
+        if (animation.name?.endsWith("Confirm"))
         {
             confirmCount += elapsed;
 
