@@ -1,20 +1,12 @@
 package core;
 
-#if html5
-    import haxe.ds.ArraySort;
-
-    import openfl.utils.Assets;
-
-    using StringTools;
-#else
-    import sys.FileSystem;
-#end
+using StringTools;
 
 class Paths
 {
     public static function exists(path:String):Bool
     {
-        return #if html5 Assets.exists #else FileSystem.exists #end (path);
+        return #if html5 openfl.utils.Assets.exists #else sys.FileSystem.exists #end (path);
     }
 
     public static function readDirectory(path:String):Array<String>
@@ -22,23 +14,23 @@ class Paths
         #if html5
             var output:Array<String> = new Array<String>();
 
-            for (i in 0 ... Assets.list().length)
+            for (i in 0 ... openfl.utils.Assets.list().length)
             {
-                var file:String = Assets.list()[i];
+                var file:String = openfl.utils.Assets.list()[i];
 
-                if (file.startsWith(path))
+                if (StringTools.startsWith(file, path))
                 {
-                    file = file.replace(path.endsWith("/") ? path : '${path}/', "");
+                    file = StringTools.replace(file, StringTools.endsWith(path, "/") ? path : '${path}/', "");
 
-                    if (file.contains("/"))
-                        file = file.replace(file.substring(file.indexOf("/"), file.length), "");
+                    if (StringTools.contains(file, "/"))
+                        file = StringTools.replace(file, file.substring(file.indexOf("/"), file.length), "");
 
                     if (!output.contains(file))
                         output.push(file);
                 }
             }
 
-            ArraySort.sort(output, (a:String, b:String) -> 
+            haxe.ds.ArraySort.sort(output, (a:String, b:String) -> 
             {
                 a = a.toLowerCase();
 
@@ -49,7 +41,7 @@ class Paths
 
             return output;
         #else
-            return FileSystem.readDirectory(path);
+            return sys.FileSystem.readDirectory(path);
         #end
     }
 

@@ -4,15 +4,9 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 
-import flixel.math.FlxMath;
-
 import flixel.util.typeLimit.NextState;
 
 import core.Conductor;
-
-#if !html5
-    import objects.PerfTracker;
-#end
 
 import util.MathUtil;
 
@@ -54,7 +48,7 @@ class OpeningState extends FlxState
         Conductor.load();
 
         #if !html5
-            var perfTracker:PerfTracker = new PerfTracker();
+            var perfTracker:objects.PerfTracker = new objects.PerfTracker();
 
             perfTracker.x = 10;
 

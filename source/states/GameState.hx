@@ -431,7 +431,7 @@ class GameState extends State
         {
             var n:ParsedNote = chart.notes[noteIndex];
 
-            if (n.time <= Conductor.current.time + FlxG.height / 0.45 / chartSpeed / n.speed)
+            if (n.time <= Conductor.current.time + hudCamera.height / hudCamera.zoom / chartSpeed / n.speed / 0.45)
             {
                 var i:Int = notes.members.length - 1;
 
