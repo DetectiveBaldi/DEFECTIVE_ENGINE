@@ -41,7 +41,17 @@ class Chart
 
     public function new():Void
     {
+        name = "Test";
 
+        tempo = 150.0;
+
+        speed = 1.6;
+
+        notes = new Array<ParsedNote>();
+
+        events = new Array<ParsedEvent>();
+
+        timeChanges = new Array<ParsedTimeChange>();
     }
 
     public function toString():String

@@ -7,7 +7,7 @@ import core.Chart;
 
 class FunkFormat
 {
-    public static function build(chartPath:String, metaPath:String, ?level:String = "normal"):Chart
+    public static function build(chartPath:String, metaPath:String, level:String):Chart
     {
         var output:Chart = new Chart();
 
