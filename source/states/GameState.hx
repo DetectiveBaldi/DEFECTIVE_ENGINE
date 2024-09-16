@@ -480,7 +480,7 @@ class GameState extends State
 
                 note.updateHitbox();
 
-                note.setPosition((FlxG.width - note.width) * 0.5, (FlxG.height - note.height) * 5);
+                note.setPosition((FlxG.width - note.width) * 0.5, hudCamera.height / hudCamera.zoom);
 
                 notes.add(note);
 
@@ -513,7 +513,7 @@ class GameState extends State
 
                     sustain.updateHitbox();
 
-                    sustain.setPosition((FlxG.width - sustain.width) * 0.5, (FlxG.height - sustain.height) * 5);
+                    sustain.setPosition((FlxG.width - sustain.width) * 0.5, hudCamera.height / hudCamera.zoom);
 
                     notes.add(sustain);
                 }
