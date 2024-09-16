@@ -48,11 +48,7 @@ class OpeningState extends FlxState
         Conductor.load();
 
         #if !html5
-            var perfTracker:objects.PerfTracker = new objects.PerfTracker();
-
-            perfTracker.x = 10;
-
-            perfTracker.y = 5;
+            var perfTracker:objects.PerfTracker = new objects.PerfTracker(10.0, 5.0);
             
             FlxG.game.addChild(perfTracker);
         #end

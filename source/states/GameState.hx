@@ -580,13 +580,6 @@ class GameState extends State
         super.stepHit();
     }
 
-    override function beatHit():Void
-    {
-        super.beatHit();
-
-        FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/metronome")), 0.5);
-    }
-
     override function sectionHit():Void
     {
         super.sectionHit();

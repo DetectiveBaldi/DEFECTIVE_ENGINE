@@ -18,13 +18,17 @@ class PerfTracker extends TextField
     @:noCompletion
         var times:Array<Float>;
 
-    public function new():Void
+    public function new(x:Float = 0.0, y:Float = 0.0):Void
     {
         super();
 
         width = 250;
 
         height = 100;
+
+        this.x = x;
+
+        this.y = y;
 
         selectable = false;
 
