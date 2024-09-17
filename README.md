@@ -13,7 +13,6 @@ To compile, complete the following steps:
 Defective Engine currently supports the following targets:
 - HashLink
 - HTML5
-- Neko
 - Windows
 
 ### Chart Formats
