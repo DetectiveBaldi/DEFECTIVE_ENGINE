@@ -17,7 +17,7 @@ class AssetMan
 
         var graphic:FlxGraphic = FlxGraphic.fromBitmapData(#if html5 openfl.utils.Assets.getBitmapData(path) #else openfl.display.BitmapData.fromFile(path) #end );
 
-        #if !html5
+        #if (!hl && !html5)
             graphic.bitmap.disposeImage();
         #end
 

@@ -53,11 +53,6 @@ class Chart
 
         timeChanges = new Array<ParsedTimeChange>();
     }
-
-    public function toString():String
-    {
-        return 'name ${name}, speed ${speed}, tempo ${tempo}, notes ${notes}, events ${events}, timeChanges ${timeChanges}';
-    }
 }
 
 typedef ParsedChart =
