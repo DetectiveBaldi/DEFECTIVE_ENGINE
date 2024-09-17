@@ -44,6 +44,8 @@ class NoteSplash extends FlxSprite
                     
                     skin.animations[i].frameRate ?? 24.0,
 
+                    skin.animations[i].looped ?? false,
+
                     skin.animations[i].flipX ?? false,
 
                     skin.animations[i].flipY ?? false

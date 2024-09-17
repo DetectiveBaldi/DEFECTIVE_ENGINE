@@ -294,6 +294,10 @@ class GameState extends State
 
         opponentStrumline.noteMiss.add(noteMiss);
 
+        opponentStrumline.ghostTap.add(opponentGhostTap);
+
+        opponentStrumline.ghostTap.add(ghostTap);
+
         opponentStrumline.setPosition(45.0, downScroll ? (FlxG.height - opponentStrumline.height) - 15.0 : 15.0);
 
         strumlines.add(opponentStrumline);
@@ -313,6 +317,10 @@ class GameState extends State
         playerStrumline.noteMiss.add(playerNoteMiss);
 
         playerStrumline.noteMiss.add(noteMiss);
+
+        playerStrumline.ghostTap.add(playerGhostTap);
+
+        playerStrumline.ghostTap.add(ghostTap);
 
         playerStrumline.setPosition((FlxG.width - playerStrumline.width) - 45.0, downScroll ? (FlxG.height - playerStrumline.height) - 15.0 : 15.0);
 
@@ -366,7 +374,9 @@ class GameState extends State
 
                     var note:Note = notes.getFirst((n:Note) -> Math.abs(Conductor.current.time - n.time) <= 166.6 && strum.direction == n.direction && strumline.lane == n.lane && n.length == 0.0);
 
-                    if (note != null)
+                    if (note == null)
+                        strumline.ghostTap.dispatch(strum.direction);
+                    else
                         strumline.noteHit.dispatch(note);
                 }
 
@@ -868,7 +878,7 @@ class GameState extends State
 
                 if (judgement.name == "Epic!" || judgement.name == "Sick!")
                 {
-                    var noteSplash:NoteSplash = new NoteSplash();
+                    var noteSplash:NoteSplash = noteSplashes.recycle(NoteSplash, () -> new NoteSplash());
 
                     noteSplash.direction = strum.direction;
 
@@ -881,8 +891,6 @@ class GameState extends State
                     noteSplash.updateHitbox();
 
                     noteSplash.setPosition(strum.getMidpoint().x - noteSplash.width * 0.5, strum.getMidpoint().y - noteSplash.height * 0.5);
-
-                    noteSplashes.add(noteSplash);
                 }
 
                 FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/snap")), 0.75);
@@ -914,5 +922,53 @@ class GameState extends State
             mainVocals.volume = 0.0;
 
         notes.remove(note, true).destroy();
+    }
+
+    public function ghostTap(direction:Int):Void
+    {
+        score -= 650;
+
+        misses++;
+
+        combo = 0;
+
+        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+
+        health = FlxMath.bound(health - 2.375, 0.0, 100.0);
+
+        if (mainVocals != null)
+            mainVocals.volume = 0.0;
+    }
+
+    public function opponentGhostTap(direction:Int):Void
+    {
+        for (i in 0 ... opponentGroup.members.length)
+        {
+            var character:Character = opponentGroup.members[i];
+
+            character.singCount = 0.0;
+
+            if (character.animation.exists('Sing${Note.directions[direction]}MISS'))
+                character.animation.play('Sing${Note.directions[direction]}MISS', true);
+        }
+
+        if (opponentVocals != null)
+            opponentVocals.volume = 0.0;
+    }
+
+    public function playerGhostTap(direction:Int):Void
+    {
+        for (i in 0 ... playerGroup.members.length)
+        {
+            var character:Character = playerGroup.members[i];
+
+            character.singCount = 0.0;
+
+            if (character.animation.exists('Sing${Note.directions[direction]}MISS'))
+                character.animation.play('Sing${Note.directions[direction]}MISS', true);
+        }
+
+        if (playerVocals != null)
+            playerVocals.volume = 0.0;
     }
 }

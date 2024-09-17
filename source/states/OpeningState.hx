@@ -31,11 +31,9 @@ class OpeningState extends FlxState
 
         FlxG.fixedTimestep = false;
 
-        #if !html5
-            FlxG.updateFramerate = MathUtil.minInt(FlxG.stage.window.displayMode.refreshRate, 144);
+        FlxG.updateFramerate = MathUtil.maxInt(FlxG.stage.window.displayMode.refreshRate, 144);
 
-            FlxG.drawFramerate = MathUtil.minInt(FlxG.stage.window.displayMode.refreshRate, 144);
-        #end
+        FlxG.drawFramerate = MathUtil.maxInt(FlxG.stage.window.displayMode.refreshRate, 144);
 
         FlxG.mouse.visible = false;
 
@@ -47,11 +45,9 @@ class OpeningState extends FlxState
 
         Conductor.load();
 
-        #if !html5
-            var perfTracker:objects.PerfTracker = new objects.PerfTracker(10.0, 5.0);
-            
-            FlxG.game.addChild(perfTracker);
-        #end
+        var perfTracker:objects.PerfTracker = new objects.PerfTracker(10.0, 5.0);
+        
+        FlxG.game.addChild(perfTracker);
 
         FlxG.switchState(nextState);
     }

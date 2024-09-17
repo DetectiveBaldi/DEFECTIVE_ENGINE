@@ -23,11 +23,13 @@ class Strumline extends FlxTypedSpriteContainer<Strum>
 
     public var artificial:Bool;
 
-    public var noteSpawn(default, null):FlxTypedSignal<(Note)->Void>;
+    public var noteSpawn(default, null):FlxTypedSignal<(note:Note)->Void>;
 
-    public var noteHit(default, null):FlxTypedSignal<(Note)->Void>;
+    public var noteHit(default, null):FlxTypedSignal<(note:Note)->Void>;
 
-    public var noteMiss(default, null):FlxTypedSignal<(Note)->Void>;
+    public var noteMiss(default, null):FlxTypedSignal<(note:Note)->Void>;
+
+    public var ghostTap(default, null):FlxTypedSignal<(direction:Int)->Void>;
 
     public function new():Void
     {
@@ -41,11 +43,13 @@ class Strumline extends FlxTypedSpriteContainer<Strum>
 
         artificial = false;
 
-        noteSpawn = new FlxTypedSignal<(Note)->Void>();
+        noteSpawn = new FlxTypedSignal<(note:Note)->Void>();
 
-        noteHit = new FlxTypedSignal<(Note)->Void>();
+        noteHit = new FlxTypedSignal<(note:Note)->Void>();
 
-        noteMiss = new FlxTypedSignal<(Note)->Void>();
+        noteMiss = new FlxTypedSignal<(note:Note)->Void>();
+
+        ghostTap = new FlxTypedSignal<(direction:Int)->Void>();
 
         for (i in 0 ... 4)
         {
@@ -76,5 +80,7 @@ class Strumline extends FlxTypedSpriteContainer<Strum>
         noteMiss.destroy();
 
         noteSpawn.destroy();
+
+        ghostTap.destroy();
     }
 }
