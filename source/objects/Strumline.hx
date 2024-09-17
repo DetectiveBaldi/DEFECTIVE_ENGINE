@@ -39,7 +39,7 @@ class Strumline extends FlxTypedSpriteContainer<Strum>
 
         spacing = 116.0;
 
-        inputs = new Array<String>();
+        inputs = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
 
         artificial = false;
 

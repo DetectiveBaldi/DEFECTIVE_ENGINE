@@ -2,6 +2,8 @@ package core;
 
 import openfl.media.Sound;
 
+import flixel.FlxG;
+
 import flixel.graphics.FlxGraphic;
 
 class AssetMan
@@ -19,6 +21,8 @@ class AssetMan
 
         #if (!hl && !html5)
             graphic.bitmap.disposeImage();
+
+            graphic.bitmap.getTexture(FlxG.stage.context3D);
         #end
 
         graphic.persist = true;

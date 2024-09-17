@@ -51,7 +51,7 @@ class Chart
 
         events = new Array<ParsedEvent>();
 
-        timeChanges = new Array<ParsedTimeChange>();
+        timeChanges = [{tempo: tempo, time: 0.0, step: 0.0, beat: 0.0, section: 0.0}];
     }
 }
 

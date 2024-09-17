@@ -1,6 +1,6 @@
 package core;
 
-import flixel.util.FlxSignal;
+import flixel.util.FlxSignal.FlxTypedSignal;
 
 import core.Chart.ParsedTimeChange;
 
@@ -38,11 +38,11 @@ class Conductor
         return Math.floor(decimalSection);
     }
 
-    public var stepHit:FlxSignal;
+    public var stepHit:FlxTypedSignal<(step:Int)->Void>;
 
-    public var beatHit:FlxSignal;
+    public var beatHit:FlxTypedSignal<(beat:Int)->Void>;
 
-    public var sectionHit:FlxSignal;
+    public var sectionHit:FlxTypedSignal<(section:Int)->Void>;
 
     public var tempo:Float;
 
@@ -73,11 +73,11 @@ class Conductor
 
         decimalSection = -1.0;
 
-        stepHit = new FlxSignal();
+        stepHit = new FlxTypedSignal<(step:Int)->Void>();
 
-        beatHit = new FlxSignal();
+        beatHit = new FlxTypedSignal<(beat:Int)->Void>();
 
-        sectionHit = new FlxSignal();
+        sectionHit = new FlxTypedSignal<(section:Int)->Void>();
 
         tempo = 150.0;
 
@@ -127,13 +127,13 @@ class Conductor
         decimalSection = decimalBeat * 0.25;
 
         if (step != lastStep)
-            stepHit.dispatch();
+            stepHit.dispatch(step);
 
         if (beat != lastBeat)
-            beatHit.dispatch();
+            beatHit.dispatch(beat);
 
         if (section != lastSection)
-            sectionHit.dispatch();
+            sectionHit.dispatch(section);
     }
 
     public function reset():Void
@@ -144,11 +144,11 @@ class Conductor
 
         decimalSection = -1.0;
 
-        stepHit = new FlxSignal();
+        stepHit = new FlxTypedSignal<(step:Int)->Void>();
 
-        beatHit = new FlxSignal();
+        beatHit = new FlxTypedSignal<(beat:Int)->Void>();
 
-        sectionHit = new FlxSignal();
+        sectionHit = new FlxTypedSignal<(section:Int)->Void>();
 
         tempo = 150.0;
 

@@ -17,7 +17,7 @@ class Judgement
 
     public var hits:Int;
 
-    public static function guage(judgements:Array<Judgement>, timing:Float):Judgement
+    public static function guage(judgements:Array<Judgement>, timing:Float):Null<Judgement>
     {
         for (i in 0 ... judgements.length)
         {

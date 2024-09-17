@@ -38,7 +38,7 @@ import core.Paths;
 import events.CameraFollowEvent;
 import events.SpeedChangeEvent;
 
-import extendable.State;
+import extendable.MusicBeatState;
 
 import objects.Character;
 import objects.Note;
@@ -52,7 +52,7 @@ import stages.Week1;
 import util.formats.charts.FunkFormat;
 import util.formats.charts.PsychFormat;
 
-class GameState extends State
+class GameState extends MusicBeatState
 {
     public var gameCamera(get, never):FlxCamera;
 
@@ -282,8 +282,6 @@ class GameState extends State
         
         opponentStrumline.spacing = 116.0;
 
-        opponentStrumline.inputs = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
-
         opponentStrumline.artificial = true;
 
         opponentStrumline.noteHit.add(opponentNoteHit);
@@ -305,10 +303,6 @@ class GameState extends State
         playerStrumline = new Strumline();
 
         playerStrumline.lane = 1;
-
-        playerStrumline.spacing = 116.0;
-
-        playerStrumline.inputs = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
         
         playerStrumline.noteHit.add(playerNoteHit);
 
@@ -546,7 +540,7 @@ class GameState extends State
                         CameraFollowEvent.dispatch(FlxPoint.get(e.value.x, e.value.y), e.value.duration, Reflect.getProperty(FlxEase, e.value.ease));
 
                     case "Speed Change":
-                        SpeedChangeEvent.dispatch(e.value.speed, e.value.duration);
+                        SpeedChangeEvent.dispatch(e.value.speed, e.value.duration, Reflect.getProperty(FlxEase, e.value.ease));
                 }
 
                 eventIndex++;
@@ -585,14 +579,14 @@ class GameState extends State
             FlxG.resetState();
     }
 
-    override function stepHit():Void
+    override function stepHit(step:Int):Void
     {
-        super.stepHit();
+        super.stepHit(step);
     }
 
-    override function sectionHit():Void
+    override function sectionHit(section:Int):Void
     {
-        super.sectionHit();
+        super.sectionHit(section);
 
         gameCamera.zoom += 0.035;
 

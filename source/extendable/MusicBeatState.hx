@@ -4,13 +4,11 @@ import flixel.FlxState;
 
 import core.Conductor;
 
-class State extends FlxState
+class MusicBeatState extends FlxState
 {
     override function create():Void
     {
         super.create();
-
-        Conductor.current.reset();
 
         Conductor.current.stepHit.add(stepHit);
 
@@ -23,20 +21,24 @@ class State extends FlxState
     {
         super.destroy();
 
-        Conductor.current.reset();
+        Conductor.current.stepHit.remove(stepHit);
+
+        Conductor.current.beatHit.remove(beatHit);
+        
+        Conductor.current.sectionHit.remove(sectionHit);
     }
 
-    public function stepHit():Void
+    public function stepHit(step:Int):Void
     {
 
     }
 
-    public function beatHit():Void
+    public function beatHit(beat:Int):Void
     {
 
     }
 
-    public function sectionHit():Void
+    public function sectionHit(section:Int):Void
     {
 
     }

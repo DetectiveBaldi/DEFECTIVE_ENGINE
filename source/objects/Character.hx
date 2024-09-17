@@ -190,18 +190,18 @@ class Character extends FlxSprite
         animation.play(danceSteps[danceStep = FlxMath.wrap(danceStep + 1, 0, danceSteps.length - 1)], forceful);
     }
 
-    public function stepHit():Void
+    public function stepHit(step:Int):Void
     {
 
     }
 
-    public function beatHit():Void
+    public function beatHit(beat:Int):Void
     {
-        if (Conductor.current.beat % danceInterval == 0.0)
+        if (beat % danceInterval == 0.0)
             dance();
     }
 
-    public function sectionHit():Void
+    public function sectionHit(section:Int):Void
     {
 
     }

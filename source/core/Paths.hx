@@ -1,7 +1,5 @@
 package core;
 
-using StringTools;
-
 class Paths
 {
     public static function exists(path:String):Bool
