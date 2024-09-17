@@ -36,6 +36,7 @@ import core.Judgement;
 import core.Paths;
 
 import events.CameraFollowEvent;
+import events.CameraZoomEvent;
 import events.SpeedChangeEvent;
 
 import extendable.MusicBeatState;
@@ -538,6 +539,9 @@ class GameState extends MusicBeatState
                 {
                     case "Camera Follow":
                         CameraFollowEvent.dispatch(FlxPoint.get(e.value.x, e.value.y), e.value.duration, Reflect.getProperty(FlxEase, e.value.ease));
+
+                    case "Camera Zoom":
+                        CameraZoomEvent.dispatch(Reflect.getProperty(this, e.value.camera), e.value.zoom, e.value.duration, Reflect.getProperty(FlxEase, e.value.ease));
 
                     case "Speed Change":
                         SpeedChangeEvent.dispatch(e.value.speed, e.value.duration, Reflect.getProperty(FlxEase, e.value.ease));
