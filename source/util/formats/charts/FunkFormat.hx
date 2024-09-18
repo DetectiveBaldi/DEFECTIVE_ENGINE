@@ -35,6 +35,8 @@ class FunkFormat
             output.events.push({time: event.t, name: event.e, value: event.v});
         }
 
+        output.timeChanges.resize(0);
+
         for (i in 0 ... parsedMeta.timeChanges.length)
         {
             var timeChange:FunkTimeChange = parsedMeta.timeChanges[i];

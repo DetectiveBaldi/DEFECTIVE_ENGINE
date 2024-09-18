@@ -6,8 +6,6 @@ import flixel.FlxState;
 
 import flixel.util.typeLimit.NextState;
 
-import core.Conductor;
-
 import util.MathUtil;
 
 class OpeningState extends FlxState
@@ -37,13 +35,7 @@ class OpeningState extends FlxState
 
         FlxG.mouse.visible = false;
 
-        #if FLX_DEBUG
-            FlxG.console.registerClass(Conductor);
-        #end
-
         FlxSprite.defaultAntialiasing = true;
-
-        Conductor.load();
 
         var perfTracker:objects.PerfTracker = new objects.PerfTracker(10.0, 5.0);
         

@@ -8,11 +8,11 @@ import core.Paths;
 
 class Week1 extends Stage<FlxBasic>
 {
-    public var background(default, null):FlxSprite;
+    public var background:FlxSprite;
 
-    public var foreground(default, null):FlxSprite;
+    public var foreground:FlxSprite;
 
-    public var curtains(default, null):FlxSprite;
+    public var curtains:FlxSprite;
 
     public function new():Void
     {

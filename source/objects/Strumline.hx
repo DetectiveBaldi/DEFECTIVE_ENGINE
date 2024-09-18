@@ -4,14 +4,25 @@ import flixel.group.FlxSpriteContainer.FlxTypedSpriteContainer;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
 
+import core.Conductor;
+
 class Strumline extends FlxTypedSpriteContainer<Strum>
 {
+    public var conductor(default, set):Conductor;
+
+    public dynamic function set_conductor(conductor:Conductor):Conductor
+    {
+        for (i in 0 ... members.length)
+            members[i].conductor = conductor;
+
+        return this.conductor = conductor;
+    }
+
     public var lane:Int;
 
     public var spacing(default, set):Float;
 
-    @:noCompletion
-    function set_spacing(spacing:Float):Float
+    public dynamic function set_spacing(spacing:Float):Float
     {
         for (i in 0 ... members.length)
             members[i].x = x + spacing * i;
@@ -31,9 +42,11 @@ class Strumline extends FlxTypedSpriteContainer<Strum>
 
     public var ghostTap(default, null):FlxTypedSignal<(direction:Int)->Void>;
 
-    public function new():Void
+    public function new(conductor:Conductor):Void
     {
         super();
+
+        this.conductor = conductor;
 
         lane = -1;
 
@@ -53,11 +66,11 @@ class Strumline extends FlxTypedSpriteContainer<Strum>
 
         for (i in 0 ... 4)
         {
-            var strum:Strum = new Strum();
-
-            strum.direction = i;
+            var strum:Strum = new Strum(conductor);
 
             strum.parent = this;
+
+            strum.direction = i;
 
             strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Static");
 

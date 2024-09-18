@@ -6,26 +6,30 @@ import core.Conductor;
 
 class MusicBeatState extends FlxState
 {
+    public var conductor(default, null):Conductor;
+
     override function create():Void
     {
         super.create();
 
-        Conductor.current.stepHit.add(stepHit);
+        conductor = new Conductor();
 
-        Conductor.current.beatHit.add(beatHit);
+        conductor.stepHit.add(stepHit);
+
+        conductor.beatHit.add(beatHit);
         
-        Conductor.current.sectionHit.add(sectionHit);
+        conductor.sectionHit.add(sectionHit);
     }
 
     override function destroy():Void
     {
         super.destroy();
 
-        Conductor.current.stepHit.remove(stepHit);
+        conductor.stepHit.remove(stepHit);
 
-        Conductor.current.beatHit.remove(beatHit);
+        conductor.beatHit.remove(beatHit);
         
-        Conductor.current.sectionHit.remove(sectionHit);
+        conductor.sectionHit.remove(sectionHit);
     }
 
     public function stepHit(step:Int):Void

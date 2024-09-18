@@ -56,9 +56,8 @@ import util.formats.charts.PsychFormat;
 class GameState extends MusicBeatState
 {
     public var gameCamera(get, never):FlxCamera;
-
-    @:noCompletion
-    function get_gameCamera():FlxCamera
+    
+    public dynamic function get_gameCamera():FlxCamera
     {
         return FlxG.camera;
     }
@@ -176,13 +175,13 @@ class GameState extends MusicBeatState
 
         add(spectatorGroup);
 
-        spectator = new Character(0.0, 0.0, Paths.json("assets/characters/GIRLFRIEND"), ARTIFICIAL);
+        spectator = new Character(0.0, 0.0, Paths.json("assets/data/characters/GIRLFRIEND"), ARTIFICIAL, conductor);
 
         spectator.skipSing = true;
 
         spectator.setPosition((FlxG.width - spectator.width) * 0.5, 35.0);
 
-        spectatorMap[spectator.simple.name] = spectator;
+        spectatorMap[spectator.data.name] = spectator;
 
         spectatorGroup.add(spectator);
 
@@ -192,11 +191,11 @@ class GameState extends MusicBeatState
 
         add(opponentGroup);
 
-        opponent = new Character(0.0, 0.0, Paths.json("assets/characters/BOYFRIEND_PIXEL"), ARTIFICIAL);
+        opponent = new Character(0.0, 0.0, Paths.json("assets/data/characters/BOYFRIEND_PIXEL"), ARTIFICIAL, conductor);
 
         opponent.setPosition(15.0, 50.0);
 
-        opponentMap[opponent.simple.name] = opponent;
+        opponentMap[opponent.data.name] = opponent;
 
         opponentGroup.add(opponent);
 
@@ -206,11 +205,11 @@ class GameState extends MusicBeatState
 
         add(playerGroup);
 
-        player = new Character(0.0, 0.0, Paths.json("assets/characters/BOYFRIEND"), PLAYABLE);
+        player = new Character(0.0, 0.0, Paths.json("assets/data/characters/BOYFRIEND"), PLAYABLE, conductor);
 
-        player.setPosition((FlxG.width - player.width) - 15.0, 385.0);
+        player.setPosition(FlxG.width - player.width * 0.615, 385.0);
 
-        playerMap[player.simple.name] = player;
+        playerMap[player.data.name] = player;
 
         playerGroup.add(player);
 
@@ -277,7 +276,7 @@ class GameState extends MusicBeatState
 
         add(strumlines);
         
-        opponentStrumline = new Strumline();
+        opponentStrumline = new Strumline(conductor);
 
         opponentStrumline.lane = 0;
         
@@ -301,7 +300,7 @@ class GameState extends MusicBeatState
 
         strumlines.add(opponentStrumline);
         
-        playerStrumline = new Strumline();
+        playerStrumline = new Strumline(conductor);
 
         playerStrumline.lane = 1;
         
@@ -367,7 +366,7 @@ class GameState extends MusicBeatState
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
 
-                    var note:Note = notes.getFirst((n:Note) -> Math.abs(Conductor.current.time - n.time) <= 166.6 && strum.direction == n.direction && strumline.lane == n.lane && n.length == 0.0);
+                    var note:Note = notes.getFirst((n:Note) -> Math.abs(conductor.time - n.time) <= 166.6 && strum.direction == n.direction && strumline.lane == n.lane && n.length == 0.0);
 
                     if (note == null)
                         strumline.ghostTap.dispatch(strum.direction);
@@ -379,7 +378,7 @@ class GameState extends MusicBeatState
                 {
                     var strum:Strum = strumline.members[i];
 
-                    var note:Note = notes.getFirst((n:Note) -> Conductor.current.time >= n.time && strum.direction == n.direction && strumline.lane == n.lane && n.length != 0.0);
+                    var note:Note = notes.getFirst((n:Note) -> conductor.time >= n.time && strum.direction == n.direction && strumline.lane == n.lane && n.length != 0.0);
 
                     if (note != null)
                         strumline.noteHit.dispatch(note);
@@ -404,7 +403,7 @@ class GameState extends MusicBeatState
 
             if (strumline.artificial)
             {
-                if (Conductor.current.time >= note.time && strumline.lane == note.lane)
+                if (conductor.time >= note.time && strumline.lane == note.lane)
                 {
                     strumline.noteHit.dispatch(note);
 
@@ -415,7 +414,7 @@ class GameState extends MusicBeatState
             }
             else
             {
-                if (Conductor.current.time > note.time + 166.6 && strumline.lane == note.lane)
+                if (conductor.time > note.time + 166.6 && strumline.lane == note.lane)
                 {
                     strumline.noteMiss.dispatch(note);
     
@@ -427,7 +426,7 @@ class GameState extends MusicBeatState
 
             var strum:Strum = strumline.group.getFirst((s:Strum) -> note.direction == s.direction);
 
-            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (Conductor.current.time - note.time) * chartSpeed * note.speed * 0.45 * (downScroll ? -1.0 : 1.0));
+            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * chartSpeed * note.speed * 0.45 * (downScroll ? -1.0 : 1.0));
 
             i--;
         }
@@ -436,7 +435,7 @@ class GameState extends MusicBeatState
         {
             var n:ParsedNote = chart.notes[noteIndex];
 
-            if (n.time <= Conductor.current.time + hudCamera.height / hudCamera.zoom / chartSpeed / n.speed / 0.45)
+            if (n.time <= conductor.time + hudCamera.height / hudCamera.zoom / chartSpeed / n.speed / 0.45)
             {
                 var i:Int = notes.members.length - 1;
 
@@ -489,11 +488,15 @@ class GameState extends MusicBeatState
 
                 notes.add(note);
 
-                for (i in 0 ... Math.round(n.length / (((60 / Conductor.current.timeChanges[0].tempo) * 1000.0) * 0.25)))
+                for (i in 0 ... Math.round(n.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)))
                 {
                     var sustain:Note = new Note();
 
-                    sustain.time = note.time + ((((60 / Conductor.current.timeChanges[0].tempo) * 1000.0) * 0.25) * (i + 1));
+                    sustain.parent = note;
+
+                    note.children.push(sustain);
+
+                    sustain.time = note.time + ((((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25) * (i + 1));
 
                     sustain.speed = note.speed;
 
@@ -501,15 +504,11 @@ class GameState extends MusicBeatState
                     
                     sustain.lane = note.lane;
 
-                    sustain.length = (60 / Conductor.current.timeChanges[0].tempo) * 1000.0;
-
-                    note.children.push(sustain);
-
-                    sustain.parent = note;
+                    sustain.length = (60 / conductor.timeChanges[0].tempo) * 1000.0;
 
                     sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
 
-                    if (i >= Math.round(n.length / (((60 / Conductor.current.timeChanges[0].tempo) * 1000.0) * 0.25)) - 1)
+                    if (i >= Math.round(n.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)) - 1)
                         sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
 
                     sustain.flipY = downScroll;
@@ -533,7 +532,7 @@ class GameState extends MusicBeatState
         {
             var e:ParsedEvent = chart.events[eventIndex];
 
-            if (Conductor.current.time >= e.time)
+            if (conductor.time >= e.time)
             {
                 switch (e.name:String)
                 {
@@ -553,18 +552,18 @@ class GameState extends MusicBeatState
 
         if (countdownStarted)
         {
-            Conductor.current.time += 1000.0 * elapsed;
+            conductor.time += 1000.0 * elapsed;
 
-            if (Conductor.current.time >= 0.0 && !songStarted)
+            if (conductor.time >= 0.0 && !songStarted)
                 startSong();
         }
 
         if (songStarted)
         {
-            Conductor.current.guage();
+            conductor.guage();
             
-            if (Math.abs(Conductor.current.time - instrumental.time) > 25.0)
-                instrumental.time = Conductor.current.time;
+            if (Math.abs(conductor.time - instrumental.time) > 25.0)
+                instrumental.time = conductor.time;
 
             if (mainVocals != null)
                 if (Math.abs(instrumental.time - mainVocals.time) > 5.0)
@@ -599,7 +598,7 @@ class GameState extends MusicBeatState
 
     public function loadSong(name:String):Void
     {
-        chart = FunkFormat.build(Paths.json('assets/data/${name}/chart'), Paths.json('assets/data/${name}/meta'), "hard");
+        chart = FunkFormat.build(Paths.json('assets/data/songs/${name}/chart'), Paths.json('assets/data/songs/${name}/meta'), "hard");
 
         ArraySort.sort(chart.notes, (a:ParsedNote, b:ParsedNote) -> Std.int(a.time - b.time));
 
@@ -607,13 +606,13 @@ class GameState extends MusicBeatState
 
         ArraySort.sort(chart.timeChanges, (a:ParsedTimeChange, b:ParsedTimeChange) -> Std.int(a.time - b.time));
 
-        Conductor.current.tempo = chart.tempo;
+        conductor.tempo = chart.tempo;
 
-        Conductor.current.timeChange = {tempo: Conductor.current.tempo, time: 0.0, step: 0.0, beat: 0.0, section: 0.0};
+        conductor.timeChange = {tempo: conductor.tempo, time: 0.0, step: 0.0, beat: 0.0, section: 0.0};
 
-        Conductor.current.timeChanges = chart.timeChanges;
+        conductor.timeChanges = chart.timeChanges;
 
-        Conductor.current.time = -Conductor.current.crotchet * 5.0;
+        conductor.time = -conductor.crotchet * 5.0;
 
         chartSpeed = chart.speed;
 
@@ -621,20 +620,20 @@ class GameState extends MusicBeatState
 
         eventIndex = 0;
 
-        instrumental = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Instrumental')));
+        instrumental = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Instrumental')));
 
         instrumental.onComplete = endSong;
 
-        if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Main')))
-            mainVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Main')));
+        if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Main')))
+            mainVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Main')));
 
         if (mainVocals == null)
         {
-            if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Opponent')))
-                opponentVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Opponent')));
+            if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent')))
+                opponentVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent')));
 
-            if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Player')))
-                playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/${name}/Vocals-Player')));
+            if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player')))
+                playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player')));
         }
     }
 
@@ -660,7 +659,7 @@ class GameState extends MusicBeatState
 
         add(countdownSprite);
 
-        new FlxTimer().start(Conductor.current.crotchet * 0.001, function(timer):Void
+        new FlxTimer().start(conductor.crotchet * 0.001, function(timer):Void
         {
             switch (timer.elapsedLoops:Int)
             {
@@ -675,7 +674,7 @@ class GameState extends MusicBeatState
 
                     FlxTween.cancelTweensOf(countdownSprite, ["alpha"]);
 
-                    FlxTween.tween(countdownSprite, {alpha: 0.0}, Conductor.current.crotchet * 0.001, {ease: FlxEase.circInOut});
+                    FlxTween.tween(countdownSprite, {alpha: 0.0}, conductor.crotchet * 0.001, {ease: FlxEase.circInOut});
 
                     FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/two")), 0.65);
                 }
@@ -688,7 +687,7 @@ class GameState extends MusicBeatState
 
                     FlxTween.cancelTweensOf(countdownSprite, ["alpha"]);
 
-                    FlxTween.tween(countdownSprite, {alpha: 0.0}, Conductor.current.crotchet * 0.001, {ease: FlxEase.circInOut});
+                    FlxTween.tween(countdownSprite, {alpha: 0.0}, conductor.crotchet * 0.001, {ease: FlxEase.circInOut});
 
                     FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/one")), 0.65);
                 }
@@ -701,7 +700,7 @@ class GameState extends MusicBeatState
 
                     FlxTween.cancelTweensOf(countdownSprite, ["alpha"]);
 
-                    FlxTween.tween(countdownSprite, {alpha: 0.0}, Conductor.current.crotchet * 0.001,
+                    FlxTween.tween(countdownSprite, {alpha: 0.0}, conductor.crotchet * 0.001,
                     {
                         ease: FlxEase.circInOut,
 
@@ -860,7 +859,7 @@ class GameState extends MusicBeatState
         {
             if (note.length == 0.0)
             {
-                var judgement:Judgement = Judgement.guage(judgements, Math.abs(Conductor.current.time - note.time));
+                var judgement:Judgement = Judgement.guage(judgements, Math.abs(conductor.time - note.time));
 
                 score += judgement.score;
 
@@ -882,7 +881,7 @@ class GameState extends MusicBeatState
 
                     noteSplash.animation.onFinish.add((name:String) -> noteSplash.kill());
 
-                    noteSplash.animation.play('${FlxG.random.getObject(noteSplash.skin.animations).prefix} ${NoteSplash.directions[noteSplash.direction].toLowerCase()}');
+                    noteSplash.animation.play('${FlxG.random.getObject(noteSplash.textureData.animations).prefix} ${NoteSplash.directions[noteSplash.direction].toLowerCase()}');
 
                     noteSplash.scale.set(0.685, 0.685);
 

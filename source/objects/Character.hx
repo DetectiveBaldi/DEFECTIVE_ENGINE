@@ -20,7 +20,10 @@ using StringTools;
 
 class Character extends FlxSprite
 {
-    public var simple(default, null):SimpleCharacter;
+    /**
+     * A structure containing core information about `this` `Character`, such as .png and .xml locations, animation declarations, and more.
+     */
+    public var data(default, null):CharacterData;
 
     public var danceSteps:Array<String>;
 
@@ -38,80 +41,82 @@ class Character extends FlxSprite
 
     public var role:CharacterRole;
 
-    public function new(x:Float = 0.0, y:Float = 0.0, path:String, role:CharacterRole):Void
+    public var conductor:Conductor;
+
+    public function new(x:Float = 0.0, y:Float = 0.0, path:String, role:CharacterRole, conductor:Conductor):Void
     {
         super(x, y);
         
-        simple = Json.parse(AssetMan.text(path));
+        data = Json.parse(AssetMan.text(path));
 
-        switch (simple.format ?? "".toLowerCase():String)
+        switch (data.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(simple.png)), Paths.xml(simple.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(data.png)), Paths.xml(data.xml));
 
             case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(simple.png)), Paths.xml(simple.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(data.png)), Paths.xml(data.xml));
         }
 
-        antialiasing = simple.antialiasing ?? true;
+        antialiasing = data.antialiasing ?? true;
 
-        scale.set(simple.scale?.x ?? 1.0, simple.scale?.y ?? 1.0);
+        scale.set(data.scale?.x ?? 1.0, data.scale?.y ?? 1.0);
 
         updateHitbox();
 
-        flipX = simple.flipX ?? false;
+        flipX = data.flipX ?? false;
 
-        flipY = simple.flipY ?? false;
+        flipY = data.flipY ?? false;
 
-        for (i in 0 ... simple.animations.length)
+        for (i in 0 ... data.animations.length)
         {
-            if (simple.animations[i].indices.length > 0)
+            if (data.animations[i].indices.length > 0)
             {
                 animation.addByIndices
                 (
-                    simple.animations[i].name,
+                    data.animations[i].name,
 
-                    simple.animations[i].prefix,
+                    data.animations[i].prefix,
 
-                    simple.animations[i].indices,
+                    data.animations[i].indices,
 
                     "",
 
-                    simple.animations[i].frameRate ?? 24.0,
+                    data.animations[i].frameRate ?? 24.0,
 
-                    simple.animations[i].looped ?? false,
+                    data.animations[i].looped ?? false,
 
-                    simple.animations[i].flipX ?? false,
+                    data.animations[i].flipX ?? false,
 
-                    simple.animations[i].flipY ?? false
+                    data.animations[i].flipY ?? false
                 );
             }
             else
             {
                 animation.addByPrefix
                 (
-                    simple.animations[i].name,
+                    data.animations[i].name,
 
-                    simple.animations[i].prefix,
+                    data.animations[i].prefix,
 
-                    simple.animations[i].frameRate ?? 24.0,
+                    data.animations[i].frameRate ?? 24.0,
 
-                    simple.animations[i].looped ?? false,
+                    data.animations[i].looped ?? false,
 
-                    simple.animations[i].flipX ?? false,
+                    data.animations[i].flipX ?? false,
 
-                    simple.animations[i].flipY ?? false
+                    data.animations[i].flipY ?? false
                 );
             }
         }
 
-        danceSteps = simple.danceSteps;
+        danceSteps = data.danceSteps;
 
         danceStep = 0;
 
-        danceInterval = simple.danceInterval ?? 1.0;
+        danceInterval = data.danceInterval ?? 1.0;
 
-        singDuration = simple.singDuration ?? 8.0;
+        singDuration = data.singDuration ?? 8.0;
 
         skipDance = false;
 
@@ -123,11 +128,13 @@ class Character extends FlxSprite
 
         dance();
 
-        Conductor.current.stepHit.add(stepHit);
+        this.conductor = conductor;
 
-        Conductor.current.beatHit.add(beatHit);
+        conductor.stepHit.add(stepHit);
 
-        Conductor.current.sectionHit.add(sectionHit);
+        conductor.beatHit.add(beatHit);
+
+        conductor.sectionHit.add(sectionHit);
     }
 
     override function update(elapsed:Float):Void
@@ -141,7 +148,7 @@ class Character extends FlxSprite
         {
             singCount += elapsed;
 
-            var requiredTime:Float = singDuration * ((Conductor.current.crotchet * 0.25) * 0.001);
+            var requiredTime:Float = singDuration * ((conductor.crotchet * 0.25) * 0.001);
 
             if (animation.name?.endsWith("MISS"))
                 requiredTime *= FlxG.random.float(1.35, 1.85);
@@ -161,20 +168,20 @@ class Character extends FlxSprite
     {
         super.destroy();
 
-        Conductor.current.stepHit.remove(stepHit);
+        conductor.stepHit.remove(stepHit);
 
-        Conductor.current.beatHit.remove(beatHit);
+        conductor.beatHit.remove(beatHit);
 
-        Conductor.current.sectionHit.remove(sectionHit);
+        conductor.sectionHit.remove(sectionHit);
     }
 
     override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
     {
         var output:FlxPoint = super.getScreenPosition(result, camera);
 
-        for (i in 0 ... simple.animations.length)
-            if (animation.name ?? "" == simple.animations[i].name)
-                output.subtract(simple.animations[i].offsets?.x ?? 0.0, simple.animations[i].offsets?.y ?? 0.0);
+        for (i in 0 ... data.animations.length)
+            if (animation.name ?? "" == data.animations[i].name)
+                output.subtract(data.animations[i].offsets?.x ?? 0.0, data.animations[i].offsets?.y ?? 0.0);
 
         return output;
     }
@@ -207,7 +214,7 @@ class Character extends FlxSprite
     }
 }
 
-typedef SimpleCharacter =
+typedef CharacterData =
 {
     var name:String;
     

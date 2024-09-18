@@ -6,8 +6,6 @@ import core.Chart.ParsedTimeChange;
 
 class Conductor
 {
-    public static var current(default, null):Conductor;
-
     public var decimalStep(default, null):Float;
 
     public var decimalBeat(default, null):Float;
@@ -16,24 +14,21 @@ class Conductor
     
     public var step(get, never):Int;
 
-    @:noCompletion
-    function get_step():Int
+    public dynamic function get_step():Int
     {
         return Math.floor(decimalStep);
     }
 
     public var beat(get, never):Int;
 
-    @:noCompletion
-    function get_beat():Int
+    public dynamic function get_beat():Int
     {
         return Math.floor(decimalBeat);
     }
 
     public var section(get, never):Int;
 
-    @:noCompletion
-    function get_section():Int
+    public dynamic function get_section():Int
     {
         return Math.floor(decimalSection);
     }
@@ -48,8 +43,7 @@ class Conductor
 
     public var crotchet(get, never):Float;
 
-    @:noCompletion
-    function get_crotchet():Float
+    public dynamic function get_crotchet():Float
     {
         return (60.0 / tempo) * 1000.0;
     }
@@ -59,11 +53,6 @@ class Conductor
     public var timeChanges:Array<ParsedTimeChange>;
 
     public var time:Float;
-
-    public static function load():Void
-    {
-        Conductor.current = new Conductor();
-    }
 
     public function new():Void
     {

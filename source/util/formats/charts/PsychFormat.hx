@@ -55,6 +55,8 @@ class PsychFormat
                 output.events.push({time: event.time, name: event.name, value: {value1: event.value1, value2: event.value2}});
             }
         }
+
+        output.timeChanges.resize(0);
         
         output.timeChanges.push({time: 0.0, tempo: output.tempo, step: 0.0, beat: 0.0, section: 0.0});
 

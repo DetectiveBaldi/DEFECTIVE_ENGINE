@@ -13,18 +13,24 @@ class Note extends FlxSprite
 {
     public static var directions(default, null):Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 
-    public var skin(default, set):NoteSkin;
+    public var parent:Note;
 
-    @:noCompletion
-    function set_skin(skin:NoteSkin):NoteSkin
+    public var children:Array<Note>;
+
+    /**
+     * A structure containing information about `this` `Note`'s texture, such as .png and .xml locations.
+     */
+    public var textureData(default, set):NoteTextureData;
+    
+    public dynamic function set_textureData(textureData:NoteTextureData):NoteTextureData
     {
-        switch (skin.format ?? "".toLowerCase():String)
+        switch (textureData.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
             
             case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
         }
 
         for (i in 0 ... Note.directions.length)
@@ -36,7 +42,7 @@ class Note extends FlxSprite
             animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldTail", Note.directions[i].toLowerCase() + "HoldTail0", 24.0, false);
         }
 
-        return this.skin = skin;
+        return this.textureData = textureData;
     }
 
     public var time:Float;
@@ -49,15 +55,13 @@ class Note extends FlxSprite
 
     public var length:Float;
 
-    public var parent:Note;
-
-    public var children:Array<Note>;
-
     public function new(x:Float = 0.0, y:Float = 0.0):Void
     {
         super(x, y);
 
-        skin = Json.parse(AssetMan.text(Paths.json("assets/images/notes/classic")));
+        children = new Array<Note>();
+
+        textureData = Json.parse(AssetMan.text(Paths.json("assets/data/notes/classic")));
 
         time = 0.0;
 
@@ -68,12 +72,10 @@ class Note extends FlxSprite
         lane = 0;
 
         length = 0.0;
-
-        children = new Array<Note>();
     }
 }
 
-typedef NoteSkin =
+typedef NoteTextureData =
 {
     var format:String;
 

@@ -16,18 +16,24 @@ class Strum extends FlxSprite
 {
     public static var directions(default, null):Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 
-    public var skin(default, set):StrumSkin;
+    public var parent:Strumline;
 
-    @:noCompletion
-    function set_skin(skin:StrumSkin):StrumSkin
+    public var conductor:Conductor;
+
+    /**
+     * A structure containing information about `this` `Strum`'s texture, such as .png and .xml locations.
+     */
+    public var textureData(default, set):StrumTextureData;
+
+    public dynamic function set_textureData(textureData:StrumTextureData):StrumTextureData
     {
-        switch (skin.format ?? "".toLowerCase():String)
+        switch (textureData.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
             
             case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
         }
 
         for (i in 0 ... Strum.directions.length)
@@ -39,20 +45,20 @@ class Strum extends FlxSprite
             animation.addByPrefix(Strum.directions[i].toLowerCase() + "Confirm", Strum.directions[i].toLowerCase() + "Confirm0", 24.0, false);
         }
 
-        return this.skin = skin;
+        return this.textureData = textureData;
     }
 
     public var direction:Int;
 
-    public var parent:Strumline;
-
     public var confirmCount:Float;
 
-    public function new(x:Float = 0.0, y:Float = 0.0):Void
+    public function new(x:Float = 0.0, y:Float = 0.0, conductor:Conductor):Void
     {
         super(x, y);
+
+        this.conductor = conductor;
         
-        skin = Json.parse(AssetMan.text(Paths.json("assets/images/strums/classic")));
+        textureData = Json.parse(AssetMan.text(Paths.json("assets/data/strums/classic")));
 
         direction = -1;
 
@@ -67,7 +73,7 @@ class Strum extends FlxSprite
         {
             confirmCount += elapsed;
 
-            if (confirmCount >= (Conductor.current.crotchet * 0.25) * 0.001)
+            if (confirmCount >= (conductor.crotchet * 0.25) * 0.001)
             {
                 confirmCount = 0.0;
 
@@ -79,7 +85,7 @@ class Strum extends FlxSprite
     }
 }
 
-typedef StrumSkin =
+typedef StrumTextureData =
 {
     var format:String;
 

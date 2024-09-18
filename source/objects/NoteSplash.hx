@@ -18,42 +18,44 @@ class NoteSplash extends FlxSprite
 {
     public static var directions(default, null):Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 
-    public var skin(default, set):NoteSplashSkin;
+    /**
+     * A structure containing information about `this` `NoteSplash`'s texture, such as .png and .xml locations, and animation declarations.
+     */
+    public var textureData(default, set):NoteSplashTextureData;
 
-    @:noCompletion
-    function set_skin(skin:NoteSplashSkin):NoteSplashSkin
+    public dynamic function set_textureData(textureData:NoteSplashTextureData):NoteSplashTextureData
     {
-        switch (skin.format ?? "".toLowerCase():String)
+        switch (textureData.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
             
             case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(skin.png)), Paths.xml(skin.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
         }
 
-        for (i in 0 ... skin.animations.length)
+        for (i in 0 ... textureData.animations.length)
         {
             for (j in 0 ... NoteSplash.directions.length)
             {
                 animation.addByPrefix
                 (
-                    '${skin.animations[i].prefix} ${NoteSplash.directions[j].toLowerCase()}',
+                    '${textureData.animations[i].prefix} ${NoteSplash.directions[j].toLowerCase()}',
                     
-                    '${skin.animations[i].prefix} ${NoteSplash.directions[j].toLowerCase()}',
+                    '${textureData.animations[i].prefix} ${NoteSplash.directions[j].toLowerCase()}',
                     
-                    skin.animations[i].frameRate ?? 24.0,
+                    textureData.animations[i].frameRate ?? 24.0,
 
-                    skin.animations[i].looped ?? false,
+                    textureData.animations[i].looped ?? false,
 
-                    skin.animations[i].flipX ?? false,
+                    textureData.animations[i].flipX ?? false,
 
-                    skin.animations[i].flipY ?? false
+                    textureData.animations[i].flipY ?? false
                 );   
             }
         }
 
-        return this.skin = skin;
+        return this.textureData = textureData;
     }
 
     public var direction:Int;
@@ -62,7 +64,7 @@ class NoteSplash extends FlxSprite
     {
         super(x, y);
 
-        skin = Json.parse(AssetMan.text(Paths.json("assets/images/noteSplashes/classic")));
+        textureData = Json.parse(AssetMan.text(Paths.json("assets/data/noteSplashes/classic")));
 
         direction = -1;
     }
@@ -71,15 +73,15 @@ class NoteSplash extends FlxSprite
     {
         var output:FlxPoint = super.getScreenPosition(result, camera);
 
-        for (i in 0 ... skin.animations.length)
-            if (animation.name?.startsWith(skin.animations[i].prefix))
-                output.subtract(skin.animations[i].offsets?.x ?? 0.0, skin.animations[i].offsets?.y ?? 0.0);
+        for (i in 0 ... textureData.animations.length)
+            if (animation.name?.startsWith(textureData.animations[i].prefix))
+                output.subtract(textureData.animations[i].offsets?.x ?? 0.0, textureData.animations[i].offsets?.y ?? 0.0);
 
         return output;
     }
 }
 
-typedef NoteSplashSkin =
+typedef NoteSplashTextureData =
 {
     var format:String;
 
