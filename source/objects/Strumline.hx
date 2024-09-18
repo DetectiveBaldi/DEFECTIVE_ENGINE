@@ -8,16 +8,6 @@ import core.Conductor;
 
 class Strumline extends FlxTypedSpriteContainer<Strum>
 {
-    public var conductor(default, set):Conductor;
-
-    public dynamic function set_conductor(conductor:Conductor):Conductor
-    {
-        for (i in 0 ... members.length)
-            members[i].conductor = conductor;
-
-        return this.conductor = conductor;
-    }
-
     public var lane:Int;
 
     public var spacing(default, set):Float;
@@ -45,8 +35,6 @@ class Strumline extends FlxTypedSpriteContainer<Strum>
     public function new(conductor:Conductor):Void
     {
         super();
-
-        this.conductor = conductor;
 
         lane = -1;
 

@@ -41,7 +41,7 @@ class Character extends FlxSprite
 
     public var role:CharacterRole;
 
-    public var conductor:Conductor;
+    public var conductor(default, null):Conductor;
 
     public function new(x:Float = 0.0, y:Float = 0.0, path:String, role:CharacterRole, conductor:Conductor):Void
     {

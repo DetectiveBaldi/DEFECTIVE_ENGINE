@@ -6,7 +6,6 @@ import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
-import flixel.FlxSprite;
 
 import flixel.group.FlxContainer.FlxTypedContainer;
 
@@ -23,7 +22,6 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 
 import flixel.util.FlxColor;
-import flixel.util.FlxTimer;
 
 import core.AssetMan;
 import core.Chart;
@@ -42,6 +40,7 @@ import events.SpeedChangeEvent;
 import extendable.MusicBeatState;
 
 import objects.Character;
+import objects.Countdown;
 import objects.Note;
 import objects.NoteSplash;
 import objects.Strum;
@@ -136,7 +135,7 @@ class GameState extends MusicBeatState
 
     public var playerVocals:FlxSound;
 
-    public var countdownStarted:Bool;
+    public var countdown:Countdown;
 
     public var songStarted:Bool;
 
@@ -334,9 +333,42 @@ class GameState extends MusicBeatState
 
         loadSong("DadBattle (Pico Mix)");
 
-        countdownStarted = false;
+        countdown = new Countdown(conductor);
 
-        startCountdown();
+        countdown.camera = hudCamera;
+
+        countdown.onTick.add((tick:Int) ->
+        {
+            for (i in 0 ... spectatorGroup.members.length)
+            {
+                var character:Character = spectatorGroup.members[i];
+
+                if (tick % character.danceInterval == 0.0)
+                    character.dance();
+            }
+
+            for (i in 0 ... opponentGroup.members.length)
+            {
+                var character:Character = opponentGroup.members[i];
+
+                if (tick % character.danceInterval == 0.0)
+                    character.dance();
+            }
+
+            for (i in 0 ... playerGroup.members.length)
+            {
+                var character:Character = playerGroup.members[i];
+
+                if (tick % character.danceInterval == 0.0)
+                    character.dance();
+            }
+        });
+
+        countdown.onFinish.add(startSong);
+
+        countdown.start();
+
+        add(countdown);
 
         songStarted = false;
     }
@@ -550,16 +582,10 @@ class GameState extends MusicBeatState
             }
         }
 
-        if (countdownStarted)
-        {
-            conductor.time += 1000.0 * elapsed;
-
-            if (conductor.time >= 0.0 && !songStarted)
-                startSong();
-        }
-
         if (songStarted)
         {
+            conductor.time += 1000.0 * elapsed;
+            
             conductor.guage();
             
             if (Math.abs(conductor.time - instrumental.time) > 25.0)
@@ -612,8 +638,6 @@ class GameState extends MusicBeatState
 
         conductor.timeChanges = chart.timeChanges;
 
-        conductor.time = -conductor.crotchet * 5.0;
-
         chartSpeed = chart.speed;
 
         noteIndex = 0;
@@ -635,120 +659,6 @@ class GameState extends MusicBeatState
             if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player')))
                 playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player')));
         }
-    }
-
-    public function startCountdown(?finishCallback:()->Void):Void
-    {
-        var countdownSprite:FlxSprite = new FlxSprite().loadGraphic(AssetMan.graphic(Paths.png("assets/images/countdown")), true, 1000, 500);
-
-        countdownSprite.animation.add("0", [0], 0.0, false);
-
-        countdownSprite.animation.add("1", [1], 0.0, false);
-
-        countdownSprite.animation.add("2", [2], 0.0, false);
-
-        countdownSprite.camera = hudCamera;
-
-        countdownSprite.alpha = 0.0;
-
-        countdownSprite.scale.set(0.85, 0.85);
-
-        countdownSprite.updateHitbox();
-
-        countdownSprite.screenCenter();
-
-        add(countdownSprite);
-
-        new FlxTimer().start(conductor.crotchet * 0.001, function(timer):Void
-        {
-            switch (timer.elapsedLoops:Int)
-            {
-                case 1:
-                    FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/three")), 0.65);
-
-                case 2:
-                {
-                    countdownSprite.alpha = 1;
-
-                    countdownSprite.animation.play("0");
-
-                    FlxTween.cancelTweensOf(countdownSprite, ["alpha"]);
-
-                    FlxTween.tween(countdownSprite, {alpha: 0.0}, conductor.crotchet * 0.001, {ease: FlxEase.circInOut});
-
-                    FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/two")), 0.65);
-                }
-
-                case 3:
-                {
-                    countdownSprite.alpha = 1;
-
-                    countdownSprite.animation.play("1");
-
-                    FlxTween.cancelTweensOf(countdownSprite, ["alpha"]);
-
-                    FlxTween.tween(countdownSprite, {alpha: 0.0}, conductor.crotchet * 0.001, {ease: FlxEase.circInOut});
-
-                    FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/one")), 0.65);
-                }
-
-                case 4:
-                {
-                    countdownSprite.alpha = 1;
-
-                    countdownSprite.animation.play("2");
-
-                    FlxTween.cancelTweensOf(countdownSprite, ["alpha"]);
-
-                    FlxTween.tween(countdownSprite, {alpha: 0.0}, conductor.crotchet * 0.001,
-                    {
-                        ease: FlxEase.circInOut,
-
-                        onComplete: function(tween:FlxTween):Void
-                        {
-                            remove(countdownSprite, true);
-
-                            countdownSprite.destroy();
-                        }
-                    });
-
-                    FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/go")), 0.65);
-                }
-
-                case 5:
-                    if (finishCallback != null)
-                        finishCallback();
-            }
-
-            if (timer.elapsedLoops < 5.0)
-            {
-                for (i in 0 ... spectatorGroup.members.length)
-                {
-                    var character:Character = spectatorGroup.members[i];
-
-                    if (timer.elapsedLoops % character.danceInterval == 0.0)
-                        character.dance();
-                }
-
-                for (i in 0 ... opponentGroup.members.length)
-                {
-                    var character:Character = opponentGroup.members[i];
-
-                    if (timer.elapsedLoops % character.danceInterval == 0.0)
-                        character.dance();
-                }
-
-                for (i in 0 ... playerGroup.members.length)
-                {
-                    var character:Character = playerGroup.members[i];
-
-                    if (timer.elapsedLoops % character.danceInterval == 0.0)
-                        character.dance();
-                }
-            }
-        }, 5);
-
-        countdownStarted = true;
     }
 
     public function startSong():Void
