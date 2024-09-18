@@ -339,28 +339,31 @@ class GameState extends MusicBeatState
 
         countdown.onTick.add((tick:Int) ->
         {
-            for (i in 0 ... spectatorGroup.members.length)
+            if (tick < 5.0)
             {
-                var character:Character = spectatorGroup.members[i];
+                for (i in 0 ... spectatorGroup.members.length)
+                {
+                    var character:Character = spectatorGroup.members[i];
 
-                if (tick % character.danceInterval == 0.0)
-                    character.dance();
-            }
+                    if (tick % character.danceInterval == 0.0)
+                        character.dance();
+                }
 
-            for (i in 0 ... opponentGroup.members.length)
-            {
-                var character:Character = opponentGroup.members[i];
+                for (i in 0 ... opponentGroup.members.length)
+                {
+                    var character:Character = opponentGroup.members[i];
 
-                if (tick % character.danceInterval == 0.0)
-                    character.dance();
-            }
+                    if (tick % character.danceInterval == 0.0)
+                        character.dance();
+                }
 
-            for (i in 0 ... playerGroup.members.length)
-            {
-                var character:Character = playerGroup.members[i];
+                for (i in 0 ... playerGroup.members.length)
+                {
+                    var character:Character = playerGroup.members[i];
 
-                if (tick % character.danceInterval == 0.0)
-                    character.dance();
+                    if (tick % character.danceInterval == 0.0)
+                        character.dance();
+                }
             }
         });
 

@@ -5,8 +5,9 @@ import flixel.FlxSprite;
 
 import flixel.group.FlxContainer;
 
-import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
+import flixel.sound.FlxSound;
+
+import flixel.tweens.FlxTween.FlxTweenManager;
 
 import flixel.util.FlxSignal;
 import flixel.util.FlxSignal.FlxTypedSignal;
@@ -17,6 +18,9 @@ import core.AssetMan;
 import core.Conductor;
 import core.Paths;
 
+/**
+ * An object representing the countdown you see in `GameState`.
+ */
 class Countdown extends FlxContainer
 {
     public var conductor(default, null):Conductor;
@@ -25,9 +29,13 @@ class Countdown extends FlxContainer
 
     public var timer(default, null):FlxTimer;
 
+    public var tweens(default, null):FlxTweenManager;
+
     public var started(default, null):Bool;
 
     public var onStart(default, null):FlxSignal;
+
+    public var paused(default, null):Bool;
 
     public var tick(default, null):Int;
 
@@ -37,7 +45,19 @@ class Countdown extends FlxContainer
 
     public var onFinish(default, null):FlxSignal;
 
+    public var skipped(default, null):Bool;
+
+    public var onSkip(default, null):FlxSignal;
+
     public var sprite(default, null):FlxSprite;
+
+    public var three(default, null):FlxSound;
+
+    public var two(default, null):FlxSound;
+
+    public var one(default, null):FlxSound;
+
+    public var go(default, null):FlxSound;
 
     public function new(conductor:Conductor):Void
     {
@@ -51,9 +71,15 @@ class Countdown extends FlxContainer
 
         timer = new FlxTimer(timers);
 
+        tweens = new FlxTweenManager();
+
+        add(tweens);
+
         started = false;
 
         onStart = new FlxSignal();
+
+        paused = false;
 
         tick = 0;
 
@@ -63,13 +89,17 @@ class Countdown extends FlxContainer
 
         onFinish = new FlxSignal();
 
+        skipped = false;
+
+        onSkip = new FlxSignal();
+
         sprite = new FlxSprite().loadGraphic(AssetMan.graphic(Paths.png("assets/images/countdown")), true, 1000, 500);
 
-        sprite.animation.add("0", [0], 0.0, false);
+        sprite.animation.add("ready", [0], 0.0, false);
 
-        sprite.animation.add("1", [1], 0.0, false);
+        sprite.animation.add("set", [1], 0.0, false);
 
-        sprite.animation.add("2", [2], 0.0, false);
+        sprite.animation.add("go", [2], 0.0, false);
 
         sprite.alpha = 0.0;
 
@@ -80,6 +110,14 @@ class Countdown extends FlxContainer
         sprite.screenCenter();
 
         add(sprite);
+
+        three = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/three")), 0.65);
+
+        two = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/two")), 0.65);
+
+        one = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/one")), 0.65);
+
+        go = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/go")), 0.65);
     }
 
     public function start():Void
@@ -89,55 +127,27 @@ class Countdown extends FlxContainer
             switch (timer.elapsedLoops:Int)
             {
                 case 1:
-                    FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/three")), 0.65);
+                    three.play();
 
                 case 2:
                 {
-                    sprite.alpha = 1;
+                    sprite.animation.play("ready");
 
-                    sprite.animation.play("0");
-
-                    FlxTween.cancelTweensOf(sprite, ["alpha"]);
-
-                    FlxTween.tween(sprite, {alpha: 0.0}, conductor.crotchet * 0.001, {ease: FlxEase.circInOut});
-
-                    FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/two")), 0.65);
+                    two.play();
                 }
 
                 case 3:
                 {
-                    sprite.alpha = 1;
+                    sprite.animation.play("set");
 
-                    sprite.animation.play("1");
-
-                    FlxTween.cancelTweensOf(sprite, ["alpha"]);
-
-                    FlxTween.tween(sprite, {alpha: 0.0}, conductor.crotchet * 0.001, {ease: FlxEase.circInOut});
-
-                    FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/one")), 0.65);
+                    one.play();
                 }
 
                 case 4:
                 {
-                    sprite.alpha = 1;
+                    sprite.animation.play("go");
 
-                    sprite.animation.play("2");
-
-                    FlxTween.cancelTweensOf(sprite, ["alpha"]);
-
-                    FlxTween.tween(sprite, {alpha: 0.0}, conductor.crotchet * 0.001,
-                    {
-                        ease: FlxEase.circInOut,
-
-                        onComplete: function(tween:FlxTween):Void
-                        {
-                            remove(sprite, true);
-
-                            sprite.destroy();
-                        }
-                    });
-
-                    FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/go")), 0.65);
+                    go.play();
                 }
 
                 case 5:
@@ -151,6 +161,15 @@ class Countdown extends FlxContainer
             tick++;
 
             onTick.dispatch(tick);
+
+            if (tick > 1.0 && !finished)
+            {
+                sprite.alpha = 1;
+
+                tweens.completeTweensOf(sprite, ["alpha"]);
+
+                tweens.tween(sprite, {alpha: 0.0}, conductor.crotchet * 0.001);
+            }
         }, 5);
 
         started = true;
@@ -158,13 +177,79 @@ class Countdown extends FlxContainer
         onStart.dispatch();
     }
 
+    /**
+     * Temporarily pauses `this` `Countdown`.
+     * It is recommended to use this function instead of `kill`ing `this` `Countdown`!
+     */
     public function pause():Void
     {
-        timer.active = false;
+        if (!started || paused)
+            return;
+
+        timers.active = false;
+
+        tweens.active = false;
+
+        paused = true;
+
+        three.pause();
+
+        two.pause();
+
+        one.pause();
+
+        go.pause();
     }
 
+    /**
+     * Resumes `this` `Countdown`.
+     * It is recommended to use this function instead of `revive`ing `this` `Countdown`!
+     */
     public function resume():Void
     {
-        timer.active = true;
+        if (!started || !paused)
+            return;
+
+        timers.active = true;
+
+        tweens.active = true;
+
+        paused = false;
+
+        three.resume();
+
+        two.resume();
+
+        one.resume();
+
+        go.resume();
+    }
+
+    /**
+     * Skips `this` `Countdown`. `onSkip` is dispatched.
+     * `this` `Countdown` must be unpaused for this function to run!
+     */
+    public function skip():Void
+    {
+        if (!started || paused)
+            return;
+
+        @:privateAccess
+            for (i in 0 ... timers._timers.length)
+                timers._timers[i].cancel();
+
+        tweens.completeTweensOf(sprite);
+
+        skipped = true;
+
+        onSkip.dispatch();
+
+        three.stop();
+
+        two.stop();
+
+        one.stop();
+
+        go.stop();
     }
 }
