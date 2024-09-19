@@ -16,7 +16,7 @@ using StringTools;
 
 class NoteSplash extends FlxSprite
 {
-    public static var directions(default, null):Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
+    public static var directions:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 
     /**
      * A structure containing texture-related information about this `NoteSplash`, such as .png and .xml locations, and animation declarations.

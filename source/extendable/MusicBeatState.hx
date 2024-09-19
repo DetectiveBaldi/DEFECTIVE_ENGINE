@@ -9,7 +9,7 @@ import core.Conductor;
  */
 class MusicBeatState extends FlxState
 {
-    public var conductor(default, null):Conductor;
+    public var conductor:Conductor;
 
     override function create():Void
     {

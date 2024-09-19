@@ -25,43 +25,43 @@ import core.Paths;
  */
 class Countdown extends FlxContainer
 {
-    public var conductor(default, null):Conductor;
+    public var conductor:Conductor;
 
-    public var timers(default, null):FlxTimerManager;
+    public var timers:FlxTimerManager;
 
-    public var timer(default, null):FlxTimer;
+    public var timer:FlxTimer;
 
-    public var tweens(default, null):FlxTweenManager;
+    public var tweens:FlxTweenManager;
 
-    public var tween(default, null):FlxTween;
+    public var tween:FlxTween;
 
-    public var started(default, null):Bool;
+    public var started:Bool;
 
-    public var onStart(default, null):FlxSignal;
+    public var onStart:FlxSignal;
 
-    public var paused(default, null):Bool;
+    public var paused:Bool;
 
-    public var tick(default, null):Int;
+    public var tick:Int;
 
-    public var onTick(default, null):FlxTypedSignal<(tick:Int)->Void>;
+    public var onTick:FlxTypedSignal<(tick:Int)->Void>;
 
-    public var finished(default, null):Bool;
+    public var finished:Bool;
 
-    public var onFinish(default, null):FlxSignal;
+    public var onFinish:FlxSignal;
 
-    public var skipped(default, null):Bool;
+    public var skipped:Bool;
 
-    public var onSkip(default, null):FlxSignal;
+    public var onSkip:FlxSignal;
 
-    public var sprite(default, null):FlxSprite;
+    public var sprite:FlxSprite;
 
-    public var three(default, null):FlxSound;
+    public var three:FlxSound;
 
-    public var two(default, null):FlxSound;
+    public var two:FlxSound;
 
-    public var one(default, null):FlxSound;
+    public var one:FlxSound;
 
-    public var go(default, null):FlxSound;
+    public var go:FlxSound;
 
     public function new(conductor:Conductor):Void
     {
@@ -147,7 +147,7 @@ class Countdown extends FlxContainer
 
     public function start():Void
     {
-        if (started || skipped)
+        if (started || finished || skipped)
             return;
 
         timer.start(conductor.crotchet * 0.001, (timer:FlxTimer) ->

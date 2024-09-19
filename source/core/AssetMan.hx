@@ -13,11 +13,11 @@ import flixel.graphics.FlxGraphic;
  */
 class AssetMan
 {
-    public static var graphics(default, null):Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
+    public static var graphics:Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
 
-    public static var sounds(default, null):Map<String, Sound> = new Map<String, Sound>();
+    public static var sounds:Map<String, Sound> = new Map<String, Sound>();
 
-    public static var texts(default, null):Map<String, String> = new Map<String, String>();
+    public static var texts:Map<String, String> = new Map<String, String>();
 
     /**
      * Caches a `flixel.graphics.FlxGraphic`, and, if possible, uploads it to the GPU. Then, it is returned.

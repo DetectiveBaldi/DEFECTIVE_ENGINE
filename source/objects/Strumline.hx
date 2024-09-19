@@ -24,13 +24,13 @@ class Strumline extends FlxTypedSpriteContainer<Strum>
 
     public var artificial:Bool;
 
-    public var noteSpawn(default, null):FlxTypedSignal<(note:Note)->Void>;
+    public var noteSpawn:FlxTypedSignal<(note:Note)->Void>;
 
-    public var noteHit(default, null):FlxTypedSignal<(note:Note)->Void>;
+    public var noteHit:FlxTypedSignal<(note:Note)->Void>;
 
-    public var noteMiss(default, null):FlxTypedSignal<(note:Note)->Void>;
+    public var noteMiss:FlxTypedSignal<(note:Note)->Void>;
 
-    public var ghostTap(default, null):FlxTypedSignal<(direction:Int)->Void>;
+    public var ghostTap:FlxTypedSignal<(direction:Int)->Void>;
 
     public function new(conductor:Conductor):Void
     {

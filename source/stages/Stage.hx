@@ -4,7 +4,7 @@ import flixel.FlxBasic;
 
 class Stage<T:FlxBasic>
 {
-    public var members(default, null):Array<T>;
+    public var members:Array<T>;
 
     public function new():Void
     {

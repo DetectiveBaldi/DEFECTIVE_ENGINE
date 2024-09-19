@@ -10,7 +10,7 @@ import util.MathUtil;
 
 class OpeningState extends FlxState
 {
-    public var nextState(default, null):NextState;
+    public var nextState:NextState;
 
     public function new(nextState:NextState):Void
     {

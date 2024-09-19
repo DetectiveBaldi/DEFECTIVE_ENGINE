@@ -23,7 +23,7 @@ class Character extends FlxSprite
     /**
      * A structure containing fundamentals about this `Character`, such as name, texture-related information, and more.
      */
-    public var data(default, null):CharacterData;
+    public var data:CharacterData;
 
     public var danceSteps:Array<String>;
 
@@ -41,7 +41,7 @@ class Character extends FlxSprite
 
     public var role:CharacterRole;
 
-    public var conductor(default, null):Conductor;
+    public var conductor:Conductor;
 
     public function new(x:Float = 0.0, y:Float = 0.0, path:String, role:CharacterRole, conductor:Conductor):Void
     {

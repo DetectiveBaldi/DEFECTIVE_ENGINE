@@ -9,11 +9,11 @@ import core.Chart.ParsedTimeChange;
  */
 class Conductor
 {
-    public var decimalStep(default, null):Float;
+    public var decimalStep:Float;
 
-    public var decimalBeat(default, null):Float;
+    public var decimalBeat:Float;
 
-    public var decimalSection(default, null):Float;
+    public var decimalSection:Float;
     
     public var step(get, never):Int;
 
