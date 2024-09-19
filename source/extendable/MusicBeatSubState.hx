@@ -28,11 +28,7 @@ class MusicBeatSubState extends FlxSubState
     {
         super.destroy();
 
-        conductor.stepHit.remove(stepHit);
-
-        conductor.beatHit.remove(beatHit);
-        
-        conductor.sectionHit.remove(sectionHit);
+        conductor.reset();
     }
 
     public function stepHit(step:Int):Void

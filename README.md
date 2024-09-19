@@ -8,7 +8,7 @@ To compile, complete the following steps:
   - lime: Refer to the [Development Builds](https://github.com/openfl/lime?tab=readme-ov-file#development-builds).
   - openfl: Refer to the [Development Builds](https://github.com/openfl/openfl?tab=readme-ov-file#development-builds).
   - flixel: Run `haxelib git flixel https://github.com/HaxeFlixel/flixel` in a command prompt.
-- Finally, build the game using `haxelib run lime build :target:`.
+- Finally, run `haxelib run lime build :target:` in a command prompt to compile the game.
 
 Defective Engine currently supports the following targets:
 - HashLink

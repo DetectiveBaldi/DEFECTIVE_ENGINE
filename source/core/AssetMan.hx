@@ -17,8 +17,11 @@ class AssetMan
 
     public static var sounds(default, null):Map<String, Sound> = new Map<String, Sound>();
 
+    public static var texts(default, null):Map<String, String> = new Map<String, String>();
+
     /**
-     * Caches a `flixel.graphics.FlxGraphic`, and, if possible, uploads it to the GPU. Then, it is returned. If the requested file path already exists in the cache, it will NOT be renewed.
+     * Caches a `flixel.graphics.FlxGraphic`, and, if possible, uploads it to the GPU. Then, it is returned.
+     * If the requested file path already exists in the cache, it will NOT be renewed.
      * @param path The file path of the graphic you want to cache.
      * @return `flixel.graphics.FlxGraphic`
      */
@@ -43,7 +46,8 @@ class AssetMan
     }
 
     /**
-     * Caches a `openfl.media.Sound`. Then, it is returned. If the requested file path already exists in the cache, it will NOT be renewed.
+     * Caches a `openfl.media.Sound`. Then, it is returned.
+     * If the requested file path already exists in the cache, it will NOT be renewed.
      * @param path The file path of the sound you want to cache.
      * @return `openfl.media.Sound`
      */
@@ -58,9 +62,25 @@ class AssetMan
     }
 
     /**
-     * Removes every graphic from the cache. This frees some VRAM.
+     * Returns the content of a specified text file.
+     * If the requested file path already exists in the cache, it will NOT be renewed.
+     * @param path The file path of the text you want to recieve content from.
+     * @return `String`
      */
-    public static function disposeGraphics():Void
+     public static function text(path:String):String
+    {
+        if (texts.exists(path))
+            return texts[path];
+
+        texts[path] = #if html5 Assets.getText #else sys.io.File.getContent #end (path);
+
+        return texts[path];
+    }
+
+    /**
+     * Clears each item from the graphic, sound, and text caches. Frees some RAM and VRAM.
+     */
+    public static function clearCache():Void
     {
         for (key => value in graphics)
         {
@@ -75,13 +95,7 @@ class AssetMan
         }
 
         graphics.clear();
-    }
 
-    /**
-     * Removes every sound from the cache. This frees some RAM.
-     */
-    public static function disposeSounds():Void
-    {
         for (key => value in sounds)
         {
             value.close();
@@ -90,10 +104,7 @@ class AssetMan
         }
 
         sounds.clear();
-    }
 
-    public static function text(path:String):String
-    {
-        return #if html5 Assets.getText #else sys.io.File.getContent #end (path);
+        texts.clear();
     }
 }

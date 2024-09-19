@@ -21,7 +21,7 @@ using StringTools;
 class Character extends FlxSprite
 {
     /**
-     * A structure containing fundamentals about `this` `Character`, such as name, texture-related information, and more.
+     * A structure containing fundamentals about this `Character`, such as name, texture-related information, and more.
      */
     public var data(default, null):CharacterData;
 

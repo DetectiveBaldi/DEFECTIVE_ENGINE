@@ -7,6 +7,8 @@ import flixel.group.FlxContainer;
 
 import flixel.sound.FlxSound;
 
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.tweens.FlxTween.FlxTweenManager;
 
 import flixel.util.FlxSignal;
@@ -30,6 +32,8 @@ class Countdown extends FlxContainer
     public var timer(default, null):FlxTimer;
 
     public var tweens(default, null):FlxTweenManager;
+
+    public var tween(default, null):FlxTween;
 
     public var started(default, null):Bool;
 
@@ -143,6 +147,9 @@ class Countdown extends FlxContainer
 
     public function start():Void
     {
+        if (started || skipped)
+            return;
+
         timer.start(conductor.crotchet * 0.001, (timer:FlxTimer) ->
         {
             switch (timer.elapsedLoops:Int)
@@ -187,9 +194,7 @@ class Countdown extends FlxContainer
             {
                 sprite.alpha = 1;
 
-                tweens.cancelTweensOf(sprite, ["alpha"]);
-
-                tweens.tween(sprite, {alpha: 0.0}, conductor.crotchet * 0.001);
+                tweens.tween(sprite, {alpha: 0.0}, conductor.crotchet * 0.001, {ease: FlxEase.circInOut});
             }
         }, 5);
 
@@ -198,13 +203,9 @@ class Countdown extends FlxContainer
         onStart.dispatch();
     }
 
-    /**
-     * Temporarily pauses `this` `Countdown`.
-     * If you want to pause the countdown, it's recommended you use this function instead of `kill`ing the object!
-     */
     public function pause():Void
     {
-        if (!started || paused)
+        if (!started || paused || finished || skipped)
             return;
 
         timers.active = false;
@@ -222,13 +223,9 @@ class Countdown extends FlxContainer
         go.pause();
     }
 
-    /**
-     * Resumes the countdown.
-     * If you want to resume the countdown, it's recommended you use this function instead of `revive`ing the object!
-     */
     public function resume():Void
     {
-        if (!started || !paused)
+        if (!started || !paused || finished || skipped)
             return;
 
         timers.active = true;
@@ -246,20 +243,19 @@ class Countdown extends FlxContainer
         go.resume();
     }
 
-    /**
-     * Skips `this` `Countdown`. `onSkip` is dispatched.
-     * `this` `Countdown` must be unpaused for this function to run!
-     */
     public function skip():Void
     {
-        if (!started || paused)
+        if (!started)
             return;
 
         @:privateAccess
+        {
             for (i in 0 ... timers._timers.length)
                 timers._timers[i].cancel();
 
-        tweens.cancelTweensOf(sprite);
+            for (i in 0 ... tweens._tweens.length)
+                tweens._tweens[i].cancel();
+        }
 
         skipped = true;
 
