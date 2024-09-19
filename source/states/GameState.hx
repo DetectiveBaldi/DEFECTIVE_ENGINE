@@ -278,8 +278,6 @@ class GameState extends MusicBeatState
         opponentStrumline = new Strumline(conductor);
 
         opponentStrumline.lane = 0;
-        
-        opponentStrumline.spacing = 116.0;
 
         opponentStrumline.artificial = true;
 
@@ -295,7 +293,7 @@ class GameState extends MusicBeatState
 
         opponentStrumline.ghostTap.add(ghostTap);
 
-        opponentStrumline.setPosition(45.0, downScroll ? (FlxG.height - opponentStrumline.height) - 15.0 : 15.0);
+        opponentStrumline.setPosition(45.0, downScroll ? FlxG.height - opponentStrumline.height - 15.0 : 15.0);
 
         strumlines.add(opponentStrumline);
         
@@ -315,7 +313,7 @@ class GameState extends MusicBeatState
 
         playerStrumline.ghostTap.add(ghostTap);
 
-        playerStrumline.setPosition((FlxG.width - playerStrumline.width) - 45.0, downScroll ? (FlxG.height - playerStrumline.height) - 15.0 : 15.0);
+        playerStrumline.setPosition(FlxG.width - playerStrumline.width - 45.0, downScroll ? FlxG.height - playerStrumline.height - 15.0 : 15.0);
 
         strumlines.add(playerStrumline);
 
