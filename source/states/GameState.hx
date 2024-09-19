@@ -331,7 +331,7 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("DadBattle (Pico Mix)");
+        loadSong("Darnell (Bf Mix)");
 
         countdown = new Countdown(conductor);
 
@@ -368,6 +368,13 @@ class GameState extends MusicBeatState
         });
 
         countdown.onFinish.add(startSong);
+
+        countdown.onSkip.add(() ->
+        {
+            conductor.time = 0.0;
+
+            startSong();
+        });
 
         countdown.start();
 
@@ -585,26 +592,29 @@ class GameState extends MusicBeatState
             }
         }
 
-        if (songStarted)
+        if (countdown.started)
         {
             conductor.time += 1000.0 * elapsed;
-            
-            conductor.guage();
-            
-            if (Math.abs(conductor.time - instrumental.time) > 25.0)
-                instrumental.time = conductor.time;
 
-            if (mainVocals != null)
-                if (Math.abs(instrumental.time - mainVocals.time) > 5.0)
-                    mainVocals.time = instrumental.time;
+            if (countdown.finished)
+            {
+                conductor.guage();
+                
+                if (Math.abs(conductor.time - instrumental.time) > 25.0)
+                    instrumental.time = conductor.time;
 
-            if (opponentVocals != null)
-                if (Math.abs(instrumental.time - opponentVocals.time) > 5.0)
-                    opponentVocals.time = instrumental.time;
+                if (mainVocals != null)
+                    if (Math.abs(instrumental.time - mainVocals.time) > 5.0)
+                        mainVocals.time = instrumental.time;
 
-            if (playerVocals != null)
-                if (Math.abs(instrumental.time - playerVocals.time) > 5.0)
-                    playerVocals.time = instrumental.time;
+                if (opponentVocals != null)
+                    if (Math.abs(instrumental.time - opponentVocals.time) > 5.0)
+                        opponentVocals.time = instrumental.time;
+
+                if (playerVocals != null)
+                    if (Math.abs(instrumental.time - playerVocals.time) > 5.0)
+                        playerVocals.time = instrumental.time;
+            }
         }
 
         if (FlxG.keys.justPressed.ESCAPE)
@@ -640,6 +650,8 @@ class GameState extends MusicBeatState
         conductor.timeChange = {tempo: conductor.tempo, time: 0.0, step: 0.0, beat: 0.0, section: 0.0};
 
         conductor.timeChanges = chart.timeChanges;
+
+        conductor.time = -conductor.crotchet * 5.0;
 
         chartSpeed = chart.speed;
 
