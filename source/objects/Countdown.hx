@@ -187,7 +187,7 @@ class Countdown extends FlxContainer
             {
                 sprite.alpha = 1;
 
-                tweens.completeTweensOf(sprite, ["alpha"]);
+                tweens.cancelTweensOf(sprite, ["alpha"]);
 
                 tweens.tween(sprite, {alpha: 0.0}, conductor.crotchet * 0.001);
             }
@@ -259,11 +259,13 @@ class Countdown extends FlxContainer
             for (i in 0 ... timers._timers.length)
                 timers._timers[i].cancel();
 
-        tweens.completeTweensOf(sprite);
+        tweens.cancelTweensOf(sprite);
 
         skipped = true;
 
         onSkip.dispatch();
+
+        sprite.alpha = 0.0;
 
         three.stop();
 

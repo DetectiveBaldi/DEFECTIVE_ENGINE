@@ -206,7 +206,7 @@ class GameState extends MusicBeatState
 
         player = new Character(0.0, 0.0, Paths.json("assets/data/characters/BOYFRIEND"), PLAYABLE, conductor);
 
-        player.setPosition(FlxG.width - player.width * 0.615, 385.0);
+        player.setPosition(FlxG.width - player.width - 15.0, 385.0);
 
         playerMap[player.data.name] = player;
 
@@ -367,14 +367,7 @@ class GameState extends MusicBeatState
             }
         });
 
-        countdown.onFinish.add(startSong);
-
-        countdown.onSkip.add(() ->
-        {
-            conductor.time = 0.0;
-
-            startSong();
-        });
+        countdown.onSkip.add(() -> conductor.time = 0.0);
 
         countdown.start();
 
@@ -596,28 +589,31 @@ class GameState extends MusicBeatState
         {
             conductor.time += 1000.0 * elapsed;
 
-            if (countdown.finished || countdown.skipped)
-            {
-                conductor.guage();
-                
-                if (Math.abs(conductor.time - instrumental.time) > 25.0)
-                    instrumental.time = conductor.time;
+            if (conductor.time >= 0.0 && !songStarted)
+                startSong();
+        }
 
-                if (mainVocals != null)
-                    if (Math.abs(instrumental.time - mainVocals.time) > 5.0)
-                        mainVocals.time = instrumental.time;
+        if (songStarted)
+        {
+            conductor.guage();
 
-                if (opponentVocals != null)
-                    if (Math.abs(instrumental.time - opponentVocals.time) > 5.0)
-                        opponentVocals.time = instrumental.time;
+            if (Math.abs(conductor.time - instrumental.time) > 25.0)
+                instrumental.time = conductor.time;
 
-                if (playerVocals != null)
-                    if (Math.abs(instrumental.time - playerVocals.time) > 5.0)
-                        playerVocals.time = instrumental.time;
+            if (mainVocals != null)
+                if (Math.abs(instrumental.time - mainVocals.time) > 5.0)
+                    mainVocals.time = instrumental.time;
 
-                if (conductor.time >= instrumental.length)
-                    endSong();
-            }
+            if (opponentVocals != null)
+                if (Math.abs(instrumental.time - opponentVocals.time) > 5.0)
+                    opponentVocals.time = instrumental.time;
+
+            if (playerVocals != null)
+                if (Math.abs(instrumental.time - playerVocals.time) > 5.0)
+                    playerVocals.time = instrumental.time;
+
+            if (conductor.time >= instrumental.length)
+                endSong();
         }
 
         if (FlxG.keys.justPressed.ESCAPE)
