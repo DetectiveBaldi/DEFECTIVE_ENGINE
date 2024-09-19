@@ -120,6 +120,27 @@ class Countdown extends FlxContainer
         go = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/go")), 0.65);
     }
 
+    override function destroy():Void
+    {
+        super.destroy();
+
+        onStart.destroy();
+
+        onTick.destroy();
+
+        onFinish.destroy();
+
+        onSkip.destroy();
+
+        three.destroy();
+
+        two.destroy();
+
+        one.destroy();
+
+        go.destroy();
+    }
+
     public function start():Void
     {
         timer.start(conductor.crotchet * 0.001, (timer:FlxTimer) ->
