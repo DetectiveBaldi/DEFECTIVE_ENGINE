@@ -4,6 +4,9 @@ import flixel.FlxSubState;
 
 import core.Conductor;
 
+/**
+ * A `flixel.FlxSubState` with implemented support for a `core.Conductor`.
+ */
 class MusicBeatSubState extends FlxSubState
 {
     public var conductor(default, null):Conductor;
