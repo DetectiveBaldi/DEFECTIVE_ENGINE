@@ -596,7 +596,7 @@ class GameState extends MusicBeatState
         {
             conductor.time += 1000.0 * elapsed;
 
-            if (countdown.finished)
+            if (countdown.finished || countdown.skipped)
             {
                 conductor.guage();
                 
@@ -614,6 +614,9 @@ class GameState extends MusicBeatState
                 if (playerVocals != null)
                     if (Math.abs(instrumental.time - playerVocals.time) > 5.0)
                         playerVocals.time = instrumental.time;
+
+                if (conductor.time >= instrumental.length)
+                    endSong();
             }
         }
 
@@ -660,8 +663,6 @@ class GameState extends MusicBeatState
         eventIndex = 0;
 
         instrumental = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Instrumental')));
-
-        instrumental.onComplete = endSong;
 
         if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Main')))
             mainVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Main')));
