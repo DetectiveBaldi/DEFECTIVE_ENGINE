@@ -4,6 +4,9 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 
 import core.Chart.ParsedTimeChange;
 
+/**
+ * A class which handles musical timing events throughout the game. It is the heart of `states.GameState`.
+ */
 class Conductor
 {
     public var decimalStep(default, null):Float;
