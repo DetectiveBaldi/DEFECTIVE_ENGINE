@@ -21,7 +21,7 @@ class Strum extends FlxSprite
     public var conductor(default, null):Conductor;
 
     /**
-     * A structure containing information about `this` `Strum`'s texture, such as .png and .xml locations.
+     * A structure containing texture-related information about `this` `Strum`, such as .png and .xml locations.
      */
     public var textureData(default, set):StrumTextureData;
 

@@ -18,7 +18,7 @@ class Note extends FlxSprite
     public var children:Array<Note>;
 
     /**
-     * A structure containing information about `this` `Note`'s texture, such as .png and .xml locations.
+     * A structure containing texture-related information about `this` `Note`, such as .png and .xml locations.
      */
     public var textureData(default, set):NoteTextureData;
     

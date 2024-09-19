@@ -19,7 +19,7 @@ class NoteSplash extends FlxSprite
     public static var directions(default, null):Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 
     /**
-     * A structure containing information about `this` `NoteSplash`'s texture, such as .png and .xml locations, and animation declarations.
+     * A structure containing texture-related information about `this` `NoteSplash`, such as .png and .xml locations, and animation declarations.
      */
     public var textureData(default, set):NoteSplashTextureData;
 

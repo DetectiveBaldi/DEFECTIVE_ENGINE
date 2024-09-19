@@ -19,7 +19,7 @@ import core.Conductor;
 import core.Paths;
 
 /**
- * An object representing the countdown you see in `GameState`.
+ * An object representing the countdown you see in `states.GameState`.
  */
 class Countdown extends FlxContainer
 {
@@ -200,7 +200,7 @@ class Countdown extends FlxContainer
 
     /**
      * Temporarily pauses `this` `Countdown`.
-     * It is recommended to use this function instead of `kill`ing `this` `Countdown`!
+     * If you want to pause the countdown, it's recommended you use this function instead of `kill`ing the object!
      */
     public function pause():Void
     {
@@ -223,8 +223,8 @@ class Countdown extends FlxContainer
     }
 
     /**
-     * Resumes `this` `Countdown`.
-     * It is recommended to use this function instead of `revive`ing `this` `Countdown`!
+     * Resumes the countdown.
+     * If you want to resume the countdown, it's recommended you use this function instead of `revive`ing the object!
      */
     public function resume():Void
     {
