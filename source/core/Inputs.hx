@@ -37,10 +37,12 @@ class Inputs
     {
         for (i in 0 ... inputs.length)
         {
-            if (!list.exists(inputs[i]))
+            var input:String = inputs[i];
+
+            if (!list.exists(input))
                 return null;
 
-            if (checkStatus(inputs[i], JUST_PRESSED))
+            if (checkStatus(input, JUST_PRESSED))
                 return true;
         }
 
@@ -51,10 +53,12 @@ class Inputs
     {
         for (i in 0 ... inputs.length)
         {
-            if (!list.exists(inputs[i]))
+            var input:String = inputs[i];
+
+            if (!list.exists(input))
                 return null;
 
-            if (checkStatus(inputs[i], PRESSED))
+            if (checkStatus(input, PRESSED))
                 return true;
         }
 
@@ -65,10 +69,12 @@ class Inputs
     {
         for (i in 0 ... inputs.length)
         {
-            if (!list.exists(inputs[i]))
+            var input:String = inputs[i];
+
+            if (!list.exists(input))
                 return null;
 
-            if (checkStatus(inputs[i], JUST_RELEASED))
+            if (checkStatus(input, JUST_RELEASED))
                 return true;
         }
 
@@ -79,10 +85,12 @@ class Inputs
     {
         for (i in 0 ... inputs.length)
         {
-            if (!list.exists(inputs[i]))
+            var input:String = inputs[i];
+
+            if (!list.exists(input))
                 return null;
 
-            if (checkStatus(inputs[i], RELEASED))
+            if (checkStatus(input, RELEASED))
                 return true;
         }
 
