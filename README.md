@@ -5,9 +5,9 @@ A small, simple Friday Night Funkin' engine.
 To compile, complete the following steps:
 - First, install [Haxe](https://haxe.org/).
 - Then, install the following libraries:
-  - lime (`haxelib install lime`)
-  - openfl (`haxelib install openfl`)
-  - flixel (`haxelib git flixel https://github.com/HaxeFlixel/flixel`)
+  - lime: Refer to the [Development Builds](https://github.com/openfl/lime?tab=readme-ov-file#development-builds).
+  - openfl: Refer to the [Development Builds](https://github.com/openfl/openfl?tab=readme-ov-file#development-builds).
+  - flixel: Run `haxelib git flixel https://github.com/HaxeFlixel/flixel` in a command prompt.
 - Finally, build the game using `haxelib run lime build :target:`.
 
 Defective Engine currently supports the following targets:
