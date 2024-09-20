@@ -8,7 +8,6 @@ import flixel.group.FlxContainer;
 import flixel.sound.FlxSound;
 
 import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
 import flixel.tweens.FlxTween.FlxTweenManager;
 
 import flixel.util.FlxSignal;
@@ -29,11 +28,7 @@ class Countdown extends FlxContainer
 
     public var timers:FlxTimerManager;
 
-    public var timer:FlxTimer;
-
     public var tweens:FlxTweenManager;
-
-    public var tween:FlxTween;
 
     public var started:Bool;
 
@@ -73,27 +68,15 @@ class Countdown extends FlxContainer
 
         add(timers);
 
-        timer = new FlxTimer(timers);
-
         tweens = new FlxTweenManager();
 
         add(tweens);
 
-        started = false;
-
         onStart = new FlxSignal();
-
-        paused = false;
-
-        tick = 0;
 
         onTick = new FlxTypedSignal<(tick:Int)->Void>();
 
-        finished = false;
-
         onFinish = new FlxSignal();
-
-        skipped = false;
 
         onSkip = new FlxSignal();
 
@@ -147,10 +130,36 @@ class Countdown extends FlxContainer
 
     public function start():Void
     {
-        if (started || finished || skipped)
-            return;
+        @:privateAccess
+        {
+            for (i in 0 ... timers._timers.length)
+                timers._timers[i].cancel();
 
-        timer.start(conductor.crotchet * 0.001, (timer:FlxTimer) ->
+            for (i in 0 ... tweens._tweens.length)
+                tweens._tweens[i].cancel();
+        }
+
+        started = false;
+
+        paused = false;
+
+        tick = 0;
+
+        finished = false;
+
+        skipped = false;
+
+        sprite.alpha = 0.0;
+
+        three.stop();
+
+        two.stop();
+
+        one.stop();
+
+        go.stop();
+
+        new FlxTimer(timers).start(conductor.crotchet * 0.001, (timer:FlxTimer) ->
         {
             switch (timer.elapsedLoops:Int)
             {
@@ -192,8 +201,12 @@ class Countdown extends FlxContainer
 
             if (tick > 1.0 && !finished)
             {
+                @:privateAccess
+                    for (i in 0 ... tweens._tweens.length)
+                        tweens._tweens[i].cancel();
+                
                 sprite.alpha = 1;
-
+                
                 tweens.tween(sprite, {alpha: 0.0}, conductor.crotchet * 0.001, {ease: FlxEase.circInOut});
             }
         }, 5);
@@ -245,7 +258,7 @@ class Countdown extends FlxContainer
 
     public function skip():Void
     {
-        if (!started)
+        if (!started || paused || finished || skipped)
             return;
 
         @:privateAccess
