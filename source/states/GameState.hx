@@ -444,6 +444,10 @@ class GameState extends MusicBeatState
 
             var strumline:Strumline = strumlines.getFirst((s:Strumline) -> note.lane == s.lane);
 
+            var strum:Strum = strumline.group.getFirst((s:Strum) -> note.direction == s.direction);
+
+            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * chartSpeed * note.speed * 0.45 * (downScroll ? -1.0 : 1.0));
+
             if (strumline.artificial)
             {
                 if (conductor.time >= note.time && strumline.lane == note.lane)
@@ -466,10 +470,6 @@ class GameState extends MusicBeatState
                     continue;
                 }
             }
-
-            var strum:Strum = strumline.group.getFirst((s:Strum) -> note.direction == s.direction);
-
-            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * chartSpeed * note.speed * 0.45 * (downScroll ? -1.0 : 1.0));
 
             i--;
         }

@@ -9,15 +9,13 @@ import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 
 /**
- * A class which handles the caching and storing of graphics, sounds, and texts.
+ * A class which handles the caching and storing of graphics and sounds.
  */
 class AssetMan
 {
     public static var graphics:Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
 
     public static var sounds:Map<String, Sound> = new Map<String, Sound>();
-
-    public static var texts:Map<String, String> = new Map<String, String>();
 
     /**
      * Caches a `flixel.graphics.FlxGraphic`, and, if possible, uploads it to the GPU. Then, it is returned.
@@ -46,6 +44,25 @@ class AssetMan
     }
 
     /**
+     * Removes the specified graphic from the cache. Frees some VRAM.
+     * @param path The file path of the graphic you want to remove.
+     */
+    public static function removeGraphic(path:String):Void
+    {
+        if (!graphics.exists(path))
+            return;
+
+        var graphic:FlxGraphic = graphics[path];
+
+        @:privateAccess
+            graphic.bitmap.__texture.dispose();
+
+        FlxG.bitmap.remove(graphic);
+
+        graphics.remove(path);
+    }
+
+    /**
      * Caches a `openfl.media.Sound`. Then, it is returned.
      * If the requested file path already exists in the cache, it will NOT be renewed.
      * @param path The file path of the sound you want to cache.
@@ -62,49 +79,42 @@ class AssetMan
     }
 
     /**
-     * Returns the content of a specified text file.
-     * If the requested file path already exists in the cache, it will NOT be renewed.
-     * @param path The file path of the text you want to recieve content from.
-     * @return `String`
+     * Removes the specified sound from the sound cache. Frees some RAM.
+     * @param path The file path of the sound you want to remove.
      */
-     public static function text(path:String):String
+    public static function removeSound(path:String):Void
     {
-        if (texts.exists(path))
-            return texts[path];
+        if (!sounds.exists(path))
+            return;
 
-        texts[path] = #if html5 Assets.getText #else sys.io.File.getContent #end (path);
+        var sound:Sound = sounds[path];
 
-        return texts[path];
+        sound.close();
+
+        Assets.cache.removeSound(path);
+
+        sounds.remove(path);
     }
 
     /**
-     * Clears each item from the graphic, sound, and text caches. Frees some RAM and VRAM.
+     * Gets the content of the specified text file.
+     * @param path The file path of the text you want to recieve content from.
+     * @return `String`
+     */
+    public static function text(path:String):String
+    {
+        return #if html5 Assets.getText #else sys.io.File.getContent #end (path);
+    }
+
+    /**
+     * Clears each item from the graphic and sound caches. Frees some RAM and VRAM.
      */
     public static function clearCache():Void
     {
         for (key => value in graphics)
-        {
-            @:privateAccess
-                value.bitmap.__texture.dispose();
-            
-            value.bitmap.dispose();
-            
-            value.destroy();
-
-            FlxG.bitmap.remove(value);
-        }
-
-        graphics.clear();
+            removeGraphic(key);
 
         for (key => value in sounds)
-        {
-            value.close();
-
-            Assets.cache.removeSound(key);
-        }
-
-        sounds.clear();
-
-        texts.clear();
+            removeSound(key);
     }
 }

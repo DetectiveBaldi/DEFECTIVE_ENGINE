@@ -32,6 +32,16 @@ class Strumline extends FlxTypedSpriteContainer<Strum>
 
     public var ghostTap:FlxTypedSignal<(direction:Int)->Void>;
 
+    public var conductor(default, set):Conductor;
+
+    public dynamic function set_conductor(conductor:Conductor):Conductor
+    {
+        for (i in 0 ... members.length)
+            members[i].conductor = conductor;
+        
+        return this.conductor = conductor;
+    }
+
     public function new(conductor:Conductor):Void
     {
         super();
@@ -51,6 +61,8 @@ class Strumline extends FlxTypedSpriteContainer<Strum>
         noteMiss = new FlxTypedSignal<(note:Note)->Void>();
 
         ghostTap = new FlxTypedSignal<(direction:Int)->Void>();
+
+        this.conductor = conductor;
 
         for (i in 0 ... 4)
         {

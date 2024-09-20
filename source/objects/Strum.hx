@@ -17,8 +17,6 @@ class Strum extends FlxSprite
     public static var directions:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 
     public var parent:Strumline;
-    
-    public var conductor:Conductor;
 
     /**
      * A structure containing texture-related information about this `Strum`, such as .png and .xml locations.
@@ -52,17 +50,19 @@ class Strum extends FlxSprite
 
     public var confirmCount:Float;
 
+    public var conductor:Conductor;
+
     public function new(x:Float = 0.0, y:Float = 0.0, conductor:Conductor):Void
     {
         super(x, y);
-
-        this.conductor = conductor;
         
         textureData = Json.parse(AssetMan.text(Paths.json("assets/data/strums/classic")));
 
         direction = -1;
 
         confirmCount = 0.0;
+
+        this.conductor = conductor;
     }
 
     override function update(elapsed:Float):Void
