@@ -365,7 +365,17 @@ class GameState extends MusicBeatState
             }
         });
 
-        countdown.onSkip.add(() -> conductor.time = 0.0);
+        countdown.onFinish.add(() ->
+        {
+            countdown.kill();
+        });
+
+        countdown.onSkip.add(() ->
+        {
+            conductor.time = 0.0;
+
+            countdown.kill();
+        });
 
         countdown.start();
 
