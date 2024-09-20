@@ -9,7 +9,7 @@ import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 
 /**
- * A class which handles the caching and storing of graphics and sounds.
+ * A class which handles the caching and storing of graphics, sounds, and texts.
  */
 class AssetMan
 {
