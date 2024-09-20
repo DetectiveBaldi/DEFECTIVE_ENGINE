@@ -44,7 +44,7 @@ import objects.Countdown;
 import objects.Note;
 import objects.NoteSplash;
 import objects.Strum;
-import objects.Strumline;
+import objects.StrumLine;
 
 import stages.Stage;
 import stages.Week1;
@@ -109,11 +109,11 @@ class GameState extends MusicBeatState
 
     public var judgements:Array<Judgement>;
 
-    public var strumlines:FlxTypedContainer<Strumline>;
+    public var strumLines:FlxTypedContainer<StrumLine>;
 
-    public var opponentStrumline:Strumline;
+    public var opponentStrumLine:StrumLine;
 
-    public var playerStrumline:Strumline;
+    public var playerStrumLine:StrumLine;
 
     public var notes:FlxTypedContainer<Note>;
 
@@ -269,53 +269,53 @@ class GameState extends MusicBeatState
             {name: "Shit", color: FlxColor.subtract(FlxColor.RED, FlxColor.BROWN), timing: Math.POSITIVE_INFINITY, bonus: 0.0, score: 50, hits: 0}
         ];
 
-        strumlines = new FlxTypedContainer<Strumline>();
+        strumLines = new FlxTypedContainer<StrumLine>();
 
-        strumlines.camera = hudCamera;
+        strumLines.camera = hudCamera;
 
-        add(strumlines);
+        add(strumLines);
         
-        opponentStrumline = new Strumline(conductor);
+        opponentStrumLine = new StrumLine(conductor);
 
-        opponentStrumline.lane = 0;
+        opponentStrumLine.lane = 0;
 
-        opponentStrumline.artificial = true;
+        opponentStrumLine.artificial = true;
 
-        opponentStrumline.noteHit.add(opponentNoteHit);
+        opponentStrumLine.noteHit.add(opponentNoteHit);
 
-        opponentStrumline.noteHit.add(noteHit);
+        opponentStrumLine.noteHit.add(noteHit);
 
-        opponentStrumline.noteMiss.add(opponentNoteMiss);
+        opponentStrumLine.noteMiss.add(opponentNoteMiss);
 
-        opponentStrumline.noteMiss.add(noteMiss);
+        opponentStrumLine.noteMiss.add(noteMiss);
 
-        opponentStrumline.ghostTap.add(opponentGhostTap);
+        opponentStrumLine.ghostTap.add(opponentGhostTap);
 
-        opponentStrumline.ghostTap.add(ghostTap);
+        opponentStrumLine.ghostTap.add(ghostTap);
 
-        opponentStrumline.setPosition(45.0, downScroll ? FlxG.height - opponentStrumline.height - 15.0 : 15.0);
+        opponentStrumLine.setPosition(45.0, downScroll ? FlxG.height - opponentStrumLine.height - 15.0 : 15.0);
 
-        strumlines.add(opponentStrumline);
+        strumLines.add(opponentStrumLine);
         
-        playerStrumline = new Strumline(conductor);
+        playerStrumLine = new StrumLine(conductor);
 
-        playerStrumline.lane = 1;
+        playerStrumLine.lane = 1;
         
-        playerStrumline.noteHit.add(playerNoteHit);
+        playerStrumLine.noteHit.add(playerNoteHit);
 
-        playerStrumline.noteHit.add(noteHit);
+        playerStrumLine.noteHit.add(noteHit);
 
-        playerStrumline.noteMiss.add(playerNoteMiss);
+        playerStrumLine.noteMiss.add(playerNoteMiss);
 
-        playerStrumline.noteMiss.add(noteMiss);
+        playerStrumLine.noteMiss.add(noteMiss);
 
-        playerStrumline.ghostTap.add(playerGhostTap);
+        playerStrumLine.ghostTap.add(playerGhostTap);
 
-        playerStrumline.ghostTap.add(ghostTap);
+        playerStrumLine.ghostTap.add(ghostTap);
 
-        playerStrumline.setPosition(FlxG.width - playerStrumline.width - 45.0, downScroll ? FlxG.height - playerStrumline.height - 15.0 : 15.0);
+        playerStrumLine.setPosition(FlxG.width - playerStrumLine.width - 45.0, downScroll ? FlxG.height - playerStrumLine.height - 15.0 : 15.0);
 
-        strumlines.add(playerStrumline);
+        strumLines.add(playerStrumLine);
 
         notes = new FlxTypedContainer<Note>();
 
@@ -392,44 +392,44 @@ class GameState extends MusicBeatState
 
         hudCamera.zoom = FlxMath.lerp(hudCamera.zoom, hudCameraZoom, 0.15);
 
-        for (i in 0 ... strumlines.members.length)
+        for (i in 0 ... strumLines.members.length)
         {
-            var strumline:Strumline = strumlines.members[i];
+            var strumLine:StrumLine = strumLines.members[i];
 
-            if (strumline.artificial)
+            if (strumLine.artificial)
                 continue;
 
-            for (i in 0 ... strumline.inputs.length)
+            for (i in 0 ... strumLine.inputs.length)
             {
-                var input:String = strumline.inputs[i];
+                var input:String = strumLine.inputs[i];
 
                 if (Inputs.checkStatus(input, JUST_PRESSED))
                 {
-                    var strum:Strum = strumline.members[i];
+                    var strum:Strum = strumLine.members[i];
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
 
-                    var note:Note = notes.getFirst((n:Note) -> Math.abs(conductor.time - n.time) <= 166.6 && strum.direction == n.direction && strumline.lane == n.lane && n.length == 0.0);
+                    var note:Note = notes.getFirst((n:Note) -> Math.abs(conductor.time - n.time) <= 166.6 && strum.direction == n.direction && strumLine.lane == n.lane && n.length == 0.0);
 
                     if (note == null)
-                        strumline.ghostTap.dispatch(strum.direction);
+                        strumLine.ghostTap.dispatch(strum.direction);
                     else
-                        strumline.noteHit.dispatch(note);
+                        strumLine.noteHit.dispatch(note);
                 }
 
                 if (Inputs.checkStatus(input, PRESSED))
                 {
-                    var strum:Strum = strumline.members[i];
+                    var strum:Strum = strumLine.members[i];
 
-                    var note:Note = notes.getFirst((n:Note) -> conductor.time >= n.time && strum.direction == n.direction && strumline.lane == n.lane && n.length != 0.0);
+                    var note:Note = notes.getFirst((n:Note) -> conductor.time >= n.time && strum.direction == n.direction && strumLine.lane == n.lane && n.length != 0.0);
 
                     if (note != null)
-                        strumline.noteHit.dispatch(note);
+                        strumLine.noteHit.dispatch(note);
                 }
 
                 if (Inputs.checkStatus(input, JUST_RELEASED))
                 {
-                    var strum:Strum = strumline.members[i];
+                    var strum:Strum = strumLine.members[i];
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Static");
                 }
@@ -442,17 +442,17 @@ class GameState extends MusicBeatState
         {
             var note:Note = notes.members[i];
 
-            var strumline:Strumline = strumlines.getFirst((s:Strumline) -> note.lane == s.lane);
+            var strumLine:StrumLine = strumLines.getFirst((s:StrumLine) -> note.lane == s.lane);
 
-            var strum:Strum = strumline.group.getFirst((s:Strum) -> note.direction == s.direction);
+            var strum:Strum = strumLine.group.getFirst((s:Strum) -> note.direction == s.direction);
 
             note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * chartSpeed * note.speed * 0.45 * (downScroll ? -1.0 : 1.0));
 
-            if (strumline.artificial)
+            if (strumLine.artificial)
             {
-                if (conductor.time >= note.time && strumline.lane == note.lane)
+                if (conductor.time >= note.time && strumLine.lane == note.lane)
                 {
-                    strumline.noteHit.dispatch(note);
+                    strumLine.noteHit.dispatch(note);
 
                     i--;
 
@@ -461,9 +461,9 @@ class GameState extends MusicBeatState
             }
             else
             {
-                if (conductor.time > note.time + 166.6 && strumline.lane == note.lane)
+                if (conductor.time > note.time + 166.6 && strumLine.lane == note.lane)
                 {
-                    strumline.noteMiss.dispatch(note);
+                    strumLine.noteMiss.dispatch(note);
     
                     i--;
     
@@ -567,7 +567,7 @@ class GameState extends MusicBeatState
 
                 noteIndex++;
 
-                strumlines.getFirst((s:Strumline) -> note.lane == s.lane).noteSpawn.dispatch(note);
+                strumLines.getFirst((s:StrumLine) -> note.lane == s.lane).noteSpawn.dispatch(note);
             }
         }
 
@@ -777,15 +777,15 @@ class GameState extends MusicBeatState
 
     public function noteHit(note:Note):Void
     {
-        var strumline:Strumline = strumlines.getFirst((s:Strumline) -> note.lane == s.lane);
+        var strumLine:StrumLine = strumLines.getFirst((s:StrumLine) -> note.lane == s.lane);
 
-        var strum:Strum = strumline.group.getFirst((s:Strum) -> note.direction == s.direction);
+        var strum:Strum = strumLine.group.getFirst((s:Strum) -> note.direction == s.direction);
 
         strum.confirmCount = 0.0;
         
         strum.animation.play(Strum.directions[note.direction].toLowerCase() + "Confirm", true);
 
-        if (!strumline.artificial)
+        if (!strumLine.artificial)
         {
             if (note.length == 0.0)
             {

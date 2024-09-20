@@ -16,7 +16,7 @@ class Strum extends FlxSprite
 {
     public static var directions:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 
-    public var parent:Strumline;
+    public var parent:StrumLine;
 
     /**
      * A structure containing texture-related information about this `Strum`, such as .png and .xml locations.
