@@ -1,4 +1,4 @@
-package objects;
+package game.notes;
 
 import flixel.group.FlxSpriteContainer.FlxTypedSpriteContainer;
 

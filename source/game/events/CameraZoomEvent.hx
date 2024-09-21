@@ -1,4 +1,4 @@
-package events;
+package game.events;
 
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -6,7 +6,7 @@ import flixel.FlxG;
 import flixel.tweens.FlxEase.EaseFunction;
 import flixel.tweens.FlxTween;
 
-import states.GameState;
+import game.GameState;
 
 class CameraZoomEvent
 {

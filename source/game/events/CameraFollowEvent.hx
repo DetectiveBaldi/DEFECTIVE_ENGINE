@@ -1,4 +1,4 @@
-package events;
+package game.events;
 
 import flixel.FlxG;
 
@@ -7,7 +7,7 @@ import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase.EaseFunction;
 import flixel.tweens.FlxTween;
 
-import states.GameState;
+import game.GameState;
 
 class CameraFollowEvent
 {

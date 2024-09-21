@@ -1,4 +1,4 @@
-package stages;
+package game.stages;
 
 import flixel.FlxBasic;
 

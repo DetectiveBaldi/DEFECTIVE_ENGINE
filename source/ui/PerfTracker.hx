@@ -1,4 +1,4 @@
-package objects;
+package ui;
 
 import haxe.Timer;
 

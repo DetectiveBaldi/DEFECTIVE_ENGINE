@@ -1,4 +1,4 @@
-package states;
+package game;
 
 import haxe.ds.ArraySort;
 
@@ -24,33 +24,28 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 
 import core.AssetMan;
-import core.Chart;
-import core.Chart.ParsedEvent;
-import core.Chart.ParsedNote;
-import core.Chart.ParsedTimeChange;
-import core.Conductor;
 import core.Inputs;
-import core.Judgement;
 import core.Paths;
-
-import events.CameraFollowEvent;
-import events.CameraZoomEvent;
-import events.SpeedChangeEvent;
 
 import extendable.MusicBeatState;
 
-import objects.Character;
-import objects.Countdown;
-import objects.Note;
-import objects.NoteSplash;
-import objects.Strum;
-import objects.StrumLine;
+import game.Chart.ParsedEvent;
+import game.Chart.ParsedNote;
+import game.Chart.ParsedTimeChange;
+import game.ChartConverters.FunkConverter;
+import game.ChartConverters.PsychConverter;
+import game.events.CameraFollowEvent;
+import game.events.CameraZoomEvent;
+import game.events.SpeedChangeEvent;
+import game.notes.Note;
+import game.notes.NoteSplash;
+import game.notes.Strum;
+import game.notes.StrumLine;
+import game.stages.Stage;
+import game.stages.Week1;
+import game.timing.Judgement;
 
-import stages.Stage;
-import stages.Week1;
-
-import util.formats.charts.FunkFormat;
-import util.formats.charts.PsychFormat;
+import ui.Countdown;
 
 class GameState extends MusicBeatState
 {
@@ -329,7 +324,7 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("Darnell (Bf Mix)");
+        loadSong("DadBattle (Pico Mix)");
 
         countdown = new Countdown(conductor);
 
@@ -644,7 +639,7 @@ class GameState extends MusicBeatState
 
     public function loadSong(name:String):Void
     {
-        chart = FunkFormat.build(Paths.json('assets/data/songs/${name}/chart'), Paths.json('assets/data/songs/${name}/meta'), "hard");
+        chart = new FunkConverter(Paths.json('assets/data/songs/${name}/chart'), Paths.json('assets/data/songs/${name}/meta')).build("hard");
 
         ArraySort.sort(chart.notes, (a:ParsedNote, b:ParsedNote) -> Std.int(a.time - b.time));
 

@@ -4,8 +4,7 @@ import openfl.display.Sprite;
 
 import flixel.FlxGame;
 
-import states.GameState;
-import states.OpeningState;
+import game.GameState;
 
 class Main extends Sprite
 {

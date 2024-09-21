@@ -1,10 +1,12 @@
-package states;
+package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 
 import flixel.util.typeLimit.NextState;
+
+import ui.PerfTracker;
 
 import util.MathUtil;
 
@@ -37,7 +39,7 @@ class OpeningState extends FlxState
 
         FlxSprite.defaultAntialiasing = true;
 
-        var perfTracker:objects.PerfTracker = new objects.PerfTracker(10.0, 5.0);
+        var perfTracker:PerfTracker = new PerfTracker(10.0, 5.0);
         
         FlxG.game.addChild(perfTracker);
 

@@ -2,10 +2,10 @@ package core;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
 
-import core.Chart.ParsedTimeChange;
+import game.Chart.ParsedTimeChange;
 
 /**
- * A class which handles musical timing events throughout the game. It is the heart of `states.GameState`.
+ * A class which handles musical timing events throughout the game. It is the heart of `game.GameState`.
  */
 class Conductor
 {

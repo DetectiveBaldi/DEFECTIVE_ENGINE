@@ -1,4 +1,4 @@
-package objects;
+package ui;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -20,7 +20,7 @@ import core.Conductor;
 import core.Paths;
 
 /**
- * An object representing the countdown you see in `states.GameState`.
+ * An object representing the countdown you see in `game.GameState`.
  */
 class Countdown extends FlxContainer
 {
