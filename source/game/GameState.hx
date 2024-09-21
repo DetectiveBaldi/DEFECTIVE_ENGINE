@@ -324,7 +324,7 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("DadBattle (Pico Mix)");
+        loadSong("Darnell (Bf Mix)");
 
         countdown = new Countdown(conductor);
 
@@ -469,101 +469,101 @@ class GameState extends MusicBeatState
             i--;
         }
 
-        if (noteIndex < chart.notes.length)
+        while (noteIndex < chart.notes.length)
         {
             var n:ParsedNote = chart.notes[noteIndex];
 
-            if (n.time <= conductor.time + hudCamera.height / hudCamera.zoom / chartSpeed / n.speed / 0.45)
+            if (n.time > conductor.time + hudCamera.height / hudCamera.zoom / chartSpeed / n.speed / 0.45)
+                break;
+
+            var i:Int = notes.members.length - 1;
+
+            while (i >= 0.0)
             {
-                var i:Int = notes.members.length - 1;
+                var note:Note = notes.members[i];
 
-                while (i >= 0.0)
+                if (n.time == note.time && n.direction == note.direction && n.lane == note.lane && note.length == 0.0)
                 {
-                    var note:Note = notes.members[i];
-
-                    if (n.time == note.time && n.direction == note.direction && n.lane == note.lane && note.length == 0.0)
-                    {
-                        notes.remove(note).destroy();
-
-                        i--;
-
-                        var j:Int = note.children.length - 1;
-
-                        while (j >= 0.0)
-                        {
-                            notes.remove(note.children[j]).destroy();
-
-                            j--;
-
-                            i--;
-                        }
-
-                        continue;
-                    }
+                    notes.remove(note).destroy();
 
                     i--;
+
+                    var j:Int = note.children.length - 1;
+
+                    while (j >= 0.0)
+                    {
+                        notes.remove(note.children[j]).destroy();
+
+                        j--;
+
+                        i--;
+                    }
+
+                    continue;
                 }
 
-                var note:Note = new Note();
-
-                note.time = n.time;
-
-                note.speed = n.speed;
-
-                note.direction = n.direction;
-
-                note.lane = n.lane;
-
-                note.length = 0.0;
-
-                note.animation.play(Note.directions[note.direction].toLowerCase());
-
-                note.scale.set(0.685, 0.685);
-
-                note.updateHitbox();
-
-                note.setPosition((FlxG.width - note.width) * 0.5, hudCamera.height / hudCamera.zoom);
-
-                notes.add(note);
-
-                for (i in 0 ... Math.round(n.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)))
-                {
-                    var sustain:Note = new Note();
-
-                    sustain.parent = note;
-
-                    note.children.push(sustain);
-
-                    sustain.time = note.time + ((((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25) * (i + 1));
-
-                    sustain.speed = note.speed;
-
-                    sustain.direction = note.direction;
-                    
-                    sustain.lane = note.lane;
-
-                    sustain.length = (60 / conductor.timeChanges[0].tempo) * 1000.0;
-
-                    sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
-
-                    if (i >= Math.round(n.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)) - 1)
-                        sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
-
-                    sustain.flipY = downScroll;
-
-                    sustain.scale.set(0.685, 0.685);
-
-                    sustain.updateHitbox();
-
-                    sustain.setPosition((FlxG.width - sustain.width) * 0.5, hudCamera.height / hudCamera.zoom);
-
-                    notes.add(sustain);
-                }
-
-                noteIndex++;
-
-                strumLines.getFirst((s:StrumLine) -> note.lane == s.lane).noteSpawn.dispatch(note);
+                i--;
             }
+
+            var note:Note = new Note();
+
+            note.time = n.time;
+
+            note.speed = n.speed;
+
+            note.direction = n.direction;
+
+            note.lane = n.lane;
+
+            note.length = 0.0;
+
+            note.animation.play(Note.directions[note.direction].toLowerCase());
+
+            note.scale.set(0.685, 0.685);
+
+            note.updateHitbox();
+
+            note.setPosition((FlxG.width - note.width) * 0.5, hudCamera.height / hudCamera.zoom);
+
+            notes.add(note);
+
+            for (i in 0 ... Math.round(n.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)))
+            {
+                var sustain:Note = new Note();
+
+                sustain.parent = note;
+
+                note.children.push(sustain);
+
+                sustain.time = note.time + ((((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25) * (i + 1));
+
+                sustain.speed = note.speed;
+
+                sustain.direction = note.direction;
+                
+                sustain.lane = note.lane;
+
+                sustain.length = (60 / conductor.timeChanges[0].tempo) * 1000.0;
+
+                sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
+
+                if (i >= Math.round(n.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)) - 1)
+                    sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
+
+                sustain.flipY = downScroll;
+
+                sustain.scale.set(0.685, 0.685);
+
+                sustain.updateHitbox();
+
+                sustain.setPosition((FlxG.width - sustain.width) * 0.5, hudCamera.height / hudCamera.zoom);
+
+                notes.add(sustain);
+            }
+
+            noteIndex++;
+
+            strumLines.getFirst((s:StrumLine) -> note.lane == s.lane).noteSpawn.dispatch(note);
         }
 
         if (eventIndex < chart.events.length)
@@ -616,7 +616,27 @@ class GameState extends MusicBeatState
                     playerVocals.time = instrumental.time;
 
             if (conductor.time >= instrumental.length)
-                endSong();
+            {
+                FlxG.timeScale *= 1.05;
+
+                conductor.time = 0;
+
+                noteIndex = 0;
+
+                eventIndex = 0;
+
+                instrumental.play(true);
+
+                instrumental.pitch *= 1.05;
+
+                opponentVocals.play(true);
+
+                opponentVocals.pitch *= 1.05;
+
+                playerVocals.play(true);
+
+                playerVocals.pitch *= 1.05;
+            }
         }
 
         if (FlxG.keys.justPressed.ESCAPE)
@@ -694,15 +714,6 @@ class GameState extends MusicBeatState
 
     public function endSong():Void
     {
-        if (mainVocals != null)
-            mainVocals.stop();
-
-        if (opponentVocals != null)
-            opponentVocals.stop();
-
-        if (playerVocals != null)
-            playerVocals.stop();
-
         FlxG.resetState();
     }
 
