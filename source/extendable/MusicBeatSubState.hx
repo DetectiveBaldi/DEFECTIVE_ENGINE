@@ -5,7 +5,7 @@ import flixel.FlxSubState;
 import core.Conductor;
 
 /**
- * A `flixel.FlxSubState` with implemented support for a `core.Conductor`.
+ * An extended `flixel.FlxSubState` which is created containing a single `core.Conductor` instance.
  */
 class MusicBeatSubState extends FlxSubState
 {

@@ -20,7 +20,7 @@ import core.Conductor;
 import core.Paths;
 
 /**
- * An object representing the countdown you see in `game.GameState`.
+ * A `flixel.group.FlxContainer` representing the countdown you see in `game.GameState`.
  */
 class Countdown extends FlxContainer
 {
