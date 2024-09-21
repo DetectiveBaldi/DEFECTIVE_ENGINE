@@ -561,9 +561,9 @@ class GameState extends MusicBeatState
                 notes.add(sustain);
             }
 
-            noteIndex++;
-
             strumLines.getFirst((s:StrumLine) -> note.lane == s.lane).noteSpawn.dispatch(note);
+
+            noteIndex++;
         }
 
         if (eventIndex < chart.events.length)
