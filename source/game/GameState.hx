@@ -324,7 +324,7 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("Darnell (Bf Mix)");
+        loadSong("Satin Panties Erect");
 
         countdown = new Countdown(conductor);
 
@@ -527,7 +527,7 @@ class GameState extends MusicBeatState
 
             notes.add(note);
 
-            for (i in 0 ... Math.round(n.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)))
+            for (i in 0 ... Math.floor(n.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)))
             {
                 var sustain:Note = new Note();
 
@@ -547,7 +547,7 @@ class GameState extends MusicBeatState
 
                 sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
 
-                if (i >= Math.round(n.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)) - 1)
+                if (i >= Math.floor(n.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)) - 1)
                     sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
 
                 sustain.flipY = downScroll;
@@ -639,7 +639,7 @@ class GameState extends MusicBeatState
 
     public function loadSong(name:String):Void
     {
-        chart = new FunkConverter(Paths.json('assets/data/songs/${name}/chart'), Paths.json('assets/data/songs/${name}/meta')).build("hard");
+        chart = new FunkConverter(Paths.json('assets/data/songs/${name}/chart'), Paths.json('assets/data/songs/${name}/meta')).build("nightmare");
 
         ArraySort.sort(chart.notes, (a:ParsedNote, b:ParsedNote) -> Std.int(a.time - b.time));
 
