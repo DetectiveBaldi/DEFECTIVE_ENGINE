@@ -616,27 +616,7 @@ class GameState extends MusicBeatState
                     playerVocals.time = instrumental.time;
 
             if (conductor.time >= instrumental.length)
-            {
-                FlxG.timeScale *= 1.05;
-
-                conductor.time = 0;
-
-                noteIndex = 0;
-
-                eventIndex = 0;
-
-                instrumental.play(true);
-
-                instrumental.pitch *= 1.05;
-
-                opponentVocals.play(true);
-
-                opponentVocals.pitch *= 1.05;
-
-                playerVocals.play(true);
-
-                playerVocals.pitch *= 1.05;
-            }
+                endSong();
         }
 
         if (FlxG.keys.justPressed.ESCAPE)
