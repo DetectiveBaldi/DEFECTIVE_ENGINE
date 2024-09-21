@@ -36,11 +36,31 @@ class MathUtil
 
     public static function minInt(...numbers:Int):Int
     {
-        return Std.int(min(for (i in 0 ... numbers.length) numbers[i]));
+        var output:Int = FlxMath.MAX_VALUE_INT;
+
+        for (i in 0 ... numbers.length)
+        {
+            var number:Int = numbers[i];
+
+            if (number < output)
+                output = number;
+        }
+
+        return output;
     }
 
     public static function maxInt(...numbers:Int):Int
     {
-        return Std.int(max(for (i in 0 ... numbers.length) numbers[i]));
+        var output:Int = FlxMath.MIN_VALUE_INT;
+
+        for (i in 0 ... numbers.length)
+        {
+            var number:Int = numbers[i];
+
+            if (number > output)
+                output = number;
+        }
+
+        return output;
     }
 }
