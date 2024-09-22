@@ -441,7 +441,7 @@ class GameState extends MusicBeatState
 
             var strum:Strum = strumLine.group.getFirst((s:Strum) -> note.direction == s.direction);
 
-            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * chartSpeed * note.speed * 0.45 * (downScroll ? -1.0 : 1.0));
+            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * chartSpeed * note.speed * (downScroll ? -1.0 : 1.0));
 
             if (strumLine.artificial)
             {
@@ -473,7 +473,7 @@ class GameState extends MusicBeatState
         {
             var n:ParsedNote = chart.notes[noteIndex];
 
-            if (n.time > conductor.time + hudCamera.height / hudCamera.zoom / chartSpeed / n.speed / 0.45)
+            if (n.time > conductor.time + hudCamera.height / hudCamera.zoom / chartSpeed / n.speed)
                 break;
 
             var j:Int = notes.members.length - 1;
@@ -640,6 +640,8 @@ class GameState extends MusicBeatState
     public function loadSong(name:String):Void
     {
         chart = new FunkConverter(Paths.json('assets/data/songs/${name}/chart'), Paths.json('assets/data/songs/${name}/meta')).build("hard");
+
+        chart.speed = FlxMath.bound(chart.speed, 0.0, 1.5);
 
         ArraySort.sort(chart.notes, (a:ParsedNote, b:ParsedNote) -> Std.int(a.time - b.time));
 
