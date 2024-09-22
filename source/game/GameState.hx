@@ -404,7 +404,7 @@ class GameState extends MusicBeatState
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
 
-                    var note:Note = notes.getFirst((n:Note) -> Math.abs(conductor.time - n.time) <= 166.6 && strum.direction == n.direction && strumLine.lane == n.lane && n.length == 0.0);
+                    var note:Note = notes.getFirst((parsed:Note) -> Math.abs(conductor.time - parsed.time) <= 166.6 && strum.direction == parsed.direction && strumLine.lane == parsed.lane && parsed.length == 0.0);
 
                     if (note == null)
                         strumLine.ghostTap.dispatch(strum.direction);
@@ -416,7 +416,7 @@ class GameState extends MusicBeatState
                 {
                     var strum:Strum = strumLine.members[j];
 
-                    var note:Note = notes.getFirst((n:Note) -> conductor.time >= n.time && strum.direction == n.direction && strumLine.lane == n.lane && n.length != 0.0);
+                    var note:Note = notes.getFirst((parsed:Note) -> conductor.time >= parsed.time && strum.direction == parsed.direction && strumLine.lane == parsed.lane && parsed.length != 0.0);
 
                     if (note != null)
                         strumLine.noteHit.dispatch(note);
@@ -471,9 +471,9 @@ class GameState extends MusicBeatState
 
         while (noteIndex < chart.notes.length)
         {
-            var n:ParsedNote = chart.notes[noteIndex];
+            var parsed:ParsedNote = chart.notes[noteIndex];
 
-            if (n.time > conductor.time + hudCamera.height / hudCamera.zoom / chartSpeed / n.speed)
+            if (parsed.time > conductor.time + hudCamera.height / hudCamera.zoom / chartSpeed / parsed.speed)
                 break;
 
             var j:Int = notes.members.length - 1;
@@ -482,7 +482,7 @@ class GameState extends MusicBeatState
             {
                 var note:Note = notes.members[j];
 
-                if (n.time == note.time && n.direction == note.direction && n.lane == note.lane && note.length == 0.0)
+                if (parsed.time == note.time && parsed.direction == note.direction && parsed.lane == note.lane && note.length == 0.0)
                 {
                     notes.remove(note).destroy();
 
@@ -507,13 +507,13 @@ class GameState extends MusicBeatState
 
             var note:Note = new Note();
 
-            note.time = n.time;
+            note.time = parsed.time;
 
-            note.speed = n.speed;
+            note.speed = parsed.speed;
 
-            note.direction = n.direction;
+            note.direction = parsed.direction;
 
-            note.lane = n.lane;
+            note.lane = parsed.lane;
 
             note.length = 0.0;
 
@@ -527,7 +527,7 @@ class GameState extends MusicBeatState
 
             notes.add(note);
 
-            for (k in 0 ... Math.floor(n.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)))
+            for (k in 0 ... Math.floor(parsed.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)))
             {
                 var sustain:Note = new Note();
 
@@ -547,7 +547,7 @@ class GameState extends MusicBeatState
 
                 sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
 
-                if (k >= Math.floor(n.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)) - 1)
+                if (k >= Math.floor(parsed.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)) - 1)
                     sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
 
                 sustain.flipY = downScroll;
@@ -568,20 +568,20 @@ class GameState extends MusicBeatState
 
         if (eventIndex < chart.events.length)
         {
-            var e:ParsedEvent = chart.events[eventIndex];
+            var parsed:ParsedEvent = chart.events[eventIndex];
 
-            if (conductor.time >= e.time)
+            if (conductor.time >= parsed.time)
             {
-                switch (e.name:String)
+                switch (parsed.name:String)
                 {
                     case "Camera Follow":
-                        CameraFollowEvent.dispatch(FlxPoint.get(e.value.x, e.value.y), e.value.duration, Reflect.getProperty(FlxEase, e.value.ease));
+                        CameraFollowEvent.dispatch(FlxPoint.get(parsed.value.x, parsed.value.y), parsed.value.duration, Reflect.getProperty(FlxEase, parsed.value.ease));
 
                     case "Camera Zoom":
-                        CameraZoomEvent.dispatch(Reflect.getProperty(this, e.value.camera), e.value.zoom, e.value.duration, Reflect.getProperty(FlxEase, e.value.ease));
+                        CameraZoomEvent.dispatch(Reflect.getProperty(this, parsed.value.camera), parsed.value.zoom, parsed.value.duration, Reflect.getProperty(FlxEase, parsed.value.ease));
 
                     case "Speed Change":
-                        SpeedChangeEvent.dispatch(e.value.speed, e.value.duration, Reflect.getProperty(FlxEase, e.value.ease));
+                        SpeedChangeEvent.dispatch(parsed.value.speed, parsed.value.duration, Reflect.getProperty(FlxEase, parsed.value.ease));
                 }
 
                 eventIndex++;
