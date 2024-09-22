@@ -324,7 +324,7 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("Satin Panties Erect");
+        loadSong("Darnell (Bf Mix)");
 
         countdown = new Countdown(conductor);
 
@@ -394,13 +394,13 @@ class GameState extends MusicBeatState
             if (strumLine.artificial)
                 continue;
 
-            for (i in 0 ... strumLine.inputs.length)
+            for (j in 0 ... strumLine.inputs.length)
             {
-                var input:String = strumLine.inputs[i];
+                var input:String = strumLine.inputs[j];
 
                 if (Inputs.checkStatus(input, JUST_PRESSED))
                 {
-                    var strum:Strum = strumLine.members[i];
+                    var strum:Strum = strumLine.members[j];
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
 
@@ -414,7 +414,7 @@ class GameState extends MusicBeatState
 
                 if (Inputs.checkStatus(input, PRESSED))
                 {
-                    var strum:Strum = strumLine.members[i];
+                    var strum:Strum = strumLine.members[j];
 
                     var note:Note = notes.getFirst((n:Note) -> conductor.time >= n.time && strum.direction == n.direction && strumLine.lane == n.lane && n.length != 0.0);
 
@@ -424,7 +424,7 @@ class GameState extends MusicBeatState
 
                 if (Inputs.checkStatus(input, JUST_RELEASED))
                 {
-                    var strum:Strum = strumLine.members[i];
+                    var strum:Strum = strumLine.members[j];
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Static");
                 }
@@ -476,33 +476,33 @@ class GameState extends MusicBeatState
             if (n.time > conductor.time + hudCamera.height / hudCamera.zoom / chartSpeed / n.speed / 0.45)
                 break;
 
-            var i:Int = notes.members.length - 1;
+            var j:Int = notes.members.length - 1;
 
-            while (i >= 0.0)
+            while (j >= 0.0)
             {
-                var note:Note = notes.members[i];
+                var note:Note = notes.members[j];
 
                 if (n.time == note.time && n.direction == note.direction && n.lane == note.lane && note.length == 0.0)
                 {
                     notes.remove(note).destroy();
 
-                    i--;
+                    j--;
 
-                    var j:Int = note.children.length - 1;
+                    var k:Int = note.children.length - 1;
 
-                    while (j >= 0.0)
+                    while (k >= 0.0)
                     {
-                        notes.remove(note.children[j]).destroy();
+                        notes.remove(note.children[k]).destroy();
+
+                        k--;
 
                         j--;
-
-                        i--;
                     }
 
                     continue;
                 }
 
-                i--;
+                j--;
             }
 
             var note:Note = new Note();
@@ -527,7 +527,7 @@ class GameState extends MusicBeatState
 
             notes.add(note);
 
-            for (i in 0 ... Math.floor(n.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)))
+            for (k in 0 ... Math.floor(n.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)))
             {
                 var sustain:Note = new Note();
 
@@ -535,7 +535,7 @@ class GameState extends MusicBeatState
 
                 note.children.push(sustain);
 
-                sustain.time = note.time + ((((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25) * (i + 1));
+                sustain.time = note.time + ((((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25) * (k + 1));
 
                 sustain.speed = note.speed;
 
@@ -547,7 +547,7 @@ class GameState extends MusicBeatState
 
                 sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
 
-                if (i >= Math.floor(n.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)) - 1)
+                if (k >= Math.floor(n.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)) - 1)
                     sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
 
                 sustain.flipY = downScroll;
@@ -639,7 +639,7 @@ class GameState extends MusicBeatState
 
     public function loadSong(name:String):Void
     {
-        chart = new FunkConverter(Paths.json('assets/data/songs/${name}/chart'), Paths.json('assets/data/songs/${name}/meta')).build("nightmare");
+        chart = new FunkConverter(Paths.json('assets/data/songs/${name}/chart'), Paths.json('assets/data/songs/${name}/meta')).build("hard");
 
         ArraySort.sort(chart.notes, (a:ParsedNote, b:ParsedNote) -> Std.int(a.time - b.time));
 
