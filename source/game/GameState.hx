@@ -671,7 +671,7 @@ class GameState extends MusicBeatState
     {
         chart = new FunkConverter(Paths.json('assets/data/songs/${name}/chart'), Paths.json('assets/data/songs/${name}/meta')).build("hard");
 
-        chart.speed = FlxMath.bound(chart.speed, 0.0, 1.5);
+        chart.speed = FlxMath.bound(chart.speed, 0.0, 1.35);
 
         ArraySort.sort(chart.notes, (a:ParsedNote, b:ParsedNote) -> Std.int(a.time - b.time));
 
