@@ -84,7 +84,35 @@ class GameState extends MusicBeatState
 
     public var player:Character;
 
-    public var downScroll:Bool;
+    public var downScroll(default, set):Bool;
+
+    public dynamic function set_downScroll(downScroll:Bool):Bool
+    {
+        if (opponentStrums != null)
+            opponentStrums.y = downScroll ? FlxG.height - opponentStrums.height - 15.0 : 15.0;
+
+        if (playerStrums != null)
+            playerStrums.y = downScroll ? FlxG.height - playerStrums.height - 15.0 : 15.0;
+        
+        return this.downScroll = downScroll;
+    }
+
+    public var middleScroll(default, set):Bool;
+
+    public dynamic function set_middleScroll(middleScroll:Bool):Bool
+    {
+        if (opponentStrums != null)
+        {
+            opponentStrums.visible = !middleScroll;
+
+            opponentStrums.x = middleScroll ? (FlxG.width - opponentStrums.width) * 0.5 : 45.0;
+        }
+
+        if (playerStrums != null)
+            playerStrums.x = middleScroll ? (FlxG.width - playerStrums.width) * 0.5 : FlxG.width - playerStrums.width - 45.0;
+
+        return this.middleScroll = middleScroll;
+    }
 
     public var score:Int;
 
@@ -106,9 +134,9 @@ class GameState extends MusicBeatState
 
     public var strumLines:FlxTypedContainer<StrumLine>;
 
-    public var opponentStrumLine:StrumLine;
+    public var opponentStrums:StrumLine;
 
-    public var playerStrumLine:StrumLine;
+    public var playerStrums:StrumLine;
 
     public var notes:FlxTypedContainer<Note>;
 
@@ -209,6 +237,8 @@ class GameState extends MusicBeatState
 
         downScroll = false;
 
+        middleScroll = false;
+
         score = 0;
 
         hits = 0;
@@ -270,47 +300,47 @@ class GameState extends MusicBeatState
 
         add(strumLines);
         
-        opponentStrumLine = new StrumLine(conductor);
+        opponentStrums = new StrumLine(conductor);
 
-        opponentStrumLine.lane = 0;
+        opponentStrums.lane = 0;
 
-        opponentStrumLine.artificial = true;
+        opponentStrums.artificial = true;
 
-        opponentStrumLine.noteHit.add(opponentNoteHit);
+        opponentStrums.noteHit.add(opponentNoteHit);
 
-        opponentStrumLine.noteHit.add(noteHit);
+        opponentStrums.noteHit.add(noteHit);
 
-        opponentStrumLine.noteMiss.add(opponentNoteMiss);
+        opponentStrums.noteMiss.add(opponentNoteMiss);
 
-        opponentStrumLine.noteMiss.add(noteMiss);
+        opponentStrums.noteMiss.add(noteMiss);
 
-        opponentStrumLine.ghostTap.add(opponentGhostTap);
+        opponentStrums.ghostTap.add(opponentGhostTap);
 
-        opponentStrumLine.ghostTap.add(ghostTap);
+        opponentStrums.ghostTap.add(ghostTap);
 
-        opponentStrumLine.setPosition(45.0, downScroll ? FlxG.height - opponentStrumLine.height - 15.0 : 15.0);
+        opponentStrums.setPosition(middleScroll ? (FlxG.width - opponentStrums.width) * 0.5 : 45.0, downScroll ? FlxG.height - opponentStrums.height - 15.0 : 15.0);
 
-        strumLines.add(opponentStrumLine);
+        strumLines.add(opponentStrums);
         
-        playerStrumLine = new StrumLine(conductor);
+        playerStrums = new StrumLine(conductor);
 
-        playerStrumLine.lane = 1;
+        playerStrums.lane = 1;
         
-        playerStrumLine.noteHit.add(playerNoteHit);
+        playerStrums.noteHit.add(playerNoteHit);
 
-        playerStrumLine.noteHit.add(noteHit);
+        playerStrums.noteHit.add(noteHit);
 
-        playerStrumLine.noteMiss.add(playerNoteMiss);
+        playerStrums.noteMiss.add(playerNoteMiss);
 
-        playerStrumLine.noteMiss.add(noteMiss);
+        playerStrums.noteMiss.add(noteMiss);
 
-        playerStrumLine.ghostTap.add(playerGhostTap);
+        playerStrums.ghostTap.add(playerGhostTap);
 
-        playerStrumLine.ghostTap.add(ghostTap);
+        playerStrums.ghostTap.add(ghostTap);
 
-        playerStrumLine.setPosition(FlxG.width - playerStrumLine.width - 45.0, downScroll ? FlxG.height - playerStrumLine.height - 15.0 : 15.0);
+        playerStrums.setPosition(middleScroll ? (FlxG.width - playerStrums.width) * 0.5 : FlxG.width - playerStrums.width - 45.0, downScroll ? FlxG.height - playerStrums.height - 15.0 : 15.0);
 
-        strumLines.add(playerStrumLine);
+        strumLines.add(playerStrums);
 
         notes = new FlxTypedContainer<Note>();
 
@@ -663,18 +693,18 @@ class GameState extends MusicBeatState
 
         eventIndex = 0;
 
-        instrumental = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Instrumental')));
+        instrumental = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Instrumental')), 1.0, true);
 
         if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Main')))
-            mainVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Main')));
+            mainVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Main')), 1.0, true);
 
         if (mainVocals == null)
         {
             if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent')))
-                opponentVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent')));
+                opponentVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent')), 1.0, true);
 
             if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player')))
-                playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player')));
+                playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player')), 1.0, true);
         }
     }
 
