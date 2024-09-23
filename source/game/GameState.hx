@@ -27,15 +27,13 @@ import core.AssetMan;
 import core.Inputs;
 import core.Paths;
 
-import editors.ChartConverters.FunkConverter;
-import editors.ChartConverters.PsychConverter;
-import editors.ChartEditorState;
-
 import extendable.MusicBeatState;
 
 import game.Chart.ParsedEvent;
 import game.Chart.ParsedNote;
 import game.Chart.ParsedTimeChange;
+import game.ChartConverters.FunkConverter;
+import game.ChartConverters.PsychConverter;
 import game.events.CameraFollowEvent;
 import game.events.CameraZoomEvent;
 import game.events.SpeedChangeEvent;
@@ -165,13 +163,6 @@ class GameState extends MusicBeatState
     public var countdown:Countdown;
 
     public var songStarted:Bool;
-
-    public function new(?chart:Chart):Void
-    {
-        super();
-
-        this.chart = chart;
-    }
 
     override function create():Void
     {
@@ -661,9 +652,6 @@ class GameState extends MusicBeatState
                 endSong();
         }
 
-        if (Inputs.checkStatus("DEBUG:0", JUST_PRESSED))
-            FlxG.switchState(() -> new ChartEditorState(chart));
-
         if (FlxG.keys.justPressed.ESCAPE)
             FlxG.resetState();
     }
@@ -684,8 +672,7 @@ class GameState extends MusicBeatState
 
     public function loadSong(name:String):Void
     {
-        if (chart == null)
-            chart = new FunkConverter(Paths.json('assets/data/songs/${name}/chart'), Paths.json('assets/data/songs/${name}/meta')).build("hard");
+        chart = new FunkConverter(Paths.json('assets/data/songs/${name}/chart'), Paths.json('assets/data/songs/${name}/meta')).build("hard");
 
         chart.speed = FlxMath.bound(chart.speed, 0.0, 1.35);
 
@@ -742,11 +729,7 @@ class GameState extends MusicBeatState
 
     public function endSong():Void
     {
-        #if debug
-            FlxG.switchState(() -> new ChartEditorState(chart));
-        #else
-            FlxG.resetState();
-        #end
+        FlxG.resetState();
     }
 
     public function opponentNoteHit(note:Note):Void

@@ -1,7 +1,5 @@
 package;
 
-import haxe.ui.Toolkit;
-
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -26,8 +24,6 @@ class OpeningState extends FlxState
     override function create():Void
     {
         super.create();
-
-        Toolkit.init();
 
         #if !html5
             FlxG.autoPause = false;
