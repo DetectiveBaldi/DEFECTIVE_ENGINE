@@ -26,11 +26,6 @@ class MusicBeatSubState extends FlxSubState
         add(conductor);
     }
 
-    override function destroy():Void
-    {
-        super.destroy();
-    }
-
     public function stepHit(step:Int):Void
     {
 

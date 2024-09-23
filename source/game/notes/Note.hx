@@ -2,6 +2,7 @@ package game.notes;
 
 import haxe.Json;
 
+import flixel.FlxCamera;
 import flixel.FlxSprite;
 
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -72,6 +73,23 @@ class Note extends FlxSprite
         lane = 0;
 
         length = 0.0;
+    }
+
+    override function isOnScreen(?camera:FlxCamera):Bool
+    {
+        if (super.isOnScreen(camera))
+            return true;
+
+        for (i in 0 ... children.length)
+        {
+            var sustain:Note = children[i];
+
+            if (sustain.exists && sustain.visible)
+                if (sustain.isOnScreen(camera))
+                    return true;
+        }
+
+        return false;
     }
 }
 

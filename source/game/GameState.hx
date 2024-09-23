@@ -356,7 +356,7 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("Darnell (Bf Mix)");
+        loadSong("Blammed Erect");
 
         countdown = new Countdown(conductor);
 
@@ -620,17 +620,6 @@ class GameState extends MusicBeatState
             }
         }
 
-        if (countdown.started)
-        {
-            if (conductor.active && conductor.exists)
-            {
-                conductor.time += 1000.0 * elapsed;
-
-                if (conductor.time >= 0.0 && !songStarted)
-                    startSong();
-            }
-        }
-
         if (songStarted)
         {
             if (Math.abs(conductor.time - instrumental.time) > 25.0)
@@ -650,6 +639,11 @@ class GameState extends MusicBeatState
 
             if (conductor.time > instrumental.length)
                 endSong();
+        }
+        else
+        {
+            if (conductor.time >= 0.0)
+                startSong();
         }
 
         if (FlxG.keys.justPressed.ESCAPE)
@@ -672,7 +666,7 @@ class GameState extends MusicBeatState
 
     public function loadSong(name:String):Void
     {
-        chart = new FunkConverter(Paths.json('assets/data/songs/${name}/chart'), Paths.json('assets/data/songs/${name}/meta')).build("hard");
+        chart = new FunkConverter(Paths.json('assets/data/songs/${name}/chart'), Paths.json('assets/data/songs/${name}/meta')).build("nightmare");
 
         chart.speed = FlxMath.bound(chart.speed, 0.0, 1.35);
 
