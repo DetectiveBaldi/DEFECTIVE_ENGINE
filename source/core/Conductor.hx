@@ -1,5 +1,7 @@
 package core;
 
+import flixel.FlxBasic;
+
 import flixel.util.FlxSignal.FlxTypedSignal;
 
 import game.Chart.ParsedTimeChange;
@@ -7,7 +9,7 @@ import game.Chart.ParsedTimeChange;
 /**
  * A class which handles musical timing events throughout the game. It is the heart of `game.GameState`.
  */
-class Conductor
+class Conductor extends FlxBasic
 {
     public var decimalStep:Float;
 
@@ -59,6 +61,8 @@ class Conductor
 
     public function new():Void
     {
+        super();
+
         decimalStep = -1.0;
 
         decimalBeat = -1.0;
@@ -80,8 +84,11 @@ class Conductor
         time = 0.0;
     }
 
-    public function guage():Void
+    override function update(elapsed:Float):Void
     {
+        if (time < 0.0)
+            return;
+        
         var lastStep:Int = step;
 
         var lastBeat:Int = beat;
@@ -128,8 +135,10 @@ class Conductor
             sectionHit.dispatch(section);
     }
 
-    public function reset():Void
+    override function destroy():Void
     {
+        super.destroy();
+        
         decimalStep = -1.0;
 
         decimalBeat = -1.0;

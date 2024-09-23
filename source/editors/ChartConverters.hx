@@ -1,8 +1,10 @@
-package game;
+package editors;
 
 import haxe.Json;
 
 import core.AssetMan;
+
+import game.Chart;
 
 class FunkConverter
 {

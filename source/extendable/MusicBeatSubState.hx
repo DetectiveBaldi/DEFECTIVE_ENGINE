@@ -22,13 +22,13 @@ class MusicBeatSubState extends FlxSubState
         conductor.beatHit.add(beatHit);
         
         conductor.sectionHit.add(sectionHit);
+
+        add(conductor);
     }
 
     override function destroy():Void
     {
         super.destroy();
-
-        conductor.reset();
     }
 
     public function stepHit(step:Int):Void

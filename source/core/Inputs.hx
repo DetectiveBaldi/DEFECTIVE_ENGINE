@@ -16,7 +16,9 @@ class Inputs
 
         "NOTE:UP" => [FlxKey.PERIOD, FlxKey.UP],
 
-        "NOTE:RIGHT" => [FlxKey.SLASH, FlxKey.RIGHT]
+        "NOTE:RIGHT" => [FlxKey.SLASH, FlxKey.RIGHT],
+
+        "DEBUG:0" => [FlxKey.EIGHT]
     ];
 
     public static function checkStatus(input:String, status:FlxInputState):Null<Bool>

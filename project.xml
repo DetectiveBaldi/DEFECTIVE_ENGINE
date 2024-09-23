@@ -34,7 +34,13 @@
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
+	<haxelib name="haxeui-core" />
+
 	<haxelib name="flixel" />
+
+	<haxelib name="flixel-addons" />
+
+	<haxelib name="haxeui-flixel" />
 
 	<!-- ______________________________ Defines _____________________________ -->
 	
