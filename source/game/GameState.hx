@@ -86,6 +86,12 @@ class GameState extends MusicBeatState
 
     public dynamic function set_downScroll(downScroll:Bool):Bool
     {
+        if (scoreTxt != null)
+            scoreTxt.y = downScroll ? 35.0 : (FlxG.height - scoreTxt.height) - 35.0;
+
+        if (healthBar != null)
+            healthBar.bar.y = downScroll ? (FlxG.height - healthBar.bar.height) - 620.0 : 620.0;
+
         if (opponentStrums != null)
             opponentStrums.y = downScroll ? FlxG.height - opponentStrums.height - 15.0 : 15.0;
 
@@ -271,7 +277,7 @@ class GameState extends MusicBeatState
 
         healthBar.playerIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/characters/icons/${player.data.name}')));
 
-        healthBar.setPosition((FlxG.width - healthBar.width) * 0.5, downScroll ? (FlxG.height - healthBar.height) - 620.0 : 620.0);
+        healthBar.bar.setPosition((FlxG.width - healthBar.bar.width) * 0.5, downScroll ? (FlxG.height - healthBar.bar.height) - 620.0 : 620.0);
 
         add(healthBar);
 

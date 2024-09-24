@@ -1,12 +1,12 @@
 package game;
 
-import flixel.group.FlxSpriteContainer;
+import flixel.group.FlxContainer;
 
 import flixel.ui.FlxBar;
 
 import flixel.util.FlxColor;
 
-class HealthBar extends FlxSpriteContainer
+class HealthBar extends FlxContainer
 {
     public var health:Float;
 
@@ -15,6 +15,8 @@ class HealthBar extends FlxSpriteContainer
     public var opponentIcon:HealthIcon;
 
     public var playerIcon:HealthIcon;
+
+    public var repositionIcons:()->Void;
 
     public function new(x:Float = 0.0, y:Float = 0.0):Void
     {
@@ -41,14 +43,20 @@ class HealthBar extends FlxSpriteContainer
         playerIcon.setPosition(bar.getMidpoint().x - playerIcon.width * 0.5, bar.getMidpoint().y - playerIcon.height * 0.5);
 
         add(playerIcon);
+
+        repositionIcons = () ->
+        {
+            opponentIcon.setPosition(bar.x + bar.width * ((100 - bar.percent) * 0.01) - opponentIcon.width + 16, bar.getMidpoint().y - opponentIcon.height * 0.5);
+
+            playerIcon.setPosition(bar.x + bar.width * ((100 - bar.percent) * 0.01) - 16.0, bar.getMidpoint().y - playerIcon.height * 0.5);
+        }
     }
 
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
 
-        opponentIcon.setPosition(bar.x + bar.width * ((100 - bar.percent) * 0.01) - opponentIcon.width + 16, bar.getMidpoint().y - opponentIcon.height * 0.5);
-
-        playerIcon.setPosition(bar.x + bar.width * ((100 - bar.percent) * 0.01) - 16.0, bar.getMidpoint().y - playerIcon.height * 0.5);
+        if (repositionIcons != null)
+            repositionIcons();
     }
 }
