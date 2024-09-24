@@ -2,8 +2,7 @@ package game.events;
 
 import flixel.FlxG;
 
-import flixel.math.FlxPoint;
-
+import flixel.tweens.FlxEase;
 import flixel.tweens.FlxEase.EaseFunction;
 import flixel.tweens.FlxTween;
 
@@ -11,18 +10,18 @@ import game.GameState;
 
 class CameraFollowEvent
 {
-    public static function dispatch(position:FlxPoint, duration:Float, ease:EaseFunction):Void
+    public static function dispatch(x:Float, y:Float, duration:Float, ease:String):Void
     {
         if (Type.getClass(FlxG.state) != GameState)
             return;
 
         var game:GameState = cast (FlxG.state, GameState);
 
-        if (duration > 0.0)
-            FlxTween.tween(game.gameCameraTarget, {x: position.x, y: position.y}, duration, {ease: ease});
-        else
-            game.gameCameraTarget.setPosition(position.x, position.y);
+        var _ease:EaseFunction = Reflect.getProperty(FlxEase, ease);
 
-        position.put();
+        if (duration > 0.0)
+            FlxTween.tween(game.gameCameraTarget, {x: x, y: y}, duration, {ease: _ease});
+        else
+            game.gameCameraTarget.setPosition(x, y,);
     }
 }

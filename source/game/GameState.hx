@@ -356,7 +356,7 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("Blammed Erect");
+        loadSong("Satin Panties Erect");
 
         countdown = new Countdown(conductor);
 
@@ -436,7 +436,7 @@ class GameState extends MusicBeatState
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
 
-                    var note:Note = notes.getFirst((n:Note) -> Math.abs(conductor.time - n.time) <= 166.6 && strum.direction == n.direction && strumLine.lane == n.lane && !n.animation.name.contains("Hold"));
+                    var note:Note = notes.getFirst((_note:Note) -> Math.abs(conductor.time - _note.time) <= 166.6 && strum.direction == _note.direction && strumLine.lane == _note.lane && !_note.animation.name.contains("Hold"));
 
                     if (note == null)
                         strumLine.ghostTap.dispatch(strum.direction);
@@ -448,7 +448,7 @@ class GameState extends MusicBeatState
                 {
                     var strum:Strum = strumLine.members[j];
 
-                    var note:Note = notes.getFirst((n:Note) -> conductor.time >= n.time && strum.direction == n.direction && strumLine.lane == n.lane && n.animation.name.contains("Hold"));
+                    var note:Note = notes.getFirst((_note:Note) -> conductor.time >= _note.time && strum.direction == _note.direction && strumLine.lane == _note.lane && _note.animation.name.contains("Hold"));
 
                     if (note != null)
                         strumLine.noteHit.dispatch(note);
@@ -503,28 +503,28 @@ class GameState extends MusicBeatState
 
         while (noteIndex < chart.notes.length)
         {
-            var parsed:ParsedNote = chart.notes[noteIndex];
+            var note:ParsedNote = chart.notes[noteIndex];
 
-            if (parsed.time > conductor.time + hudCamera.height / hudCamera.zoom / chartSpeed / parsed.speed)
+            if (note.time > conductor.time + hudCamera.height / hudCamera.zoom / chartSpeed / note.speed)
                 break;
 
             var j:Int = notes.members.length - 1;
 
             while (j >= 0.0)
             {
-                var note:Note = notes.members[j];
+                var _note:Note = notes.members[j];
 
-                if (parsed.time == note.time && parsed.direction == note.direction && parsed.lane == note.lane && !note.animation.name.contains("Hold"))
+                if (note.time == _note.time && note.direction == _note.direction && note.lane == _note.lane && !_note.animation.name.contains("Hold"))
                 {
-                    notes.remove(note, true).destroy();
+                    notes.remove(_note, true).destroy();
 
                     j--;
 
-                    var k:Int = note.children.length - 1;
+                    var k:Int = _note.children.length - 1;
 
                     while (k >= 0.0)
                     {
-                        notes.remove(note.children[k], true).destroy();
+                        notes.remove(_note.children[k], true).destroy();
 
                         k--;
 
@@ -537,45 +537,45 @@ class GameState extends MusicBeatState
                 j--;
             }
 
-            var note:Note = new Note();
+            var _note:Note = new Note();
 
-            note.time = parsed.time;
+            _note.time = note.time;
 
-            note.speed = parsed.speed;
+            _note.speed = note.speed;
 
-            note.direction = parsed.direction;
+            _note.direction = note.direction;
 
-            note.lane = parsed.lane;
+            _note.lane = note.lane;
 
-            note.length = parsed.length;
+            _note.length = note.length;
 
-            note.animation.play(Note.directions[note.direction].toLowerCase());
+            _note.animation.play(Note.directions[_note.direction].toLowerCase());
 
-            note.scale.set(0.685, 0.685);
+            _note.scale.set(0.685, 0.685);
 
-            note.updateHitbox();
+            _note.updateHitbox();
 
-            note.setPosition((FlxG.width - note.width) * 0.5, hudCamera.height / hudCamera.zoom);
+            _note.setPosition((FlxG.width - _note.width) * 0.5, hudCamera.height / hudCamera.zoom);
 
-            notes.add(note);
+            notes.add(_note);
 
-            for (k in 0 ... Math.floor(parsed.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)))
+            for (k in 0 ... Math.floor(note.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)))
             {
                 var sustain:Note = new Note();
 
-                sustain.parent = note;
+                sustain.parent = _note;
 
-                note.children.push(sustain);
+                _note.children.push(sustain);
 
-                sustain.time = note.time + ((((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25) * (k + 1));
+                sustain.time = _note.time + ((((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25) * (k + 1));
 
-                sustain.speed = note.speed;
+                sustain.speed = _note.speed;
 
-                sustain.direction = note.direction;
+                sustain.direction = _note.direction;
                 
-                sustain.lane = note.lane;
+                sustain.lane = _note.lane;
 
-                sustain.length = parsed.length;
+                sustain.length = note.length;
 
                 sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
 
@@ -593,27 +593,27 @@ class GameState extends MusicBeatState
                 notes.add(sustain);
             }
 
-            strumLines.getFirst((s:StrumLine) -> note.lane == s.lane).noteSpawn.dispatch(note);
+            strumLines.getFirst((strumLine:StrumLine) -> _note.lane == strumLine.lane).noteSpawn.dispatch(_note);
 
             noteIndex++;
         }
 
         if (eventIndex < chart.events.length)
         {
-            var parsed:ParsedEvent = chart.events[eventIndex];
+            var event:ParsedEvent = chart.events[eventIndex];
 
-            if (conductor.time >= parsed.time)
+            if (conductor.time >= event.time)
             {
-                switch (parsed.name:String)
+                switch (event.name:String)
                 {
                     case "Camera Follow":
-                        CameraFollowEvent.dispatch(FlxPoint.get(parsed.value.x, parsed.value.y), parsed.value.duration, Reflect.getProperty(FlxEase, parsed.value.ease));
+                        CameraFollowEvent.dispatch(event.value.x, event.value.y, event.value.duration, event.value.ease);
 
                     case "Camera Zoom":
-                        CameraZoomEvent.dispatch(Reflect.getProperty(this, parsed.value.camera), parsed.value.zoom, parsed.value.duration, Reflect.getProperty(FlxEase, parsed.value.ease));
+                        CameraZoomEvent.dispatch(event.value.camera, event.value.zoom, event.value.duration, event.value.ease);
 
                     case "Speed Change":
-                        SpeedChangeEvent.dispatch(parsed.value.speed, parsed.value.duration, Reflect.getProperty(FlxEase, parsed.value.ease));
+                        SpeedChangeEvent.dispatch(event.value.speed, event.value.duration, event.value.ease);
                 }
 
                 eventIndex++;
@@ -648,11 +648,6 @@ class GameState extends MusicBeatState
 
         if (FlxG.keys.justPressed.ESCAPE)
             FlxG.resetState();
-    }
-
-    override function stepHit(step:Int):Void
-    {
-        super.stepHit(step);
     }
 
     override function sectionHit(section:Int):Void
