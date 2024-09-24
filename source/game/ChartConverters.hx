@@ -3,6 +3,7 @@ package game;
 import haxe.Json;
 
 import core.AssetMan;
+import core.Paths;
 
 class FunkConverter
 {
@@ -21,9 +22,9 @@ class FunkConverter
     {
         var output:Chart = new Chart();
 
-        var parsedChart:Dynamic = Json.parse(AssetMan.text(chartPath));
+        var parsedChart:Dynamic = Json.parse(AssetMan.text(Paths.json(chartPath)));
 
-        var parsedMeta:Dynamic = Json.parse(AssetMan.text(metaPath));
+        var parsedMeta:Dynamic = Json.parse(AssetMan.text(Paths.json(metaPath)));
 
         output.name = parsedMeta.songName;
 
@@ -36,13 +37,6 @@ class FunkConverter
             var note:FunkNote = Reflect.field(parsedChart.notes, level)[i];
 
             output.notes.push({time: note.t, speed: 1.0, direction: note.d % 4, lane: 1 - Math.floor(note.d * 0.25), length: note.l});
-        }
-
-        for (i in 0 ... parsedChart.events.length)
-        {
-            var event:FunkEvent = parsedChart.events[i];
-
-            output.events.push({time: event.t, name: event.e, value: event.v});
         }
 
         output.timeChanges.resize(0);
@@ -71,7 +65,7 @@ class PsychConverter
     {
         var output:Chart = new Chart();
 
-        var parsed:Dynamic = Json.parse(AssetMan.text(path));
+        var parsed:Dynamic = Json.parse(AssetMan.text(Paths.json(path)));
 
         output.name = parsed.song.song;
 
@@ -103,16 +97,6 @@ class PsychConverter
                 var note:PsychNote = section.sectionNotes[j];
 
                 output.notes.push({time: note.time, speed: 1.0, direction: note.direction % 4, lane: 1 - Math.floor((section.mustHitSection ? note.direction : (note.direction >= 4.0) ? note.direction - 4 : note.direction + 4) * 0.25), length: note.length});
-            }
-        }
-
-        for (i in 0 ... parsed.song.events.length)
-        {
-            for (j in 0 ... parsed.song.events[i][1].length)
-            {
-                var event:PsychEvent = {time: cast (parsed.song.events[i][0], Float), name: cast (parsed.song.events[i][1][j][0], String), value1: cast (parsed.song.events[i][1][j][1], String), value2: cast (parsed.song.events[i][1][j][2], String)};
-                
-                output.events.push({time: event.time, name: event.name, value: {value1: event.value1, value2: event.value2}});
             }
         }
 

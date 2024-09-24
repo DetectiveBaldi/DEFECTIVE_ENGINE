@@ -47,7 +47,7 @@ class Character extends FlxSprite
     {
         super(x, y);
         
-        data = Json.parse(AssetMan.text(path));
+        data = Json.parse(AssetMan.text(Paths.json(path)));
 
         switch (data.format ?? "".toLowerCase():String)
         {

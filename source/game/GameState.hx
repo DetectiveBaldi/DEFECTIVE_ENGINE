@@ -1,5 +1,7 @@
 package game;
 
+import haxe.Json;
+
 import haxe.ds.ArraySort;
 
 import flixel.FlxBasic;
@@ -10,16 +12,10 @@ import flixel.FlxObject;
 import flixel.group.FlxContainer.FlxTypedContainer;
 
 import flixel.math.FlxMath;
-import flixel.math.FlxPoint;
 
 import flixel.sound.FlxSound;
 
 import flixel.text.FlxText;
-
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-
-import flixel.ui.FlxBar;
 
 import flixel.util.FlxColor;
 
@@ -128,9 +124,7 @@ class GameState extends MusicBeatState
 
     public var scoreTxt:FlxText;
 
-    public var health:Float;
-
-    public var healthBar:FlxBar;
+    public var healthBar:HealthBar;
 
     public var judgements:Array<Judgement>;
 
@@ -199,7 +193,7 @@ class GameState extends MusicBeatState
 
         add(spectatorGroup);
 
-        spectator = new Character(0.0, 0.0, Paths.json("assets/data/characters/GIRLFRIEND"), ARTIFICIAL, conductor);
+        spectator = new Character(0.0, 0.0, "assets/data/characters/GIRLFRIEND", ARTIFICIAL, conductor);
 
         spectator.skipSing = true;
 
@@ -215,7 +209,7 @@ class GameState extends MusicBeatState
 
         add(opponentGroup);
 
-        opponent = new Character(0.0, 0.0, Paths.json("assets/data/characters/BOYFRIEND_PIXEL"), ARTIFICIAL, conductor);
+        opponent = new Character(0.0, 0.0, "assets/data/characters/BOYFRIEND_PIXEL", ARTIFICIAL, conductor);
 
         opponent.setPosition(15.0, 50.0);
 
@@ -229,7 +223,7 @@ class GameState extends MusicBeatState
 
         add(playerGroup);
 
-        player = new Character(0.0, 0.0, Paths.json("assets/data/characters/BOYFRIEND"), PLAYABLE, conductor);
+        player = new Character(0.0, 0.0, "assets/data/characters/BOYFRIEND", PLAYABLE, conductor);
 
         player.setPosition(FlxG.width - player.width - 15.0, 385.0);
 
@@ -269,15 +263,13 @@ class GameState extends MusicBeatState
 
         add(scoreTxt);
 
-        health = 50.0;
-
-        healthBar = new FlxBar(0.0, 0.0, RIGHT_TO_LEFT, 600, 25, this, "health", 0.0, 100.0, true);
+        healthBar = new HealthBar(0.0, 0.0);
 
         healthBar.camera = hudCamera;
 
-        healthBar.createFilledBar(FlxColor.RED, FlxColor.LIME, true, FlxColor.BLACK, 5);
+        healthBar.opponentIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/characters/icons/${opponent.data.name}')));
 
-        healthBar.numDivisions = FlxMath.MAX_VALUE_INT;
+        healthBar.playerIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/characters/icons/${player.data.name}')));
 
         healthBar.setPosition((FlxG.width - healthBar.width) * 0.5, downScroll ? (FlxG.height - healthBar.height) - 620.0 : 620.0);
 
@@ -356,7 +348,7 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("Satin Panties Erect");
+        loadSong("Dividend");
 
         countdown = new Countdown(conductor);
 
@@ -661,7 +653,7 @@ class GameState extends MusicBeatState
 
     public function loadSong(name:String):Void
     {
-        chart = new FunkConverter(Paths.json('assets/data/songs/${name}/chart'), Paths.json('assets/data/songs/${name}/meta')).build("nightmare");
+        chart = new PsychConverter('assets/data/songs/${name}/chart').build();
 
         chart.speed = FlxMath.bound(chart.speed, 0.0, 1.35);
 
@@ -797,22 +789,22 @@ class GameState extends MusicBeatState
 
         if (!strumLine.artificial)
         {
+            var judgement:Judgement = Judgement.guage(judgements, Math.abs(conductor.time - note.time));
+
+            score += note.animation.name.contains("Hold") ? 1 : judgement.score;
+
+            hits++;
+
+            bonus += judgement.bonus;
+            
+            combo++;
+
+            scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+
+            healthBar.health = FlxMath.bound(healthBar.health + 1.15, 0.0, 100.0);
+                
             if (!note.animation.name.contains("Hold"))
             {
-                var judgement:Judgement = Judgement.guage(judgements, Math.abs(conductor.time - note.time));
-
-                score += judgement.score;
-
-                hits++;
-
-                bonus += judgement.bonus;
-                
-                combo++;
-
-                scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
-
-                health = FlxMath.bound(health + 1.15, 0.0, 100.0);
-
                 if (judgement.name == "Epic!" || judgement.name == "Sick!")
                 {
                     var noteSplash:NoteSplash = noteSplashes.recycle(NoteSplash, () -> new NoteSplash());
@@ -842,18 +834,15 @@ class GameState extends MusicBeatState
 
     public function noteMiss(note:Note):Void
     {
-        if (!note.animation.name.contains("Hold"))
-        {
-            score -= 650;
+        score -= 650;
 
-            misses++;
+        misses++;
 
-            combo = 0;
+        combo = 0;
 
-            scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
-            health = FlxMath.bound(health - 2.375, 0.0, 100.0);
-        }
+        healthBar.health = FlxMath.bound(healthBar.health - 2.375, 0.0, 100.0);
 
         if (mainVocals != null)
             mainVocals.volume = 0.0;
@@ -871,7 +860,7 @@ class GameState extends MusicBeatState
 
         scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
-        health = FlxMath.bound(health - 2.375, 0.0, 100.0);
+        healthBar.health = FlxMath.bound(healthBar.health - 2.375, 0.0, 100.0);
 
         if (mainVocals != null)
             mainVocals.volume = 0.0;
