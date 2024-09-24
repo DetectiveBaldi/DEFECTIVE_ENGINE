@@ -428,7 +428,7 @@ class GameState extends MusicBeatState
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
 
-                    var note:Note = notes.getFirst((_note:Note) -> Math.abs(conductor.time - _note.time) <= 166.6 && strum.direction == _note.direction && strumLine.lane == _note.lane && !_note.animation.name.contains("Hold"));
+                    var note:Note = notes.getFirst((_note:Note) -> Math.abs(conductor.time - _note.time) <= 166.6 && strum.direction == _note.direction && strumLine.lane == _note.lane);
 
                     if (note == null)
                         strumLine.ghostTap.dispatch(strum.direction);
