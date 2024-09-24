@@ -97,6 +97,17 @@ class GameState extends MusicBeatState
 
         if (playerStrums != null)
             playerStrums.y = downScroll ? FlxG.height - playerStrums.height - 15.0 : 15.0;
+
+        if (notes != null)
+        {
+            for (i in 0 ... notes.members.length)
+            {
+                var note:Note = notes.members[i];
+
+                if (note.animation.name.contains("Tail"))
+                    note.flipY = downScroll;
+            }
+        }
         
         return this.downScroll = downScroll;
     }
@@ -467,9 +478,9 @@ class GameState extends MusicBeatState
         {
             var note:Note = notes.members[i];
 
-            var strumLine:StrumLine = strumLines.getFirst((s:StrumLine) -> note.lane == s.lane);
+            var strumLine:StrumLine = strumLines.getFirst((_strumLine:StrumLine) -> note.lane == _strumLine.lane);
 
-            var strum:Strum = strumLine.group.getFirst((s:Strum) -> note.direction == s.direction);
+            var strum:Strum = strumLine.group.getFirst((_strum:Strum) -> note.direction == _strum.direction);
 
             note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * chartSpeed * note.speed * (downScroll ? -1.0 : 1.0));
 
@@ -590,6 +601,8 @@ class GameState extends MusicBeatState
 
                 notes.add(sustain);
             }
+
+            ArraySort.sort(notes.members, (__note:Note, ___note:Note) -> Std.int(__note.time - ___note.time));
 
             strumLines.getFirst((strumLine:StrumLine) -> _note.lane == strumLine.lane).noteSpawn.dispatch(_note);
 
@@ -785,9 +798,9 @@ class GameState extends MusicBeatState
 
     public function noteHit(note:Note):Void
     {
-        var strumLine:StrumLine = strumLines.getFirst((s:StrumLine) -> note.lane == s.lane);
+        var strumLine:StrumLine = strumLines.getFirst((_strumLine:StrumLine) -> note.lane == _strumLine.lane);
 
-        var strum:Strum = strumLine.group.getFirst((s:Strum) -> note.direction == s.direction);
+        var strum:Strum = strumLine.group.getFirst((_strum:Strum) -> note.direction == _strum.direction);
 
         strum.confirmCount = 0.0;
         
