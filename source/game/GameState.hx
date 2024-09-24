@@ -308,9 +308,9 @@ class GameState extends MusicBeatState
 
         opponentStrums.noteMiss.add(noteMiss);
 
-        opponentStrums.ghostTap.add(opponentGhostTap);
+        // opponentStrums.ghostTap.add(opponentGhostTap);
 
-        opponentStrums.ghostTap.add(ghostTap);
+        // opponentStrums.ghostTap.add(ghostTap);
 
         opponentStrums.setPosition(middleScroll ? (FlxG.width - opponentStrums.width) * 0.5 : 45.0, downScroll ? FlxG.height - opponentStrums.height - 15.0 : 15.0);
 
@@ -328,9 +328,9 @@ class GameState extends MusicBeatState
 
         playerStrums.noteMiss.add(noteMiss);
 
-        playerStrums.ghostTap.add(playerGhostTap);
+        // playerStrums.ghostTap.add(playerGhostTap);
 
-        playerStrums.ghostTap.add(ghostTap);
+        // playerStrums.ghostTap.add(ghostTap);
 
         playerStrums.setPosition(middleScroll ? (FlxG.width - playerStrums.width) * 0.5 : FlxG.width - playerStrums.width - 45.0, downScroll ? FlxG.height - playerStrums.height - 15.0 : 15.0);
 
@@ -655,7 +655,7 @@ class GameState extends MusicBeatState
     {
         chart = new FunkConverter('assets/data/songs/${name}/chart', 'assets/data/songs/${name}/meta').build("nightmare");
 
-        chart.speed = FlxMath.bound(chart.speed, 0.0, 1.35);
+        chart.speed = FlxMath.bound(chart.speed, 0.0, 1.45);
 
         ArraySort.sort(chart.notes, (a:ParsedNote, b:ParsedNote) -> Std.int(a.time - b.time));
 
