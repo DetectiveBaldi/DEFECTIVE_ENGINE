@@ -11,13 +11,8 @@ import game.GameState;
 
 class CameraZoomEvent
 {
-    public static function dispatch(camera:String, zoom:Float, duration:Float, ease:String):Void
+    public static function dispatch(game:GameState, camera:String, zoom:Float, duration:Float, ease:String):Void
     {
-        if (Type.getClass(FlxG.state) != GameState)
-            return;
-
-        var game:GameState = cast (FlxG.state, GameState);
-
         var _camera:FlxCamera = Reflect.getProperty(game, camera);
 
         var _ease:EaseFunction = Reflect.getProperty(FlxEase, ease);

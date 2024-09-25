@@ -280,7 +280,7 @@ class GameState extends MusicBeatState
 
         add(scoreTxt);
 
-        healthBar = new HealthBar(0.0, 0.0, conductor);
+        healthBar = new HealthBar(0.0, 0.0, RIGHT_TO_LEFT, conductor);
 
         healthBar.camera = hudCamera;
 
@@ -618,13 +618,13 @@ class GameState extends MusicBeatState
                 switch (event.name:String)
                 {
                     case "Camera Follow":
-                        CameraFollowEvent.dispatch(event.value.x, event.value.y, event.value.duration, event.value.ease);
+                        CameraFollowEvent.dispatch(this, event.value.x, event.value.y, event.value.duration, event.value.ease);
 
                     case "Camera Zoom":
-                        CameraZoomEvent.dispatch(event.value.camera, event.value.zoom, event.value.duration, event.value.ease);
+                        CameraZoomEvent.dispatch(this, event.value.camera, event.value.zoom, event.value.duration, event.value.ease);
 
                     case "Speed Change":
-                        SpeedChangeEvent.dispatch(event.value.speed, event.value.duration, event.value.ease);
+                        SpeedChangeEvent.dispatch(this, event.value.speed, event.value.duration, event.value.ease);
                 }
 
                 eventIndex++;
@@ -655,6 +655,11 @@ class GameState extends MusicBeatState
         {
             if (conductor.time >= 0.0)
                 startSong();
+        }
+
+        if (FlxG.keys.justPressed.SPACE)
+        {
+            healthBar.fillDirection = healthBar.fillDirection == LEFT_TO_RIGHT ? RIGHT_TO_LEFT : LEFT_TO_RIGHT;
         }
 
         if (FlxG.keys.justPressed.ESCAPE)

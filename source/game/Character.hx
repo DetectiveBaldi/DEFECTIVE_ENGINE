@@ -41,7 +41,17 @@ class Character extends FlxSprite
 
     public var role:CharacterRole;
 
-    public var conductor:Conductor;
+    public var conductor(default, set):Conductor;
+
+    public dynamic function set_conductor(conductor:Conductor):Conductor
+    {
+        if (this.conductor != null)
+            this.conductor.beatHit.remove(beatHit);
+
+        conductor.beatHit.add(beatHit);
+
+        return this.conductor = conductor;
+    }
 
     public function new(x:Float = 0.0, y:Float = 0.0, path:String, role:CharacterRole, conductor:Conductor):Void
     {
@@ -130,11 +140,7 @@ class Character extends FlxSprite
 
         this.conductor = conductor;
 
-        conductor.stepHit.add(stepHit);
-
         conductor.beatHit.add(beatHit);
-
-        conductor.sectionHit.add(sectionHit);
     }
 
     override function update(elapsed:Float):Void
@@ -168,11 +174,7 @@ class Character extends FlxSprite
     {
         super.destroy();
 
-        conductor.stepHit.remove(stepHit);
-
         conductor.beatHit.remove(beatHit);
-
-        conductor.sectionHit.remove(sectionHit);
     }
 
     override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
@@ -197,20 +199,10 @@ class Character extends FlxSprite
         animation.play(danceSteps[danceStep = FlxMath.wrap(danceStep + 1, 0, danceSteps.length - 1)], forceful);
     }
 
-    public function stepHit(step:Int):Void
-    {
-
-    }
-
     public function beatHit(beat:Int):Void
     {
         if (beat % danceInterval == 0.0)
             dance();
-    }
-
-    public function sectionHit(section:Int):Void
-    {
-
     }
 }
 
@@ -241,11 +233,11 @@ typedef CharacterData =
     var ?singDuration:Float;
 };
 
-enum CharacterRole
+enum abstract CharacterRole(String) from String to String
 {
-    ARTIFICIAL:CharacterRole;
+    var ARTIFICIAL:CharacterRole = "ARTIFICIAL";
 
-    PLAYABLE:CharacterRole;
+    var PLAYABLE:CharacterRole = "PLAYABLE";
 
-    OTHER:CharacterRole;
+    var OTHER:CharacterRole = "OTHER";
 }
