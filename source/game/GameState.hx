@@ -365,7 +365,7 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("Ghoul");
+        loadSong("Blammed Erect");
 
         countdown = new Countdown(conductor);
 
@@ -672,7 +672,7 @@ class GameState extends MusicBeatState
 
     public function loadSong(name:String):Void
     {
-        chart = new PsychConverter('assets/data/songs/${name}/chart').build();
+        chart = new FunkConverter('assets/data/songs/${name}/chart', 'assets/data/songs/${name}/meta').build("nightmare");
 
         chart.speed = FlxMath.bound(chart.speed, 0.0, 1.45);
 
