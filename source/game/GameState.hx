@@ -280,7 +280,7 @@ class GameState extends MusicBeatState
 
         add(scoreTxt);
 
-        healthBar = new HealthBar(0.0, 0.0);
+        healthBar = new HealthBar(0.0, 0.0, conductor);
 
         healthBar.camera = hudCamera;
 
@@ -294,15 +294,15 @@ class GameState extends MusicBeatState
 
         judgements =
         [
-            {name: "Epic!", color: FlxColor.MAGENTA, timing: 15.0, bonus: 1.0, score: 500, hits: 0},
+            {name: "Epic!", timing: 15.0, bonus: 1.0, score: 500, hits: 0},
 
-            {name: "Sick!", color: FlxColor.CYAN, timing: 45.0, bonus: 1.0, score: 350, hits: 0},
+            {name: "Sick!", timing: 45.0, bonus: 1.0, score: 350, hits: 0},
 
-            {name: "Good", color: FlxColor.GREEN, timing: 75.0, bonus: 0.65, score: 250, hits: 0},
+            {name: "Good", timing: 75.0, bonus: 0.65, score: 250, hits: 0},
 
-            {name: "Bad", color: FlxColor.RED, timing: 125.0, bonus: 0.35, score: 150, hits: 0},
+            {name: "Bad", timing: 125.0, bonus: 0.35, score: 150, hits: 0},
 
-            {name: "Shit", color: FlxColor.subtract(FlxColor.RED, FlxColor.BROWN), timing: Math.POSITIVE_INFINITY, bonus: 0.0, score: 50, hits: 0}
+            {name: "Shit", timing: Math.POSITIVE_INFINITY, bonus: 0.0, score: 50, hits: 0}
         ];
 
         strumLines = new FlxTypedContainer<StrumLine>();
@@ -365,7 +365,7 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("Blammed Erect");
+        loadSong("Ghoul");
 
         countdown = new Countdown(conductor);
 
@@ -672,7 +672,7 @@ class GameState extends MusicBeatState
 
     public function loadSong(name:String):Void
     {
-        chart = new FunkConverter('assets/data/songs/${name}/chart', 'assets/data/songs/${name}/meta').build("nightmare");
+        chart = new PsychConverter('assets/data/songs/${name}/chart').build();
 
         chart.speed = FlxMath.bound(chart.speed, 0.0, 1.45);
 

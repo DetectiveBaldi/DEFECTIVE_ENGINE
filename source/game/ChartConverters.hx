@@ -18,7 +18,7 @@ class FunkConverter
         this.metaPath = metaPath;
     }
 
-    public function build(level:String):Chart
+    public function build(difficulty:String):Chart
     {
         var output:Chart = new Chart();
 
@@ -30,11 +30,11 @@ class FunkConverter
 
         output.tempo = parsedMeta.timeChanges[0].bpm;
 
-        output.speed = Reflect.field(parsedChart.scrollSpeed, level);
+        output.speed = Reflect.field(parsedChart.scrollSpeed, difficulty);
 
-        for (i in 0 ... Reflect.field(parsedChart.notes, level).length)
+        for (i in 0 ... Reflect.field(parsedChart.notes, difficulty).length)
         {
-            var note:FunkNote = Reflect.field(parsedChart.notes, level)[i];
+            var note:FunkNote = Reflect.field(parsedChart.notes, difficulty)[i];
 
             output.notes.push({time: note.t, speed: 1.0, direction: note.d % 4, lane: 1 - Math.floor(note.d * 0.25), length: note.l});
         }

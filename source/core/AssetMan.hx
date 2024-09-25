@@ -63,7 +63,7 @@ class AssetMan
     }
 
     /**
-     * Caches a `openfl.media.Sound`. Then, it is returned.
+     * Caches an `openfl.media.Sound`. Then, it is returned.
      * If the requested file path already exists in the cache, it will NOT be renewed.
      * @param path The file path of the sound you want to cache.
      * @return `openfl.media.Sound`
@@ -97,7 +97,7 @@ class AssetMan
     }
 
     /**
-     * Gets the content of the specified text file.
+     * Gets the content of the specified text file. Then, it is returned
      * @param path The file path of the text you want to recieve content from.
      * @return `String`
      */

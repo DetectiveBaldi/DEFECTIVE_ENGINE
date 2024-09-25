@@ -86,7 +86,7 @@ class Conductor extends FlxBasic
 
     override function update(elapsed:Float):Void
     {
-        time += 1000.0 * elapsed;
+        time += elapsed * 1000.0;
 
         if (time < 0.0)
             return;

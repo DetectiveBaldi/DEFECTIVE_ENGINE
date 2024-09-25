@@ -2,8 +2,6 @@ package ui;
 
 import haxe.Timer;
 
-import openfl.system.System;
-
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 
@@ -48,6 +46,6 @@ class PerfTracker extends TextField
         while (times[0] < now - 1)
             times.shift();
 
-        text = 'FPS: ${MathUtil.minInt(FlxG.updateFramerate, times.length)}' #if !html5 + '\nRAM: ${FlxMath.roundDecimal(System.totalMemory / Math.pow(1024, 2), 2)} MB\nVRAM: ${FlxMath.roundDecimal(FlxG.stage.context3D.totalGPUMemory / Math.pow(1024, 2), 2)} MB' #end;
+        text = 'FPS: ${MathUtil.minInt(FlxG.updateFramerate, times.length)}' #if !html5 + '\nRAM: ${FlxMath.roundDecimal(#if hl openfl.system.System.totalMemory #else cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_USAGE) #end / Math.pow(1024, 2), 2)} MB\nVRAM: ${FlxMath.roundDecimal(FlxG.stage.context3D.totalGPUMemory / Math.pow(1024, 2), 2)} MB' #end;
     }
 }

@@ -7,8 +7,6 @@ class Judgement
 {
     public var name:String;
 
-    public var color:FlxColor;
-
     public var timing:Float;
 
     public var bonus:Float;
