@@ -75,7 +75,7 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
         return this.conductor = conductor;
     }
 
-    public function new(x:Float = 0.0, y:Float = 0.0, fillDirection:HealthBarFillDirection, conductor:Conductor):Void
+    public function new(fillDirection:HealthBarFillDirection, conductor:Conductor):Void
     {
         super();
 
@@ -84,10 +84,10 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
         bar = switch (fillDirection:HealthBarFillDirection)
         {
             case RIGHT_TO_LEFT:
-                new FlxBar(x, y, RIGHT_TO_LEFT, 600, 25, this, "health", 0.0, 100.0, true);
+                new FlxBar(0.0, 0.0, RIGHT_TO_LEFT, 600, 25, this, "health", 0.0, 100.0, true);
             
             case LEFT_TO_RIGHT:
-                new FlxBar(x, y, LEFT_TO_RIGHT, 600, 25, this, "health", 0.0, 100.0, true);
+                new FlxBar(0.0, 0.0, LEFT_TO_RIGHT, 600, 25, this, "health", 0.0, 100.0, true);
         }
 
         bar.createFilledBar(FlxColor.RED, 0xFF66FF33, true, FlxColor.BLACK, 5);
@@ -96,7 +96,7 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
 
         this.fillDirection = fillDirection;
 
-        opponentIcon = new HealthIcon(x, y, "assets/data/characters/icons/BOYFRIEND_PIXEL");
+        opponentIcon = new HealthIcon(0.0, 0.0, "assets/data/characters/icons/BOYFRIEND_PIXEL");
 
         opponentIcon.flipX = switch (fillDirection:HealthBarFillDirection)
         {
@@ -109,7 +109,7 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
 
         add(opponentIcon);
 
-        playerIcon = new HealthIcon(x, y, "assets/data/characters/icons/BOYFRIEND");
+        playerIcon = new HealthIcon(0.0, 0.0, "assets/data/characters/icons/BOYFRIEND");
 
         playerIcon.flipX = switch (fillDirection:HealthBarFillDirection)
         {

@@ -280,7 +280,7 @@ class GameState extends MusicBeatState
 
         add(scoreTxt);
 
-        healthBar = new HealthBar(0.0, 0.0, RIGHT_TO_LEFT, conductor);
+        healthBar = new HealthBar(RIGHT_TO_LEFT, conductor);
 
         healthBar.camera = hudCamera;
 
