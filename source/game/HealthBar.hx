@@ -1,6 +1,8 @@
 package game;
 
-import flixel.group.FlxContainer;
+import flixel.FlxSprite;
+
+import flixel.group.FlxContainer.FlxTypedContainer;
 
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -11,7 +13,7 @@ import flixel.util.FlxColor;
 
 import core.Conductor;
 
-class HealthBar extends FlxContainer
+class HealthBar extends FlxTypedContainer<FlxSprite>
 {
     public var health:Float;
 
@@ -94,7 +96,7 @@ class HealthBar extends FlxContainer
 
         this.fillDirection = fillDirection;
 
-        opponentIcon = new HealthIcon(0.0, 0.0, "assets/data/characters/icons/BOYFRIEND_PIXEL");
+        opponentIcon = new HealthIcon(x, y, "assets/data/characters/icons/BOYFRIEND_PIXEL");
 
         opponentIcon.flipX = switch (fillDirection:HealthBarFillDirection)
         {
@@ -107,7 +109,7 @@ class HealthBar extends FlxContainer
 
         add(opponentIcon);
 
-        playerIcon = new HealthIcon(0.0, 0.0, "assets/data/characters/icons/BOYFRIEND");
+        playerIcon = new HealthIcon(x, y, "assets/data/characters/icons/BOYFRIEND");
 
         playerIcon.flipX = switch (fillDirection:HealthBarFillDirection)
         {
