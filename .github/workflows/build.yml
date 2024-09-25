@@ -1,10 +1,6 @@
 name: Build
 
-on:
-  push:
-    branches:
-      - "main"
-  workflow_dispatch:
+on: [push]
 
 jobs:
   Windows:
@@ -17,15 +13,14 @@ jobs:
           haxe-version: 4.3.6
       - name: Setup Dependencies
         run: |
-          haxelib setup C:\haxelib
-          haxelib install hxcpp --never
-          haxelib install format --never
-          haxelib install hxp --never
-          haxelib git lime https://github.com/openfl/lime --never
-          haxelib run lime rebuild cpp
-          haxelib run lime rebuild tools
-          haxelib git openfl https://github.com/openfl/openfl --never
-          haxelib git flixel https://github.com/HaxeFlixel/flixel --never
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib git lime https://github.com/openfl/lime --quiet
+          haxelib run lime rebuild cpp --quiet
+          haxelib run lime rebuild tools --quiet
+          haxelib git openfl https://github.com/openfl/openfl --quiet
+          haxelib git flixel https://github.com/HaxeFlixel/flixel --quiet
         shell: cmd
       - name: Build
         run: |
@@ -47,15 +42,13 @@ jobs:
           haxe-version: 4.3.6
       - name: Setup Dependencies
         run: |
-          haxelib setup C:\haxelib
-          haxelib install hxcpp --never
-          haxelib install format --never
-          haxelib install hxp --never
-          haxelib git lime https://github.com/openfl/lime --never
-          haxelib run lime rebuild hl
-          haxelib run lime rebuild tools
-          haxelib git openfl https://github.com/openfl/openfl --never
-          haxelib git flixel https://github.com/HaxeFlixel/flixel --never
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib git lime https://github.com/openfl/lime --quiet
+          haxelib run lime rebuild hl --quiet
+          haxelib run lime rebuild tools --quiet
+          haxelib git openfl https://github.com/openfl/openfl --quiet
+          haxelib git flixel https://github.com/HaxeFlixel/flixel --quiet
         shell: cmd
       - name: Build
         run: |
