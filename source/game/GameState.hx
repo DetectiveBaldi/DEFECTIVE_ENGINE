@@ -294,7 +294,7 @@ class GameState extends MusicBeatState
 
         judgements =
         [
-            {name: "Epic!", timing: 15.0, bonus: 1.0, health: 3.5, score: 500, hits: 0},
+            {name: "Epic!", timing: 15.0, bonus: 1.0, health: 3.0, score: 500, hits: 0},
 
             {name: "Sick!", timing: 45.0, bonus: 1.0, health: 2.5, score: 350, hits: 0},
 
