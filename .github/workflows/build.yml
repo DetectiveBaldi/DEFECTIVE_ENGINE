@@ -42,6 +42,9 @@ jobs:
           haxe-version: 4.3.6
       - name: Setup Dependencies
         run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
           haxelib git lime https://github.com/openfl/lime --quiet
           haxelib git openfl https://github.com/openfl/openfl --quiet
           haxelib git flixel https://github.com/HaxeFlixel/flixel --quiet
