@@ -216,21 +216,21 @@ typedef CharacterData =
 
     var xml:String;
 
-    var ?antialiasing:Bool;
+    var ?antialiasing:Null<Bool>;
 
-    var ?scale:{?x:Float, ?y:Float};
+    var ?scale:Null<{?x:Null<Float>, ?y:Null<Float>}>;
 
-    var ?flipX:Bool;
+    var ?flipX:Null<Bool>;
 
-    var ?flipY:Bool;
+    var ?flipY:Null<Bool>;
 
-    var animations:Array<{?offsets:{?x:Float, ?y:Float}, name:String, prefix:String, indices:Array<Int>, ?frameRate:Float, ?looped:Bool, ?flipX:Bool, ?flipY:Bool}>;
+    var animations:Array<{?offsets:Null<{?x:Null<Float>, ?y:Null<Float>}>, name:String, prefix:String, indices:Array<Int>, ?frameRate:Null<Float>, ?looped:Null<Bool>, ?flipX:Null<Bool>, ?flipY:Null<Bool>}>;
 
     var danceSteps:Array<String>;
 
     var ?danceInterval:Float;
 
-    var ?singDuration:Float;
+    var ?singDuration:Null<Float>;
 };
 
 enum abstract CharacterRole(String) from String to String

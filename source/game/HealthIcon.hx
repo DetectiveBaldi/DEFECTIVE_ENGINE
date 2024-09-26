@@ -36,7 +36,7 @@ typedef HealthIconTextureData =
 {
     var png:String;
 
-    var ?antialiasing:Bool;
+    var ?antialiasing:Null<Bool>;
 
-    var ?scale:{?x:Float, ?y:Float};
+    var ?scale:Null<{?x:Null<Float>, ?y:Null<Float>}>;
 }

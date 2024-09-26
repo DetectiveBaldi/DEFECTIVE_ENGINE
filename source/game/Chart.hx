@@ -98,9 +98,9 @@ typedef ParsedTimeChange =
     
     var time:Float;
 
-    var ?step:Float;
+    var ?step:Null<Float>;
 
-    var ?beat:Float;
+    var ?beat:Null<Float>;
 
-    var ?section:Float;
+    var ?section:Null<Float>;
 };
