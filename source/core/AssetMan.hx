@@ -5,6 +5,7 @@ import openfl.media.Sound;
 import openfl.utils.Assets;
 
 import flixel.FlxG;
+import flixel.FlxState;
 
 import flixel.graphics.FlxGraphic;
 
@@ -13,9 +14,16 @@ import flixel.graphics.FlxGraphic;
  */
 class AssetMan
 {
-    public static var graphics:Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
+    public static var graphics:Map<String, FlxGraphic>;
 
-    public static var sounds:Map<String, Sound> = new Map<String, Sound>();
+    public static var sounds:Map<String, Sound>;
+
+    public static function init():Void
+    {
+        graphics = new Map<String, FlxGraphic>();
+
+        sounds = new Map<String, Sound>();  
+    }
 
     /**
      * Caches a `flixel.graphics.FlxGraphic`, and, if possible, uploads it to the GPU. Then, it is returned.

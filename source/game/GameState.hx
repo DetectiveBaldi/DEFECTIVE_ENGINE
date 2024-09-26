@@ -294,15 +294,15 @@ class GameState extends MusicBeatState
 
         judgements =
         [
-            {name: "Epic!", timing: 15.0, bonus: 1.0, score: 500, hits: 0},
+            {name: "Epic!", timing: 15.0, bonus: 1.0, health: 3.5, score: 500, hits: 0},
 
-            {name: "Sick!", timing: 45.0, bonus: 1.0, score: 350, hits: 0},
+            {name: "Sick!", timing: 45.0, bonus: 1.0, health: 2.5, score: 350, hits: 0},
 
-            {name: "Good", timing: 75.0, bonus: 0.65, score: 250, hits: 0},
+            {name: "Good", timing: 75.0, bonus: 0.65, health: 1.5, score: 250, hits: 0},
 
-            {name: "Bad", timing: 125.0, bonus: 0.35, score: 150, hits: 0},
+            {name: "Bad", timing: 125.0, bonus: 0.35, health: -1.5, score: 150, hits: 0},
 
-            {name: "Shit", timing: Math.POSITIVE_INFINITY, bonus: 0.0, score: 50, hits: 0}
+            {name: "Shit", timing: Math.POSITIVE_INFINITY, health: -2.5, bonus: 0.0, score: 50, hits: 0}
         ];
 
         strumLines = new FlxTypedContainer<StrumLine>();
@@ -681,11 +681,11 @@ class GameState extends MusicBeatState
 
         chart.speed = FlxMath.bound(chart.speed, 0.0, 1.45);
 
-        ArraySort.sort(chart.notes, (a:ParsedNote, b:ParsedNote) -> Std.int(a.time - b.time));
+        ArraySort.sort(chart.notes, (note:ParsedNote, _note:ParsedNote) -> Std.int(note.time - _note.time));
 
-        ArraySort.sort(chart.events, (a:ParsedEvent, b:ParsedEvent) -> Std.int(a.time - b.time));
+        ArraySort.sort(chart.events, (event:ParsedEvent, _event:ParsedEvent) -> Std.int(event.time - _event.time));
 
-        ArraySort.sort(chart.timeChanges, (a:ParsedTimeChange, b:ParsedTimeChange) -> Std.int(a.time - b.time));
+        ArraySort.sort(chart.timeChanges, (timeChange:ParsedTimeChange, _timeChange:ParsedTimeChange) -> Std.int(timeChange.time - _timeChange.time));
 
         conductor.tempo = chart.tempo;
 
@@ -815,20 +815,20 @@ class GameState extends MusicBeatState
         {
             var judgement:Judgement = Judgement.guage(judgements, Math.abs(conductor.time - note.time));
 
-            score += note.animation.name.contains("Hold") ? 1 : judgement.score;
-
-            hits++;
-
-            bonus += judgement.bonus;
-            
-            combo++;
+            score += note.animation.name.contains("Hold") ? 5 : judgement.score;
 
             scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
-
-            healthBar.health = FlxMath.bound(healthBar.health + 1.15, 0.0, 100.0);
                 
             if (!note.animation.name.contains("Hold"))
             {
+                hits++;
+
+                bonus += judgement.bonus;
+                
+                combo++;
+
+                healthBar.health = FlxMath.bound(healthBar.health + judgement.health, 0.0, 100.0);
+
                 if (judgement.name == "Epic!" || judgement.name == "Sick!")
                 {
                     var noteSplash:NoteSplash = noteSplashes.recycle(NoteSplash, () -> new NoteSplash());
@@ -858,7 +858,7 @@ class GameState extends MusicBeatState
 
     public function noteMiss(note:Note):Void
     {
-        score -= 650;
+        score -= note.animation.name.contains("Hold") ? 25 : 650;
 
         misses++;
 
@@ -866,7 +866,7 @@ class GameState extends MusicBeatState
 
         scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
-        healthBar.health = FlxMath.bound(healthBar.health - 2.375, 0.0, 100.0);
+        healthBar.health = FlxMath.bound(healthBar.health - 4.5, 0.0, 100.0);
 
         if (mainVocals != null)
             mainVocals.volume = 0.0;
@@ -884,7 +884,7 @@ class GameState extends MusicBeatState
 
         scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
-        healthBar.health = FlxMath.bound(healthBar.health - 2.375, 0.0, 100.0);
+        healthBar.health = FlxMath.bound(healthBar.health - 4.5, 0.0, 100.0);
 
         if (mainVocals != null)
             mainVocals.volume = 0.0;

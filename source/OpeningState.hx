@@ -6,6 +6,8 @@ import flixel.FlxState;
 
 import flixel.util.typeLimit.NextState;
 
+import core.AssetMan;
+
 import ui.PerfTracker;
 
 import util.MathUtil;
@@ -38,6 +40,8 @@ class OpeningState extends FlxState
         FlxG.mouse.visible = false;
 
         FlxSprite.defaultAntialiasing = true;
+
+        AssetMan.init();
 
         var perfTracker:PerfTracker = new PerfTracker(10.0, 5.0);
         

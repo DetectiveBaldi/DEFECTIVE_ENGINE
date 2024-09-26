@@ -10,13 +10,13 @@ class Inputs
 {
     public static var list:Map<String, Array<FlxKey>> =
     [
-        "NOTE:LEFT" => [FlxKey.Z, FlxKey.LEFT],
+        "NOTE:LEFT" => [FlxKey.Z, FlxKey.A, FlxKey.LEFT],
 
-        "NOTE:DOWN" => [FlxKey.X, FlxKey.DOWN],
+        "NOTE:DOWN" => [FlxKey.X, FlxKey.S, FlxKey.DOWN],
 
-        "NOTE:UP" => [FlxKey.PERIOD, FlxKey.UP],
+        "NOTE:UP" => [FlxKey.PERIOD, FlxKey.W, FlxKey.UP],
 
-        "NOTE:RIGHT" => [FlxKey.SLASH, FlxKey.RIGHT]
+        "NOTE:RIGHT" => [FlxKey.SLASH, FlxKey.D, FlxKey.RIGHT]
     ];
 
     public static function checkStatus(input:String, status:FlxInputState):Null<Bool>

@@ -1,7 +1,5 @@
 package game.timing;
 
-import flixel.util.FlxColor;
-
 @:structInit
 class Judgement
 {
@@ -10,6 +8,8 @@ class Judgement
     public var timing:Float;
 
     public var bonus:Float;
+
+    public var health:Float;
 
     public var score:Int;
 
