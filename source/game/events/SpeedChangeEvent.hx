@@ -1,7 +1,5 @@
 package game.events;
 
-import flixel.FlxG;
-
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxEase.EaseFunction;
 import flixel.tweens.FlxTween;

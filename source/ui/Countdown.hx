@@ -24,8 +24,6 @@ import core.Paths;
  */
 class Countdown extends FlxContainer
 {
-    public var conductor:Conductor;
-
     public var timers:FlxTimerManager;
 
     public var tweens:FlxTweenManager;
@@ -58,11 +56,11 @@ class Countdown extends FlxContainer
 
     public var go:FlxSound;
 
+    public var conductor:Conductor;
+
     public function new(conductor:Conductor):Void
     {
         super();
-
-        this.conductor = conductor;
 
         timers = new FlxTimerManager();
 
@@ -105,6 +103,8 @@ class Countdown extends FlxContainer
         one = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/one")), 0.65);
 
         go = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/go")), 0.65);
+
+        this.conductor = conductor;
     }
 
     override function destroy():Void
