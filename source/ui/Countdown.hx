@@ -78,7 +78,7 @@ class Countdown extends FlxContainer
 
         onSkip = new FlxSignal();
 
-        sprite = new FlxSprite().loadGraphic(AssetMan.graphic(Paths.png("assets/images/countdown")), true, 1000, 500);
+        sprite = new FlxSprite().loadGraphic(AssetMan.graphic(Paths.png("assets/images/ui/countdown")), true, 1000, 500);
 
         sprite.animation.add("ready", [0], 0.0, false);
 

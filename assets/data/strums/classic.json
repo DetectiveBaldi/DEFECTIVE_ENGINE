@@ -1,7 +1,7 @@
 {
     "format": "texturepackerxml",
 
-    "png": "assets/images/strums/classic",
+    "png": "assets/images/game/notes/strums/classic",
 
-    "xml": "assets/images/strums/classic"
+    "xml": "assets/images/game/notes/strums/classic"
 }

@@ -12,7 +12,8 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
 
     public var spacing(default, set):Float;
 
-    public dynamic function set_spacing(spacing:Float):Float
+    @:noCompletion
+    function set_spacing(spacing:Float):Float
     {
         for (i in 0 ... members.length)
             members[i].x = x + spacing * i;
@@ -34,7 +35,8 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
 
     public var conductor(default, set):Conductor;
 
-    public dynamic function set_conductor(conductor:Conductor):Conductor
+    @:noCompletion
+    function set_conductor(conductor:Conductor):Conductor
     {
         for (i in 0 ... members.length)
             members[i].conductor = conductor;

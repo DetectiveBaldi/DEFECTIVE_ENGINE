@@ -10,10 +10,8 @@ class SpeedChangeEvent
 {
     public static function dispatch(game:GameState, speed:Float, duration:Float, ease:String):Void
     {
-        var _ease:EaseFunction = Reflect.getProperty(FlxEase, ease);
-
         if (duration > 0.0)
-            FlxTween.tween(game, {songSpeed: game.chart.speed * speed}, duration, {ease: _ease});
+            FlxTween.tween(game, {songSpeed: game.chart.speed * speed}, duration, {ease: Reflect.getProperty(FlxEase, ease)});
         else
             game.chartSpeed = game.chart.speed * speed;
     }

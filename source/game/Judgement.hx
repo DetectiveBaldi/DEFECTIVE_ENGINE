@@ -1,4 +1,4 @@
-package game.timing;
+package game;
 
 @:structInit
 class Judgement

@@ -39,7 +39,6 @@ import game.notes.Strum;
 import game.notes.StrumLine;
 import game.stages.Stage;
 import game.stages.Week1;
-import game.timing.Judgement;
 
 import ui.Countdown;
 
@@ -49,7 +48,8 @@ class GameState extends MusicBeatState
 {
     public var gameCamera(get, never):FlxCamera;
     
-    public dynamic function get_gameCamera():FlxCamera
+    @:noCompletion
+    function get_gameCamera():FlxCamera
     {
         return FlxG.camera;
     }
@@ -84,7 +84,8 @@ class GameState extends MusicBeatState
 
     public var downScroll(default, set):Bool;
 
-    public dynamic function set_downScroll(downScroll:Bool):Bool
+    @:noCompletion
+    function set_downScroll(downScroll:Bool):Bool
     {
         if (scoreTxt != null)
             scoreTxt.y = downScroll ? 35.0 : (FlxG.height - scoreTxt.height) - 35.0;
@@ -114,7 +115,8 @@ class GameState extends MusicBeatState
 
     public var middleScroll(default, set):Bool;
 
-    public dynamic function set_middleScroll(middleScroll:Bool):Bool
+    @:noCompletion
+    function set_middleScroll(middleScroll:Bool):Bool
     {
         if (opponentStrums != null)
         {
@@ -284,9 +286,9 @@ class GameState extends MusicBeatState
 
         healthBar.camera = hudCamera;
 
-        healthBar.opponentIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/characters/icons/${opponent.data.name}')));
+        healthBar.opponentIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/characters/healthIcons/${opponent.data.name}')));
 
-        healthBar.playerIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/characters/icons/${player.data.name}')));
+        healthBar.playerIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/characters/healthIcons/${player.data.name}')));
 
         healthBar.bar.setPosition((FlxG.width - healthBar.bar.width) * 0.5, downScroll ? (FlxG.height - healthBar.bar.height) - 620.0 : 620.0);
 

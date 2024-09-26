@@ -11,7 +11,8 @@ class HealthIcon extends FlxSprite
 {
     public var textureData(default, set):HealthIconTextureData;
 
-    public dynamic function set_textureData(textureData:HealthIconTextureData):HealthIconTextureData
+    @:noCompletion
+    function set_textureData(textureData:HealthIconTextureData):HealthIconTextureData
     {
         loadGraphic(AssetMan.graphic(Paths.png(textureData.png)));
 

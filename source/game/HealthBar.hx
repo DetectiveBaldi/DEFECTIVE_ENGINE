@@ -21,7 +21,8 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
 
     public var fillDirection(default, set):HealthBarFillDirection;
 
-    public dynamic function set_fillDirection(fillDirection:HealthBarFillDirection):HealthBarFillDirection
+    @:noCompletion
+    function set_fillDirection(fillDirection:HealthBarFillDirection):HealthBarFillDirection
     {
         bar.fillDirection = switch (fillDirection:HealthBarFillDirection)
         {
@@ -65,7 +66,8 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
 
     public var conductor(default, set):Conductor;
 
-    public dynamic function set_conductor(conductor:Conductor):Conductor
+    @:noCompletion
+    function set_conductor(conductor:Conductor):Conductor
     {
         if (this.conductor != null)
             this.conductor.beatHit.remove(beatHit);
@@ -96,7 +98,7 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
 
         this.fillDirection = fillDirection;
 
-        opponentIcon = new HealthIcon(0.0, 0.0, "assets/data/characters/icons/BOYFRIEND_PIXEL");
+        opponentIcon = new HealthIcon(0.0, 0.0, "assets/data/characters/healthIcons/BOYFRIEND_PIXEL");
 
         opponentIcon.flipX = switch (fillDirection:HealthBarFillDirection)
         {
@@ -109,7 +111,7 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
 
         add(opponentIcon);
 
-        playerIcon = new HealthIcon(0.0, 0.0, "assets/data/characters/icons/BOYFRIEND");
+        playerIcon = new HealthIcon(0.0, 0.0, "assets/data/characters/healthIcons/BOYFRIEND");
 
         playerIcon.flipX = switch (fillDirection:HealthBarFillDirection)
         {
@@ -130,13 +132,13 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
         super.update(elapsed);
 
         if (scaleIcons != null)
-            scaleIcons(elapsed);
+            scaleIcons();
 
         if (positionIcons != null)
             positionIcons();
     }
 
-    public dynamic function scaleIcons(elapsed:Float):Void
+    public dynamic function scaleIcons():Void
     {
         var opponentIconScale:FlxPoint = FlxPoint.get(FlxMath.lerp(opponentIcon.scale.x, opponentIcon.textureData.scale?.x ?? 1.0, 0.15), FlxMath.lerp(opponentIcon.scale.x, opponentIcon.textureData.scale?.y ?? 1.0, 0.15));
 

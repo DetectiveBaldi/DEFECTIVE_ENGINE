@@ -23,7 +23,8 @@ class Note extends FlxSprite
      */
     public var textureData(default, set):NoteTextureData;
     
-    public dynamic function set_textureData(textureData:NoteTextureData):NoteTextureData
+    @:noCompletion
+    function set_textureData(textureData:NoteTextureData):NoteTextureData
     {
         switch (textureData.format ?? "".toLowerCase():String)
         {

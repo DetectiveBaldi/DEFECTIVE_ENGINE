@@ -43,7 +43,8 @@ class Character extends FlxSprite
 
     public var conductor(default, set):Conductor;
 
-    public dynamic function set_conductor(conductor:Conductor):Conductor
+    @:noCompletion
+    function set_conductor(conductor:Conductor):Conductor
     {
         if (this.conductor != null)
             this.conductor.beatHit.remove(beatHit);

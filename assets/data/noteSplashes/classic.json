@@ -1,9 +1,9 @@
 {
     "format": "sparrow",
 
-    "png": "assets/images/noteSplashes/classic",
+    "png": "assets/images/game/notes/noteSplashes/classic",
 
-    "xml": "assets/images/noteSplashes/classic",
+    "xml": "assets/images/game/notes/noteSplashes/classic",
 
     "animations":
     [

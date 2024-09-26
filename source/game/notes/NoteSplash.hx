@@ -23,7 +23,8 @@ class NoteSplash extends FlxSprite
      */
     public var textureData(default, set):NoteSplashTextureData;
 
-    public dynamic function set_textureData(textureData:NoteSplashTextureData):NoteSplashTextureData
+    @:noCompletion
+    function set_textureData(textureData:NoteSplashTextureData):NoteSplashTextureData
     {
         switch (textureData.format ?? "".toLowerCase():String)
         {
@@ -89,5 +90,5 @@ typedef NoteSplashTextureData =
 
     var xml:String;
 
-    var animations:Array<{?offsets:{?x:Float, ?y:Float}, prefix:String, ?frameRate:Float, ?looped:Bool, ?flipX:Bool, ?flipY:Bool}>;
+    var animations:Array<{?offsets:Null<{?x:Null<Float>, ?y:Null<Float>}>, prefix:String, ?frameRate:Null<Float>, ?looped:Null<Bool>, ?flipX:Null<Bool>, ?flipY:Null<Bool>}>;
 }

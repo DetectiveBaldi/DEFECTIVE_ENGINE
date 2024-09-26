@@ -3,9 +3,9 @@
 
     "format": "sparrow",
     
-    "png": "assets/images/characters/BOYFRIEND_PIXEL",
+    "png": "assets/images/game/characters/BOYFRIEND_PIXEL",
 
-    "xml": "assets/images/characters/BOYFRIEND_PIXEL",
+    "xml": "assets/images/game/characters/BOYFRIEND_PIXEL",
 
     "antialiasing": false,
 

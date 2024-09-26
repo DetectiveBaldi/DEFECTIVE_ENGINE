@@ -19,21 +19,24 @@ class Conductor extends FlxBasic
     
     public var step(get, never):Int;
 
-    public dynamic function get_step():Int
+    @:noCompletion
+    function get_step():Int
     {
         return Math.floor(decimalStep);
     }
 
     public var beat(get, never):Int;
 
-    public dynamic function get_beat():Int
+    @:noCompletion
+    function get_beat():Int
     {
         return Math.floor(decimalBeat);
     }
 
     public var section(get, never):Int;
 
-    public dynamic function get_section():Int
+    @:noCompletion
+    function get_section():Int
     {
         return Math.floor(decimalSection);
     }
@@ -48,7 +51,8 @@ class Conductor extends FlxBasic
 
     public var crotchet(get, never):Float;
 
-    public dynamic function get_crotchet():Float
+    @:noCompletion
+    function get_crotchet():Float
     {
         return (60.0 / tempo) * 1000.0;
     }

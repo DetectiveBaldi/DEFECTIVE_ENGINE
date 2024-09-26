@@ -23,7 +23,8 @@ class Strum extends FlxSprite
      */
     public var textureData(default, set):StrumTextureData;
 
-    public dynamic function set_textureData(textureData:StrumTextureData):StrumTextureData
+    @:noCompletion
+    function set_textureData(textureData:StrumTextureData):StrumTextureData
     {
         switch (textureData.format ?? "".toLowerCase():String)
         {

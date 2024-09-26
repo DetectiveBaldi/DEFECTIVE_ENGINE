@@ -3,7 +3,6 @@ package game.events;
 import flixel.FlxCamera;
 
 import flixel.tweens.FlxEase;
-import flixel.tweens.FlxEase.EaseFunction;
 import flixel.tweens.FlxTween;
 
 import game.GameState;
@@ -14,10 +13,8 @@ class CameraZoomEvent
     {
         var _camera:FlxCamera = Reflect.getProperty(game, camera);
 
-        var _ease:EaseFunction = Reflect.getProperty(FlxEase, ease);
-
         if (duration > 0.0)
-            FlxTween.tween(camera, {zoom: zoom}, duration, {ease: _ease});
+            FlxTween.tween(camera, {zoom: zoom}, duration, {ease: Reflect.getProperty(FlxEase, ease)});
         else
             _camera.zoom = zoom;
     }
