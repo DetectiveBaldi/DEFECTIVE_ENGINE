@@ -3,35 +3,6 @@ name: Build
 on: [push]
 
 jobs:
-  Windows:
-    runs-on: windows-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: krdlab/setup-haxe@master
-        with:
-          haxe-version: 4.3.6
-      - name: Setup Dependencies
-        run: |
-          haxelib install hxcpp --quiet
-          haxelib install format --quiet
-          haxelib install hxp --quiet
-          haxelib git lime https://github.com/openfl/lime --quiet
-          haxelib run lime rebuild cpp --quiet
-          haxelib run lime rebuild tools --quiet
-          haxelib git openfl https://github.com/openfl/openfl --quiet
-          haxelib git flixel https://github.com/HaxeFlixel/flixel --quiet
-        shell: cmd
-      - name: Build
-        run: |
-          haxelib run lime build cpp -debug
-        shell: cmd
-      - name: Publish Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Defective Engine (Windows)
-          path: bin/windows/bin
-
   HashLink:
     runs-on: windows-latest
 
@@ -60,3 +31,56 @@ jobs:
         with:
           name: Defective Engine (HashLink)
           path: bin/hl/bin
+
+  HTML5:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.6
+      - name: Setup Dependencies
+        run: |
+          haxelib git lime https://github.com/openfl/lime --quiet
+          haxelib git openfl https://github.com/openfl/openfl --quiet
+          haxelib git flixel https://github.com/HaxeFlixel/flixel --quiet
+        shell: cmd
+      - name: Build
+        run: |
+          haxelib run lime build html5 -debug
+        shell: cmd
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Defective Engine (HTML5)
+          path: bin/html5/bin
+
+  Windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.6
+      - name: Setup Dependencies
+        run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib git lime https://github.com/openfl/lime --quiet
+          haxelib run lime rebuild cpp --quiet
+          haxelib run lime rebuild tools --quiet
+          haxelib git openfl https://github.com/openfl/openfl --quiet
+          haxelib git flixel https://github.com/HaxeFlixel/flixel --quiet
+        shell: cmd
+      - name: Build
+        run: |
+          haxelib run lime build cpp -debug
+        shell: cmd
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Defective Engine (Windows)
+          path: bin/windows/bin
