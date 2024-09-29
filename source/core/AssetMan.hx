@@ -70,7 +70,7 @@ class AssetMan
     }
 
     /**
-     * Caches an `openfl.media.Sound`. Then, it is returned.
+     * Caches a streamable `openfl.media.Sound`. Then, it is returned.
      * If the requested file path already exists in the cache, it will NOT be renewed.
      * @param path The file path of the sound you want to cache.
      * @return `openfl.media.Sound`
@@ -89,7 +89,14 @@ class AssetMan
                 var output:Sound;
 
                 if (Settings.audioStreaming)
-                    output = Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
+                {
+                    var vorbisFile:lime.media.vorbis.VorbisFile = lime.media.vorbis.VorbisFile.fromFile(path);
+
+                    if (vorbisFile == null)
+                        output = Sound.fromFile(path);
+                    else
+                        output = Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
+                }
                 else
                     output = Sound.fromFile(path);
             #end
