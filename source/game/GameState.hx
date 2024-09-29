@@ -22,6 +22,7 @@ import flixel.util.FlxColor;
 import core.AssetMan;
 import core.Inputs;
 import core.Paths;
+import core.Settings;
 
 import extendable.MusicBeatState;
 
@@ -250,9 +251,9 @@ class GameState extends MusicBeatState
 
         playerGroup.add(player);
 
-        downScroll = false;
+        downScroll = Settings.downScroll;
 
-        middleScroll = false;
+        middleScroll = Settings.middleScroll;
 
         score = 0;
 
@@ -711,10 +712,10 @@ class GameState extends MusicBeatState
         if (mainVocals == null)
         {
             if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent')))
-                opponentVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent')), 1.0, true);
+                opponentVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.ogg #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent')), 1.0, true);
 
             if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player')))
-                playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player')), 1.0, true);
+                playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.ogg #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player')), 1.0, true);
         }
     }
 

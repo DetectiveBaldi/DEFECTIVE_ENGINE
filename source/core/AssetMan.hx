@@ -5,9 +5,10 @@ import openfl.media.Sound;
 import openfl.utils.Assets;
 
 import flixel.FlxG;
-import flixel.FlxState;
 
 import flixel.graphics.FlxGraphic;
+
+import core.Settings;
 
 /**
  * A class which handles the caching and storing of graphics and sounds.
@@ -81,7 +82,22 @@ class AssetMan
         if (sounds.exists(path))
             return sounds[path];
 
-        sounds[path] = #if html5 Assets.getSound(path) #else openfl.media.Sound.fromFile(path) #end ;
+        #if html5
+            var output:Sound = Assets.getSound(path);
+        #else
+            #if hl
+                var output:Sound = openfl.media.Sound.fromFile(path);
+            #else
+                var output:Sound;
+
+                if (Settings.audioStreaming)
+                    output = openfl.media.Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
+                else
+                    output = openfl.media.Sound.fromFile(path);
+            #end
+        #end
+
+        sounds[path] = output;
 
         return sounds[path];
     }

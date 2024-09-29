@@ -7,8 +7,6 @@ import openfl.text.TextFormat;
 
 import flixel.FlxG;
 
-import flixel.math.FlxMath;
-
 import util.MathUtil;
 
 class PerfTracker extends TextField
@@ -46,6 +44,6 @@ class PerfTracker extends TextField
         while (times[0] < now - 1)
             times.shift();
 
-        text = 'FPS: ${MathUtil.minInt(FlxG.updateFramerate, times.length)}' #if !html5 + '\nRAM: ${FlxMath.roundDecimal(#if hl openfl.system.System.totalMemory #else cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_USAGE) #end / Math.pow(1024, 2), 2)} MB\nVRAM: ${FlxMath.roundDecimal(FlxG.stage.context3D.totalGPUMemory / Math.pow(1024, 2), 2)} MB' #end;
+        text = 'FPS: ${MathUtil.minInt(FlxG.updateFramerate, times.length)}' #if !html5 + '\nRAM: ${flixel.math.FlxMath.roundDecimal(openfl.system.System.totalMemory / Math.pow(1024, 2), 2)} MB\nVRAM: ${flixel.math.FlxMath.roundDecimal(FlxG.stage.context3D.totalGPUMemory / Math.pow(1024, 2), 2)} MB' #end;
     }
 }

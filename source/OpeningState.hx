@@ -7,6 +7,7 @@ import flixel.FlxState;
 import flixel.util.typeLimit.NextState;
 
 import core.AssetMan;
+import core.Settings;
 
 import ui.PerfTracker;
 
@@ -39,9 +40,17 @@ class OpeningState extends FlxState
 
         FlxG.mouse.visible = false;
 
+        #if FLX_DEBUG
+            FlxG.console.registerClass(Settings);
+        #end
+
         FlxSprite.defaultAntialiasing = true;
 
         AssetMan.init();
+
+        Settings.init();
+
+        Settings.load();
 
         var perfTracker:PerfTracker = new PerfTracker(10.0, 5.0);
         
