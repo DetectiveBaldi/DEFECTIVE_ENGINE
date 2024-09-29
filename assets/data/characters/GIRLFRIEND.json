@@ -1,7 +1,7 @@
 {
     "name": "GIRLFRIEND",
 
-    "format": "sparrow",
+    "format": "texturepackerxml",
     
     "png": "assets/images/game/characters/GIRLFRIEND",
 

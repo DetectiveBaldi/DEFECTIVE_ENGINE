@@ -12,7 +12,7 @@ class Settings
 
     public static function init():Void
     {
-        audioStreaming = false;
+        audioStreaming = true;
 
         downScroll = false;
 

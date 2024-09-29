@@ -41,8 +41,6 @@ class AssetMan
 
         #if (!hl && !html5)
             graphic.bitmap.disposeImage();
-
-            graphic.bitmap.getTexture(FlxG.stage.context3D);
         #end
 
         graphic.persist = true;
@@ -86,14 +84,14 @@ class AssetMan
             var output:Sound = Assets.getSound(path);
         #else
             #if hl
-                var output:Sound = openfl.media.Sound.fromFile(path);
+                var output:Sound = Sound.fromFile(path);
             #else
                 var output:Sound;
 
                 if (Settings.audioStreaming)
-                    output = openfl.media.Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
+                    output = Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
                 else
-                    output = openfl.media.Sound.fromFile(path);
+                    output = Sound.fromFile(path);
             #end
         #end
 
