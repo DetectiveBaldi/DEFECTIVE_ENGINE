@@ -90,9 +90,7 @@ class AssetMan
 
                 if (Settings.audioStreaming)
                 {
-                    var vorbisFile:lime.media.vorbis.VorbisFile = lime.media.vorbis.VorbisFile.fromFile(path);
-
-                    if (vorbisFile == null)
+                    if (lime.media.vorbis.VorbisFile.fromFile(path) == null)
                         output = Sound.fromFile(path);
                     else
                         output = Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
