@@ -659,12 +659,7 @@ class GameState extends MusicBeatState
             if (conductor.time >= 0.0)
                 startSong();
         }
-
-        if (FlxG.keys.justPressed.SPACE)
-        {
-            healthBar.fillDirection = healthBar.fillDirection == LEFT_TO_RIGHT ? RIGHT_TO_LEFT : LEFT_TO_RIGHT;
-        }
-
+        
         if (FlxG.keys.justPressed.ESCAPE)
             FlxG.resetState();
     }
