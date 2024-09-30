@@ -16,4 +16,4 @@ Defective Engine currently supports the following targets:
 - Windows
 
 ### Chart Formats
-The `game.ChartConverters` class contains some helpful classes for converting charts to the Defective Engine format.
+The `game.ChartConverters` module contains some helpful classes for converting charts to the Defective Engine format.
