@@ -8,7 +8,7 @@ import flixel.FlxG;
 
 import flixel.graphics.FlxGraphic;
 
-import core.Settings;
+import core.Preferences;
 
 /**
  * A class which handles the caching and storing of graphics and sounds.
@@ -27,7 +27,8 @@ class AssetMan
     }
 
     /**
-     * Caches a `flixel.graphics.FlxGraphic`, and, if possible, uploads it to the GPU. Then, it is returned.
+     * Caches a `flixel.graphics.FlxGraphic` and returns it.
+     * If possible, the graphic will be uploaded to the GPU to reduce RAM usage.
      * If the requested file path already exists in the cache, it will NOT be renewed.
      * @param path The file path of the graphic you want to cache.
      * @return `flixel.graphics.FlxGraphic`
@@ -40,7 +41,8 @@ class AssetMan
         var graphic:FlxGraphic = FlxGraphic.fromBitmapData(#if html5 Assets.getBitmapData(path) #else openfl.display.BitmapData.fromFile(path) #end );
 
         #if (!hl && !html5)
-            graphic.bitmap.disposeImage();
+            if (Preferences.gpuCaching)
+                graphic.bitmap.disposeImage();
         #end
 
         graphic.persist = true;
@@ -61,8 +63,16 @@ class AssetMan
 
         var graphic:FlxGraphic = graphics[path];
 
-        @:privateAccess
-            graphic.bitmap.__texture.dispose();
+        if (graphic.useCount > 0.0)
+            return;
+
+        #if (!hl && !html5)
+            if (Preferences.gpuCaching)
+            {
+                @:privateAccess
+                    graphic.bitmap.__texture.dispose();
+            }
+        #end
 
         FlxG.bitmap.remove(graphic);
 
@@ -70,7 +80,8 @@ class AssetMan
     }
 
     /**
-     * Caches a streamable `openfl.media.Sound`. Then, it is returned.
+     * Caches an `openfl.media.Sound` and returns it.
+     * If possible, the sound will be streamed to reduce RAM usage.
      * If the requested file path already exists in the cache, it will NOT be renewed.
      * @param path The file path of the sound you want to cache.
      * @return `openfl.media.Sound`
@@ -80,23 +91,15 @@ class AssetMan
         if (sounds.exists(path))
             return sounds[path];
 
-        #if html5
-            var output:Sound = Assets.getSound(path);
-        #else
-            #if hl
-                var output:Sound = Sound.fromFile(path);
-            #else
-                var output:Sound;
+        var output:Sound;
 
-                if (Settings.audioStreaming)
-                {
-                    if (lime.media.vorbis.VorbisFile.fromFile(path) == null)
-                        output = Sound.fromFile(path);
-                    else
-                        output = Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
-                }
-                else
-                    output = Sound.fromFile(path);
+        #if hl
+            output = Sound.fromFile(path);
+        #else
+            #if html5
+                output = Assets.getSound(path);
+            #else
+                output = lime.media.vorbis.VorbisFile.fromFile(path) == null ? Sound.fromFile(path) : Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
             #end
         #end
 
@@ -116,6 +119,15 @@ class AssetMan
 
         var sound:Sound = sounds[path];
 
+        for (i in 0 ... FlxG.sound.list.length)
+        {
+            @:privateAccess
+            {
+                if (FlxG.sound.list.members[i]._sound == sound)
+                    return;
+            }
+        }
+
         sound.close();
 
         Assets.cache.removeSound(path);
@@ -134,7 +146,7 @@ class AssetMan
     }
 
     /**
-     * Clears each item from the graphic and sound caches. Frees some RAM and VRAM.
+     * Clears each item from the graphic and sound caches. Frees some VRAM and RAM.
      */
     public static function clearCache():Void
     {

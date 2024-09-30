@@ -22,7 +22,7 @@ import flixel.util.FlxColor;
 import core.AssetMan;
 import core.Inputs;
 import core.Paths;
-import core.Settings;
+import core.Preferences;
 
 import extendable.MusicBeatState;
 
@@ -251,9 +251,9 @@ class GameState extends MusicBeatState
 
         playerGroup.add(player);
 
-        downScroll = Settings.downScroll;
+        downScroll = Preferences.downScroll;
 
-        middleScroll = Settings.middleScroll;
+        middleScroll = Preferences.middleScroll;
 
         score = 0;
 
@@ -368,7 +368,7 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("Blammed Erect");
+        loadSong("Satin Panties Erect");
 
         countdown = new Countdown(conductor);
 
