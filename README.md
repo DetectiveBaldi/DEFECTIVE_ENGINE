@@ -1,8 +1,8 @@
 ## Defective Engine
-A small, simple Friday Night Funkin' engine.
+A simple Friday Night Funkin' engine.
 
 ### Compiling
-To compile, complete the following steps:
+To compile, follow these steps:
 - First, install [Haxe](https://haxe.org/).
 - Then, install the following libraries:
   - lime: Refer to the [Development Builds](https://github.com/openfl/lime?tab=readme-ov-file#development-builds).
@@ -16,4 +16,4 @@ Defective Engine currently supports the following targets:
 - Windows
 
 ### Chart Formats
-The `game.ChartConverters` module contains some helpful classes for converting charts to the Defective Engine format.
+The `game.ChartConverters` module contains some useful classes for converting charts to the Defective Engine format.
