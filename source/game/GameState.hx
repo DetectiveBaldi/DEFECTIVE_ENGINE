@@ -88,11 +88,11 @@ class GameState extends MusicBeatState
     @:noCompletion
     function set_downScroll(downScroll:Bool):Bool
     {
-        if (scoreTxt != null)
-            scoreTxt.y = downScroll ? 35.0 : (FlxG.height - scoreTxt.height) - 35.0;
-
         if (healthBar != null)
             healthBar.bar.y = downScroll ? (FlxG.height - healthBar.bar.height) - 620.0 : 620.0;
+
+        if (scoreTxt != null)
+            scoreTxt.y = downScroll ? 25.0 : (FlxG.height - scoreTxt.height) - 25.0;
 
         if (opponentStrums != null)
             opponentStrums.y = downScroll ? FlxG.height - opponentStrums.height - 15.0 : 15.0;
@@ -142,11 +142,11 @@ class GameState extends MusicBeatState
 
     public var combo:Int;
 
-    public var scoreTxt:FlxText;
+    public var judgements:Array<Judgement>;
 
     public var healthBar:HealthBar;
 
-    public var judgements:Array<Judgement>;
+    public var scoreTxt:FlxText;
 
     public var strumLines:FlxTypedContainer<StrumLine>;
 
@@ -265,6 +265,31 @@ class GameState extends MusicBeatState
 
         combo = 0;
 
+        judgements =
+        [
+            {name: "Epic!", timing: 15.0, bonus: 1.0, health: 2.85, score: 500, hits: 0},
+
+            {name: "Sick!", timing: 45.0, bonus: 1.0, health: 2.5, score: 350, hits: 0},
+
+            {name: "Good", timing: 75.0, bonus: 0.65, health: 1.5, score: 250, hits: 0},
+
+            {name: "Bad", timing: 125.0, bonus: 0.35, health: -1.5, score: 150, hits: 0},
+
+            {name: "Shit", timing: Math.POSITIVE_INFINITY, health: -2.5, bonus: 0.0, score: 50, hits: 0}
+        ];
+
+        healthBar = new HealthBar(RIGHT_TO_LEFT, conductor);
+
+        healthBar.camera = hudCamera;
+
+        healthBar.opponentIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/characters/healthIcons/${opponent.data.name}')));
+
+        healthBar.playerIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/characters/healthIcons/${player.data.name}')));
+
+        healthBar.bar.setPosition((FlxG.width - healthBar.bar.width) * 0.5, downScroll ? (FlxG.height - healthBar.bar.height) - 620.0 : 620.0);
+
+        add(healthBar);
+
         scoreTxt = new FlxText(0.0, 0.0, FlxG.width, "Score: 0 | Misses: 0 | Accuracy: 0.0%", 24);
 
         scoreTxt.camera = hudCamera;
@@ -279,34 +304,9 @@ class GameState extends MusicBeatState
 
         scoreTxt.borderSize = 5.0;
 
-        scoreTxt.setPosition((FlxG.width - scoreTxt.width) * 0.5, downScroll ? 35.0 : (FlxG.height - scoreTxt.height) - 35.0);
+        scoreTxt.setPosition((FlxG.width - scoreTxt.width) * 0.5, downScroll ? 25.0 : (FlxG.height - scoreTxt.height) - 25.0);
 
         add(scoreTxt);
-
-        healthBar = new HealthBar(RIGHT_TO_LEFT, conductor);
-
-        healthBar.camera = hudCamera;
-
-        healthBar.opponentIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/characters/healthIcons/${opponent.data.name}')));
-
-        healthBar.playerIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/characters/healthIcons/${player.data.name}')));
-
-        healthBar.bar.setPosition((FlxG.width - healthBar.bar.width) * 0.5, downScroll ? (FlxG.height - healthBar.bar.height) - 620.0 : 620.0);
-
-        add(healthBar);
-
-        judgements =
-        [
-            {name: "Epic!", timing: 15.0, bonus: 1.0, health: 3.0, score: 500, hits: 0},
-
-            {name: "Sick!", timing: 45.0, bonus: 1.0, health: 2.5, score: 350, hits: 0},
-
-            {name: "Good", timing: 75.0, bonus: 0.65, health: 1.5, score: 250, hits: 0},
-
-            {name: "Bad", timing: 125.0, bonus: 0.35, health: -1.5, score: 150, hits: 0},
-
-            {name: "Shit", timing: Math.POSITIVE_INFINITY, health: -2.5, bonus: 0.0, score: 50, hits: 0}
-        ];
 
         strumLines = new FlxTypedContainer<StrumLine>();
 
@@ -862,9 +862,9 @@ class GameState extends MusicBeatState
 
         combo = 0;
 
-        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+        healthBar.health = FlxMath.bound(healthBar.health - 3.5, 0.0, 100.0);
 
-        healthBar.health = FlxMath.bound(healthBar.health - 4.5, 0.0, 100.0);
+        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
         if (mainVocals != null)
             mainVocals.volume = 0.0;
@@ -880,9 +880,9 @@ class GameState extends MusicBeatState
 
         combo = 0;
 
-        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
-
         healthBar.health = FlxMath.bound(healthBar.health - 4.5, 0.0, 100.0);
+
+        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
         if (mainVocals != null)
             mainVocals.volume = 0.0;

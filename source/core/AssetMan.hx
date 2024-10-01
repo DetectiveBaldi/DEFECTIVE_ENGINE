@@ -53,7 +53,7 @@ class AssetMan
     }
 
     /**
-     * Removes the specified graphic from the cache. Frees some VRAM.
+     * Removes the specified graphic from the cache.
      * @param path The file path of the graphic you want to remove.
      */
     public static function removeGraphic(path:String):Void
@@ -77,6 +77,15 @@ class AssetMan
         FlxG.bitmap.remove(graphic);
 
         graphics.remove(path);
+    }
+
+    /**
+     * Clears each item from the graphic cache.
+     */
+    public static function clearGraphics():Void
+    {
+        for (key => value in graphics)
+            removeGraphic(key);
     }
 
     /**
@@ -109,7 +118,7 @@ class AssetMan
     }
 
     /**
-     * Removes the specified sound from the sound cache. Frees some RAM.
+     * Removes the specified sound from the sound cache.
      * @param path The file path of the sound you want to remove.
      */
     public static function removeSound(path:String):Void
@@ -136,6 +145,15 @@ class AssetMan
     }
 
     /**
+     * Clears each item from the sound cache.
+     */
+    public static function clearSounds():Void
+    {
+        for (key => value in graphics)
+            removeGraphic(key);
+    }
+
+    /**
      * Gets the content of the specified text file. Then, it is returned
      * @param path The file path of the text you want to recieve content from.
      * @return `String`
@@ -146,14 +164,12 @@ class AssetMan
     }
 
     /**
-     * Clears each item from the graphic and sound caches. Frees some VRAM and RAM.
+     * Clears each item from the graphic and sound caches.
      */
     public static function clearCache():Void
     {
-        for (key => value in graphics)
-            removeGraphic(key);
+        clearGraphics();
 
-        for (key => value in sounds)
-            removeSound(key);
+        clearSounds();
     }
 }

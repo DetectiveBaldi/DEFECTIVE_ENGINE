@@ -70,11 +70,21 @@ class Countdown extends FlxContainer
 
         add(tweens);
 
+        started = false;
+
         onStart = new FlxSignal();
+
+        paused = false;
+
+        tick = 0;
 
         onTick = new FlxTypedSignal<(tick:Int)->Void>();
 
+        finished = false;
+
         onFinish = new FlxSignal();
+
+        skipped = false;
 
         onSkip = new FlxSignal();
 
