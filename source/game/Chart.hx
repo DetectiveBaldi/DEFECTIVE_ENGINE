@@ -23,7 +23,7 @@ class Chart
     {
         var output:Chart = new Chart();
 
-        var parsed:ParsedChart = Json.parse(Paths.json(AssetMan.text(path)));
+        var parsed:ParsedChart = Json.parse(AssetMan.text(Paths.json(path)));
 
         output.name = parsed.name;
 
