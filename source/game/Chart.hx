@@ -3,6 +3,7 @@ package game;
 import haxe.Json;
 
 import core.AssetMan;
+import core.Paths;
 
 class Chart
 {
@@ -22,7 +23,7 @@ class Chart
     {
         var output:Chart = new Chart();
 
-        var parsed:ParsedChart = Json.parse(AssetMan.text(path));
+        var parsed:ParsedChart = Json.parse(Paths.json(AssetMan.text(path)));
 
         output.name = parsed.name;
 
