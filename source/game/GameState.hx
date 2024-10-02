@@ -213,7 +213,7 @@ class GameState extends MusicBeatState
 
         add(spectatorGroup);
 
-        spectator = new Character(0.0, 0.0, "assets/data/characters/GIRLFRIEND", ARTIFICIAL, conductor);
+        spectator = new Character(0.0, 0.0, "assets/data/game/characters/GIRLFRIEND", ARTIFICIAL, conductor);
 
         spectator.skipSing = true;
 
@@ -229,7 +229,7 @@ class GameState extends MusicBeatState
 
         add(opponentGroup);
 
-        opponent = new Character(0.0, 0.0, "assets/data/characters/BOYFRIEND_PIXEL", ARTIFICIAL, conductor);
+        opponent = new Character(0.0, 0.0, "assets/data/game/characters/BOYFRIEND_PIXEL", ARTIFICIAL, conductor);
 
         opponent.setPosition(15.0, 50.0);
 
@@ -243,7 +243,7 @@ class GameState extends MusicBeatState
 
         add(playerGroup);
 
-        player = new Character(0.0, 0.0, "assets/data/characters/BOYFRIEND", PLAYABLE, conductor);
+        player = new Character(0.0, 0.0, "assets/data/game/characters/BOYFRIEND", PLAYABLE, conductor);
 
         player.setPosition(FlxG.width - player.width - 15.0, 385.0);
 
@@ -282,9 +282,9 @@ class GameState extends MusicBeatState
 
         healthBar.camera = hudCamera;
 
-        healthBar.opponentIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/characters/healthIcons/${opponent.data.name}')));
+        healthBar.opponentIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/game/healthIcons/${opponent.data.name}')));
 
-        healthBar.playerIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/characters/healthIcons/${player.data.name}')));
+        healthBar.playerIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/game/healthIcons/${player.data.name}')));
 
         healthBar.bar.setPosition((FlxG.width - healthBar.bar.width) * 0.5, downScroll ? (FlxG.height - healthBar.bar.height) - 620.0 : 620.0);
 
@@ -675,7 +675,7 @@ class GameState extends MusicBeatState
 
     public function loadSong(name:String):Void
     {
-        chart = new FunkConverter('assets/data/songs/${name}/chart', 'assets/data/songs/${name}/meta').build("nightmare");
+        chart = new FunkConverter('assets/data/game/songs/${name}/chart', 'assets/data/game/songs/${name}/meta').build("nightmare");
 
         chart.speed = FlxMath.bound(chart.speed, 0.0, 1.45);
 

@@ -98,7 +98,7 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
 
         this.fillDirection = fillDirection;
 
-        opponentIcon = new HealthIcon(0.0, 0.0, "assets/data/characters/healthIcons/BOYFRIEND_PIXEL");
+        opponentIcon = new HealthIcon(0.0, 0.0, "assets/data/game/healthIcons/BOYFRIEND_PIXEL");
 
         opponentIcon.flipX = switch (fillDirection:HealthBarFillDirection)
         {
@@ -111,7 +111,7 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
 
         add(opponentIcon);
 
-        playerIcon = new HealthIcon(0.0, 0.0, "assets/data/characters/healthIcons/BOYFRIEND");
+        playerIcon = new HealthIcon(0.0, 0.0, "assets/data/game/healthIcons/BOYFRIEND");
 
         playerIcon.flipX = switch (fillDirection:HealthBarFillDirection)
         {

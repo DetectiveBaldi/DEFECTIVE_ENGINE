@@ -57,7 +57,7 @@ class Strum extends FlxSprite
     {
         super(x, y);
         
-        textureData = Json.parse(AssetMan.text(Paths.json("assets/data/strums/classic")));
+        textureData = Json.parse(AssetMan.text(Paths.json("assets/data/game/notes/strums/classic")));
 
         direction = -1;
 

@@ -63,7 +63,7 @@ class Note extends FlxSprite
 
         children = new Array<Note>();
 
-        textureData = Json.parse(AssetMan.text(Paths.json("assets/data/notes/classic")));
+        textureData = Json.parse(AssetMan.text(Paths.json("assets/data/game/notes/classic")));
 
         time = 0.0;
 

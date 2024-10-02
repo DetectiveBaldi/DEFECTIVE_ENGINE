@@ -65,7 +65,7 @@ class NoteSplash extends FlxSprite
     {
         super(x, y);
 
-        textureData = Json.parse(AssetMan.text(Paths.json("assets/data/noteSplashes/classic")));
+        textureData = Json.parse(AssetMan.text(Paths.json("assets/data/game/notes/noteSplashes/classic")));
 
         direction = -1;
     }
