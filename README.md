@@ -1,5 +1,5 @@
 ## Defective Engine
-A simple Friday Night Funkin' engine.
+A Friday Night Funkin' engine.
 
 ### Compiling
 To compile, follow these steps:
