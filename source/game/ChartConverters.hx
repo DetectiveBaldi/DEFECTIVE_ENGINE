@@ -32,9 +32,11 @@ class FunkConverter
 
         output.speed = Reflect.field(parsedChart.scrollSpeed, difficulty);
 
-        for (i in 0 ... Reflect.field(parsedChart.notes, difficulty).length)
+        var notes:Array<FunkNote> = Reflect.field(parsedChart.notes, difficulty);
+
+        for (i in 0 ... notes.length)
         {
-            var note:FunkNote = Reflect.field(parsedChart.notes, difficulty)[i];
+            var note:FunkNote = notes[i];
 
             output.notes.push({time: note.t, speed: 1.0, direction: note.d % 4, lane: 1 - Math.floor(note.d * 0.25), length: note.l});
         }
@@ -75,28 +77,34 @@ class PsychConverter
 
         for (i in 0 ... parsed.song.notes.length)
         {
-            var section:PsychSection =
+            var section:Dynamic = parsed.song.notes[i];
+
+            var _section:PsychSection =
             {
                 sectionNotes:
                 [
-                    for (j in 0 ... parsed.song.notes[i].sectionNotes.length)
-                        {time: cast (parsed.song.notes[i].sectionNotes[j][0], Float), direction: cast (parsed.song.notes[i].sectionNotes[j][1], Int), length: cast (parsed.song.notes[i].sectionNotes[j][2], Float)}
+                    for (j in 0 ... section.sectionNotes.length)
+                    {
+                        var note:Array<Dynamic> = section.sectionNotes[j];
+
+                        {time: note[0], direction: note[1], length: cast note[2]}
+                    }
                 ],
 
-                sectionBeats: parsed.song.notes[i].sectionBeats,
+                sectionBeats: section.sectionBeats,
 
-                mustHitSection: parsed.song.notes[i].mustHitSection,
+                mustHitSection: section.mustHitSection,
 
-                changeBPM: parsed.song.notes[i].changeBPM,
+                changeBPM: section.changeBPM,
 
-                bpm: parsed.song.notes[i].bpm
+                bpm: section.bpm
             };
 
-            for (j in 0 ... section.sectionNotes.length)
+            for (j in 0 ... _section.sectionNotes.length)
             {
-                var note:PsychNote = section.sectionNotes[j];
+                var note:PsychNote = _section.sectionNotes[j];
 
-                output.notes.push({time: note.time, speed: 1.0, direction: note.direction % 4, lane: 1 - Math.floor((section.mustHitSection ? note.direction : (note.direction >= 4.0) ? note.direction - 4 : note.direction + 4) * 0.25), length: note.length});
+                output.notes.push({time: note.time, speed: 1.0, direction: note.direction % 4, lane: 1 - Math.floor((_section.mustHitSection ? note.direction : (note.direction >= 4.0) ? note.direction - 4 : note.direction + 4) * 0.25), length: note.length});
             }
         }
 
@@ -110,31 +118,37 @@ class PsychConverter
 
         for (i in 0 ... parsed.song.notes.length)
         {
-            var section:PsychSection =
+            var section:Dynamic = parsed.song.notes[i];
+
+            var _section:PsychSection =
             {
                 sectionNotes:
                 [
-                    for (j in 0 ... parsed.song.notes[i].sectionNotes.length)
-                        {time: cast (parsed.song.notes[i].sectionNotes[j][0], Float), direction: cast (parsed.song.notes[i].sectionNotes[j][1], Int), length: cast (parsed.song.notes[i].sectionNotes[j][2], Float)}
+                    for (j in 0 ... section.sectionNotes.length)
+                    {
+                        var note:Array<Dynamic> = section.sectionNotes[j];
+
+                        {time: note[0], direction: note[1], length: cast note[2]}
+                    }
                 ],
 
-                sectionBeats: parsed.song.notes[i].sectionBeats,
+                sectionBeats: section.sectionBeats,
 
-                mustHitSection: parsed.song.notes[i].mustHitSection,
+                mustHitSection: section.mustHitSection,
 
-                changeBPM: parsed.song.notes[i].changeBPM,
+                changeBPM: section.changeBPM,
 
-                bpm: parsed.song.notes[i].bpm
+                bpm: section.bpm
             };
 
-            if (section.changeBPM)
+            if (_section.changeBPM)
             {
-                tempo = section.bpm;
+                tempo = _section.bpm;
 
                 output.timeChanges.push({tempo: tempo, time: time, step: 0.0, beat: 0.0, section: 0.0});
             }
             
-            time += (((1.0 / tempo) * 60.0) * 1000.0) * (Math.round(section.sectionBeats * 4.0) * 0.25);
+            time += (((1.0 / tempo) * 60.0) * 1000.0) * (Math.round(_section.sectionBeats * 4.0) * 0.25);
         }
 
         return output;
