@@ -88,7 +88,7 @@ class Countdown extends FlxContainer
 
         onSkip = new FlxSignal();
 
-        sprite = new FlxSprite().loadGraphic(AssetMan.graphic(Paths.png("assets/images/ui/countdown")), true, 1000, 500);
+        sprite = new FlxSprite().loadGraphic(AssetMan.graphic(Paths.png("assets/images/ui/countdown"), true), true, 1000, 500);
 
         sprite.animation.add("ready", [0], 0.0, false);
 
@@ -106,13 +106,13 @@ class Countdown extends FlxContainer
 
         add(sprite);
 
-        three = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/three")), 0.65);
+        three = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/three"), false), 0.65);
 
-        two = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/two")), 0.65);
+        two = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/two"), false), 0.65);
 
-        one = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/one")), 0.65);
+        one = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/one"), false), 0.65);
 
-        go = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/go")), 0.65);
+        go = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/go"), false), 0.65);
 
         this.conductor = conductor;
     }

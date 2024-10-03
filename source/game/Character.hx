@@ -63,10 +63,10 @@ class Character extends FlxSprite
         switch (data.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(data.png)), Paths.xml(data.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(data.png), true), Paths.xml(data.xml));
 
             case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(data.png)), Paths.xml(data.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(data.png), true), Paths.xml(data.xml));
         }
 
         antialiasing = data.antialiasing ?? true;

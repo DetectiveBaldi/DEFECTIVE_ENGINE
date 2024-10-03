@@ -14,7 +14,7 @@ class HealthIcon extends FlxSprite
     @:noCompletion
     function set_textureData(textureData:HealthIconTextureData):HealthIconTextureData
     {
-        loadGraphic(AssetMan.graphic(Paths.png(textureData.png)));
+        loadGraphic(AssetMan.graphic(Paths.png(textureData.png), true));
 
         antialiasing = textureData.antialiasing ?? true;
 

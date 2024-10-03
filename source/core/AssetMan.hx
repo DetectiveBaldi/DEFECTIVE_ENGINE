@@ -28,12 +28,12 @@ class AssetMan
 
     /**
      * Caches a `flixel.graphics.FlxGraphic` and returns it.
-     * If possible, the graphic will be uploaded to the GPU to reduce RAM usage.
      * If the requested file path already exists in the cache, it will NOT be renewed.
      * @param path The file path of the graphic you want to cache.
+     * @param gpuCaching Specifies whether this graphic should be uploaded to the GPU to reduce RAM usage.
      * @return `flixel.graphics.FlxGraphic`
      */
-    public static function graphic(path:String):FlxGraphic
+    public static function graphic(path:String, gpuCaching:Bool):FlxGraphic
     {
         if (graphics.exists(path))
             return graphics[path];
@@ -41,7 +41,7 @@ class AssetMan
         var graphic:FlxGraphic = FlxGraphic.fromBitmapData(#if html5 Assets.getBitmapData(path) #else openfl.display.BitmapData.fromFile(path) #end );
 
         #if (!hl && !html5)
-            if (Preferences.gpuCaching)
+            if (Preferences.gpuCaching && gpuCaching)
                 graphic.bitmap.disposeImage();
         #end
 
@@ -67,11 +67,8 @@ class AssetMan
             return;
 
         #if (!hl && !html5)
-            if (Preferences.gpuCaching)
-            {
-                @:privateAccess
-                    graphic.bitmap.__texture.dispose();
-            }
+            @:privateAccess
+                graphic.bitmap.__texture.dispose();
         #end
 
         FlxG.bitmap.remove(graphic);
@@ -90,12 +87,12 @@ class AssetMan
 
     /**
      * Caches an `openfl.media.Sound` and returns it.
-     * If possible, the sound will be streamed to reduce RAM usage.
      * If the requested file path already exists in the cache, it will NOT be renewed.
      * @param path The file path of the sound you want to cache.
+     * @param soundStreaming Specifies whether this sound should be streamed to reduce RAM usage.
      * @return `openfl.media.Sound`
      */
-    public static function sound(path:String):Sound
+    public static function sound(path:String, soundStreaming:Bool):Sound
     {
         if (sounds.exists(path))
             return sounds[path];
@@ -108,7 +105,15 @@ class AssetMan
             #if html5
                 output = Assets.getSound(path);
             #else
-                output = lime.media.vorbis.VorbisFile.fromFile(path) == null ? Sound.fromFile(path) : Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
+                if (Preferences.soundStreaming && soundStreaming)
+                {
+                    if (lime.media.vorbis.VorbisFile.fromFile(path) == null)
+                        output = Sound.fromFile(path);
+                    else
+                        output = Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
+                }
+                else
+                    output = Sound.fromFile(path);
             #end
         #end
 

@@ -18,13 +18,13 @@ class Week1 extends Stage<FlxBasic>
     {
         super();
 
-        background = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/week1/background")));
+        background = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/week1/background"), true));
 
         background.screenCenter();
 
         members.push(background);
 
-        foreground = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/week1/foreground")));
+        foreground = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/week1/foreground"), true));
 
         foreground.scale.set(1.15, 1.15);
 
@@ -34,7 +34,7 @@ class Week1 extends Stage<FlxBasic>
         
         members.push(foreground);
 
-        curtains = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/week1/curtains")));
+        curtains = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/week1/curtains"), true));
 
         curtains.scale.set(0.95, 0.95);
 

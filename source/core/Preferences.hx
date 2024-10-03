@@ -4,11 +4,9 @@ import flixel.FlxG;
 
 class Preferences
 {
-    #if (!hl && !html5)
-        public static var gpuCaching:Bool;
+    public static var gpuCaching:Bool;
 
-        public static var soundStreaming:Bool;
-    #end
+    public static var soundStreaming:Bool;
 
     public static var downScroll:Bool;
 
@@ -16,11 +14,9 @@ class Preferences
 
     public static function init():Void
     {
-        #if (!hl && !html5)
-            gpuCaching = true;
+        gpuCaching = true;
 
-            soundStreaming = false;
-        #end
+        soundStreaming = false;
 
         downScroll = false;
 
@@ -28,7 +24,7 @@ class Preferences
 
         if (FlxG.save.data.preferences == null)
         {
-            FlxG.save.data.preferences = { #if (!hl && !html5) gpuCaching: gpuCaching, soundStreaming: soundStreaming, #end downScroll: downScroll, middleScroll: middleScroll};
+            FlxG.save.data.preferences = {gpuCaching: gpuCaching, soundStreaming: soundStreaming, downScroll: downScroll, middleScroll: middleScroll};
 
             FlxG.save.flush();
         }

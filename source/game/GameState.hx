@@ -368,7 +368,7 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("Satin Panties Erect");
+        loadSong("Crossed Out");
 
         countdown = new Countdown(conductor);
 
@@ -675,7 +675,7 @@ class GameState extends MusicBeatState
 
     public function loadSong(name:String):Void
     {
-        chart = new FunkConverter('assets/data/game/songs/${name}/chart', 'assets/data/game/songs/${name}/meta').build("nightmare");
+        chart = Chart.build('assets/data/game/songs/${name}/chart');
 
         chart.speed = FlxMath.bound(chart.speed, 0.0, 1.45);
 
@@ -699,18 +699,18 @@ class GameState extends MusicBeatState
 
         eventIndex = 0;
 
-        instrumental = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Instrumental')), 1.0, true);
+        instrumental = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Instrumental'), true), 1.0, true);
 
         if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Main')))
-            mainVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Main')), 1.0, true);
+            mainVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Main'), true), 1.0, true);
 
         if (mainVocals == null)
         {
             if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent')))
-                opponentVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.ogg #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent')), 1.0, true);
+                opponentVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.ogg #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent'), true), 1.0, true);
 
             if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player')))
-                playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.ogg #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player')), 1.0, true);
+                playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.ogg #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player'), true), 1.0, true);
         }
     }
 
@@ -844,7 +844,7 @@ class GameState extends MusicBeatState
                     noteSplash.setPosition(strum.getMidpoint().x - noteSplash.width * 0.5, strum.getMidpoint().y - noteSplash.height * 0.5);
                 }
 
-                FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/snap")), 0.75);
+                FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/snap"), false), 0.75);
             }
         }
 

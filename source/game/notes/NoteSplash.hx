@@ -29,10 +29,10 @@ class NoteSplash extends FlxSprite
         switch (textureData.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureData.png), true), Paths.xml(textureData.xml));
             
             case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureData.png), true), Paths.xml(textureData.xml));
         }
 
         for (i in 0 ... textureData.animations.length)
