@@ -373,6 +373,7 @@ class GameState extends MusicBeatState
         loadSong("Bad Time");
 
         countdown = new Countdown(conductor);
+        
         countdown.camera = hudCamera;
 
         countdown.onTick.add((tick:Int) ->
@@ -561,6 +562,19 @@ class GameState extends MusicBeatState
             _note.lane = note.lane;
 
             _note.length = note.length;
+
+            if (Preferences.gameModifiers["noteRandomization"])
+            {
+                _note.direction = FlxG.random.int(0, 3);
+
+                var __note:Note = notes.getLast((___note:Note) -> _note.lane == ___note.lane);
+
+                if (__note != null)
+                {
+                    while (_note.direction == __note.direction)
+                        _note.direction = FlxG.random.int(0, 3);
+                }
+            }
 
             _note.animation.play(Note.directions[_note.direction].toLowerCase());
 

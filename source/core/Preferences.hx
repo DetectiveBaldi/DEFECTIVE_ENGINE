@@ -12,6 +12,8 @@ class Preferences
 
     public static var middleScroll:Bool;
 
+    public static var gameModifiers:Map<String, Any>;
+
     public static function init():Void
     {
         gpuCaching = true;
@@ -22,9 +24,14 @@ class Preferences
 
         middleScroll = false;
 
+        gameModifiers =
+        [
+            "noteRandomization" => false
+        ];
+
         if (FlxG.save.data.preferences == null)
         {
-            FlxG.save.data.preferences = {gpuCaching: gpuCaching, soundStreaming: soundStreaming, downScroll: downScroll, middleScroll: middleScroll};
+            FlxG.save.data.preferences = {gpuCaching: gpuCaching, soundStreaming: soundStreaming, downScroll: downScroll, middleScroll: middleScroll, gameModifiers: gameModifiers};
 
             FlxG.save.flush();
         }
