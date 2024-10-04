@@ -83,55 +83,6 @@ class GameState extends MusicBeatState
 
     public var player:Character;
 
-    public var downScroll(default, set):Bool;
-
-    @:noCompletion
-    function set_downScroll(downScroll:Bool):Bool
-    {
-        if (healthBar != null)
-            healthBar.bar.y = downScroll ? (FlxG.height - healthBar.bar.height) - 620.0 : 620.0;
-
-        if (scoreTxt != null)
-            scoreTxt.y = downScroll ? 25.0 : (FlxG.height - scoreTxt.height) - 25.0;
-
-        if (opponentStrums != null)
-            opponentStrums.y = downScroll ? FlxG.height - opponentStrums.height - 15.0 : 15.0;
-
-        if (playerStrums != null)
-            playerStrums.y = downScroll ? FlxG.height - playerStrums.height - 15.0 : 15.0;
-
-        if (notes != null)
-        {
-            for (i in 0 ... notes.members.length)
-            {
-                var note:Note = notes.members[i];
-
-                if (note.animation.name.contains("Tail"))
-                    note.flipY = downScroll;
-            }
-        }
-        
-        return this.downScroll = downScroll;
-    }
-
-    public var middleScroll(default, set):Bool;
-
-    @:noCompletion
-    function set_middleScroll(middleScroll:Bool):Bool
-    {
-        if (opponentStrums != null)
-        {
-            opponentStrums.visible = !middleScroll;
-
-            opponentStrums.x = middleScroll ? (FlxG.width - opponentStrums.width) * 0.5 : 45.0;
-        }
-
-        if (playerStrums != null)
-            playerStrums.x = middleScroll ? (FlxG.width - playerStrums.width) * 0.5 : FlxG.width - playerStrums.width - 45.0;
-
-        return this.middleScroll = middleScroll;
-    }
-
     public var score:Int;
 
     public var hits:Int;
@@ -251,10 +202,6 @@ class GameState extends MusicBeatState
 
         playerGroup.add(player);
 
-        downScroll = Preferences.downScroll;
-
-        middleScroll = Preferences.middleScroll;
-
         score = 0;
 
         hits = 0;
@@ -286,7 +233,7 @@ class GameState extends MusicBeatState
 
         healthBar.playerIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/game/healthIcons/${player.data.name}')));
 
-        healthBar.bar.setPosition((FlxG.width - healthBar.bar.width) * 0.5, downScroll ? (FlxG.height - healthBar.bar.height) - 620.0 : 620.0);
+        healthBar.bar.setPosition((FlxG.width - healthBar.bar.width) * 0.5, Preferences.downScroll ? (FlxG.height - healthBar.bar.height) - 620.0 : 620.0);
 
         add(healthBar);
 
@@ -304,7 +251,7 @@ class GameState extends MusicBeatState
 
         scoreTxt.borderSize = 5.0;
 
-        scoreTxt.setPosition((FlxG.width - scoreTxt.width) * 0.5, downScroll ? 25.0 : (FlxG.height - scoreTxt.height) - 25.0);
+        scoreTxt.setPosition((FlxG.width - scoreTxt.width) * 0.5, Preferences.downScroll ? 25.0 : (FlxG.height - scoreTxt.height) - 25.0);
 
         add(scoreTxt);
 
@@ -320,41 +267,41 @@ class GameState extends MusicBeatState
 
         opponentStrums.artificial = true;
 
-        opponentStrums.noteHit.add(opponentNoteHit);
-
         opponentStrums.noteHit.add(noteHit);
 
-        opponentStrums.noteMiss.add(opponentNoteMiss);
+        opponentStrums.noteHit.add(opponentNoteHit);
 
         opponentStrums.noteMiss.add(noteMiss);
 
-        // opponentStrums.ghostTap.add(opponentGhostTap);
+        opponentStrums.noteMiss.add(opponentNoteMiss);
 
-        // opponentStrums.ghostTap.add(ghostTap);
+        opponentStrums.ghostTap.add(ghostTap);
 
-        opponentStrums.visible = !middleScroll;
+        opponentStrums.ghostTap.add(opponentGhostTap);
 
-        opponentStrums.setPosition(middleScroll ? (FlxG.width - opponentStrums.width) * 0.5 : 45.0, downScroll ? FlxG.height - opponentStrums.height - 15.0 : 15.0);
+        opponentStrums.visible = !Preferences.middleScroll;
+
+        opponentStrums.setPosition(Preferences.middleScroll ? (FlxG.width - opponentStrums.width) * 0.5 : 45.0, Preferences.downScroll ? FlxG.height - opponentStrums.height - 15.0 : 15.0);
 
         strumLines.add(opponentStrums);
         
         playerStrums = new StrumLine(conductor);
 
         playerStrums.lane = 1;
+
+        playerStrums.noteHit.add(noteHit);
         
         playerStrums.noteHit.add(playerNoteHit);
 
-        playerStrums.noteHit.add(noteHit);
+        playerStrums.noteMiss.add(noteMiss);
 
         playerStrums.noteMiss.add(playerNoteMiss);
 
-        playerStrums.noteMiss.add(noteMiss);
+        playerStrums.ghostTap.add(ghostTap);
 
-        // playerStrums.ghostTap.add(playerGhostTap);
+        playerStrums.ghostTap.add(playerGhostTap);
 
-        // playerStrums.ghostTap.add(ghostTap);
-
-        playerStrums.setPosition(middleScroll ? (FlxG.width - playerStrums.width) * 0.5 : FlxG.width - playerStrums.width - 45.0, downScroll ? FlxG.height - playerStrums.height - 15.0 : 15.0);
+        playerStrums.setPosition(Preferences.middleScroll ? (FlxG.width - playerStrums.width) * 0.5 : FlxG.width - playerStrums.width - 45.0, Preferences.downScroll ? FlxG.height - playerStrums.height - 15.0 : 15.0);
 
         strumLines.add(playerStrums);
 
@@ -487,8 +434,6 @@ class GameState extends MusicBeatState
 
             var strum:Strum = strumLine.group.getFirst((_strum:Strum) -> note.direction == _strum.direction);
 
-            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * chartSpeed * note.speed * (downScroll ? -1.0 : 1.0));
-
             if (strumLine.artificial)
             {
                 if (conductor.time >= note.time && strumLine.lane == note.lane)
@@ -513,6 +458,14 @@ class GameState extends MusicBeatState
             }
 
             i--;
+
+            note.visible = strum.visible;
+
+            note.angle = strum.angle;
+
+            note.alpha = strum.alpha;
+
+            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * chartSpeed * note.speed * (Preferences.downScroll ? -1.0 : 1.0));
         }
 
         while (noteIndex < chart.notes.length)
@@ -609,7 +562,7 @@ class GameState extends MusicBeatState
                 if (k >= Math.floor(sustain.length / (((60 / conductor.findTimeChangeAt(note.time).tempo) * 1000.0) * 0.25)) - 1)
                     sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
 
-                sustain.flipY = downScroll;
+                sustain.flipY = Preferences.downScroll;
 
                 sustain.scale.set(0.685, 0.685);
 
@@ -750,70 +703,6 @@ class GameState extends MusicBeatState
         FlxG.resetState();
     }
 
-    public function opponentNoteHit(note:Note):Void
-    {
-        for (i in 0 ... opponentGroup.members.length)
-        {
-            var character:Character = opponentGroup.members[i];
-
-            character.singCount = 0.0;
-
-            if (character.animation.exists('Sing${Note.directions[note.direction]}'))
-                character.animation.play('Sing${Note.directions[note.direction]}', true);
-        }
-
-        if (opponentVocals != null)
-            opponentVocals.volume = 1.0;
-    }
-
-    public function opponentNoteMiss(note:Note):Void
-    {
-        for (i in 0 ... opponentGroup.members.length)
-        {
-            var character:Character = opponentGroup.members[i];
-
-            character.singCount = 0.0;
-
-            if (character.animation.exists('Sing${Note.directions[note.direction]}MISS'))
-                character.animation.play('Sing${Note.directions[note.direction]}MISS', true);
-        }
-
-        if (opponentVocals != null)
-            opponentVocals.volume = 0.0;
-    }
-
-    public function playerNoteHit(note:Note):Void
-    {
-        for (i in 0 ... playerGroup.members.length)
-        {
-            var character:Character = playerGroup.members[i];
-
-            character.singCount = 0.0;
-
-            if (character.animation.exists('Sing${Note.directions[note.direction]}'))
-                character.animation.play('Sing${Note.directions[note.direction]}', true);
-        }
-
-        if (playerVocals != null)
-            playerVocals.volume = 1.0;
-    }
-
-    public function playerNoteMiss(note:Note):Void
-    {
-        for (i in 0 ... playerGroup.members.length)
-        {
-            var character:Character = playerGroup.members[i];
-
-            character.singCount = 0.0;
-
-            if (character.animation.exists('Sing${Note.directions[note.direction]}MISS'))
-                character.animation.play('Sing${Note.directions[note.direction]}MISS', true);
-        }
-
-        if (playerVocals != null)
-            playerVocals.volume = 0.0;
-    }
-
     public function noteHit(note:Note):Void
     {
         var strumLine:StrumLine = strumLines.getFirst((_strumLine:StrumLine) -> note.lane == _strumLine.lane);
@@ -887,8 +776,75 @@ class GameState extends MusicBeatState
         notes.remove(note, true).destroy();
     }
 
+    public function opponentNoteHit(note:Note):Void
+    {
+        for (i in 0 ... opponentGroup.members.length)
+        {
+            var character:Character = opponentGroup.members[i];
+
+            character.singCount = 0.0;
+
+            if (character.animation.exists('Sing${Note.directions[note.direction]}'))
+                character.animation.play('Sing${Note.directions[note.direction]}', true);
+        }
+
+        if (opponentVocals != null)
+            opponentVocals.volume = 1.0;
+    }
+
+    public function opponentNoteMiss(note:Note):Void
+    {
+        for (i in 0 ... opponentGroup.members.length)
+        {
+            var character:Character = opponentGroup.members[i];
+
+            character.singCount = 0.0;
+
+            if (character.animation.exists('Sing${Note.directions[note.direction]}MISS'))
+                character.animation.play('Sing${Note.directions[note.direction]}MISS', true);
+        }
+
+        if (opponentVocals != null)
+            opponentVocals.volume = 0.0;
+    }
+
+    public function playerNoteHit(note:Note):Void
+    {
+        for (i in 0 ... playerGroup.members.length)
+        {
+            var character:Character = playerGroup.members[i];
+
+            character.singCount = 0.0;
+
+            if (character.animation.exists('Sing${Note.directions[note.direction]}'))
+                character.animation.play('Sing${Note.directions[note.direction]}', true);
+        }
+
+        if (playerVocals != null)
+            playerVocals.volume = 1.0;
+    }
+
+    public function playerNoteMiss(note:Note):Void
+    {
+        for (i in 0 ... playerGroup.members.length)
+        {
+            var character:Character = playerGroup.members[i];
+
+            character.singCount = 0.0;
+
+            if (character.animation.exists('Sing${Note.directions[note.direction]}MISS'))
+                character.animation.play('Sing${Note.directions[note.direction]}MISS', true);
+        }
+
+        if (playerVocals != null)
+            playerVocals.volume = 0.0;
+    }
+
     public function ghostTap(direction:Int):Void
     {
+        if (Preferences.ghostTapping)
+            return;
+        
         score -= 650;
 
         misses++;
@@ -905,6 +861,9 @@ class GameState extends MusicBeatState
 
     public function opponentGhostTap(direction:Int):Void
     {
+        if (Preferences.ghostTapping)
+            return;
+
         for (i in 0 ... opponentGroup.members.length)
         {
             var character:Character = opponentGroup.members[i];
@@ -921,6 +880,9 @@ class GameState extends MusicBeatState
 
     public function playerGhostTap(direction:Int):Void
     {
+        if (Preferences.ghostTapping)
+            return;
+
         for (i in 0 ... playerGroup.members.length)
         {
             var character:Character = playerGroup.members[i];
