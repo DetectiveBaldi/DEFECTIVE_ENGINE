@@ -66,10 +66,8 @@ class AssetMan
         if (graphic.useCount > 0.0)
             return;
 
-        #if (!hl && !html5)
-            @:privateAccess
-                graphic.bitmap.__texture.dispose();
-        #end
+        @:privateAccess
+            graphic.bitmap.__texture?.dispose();
 
         FlxG.bitmap.remove(graphic);
 
