@@ -167,4 +167,25 @@ class Conductor extends FlxBasic
 
         time = 0.0;
     }
+
+    public function findTimeChangeAt(_time:Float):ParsedTimeChange
+    {
+        var _timeChange:ParsedTimeChange = timeChanges[0];
+
+        var i:Int = 1;
+
+        while (i < timeChanges.length - 1.0)
+        {
+            var __timeChange:ParsedTimeChange = timeChanges[i];
+
+            if (__timeChange.time < _time)
+                break;
+
+            _timeChange = __timeChange;
+
+            i++;
+        }
+
+        return _timeChange;
+    }
 }

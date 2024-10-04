@@ -332,6 +332,8 @@ class GameState extends MusicBeatState
 
         // opponentStrums.ghostTap.add(ghostTap);
 
+        opponentStrums.visible = !middleScroll;
+
         opponentStrums.setPosition(middleScroll ? (FlxG.width - opponentStrums.width) * 0.5 : 45.0, downScroll ? FlxG.height - opponentStrums.height - 15.0 : 15.0);
 
         strumLines.add(opponentStrums);
@@ -368,10 +370,9 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("Crossed Out");
+        loadSong("Bad Time");
 
         countdown = new Countdown(conductor);
-
         countdown.camera = hudCamera;
 
         countdown.onTick.add((tick:Int) ->
@@ -571,7 +572,7 @@ class GameState extends MusicBeatState
 
             notes.add(_note);
 
-            for (k in 0 ... Math.floor(note.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)))
+            for (k in 0 ... Math.floor(note.length / (((60 / conductor.findTimeChangeAt(note.time).tempo) * 1000.0) * 0.25)))
             {
                 var sustain:Note = new Note();
 
@@ -579,7 +580,7 @@ class GameState extends MusicBeatState
 
                 _note.children.push(sustain);
 
-                sustain.time = _note.time + ((((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25) * (k + 1));
+                sustain.time = _note.time + ((((60 / conductor.findTimeChangeAt(note.time).tempo) * 1000.0) * 0.25) * (k + 1));
 
                 sustain.speed = _note.speed;
 
@@ -591,7 +592,7 @@ class GameState extends MusicBeatState
 
                 sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
 
-                if (k >= Math.floor(sustain.length / (((60 / conductor.timeChanges[0].tempo) * 1000.0) * 0.25)) - 1)
+                if (k >= Math.floor(sustain.length / (((60 / conductor.findTimeChangeAt(note.time).tempo) * 1000.0) * 0.25)) - 1)
                     sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
 
                 sustain.flipY = downScroll;
@@ -687,7 +688,7 @@ class GameState extends MusicBeatState
 
         conductor.tempo = chart.tempo;
 
-        conductor.timeChange = {tempo: conductor.tempo, time: 0.0, step: 0.0, beat: 0.0, section: 0.0};
+        conductor.timeChange = chart.timeChanges[0];
 
         conductor.timeChanges = chart.timeChanges;
 
