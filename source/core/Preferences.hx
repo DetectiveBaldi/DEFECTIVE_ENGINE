@@ -30,7 +30,7 @@ class Preferences
 
         gameModifiers =
         [
-            "noteRandomization" => false
+            "shuffle" => false
         ];
 
         if (FlxG.save.data.preferences == null)

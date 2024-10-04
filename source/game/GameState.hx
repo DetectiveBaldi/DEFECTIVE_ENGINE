@@ -516,7 +516,7 @@ class GameState extends MusicBeatState
 
             _note.length = note.length;
 
-            if (Preferences.gameModifiers["noteRandomization"])
+            if (Preferences.gameModifiers["shuffle"])
             {
                 _note.direction = FlxG.random.int(0, 3);
 
