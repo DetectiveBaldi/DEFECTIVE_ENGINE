@@ -7,18 +7,7 @@ import core.Paths;
 
 class FunkConverter
 {
-    public var chartPath:String;
-
-    public var metaPath:String;
-
-    public function new(chartPath:String, metaPath:String):Void
-    {
-        this.chartPath = chartPath;
-
-        this.metaPath = metaPath;
-    }
-
-    public function build(difficulty:String):Chart
+    public static function build(chartPath:String, metaPath:String, difficulty:String):Chart
     {
         var output:Chart = new Chart();
 
@@ -56,14 +45,7 @@ class FunkConverter
 
 class PsychConverter
 {
-    public var path:String;
-
-    public function new(path:String):Void
-    {
-        this.path = path;
-    }
-
-    public function build():Chart
+    public static function build(path:String):Chart
     {
         var output:Chart = new Chart();
 
