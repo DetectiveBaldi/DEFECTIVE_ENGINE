@@ -24,6 +24,8 @@ import core.Inputs;
 import core.Paths;
 import core.Preferences;
 
+import editors.CharacterEditorState;
+
 import extendable.MusicBeatState;
 
 import game.Chart.ParsedEvent;
@@ -132,6 +134,8 @@ class GameState extends MusicBeatState
     override function create():Void
     {
         super.create();
+
+        FlxG.mouse.visible = false;
 
         gameCamera.zoom = 0.75;
 
@@ -614,6 +618,9 @@ class GameState extends MusicBeatState
             if (conductor.time >= 0.0)
                 startSong();
         }
+
+        if (Inputs.checkStatus("DEBUG:0", JUST_PRESSED))
+            FlxG.switchState(() -> new CharacterEditorState());
         
         if (FlxG.keys.justPressed.ESCAPE)
             FlxG.resetState();

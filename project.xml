@@ -8,7 +8,7 @@
 
 	<!-- The Flixel preloader is not accurate in Chrome. 
     	You can use it regularly if you embed the SWF into an HTML file,
-    	or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal". -->
+    	or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal" -->
 	<app preloader="flixel.system.FlxPreloader" />
 
 	<!-- Minimum requirements:
@@ -37,6 +37,12 @@
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />
+
+	<haxelib name="flixel-text-input" />
+
+	<haxelib name="haxeui-core" />
+
+	<haxelib name="haxeui-flixel" />
 
 	<!-- ______________________________ Defines _____________________________ -->
 
@@ -68,6 +74,8 @@
 
 	<!-- Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode! -->
 	<haxedef name="FLX_NO_DEBUG" unless="debug" />
+
+	<haxedef name="haxeui_dont_impose_base_class" />
 
 	<!-- _____________________________ Resources ____________________________ -->
 

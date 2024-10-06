@@ -1,13 +1,13 @@
 package extendable;
 
-import flixel.FlxSubState;
+import haxe.ui.backend.flixel.UISubState;
 
 import core.Conductor;
 
 /**
- * An extended `flixel.FlxSubState` which, when created, initializes a single `core.Conductor` instance.
+ * An extended `haxe.ui.backend.flixel.UISubState` which, when created, initializes a single `core.Conductor` instance.
  */
-class MusicBeatSubState extends FlxSubState
+class MusicBeatSubState extends UISubState
 {
     public var conductor:Conductor;
 

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vbox>
+    <vbox id="vbox" style="padding:15px;">
+        <tabview id="tabview" width="375" height="400" styleName="full-width-buttons">
+            <box id="box" text="Main">
+                <vbox id="_vbox" style="padding:10px; spacing:10px">
+                    <hbox id="hbox">
+                        <label id="label" text="Character Name" verticalAlign="center" />
+
+                        <textfield id="textfield" />
+                    </hbox>
+
+                    <button id="button" text="Refresh" />
+
+                    <checkbox id="checkbox" text="Anti-Aliasing" />
+
+                    <hbox id="_hbox">
+                        <label id="_label" text="Scale X" verticalAlign="center" />
+
+                        <number-stepper id="number-stepper" step="0.05" />
+                    </hbox>
+
+                    <hbox id="__hbox">
+                        <label id="__label" text="Scale Y" verticalAlign="center" />
+
+                        <number-stepper id="_number-stepper" step="0.05" />
+                    </hbox>
+
+                    <checkbox id="_checkbox" text="Flip X" />
+
+                    <checkbox id="__checkbox" text="Flip Y" />
+
+                    <hbox id="___hbox">
+                        <label id="___label" text="Dance Interval" verticalAlign="center" />
+
+                        <number-stepper id="__number-stepper" step="1.0" />
+                    </hbox>
+
+                    <hbox id="____hbox">
+                        <label id="____label" text="Sing Duration" verticalAlign="center" />
+
+                        <number-stepper id="___number-stepper" step="0.5" />
+                    </hbox>
+
+                    <button id="_button" text="Save" />
+                </vbox>
+            </box>
+
+            <box id="_box" text="Assets">
+                <vbox id="__vbox" style="padding:10px; spacing:10px">
+                    <hbox id="_____hbox">
+                        <label id="_____label" text="Format:" verticalAlign="center" />
+
+                        <textfield id="_textfield" />
+                    </hbox>
+
+                    <hbox id="______hbox">
+                        <label id="______label" text="Path to .png:" verticalAlign="center" />
+
+                        <textfield id="__textfield" />
+                    </hbox>
+
+                    <hbox id="_______hbox">
+                        <label id="_______label" text="Path to .xml:" verticalAlign="center" />
+
+                        <textfield id="___textfield" />
+                    </hbox>
+
+                    <button id="__button" text="Refresh" />
+                </vbox>
+            </box>
+
+            <box id="__box" text="Animations">
+                <vbox id="___vbox" style="padding:10px; spacing:10px">
+
+                </vbox>
+            </box>
+        </tabview>
+    </vbox>
+</vbox>

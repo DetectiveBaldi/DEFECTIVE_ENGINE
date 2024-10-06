@@ -6,6 +6,10 @@ import flixel.FlxState;
 
 import flixel.util.typeLimit.NextState;
 
+import haxe.ui.Toolkit;
+
+import haxe.ui.themes.Theme;
+
 import core.AssetMan;
 import core.Preferences;
 
@@ -45,6 +49,10 @@ class OpeningState extends FlxState
         #end
 
         FlxSprite.defaultAntialiasing = true;
+
+        Toolkit.init();
+
+        Toolkit.theme = Theme.DARK;
 
         AssetMan.init();
 
