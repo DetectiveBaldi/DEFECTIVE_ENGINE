@@ -87,3 +87,21 @@ jobs:
         with:
           name: Defective Engine (Windows)
           path: bin/windows/bin
+
+  Publish-to-Surge:
+    runs-on: windows-latest
+
+    needs: HTML5
+
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: Defective Engine (HTML5)
+          path: bin/html5/bin
+      - name: Publish to Surge
+        uses: dswistowski/surge-sh-action@v1
+        with:
+          domain: defective.surge.sh
+          project: bin/html5/bin
+          login: ${{ secrets.SURGE_LOGIN }}
+          token: ${{ secrets.SURGE_TOKEN }}
