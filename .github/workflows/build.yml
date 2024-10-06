@@ -27,7 +27,7 @@ jobs:
         shell: cmd
       - name: Build
         run: |
-          haxelib run lime build $GITHUB_WORKSPACE hl -debug
+          haxelib run lime build hl -debug
         shell: cmd
       - name: Publish Artifact
         uses: actions/upload-artifact@v3
@@ -57,7 +57,7 @@ jobs:
         shell: cmd
       - name: Build
         run: |
-          haxelib run lime build $GITHUB_WORKSPACE html5 -debug
+          haxelib run lime build html5 -debug
         shell: cmd
       - name: Publish Artifact
         uses: actions/upload-artifact@v3
@@ -89,7 +89,7 @@ jobs:
         shell: cmd
       - name: Build
         run: |
-          haxelib run lime build $GITHUB_WORKSPACE cpp -debug
+          haxelib run lime build cpp -debug
         shell: cmd
       - name: Publish Artifact
         uses: actions/upload-artifact@v3
