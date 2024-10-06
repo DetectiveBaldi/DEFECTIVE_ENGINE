@@ -33,7 +33,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Defective Engine (HashLink)
-          path: bin/hl/bin
+          path: D:/a/DEFECTIVE_ENGINE/DEFECTIVE_ENGINE/bin/hl/bin
 
   HTML5:
     runs-on: windows-latest
@@ -63,7 +63,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Defective Engine (HTML5)
-          path: bin/html5/bin
+          path: D:/a/DEFECTIVE_ENGINE/DEFECTIVE_ENGINE/bin/html5/bin
 
   Windows:
     runs-on: windows-latest
@@ -95,7 +95,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Defective Engine (Windows)
-          path: bin/windows/bin
+          path: D:/a/DEFECTIVE_ENGINE/DEFECTIVE_ENGINE/bin/windows/bin
 
   Publish-to-Surge:
     runs-on: windows-latest
@@ -111,6 +111,6 @@ jobs:
         uses: dswistowski/surge-sh-action@v1
         with:
           domain: detectivebaldi.defective.surge.sh
-          project: bin/html5/bin
+          project: D:/a/DEFECTIVE_ENGINE/DEFECTIVE_ENGINE/bin/html5/bin
           login: ${{ secrets.SURGE_LOGIN }}
           token: ${{ secrets.SURGE_TOKEN }}
