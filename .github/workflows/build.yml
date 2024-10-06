@@ -110,7 +110,7 @@ jobs:
       - name: Publish to Surge
         uses: dswistowski/surge-sh-action@v1
         with:
-          domain: defective.surge.sh
+          domain: detectivebaldi.defective.surge.sh
           project: bin/html5/bin
           login: ${{ secrets.SURGE_LOGIN }}
           token: ${{ secrets.SURGE_TOKEN }}
