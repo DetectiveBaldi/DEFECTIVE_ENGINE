@@ -21,6 +21,9 @@ jobs:
           haxelib run lime rebuild tools --quiet
           haxelib git openfl https://github.com/openfl/openfl --quiet
           haxelib git flixel https://github.com/HaxeFlixel/flixel --quiet
+          haxelib git flixel-text-input https://github.com/Starmapo/flixel-text-input --quiet
+          haxelib git haxeui-core https://github.com/haxeui/haxeui-core --quiet
+          haxelib git haxeui-flixel https://github.com/haxeui/haxeui-flixel --quiet --skip-dependencies
         shell: cmd
       - name: Build
         run: |
@@ -48,6 +51,9 @@ jobs:
           haxelib git lime https://github.com/openfl/lime --quiet
           haxelib git openfl https://github.com/openfl/openfl --quiet
           haxelib git flixel https://github.com/HaxeFlixel/flixel --quiet
+          haxelib git flixel-text-input https://github.com/Starmapo/flixel-text-input --quiet
+          haxelib git haxeui-core https://github.com/haxeui/haxeui-core --quiet
+          haxelib git haxeui-flixel https://github.com/haxeui/haxeui-flixel --quiet --skip-dependencies
         shell: cmd
       - name: Build
         run: |
@@ -77,6 +83,9 @@ jobs:
           haxelib run lime rebuild tools --quiet
           haxelib git openfl https://github.com/openfl/openfl --quiet
           haxelib git flixel https://github.com/HaxeFlixel/flixel --quiet
+          haxelib git flixel-text-input https://github.com/Starmapo/flixel-text-input --quiet
+          haxelib git haxeui-core https://github.com/haxeui/haxeui-core --quiet
+          haxelib git haxeui-flixel https://github.com/haxeui/haxeui-flixel --quiet --skip-dependencies
         shell: cmd
       - name: Build
         run: |
