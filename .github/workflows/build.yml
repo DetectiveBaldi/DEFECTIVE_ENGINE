@@ -30,7 +30,7 @@ jobs:
           haxelib run lime build hl -debug
         shell: cmd
       - name: Publish Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: Defective Engine (HashLink)
           path: bin/hl/bin
@@ -60,7 +60,7 @@ jobs:
           haxelib run lime build html5 -debug
         shell: cmd
       - name: Publish Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: Defective Engine (HTML5)
           path: bin/html5/bin
@@ -92,7 +92,7 @@ jobs:
           haxelib run lime build cpp -debug
         shell: cmd
       - name: Publish Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: Defective Engine (Windows)
           path: bin/windows/bin
