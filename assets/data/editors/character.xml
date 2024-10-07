@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<vbox>
+<vbox width="100%" height="100%">
     <vbox id="vbox" style="padding:15px;">
-        <tabview id="tabview" width="375" height="400" styleName="full-width-buttons">
+        <tabview id="tabview" width="375" height="425" styleName="full-width-buttons">
             <box id="box" text="Main">
                 <vbox id="_vbox" style="padding:10px; spacing:10px">
                     <hbox id="hbox">
@@ -11,6 +11,8 @@
                     </hbox>
 
                     <button id="button" text="Refresh" />
+
+                    <menu-separator />
 
                     <checkbox id="checkbox" text="Anti-Aliasing" />
 
@@ -47,6 +49,8 @@
 
                         <number-stepper id="___number-stepper" step="0.5" />
                     </hbox>
+
+                    <menu-separator />
 
                     <button id="_button" text="Save" />
                 </vbox>
@@ -108,9 +112,13 @@
 
                     <checkbox id="_____checkbox" text="Flip Y" />
 
-                    <button id="___button" text="Save" />
+                    <menu-separator />
 
-                    <button id="____button" text="Delete" />
+                    <hbox id="_____________hbox">
+                        <button id="___button" text="Save" />
+
+                        <button id="____button" text="Delete" />
+                    </hbox>
                 </vbox>
             </box>
         </tabview>
