@@ -1,22 +1,46 @@
 name: Build
 
-on:
-  push:
-    branches: ["main"]
-  workflow_dispatch:
+on: [push]
 
 jobs:
-  build-html5:
+  HashLink:
     runs-on: windows-latest
+
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: true
       - uses: krdlab/setup-haxe@master
         with:
           haxe-version: 4.3.6
-      - run: haxe -version
-      - name: Install Dependencies
+      - name: Setup Dependencies
+        run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib git lime https://github.com/openfl/lime --quiet
+          haxelib run lime rebuild hl --quiet
+          haxelib run lime rebuild tools --quiet
+          haxelib git openfl https://github.com/openfl/openfl --quiet
+          haxelib git flixel https://github.com/HaxeFlixel/flixel --quiet
+        shell: cmd
+      - name: Build
+        run: |
+          haxelib run lime build hl -debug
+        shell: cmd
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Defective Engine (HashLink)
+          path: bin/hl/bin
+
+  HTML5:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.6
+      - name: Setup Dependencies
         run: |
           haxelib install hxcpp --quiet
           haxelib install format --quiet
@@ -24,28 +48,30 @@ jobs:
           haxelib git lime https://github.com/openfl/lime --quiet
           haxelib git openfl https://github.com/openfl/openfl --quiet
           haxelib git flixel https://github.com/HaxeFlixel/flixel --quiet
-          haxelib git flixel-text-input https://github.com/Starmapo/flixel-text-input --quiet
-          haxelib git haxeui-core https://github.com/haxeui/haxeui-core --quiet
-          haxelib git haxeui-flixel https://github.com/haxeui/haxeui-flixel --quiet --skip-dependencies
-
-      - name: Build HTML5
-        run: haxelib run lime build $GITHUB_WORKSPACE html5
-      - uses: actions/upload-artifact@v3
+        shell: cmd
+      - name: Build
+        run: |
+          haxelib run lime build html5 -debug
+        shell: cmd
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: HTML5 Build
-          path: D:/a/DEFECTIVE_ENGINE/DEFECTIVE_ENGINE/bin/html5/bin
+          name: Defective Engine (HTML5)
+          path: bin/html5/bin
+      - name: Publish to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: bin/html5/bin
 
-  build-windows:
+  Windows:
     runs-on: windows-latest
+
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: true
       - uses: krdlab/setup-haxe@master
         with:
           haxe-version: 4.3.6
-      - run: haxe -version
-      - name: Install Dependencies
+      - name: Setup Dependencies
         run: |
           haxelib install hxcpp --quiet
           haxelib install format --quiet
@@ -55,29 +81,13 @@ jobs:
           haxelib run lime rebuild tools --quiet
           haxelib git openfl https://github.com/openfl/openfl --quiet
           haxelib git flixel https://github.com/HaxeFlixel/flixel --quiet
-          haxelib git flixel-text-input https://github.com/Starmapo/flixel-text-input --quiet
-          haxelib git haxeui-core https://github.com/haxeui/haxeui-core --quiet
-          haxelib git haxeui-flixel https://github.com/haxeui/haxeui-flixel --quiet --skip-dependencies
-
-      - name: Build Windows
-        run: haxelib run lime build $GITHUB_WORKSPACE cpp
-      - uses: actions/upload-artifact@v3
+        shell: cmd
+      - name: Build
+        run: |
+          haxelib run lime build cpp -debug
+        shell: cmd
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: Windows Build
-          path: D:/a/DEFECTIVE_ENGINE/DEFECTIVE_ENGINE/bin/windows/bin
-
-  deploy-to-surge:
-    runs-on: windows-latest
-    needs: build-html5
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: HTML5 Build
-          path: D:/a/DEFECTIVE_ENGINE/DEFECTIVE_ENGINE/bin/html5/bin
-      - name: Deploy to Surge
-        uses: dswistowski/surge-sh-action@v1
-        with:
-          domain: detectivebaldi.defective.surge.sh
-          project: D:/a/DEFECTIVE_ENGINE/DEFECTIVE_ENGINE/bin/html5/bin
-          login: ${{ secrets.SURGE_LOGIN }}
-          token: ${{ secrets.SURGE_TOKEN }}
+          name: Defective Engine (Windows)
+          path: bin/windows/bin
