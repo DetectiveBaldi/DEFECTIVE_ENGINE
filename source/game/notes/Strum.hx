@@ -70,6 +70,9 @@ class Strum extends FlxSprite
     {
         super.update(elapsed);
 
+        if (conductor == null)
+            return;
+
         if (animation.name?.endsWith("Confirm"))
         {
             confirmCount += elapsed;
@@ -83,6 +86,13 @@ class Strum extends FlxSprite
         }
         else
             confirmCount = 0.0;
+    }
+
+    override function destroy():Void
+    {
+        super.destroy();
+
+        conductor = null;
     }
 }
 

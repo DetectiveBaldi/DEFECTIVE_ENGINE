@@ -5,31 +5,38 @@ import haxe.Json;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 
+import openfl.net.FileFilter;
 import openfl.net.FileReference;
 
-import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 
+import flixel.math.FlxMath;
+
+import flixel.addons.display.FlxBackdrop;
+import flixel.addons.display.FlxGridOverlay;
+
+import haxe.ui.backend.flixel.UIState;
+
+import haxe.ui.events.FocusEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
+
+import haxe.ui.focus.FocusManager;
 
 import core.AssetMan;
 import core.Paths;
 
-import extendable.MusicBeatState;
-
 import game.Character;
 import game.GameState;
 
-import game.stages.Stage;
-import game.stages.Week1;
+using util.ArrayUtil;
 
 @:build(haxe.ui.ComponentBuilder.build("assets/data/editors/character.xml"))
-class CharacterEditorState extends MusicBeatState
+class CharacterEditorState extends UIState
 {
     public var gameCamera(get, never):FlxCamera;
     
@@ -47,9 +54,9 @@ class CharacterEditorState extends MusicBeatState
 
     public var hudCameraZoom:Float;
 
-    public var stage:Stage<FlxBasic>;
-
     public var character:Character;
+
+    public var animationIndex:Int;
 
     public var fileRef:FileReference;
 
@@ -79,20 +86,21 @@ class CharacterEditorState extends MusicBeatState
 
         hudCameraZoom = hudCamera.zoom;
 
-        stage = new Week1();
+        var background:FlxBackdrop = new FlxBackdrop(FlxGridOverlay.createGrid(32, 32, 64, 64, true, 0xFFE7E6E6, 0xFFD9D5D5));
 
-        for (i in 0 ... stage.members.length)
-            add(stage.members[i]);
+        add(background);
 
-        character = new Character(0.0, 0.0, "assets/data/game/characters/BOYFRIEND", ARTIFICIAL, conductor);
+        character = new Character(0.0, 0.0, "assets/data/game/characters/BOYFRIEND", ARTIFICIAL, null);
 
-        character.setPosition(FlxG.width - character.width - 15.0, 385.0);
+        character.screenCenter();
 
         add(character);
 
+        animationIndex = character.data.animations.indexOf(character.data.animations.getFirst((animation:CharacterAnimationData) -> character.animation.name == animation.name));
+
         vbox.camera = hudCamera;
 
-        textfield.text = character.data.name;
+        refreshMainTab();
 
         textfield.onChange = (ev:UIEvent) ->
         {
@@ -180,28 +188,14 @@ class CharacterEditorState extends MusicBeatState
 
             character.dance();
 
-            checkbox.value = character.data.antialiasing ?? true;
+            character.screenCenter();
 
-            numberStepper.value = character.data.scale?.x ?? 1.0;
+            refreshMainTab();
 
-            _numberStepper.value = character.data.scale?.x ?? 1.0;
+            refreshAssetsTab();
 
-            _checkbox.value = character.data.flipX ?? false;
-
-            __checkbox.value = character.data.flipY ?? false;
-
-            __numberStepper.value = character.data.danceInterval ?? 1.0;
-
-            ___numberStepper.value = character.data.danceInterval ?? 8.0;
-
-            _textfield.text = character.data.format;
-
-            __textfield.text = character.data.png;
-
-            ___textfield.text = character.data.png;
+            refreshAnimationsTab();
         }
-
-        checkbox.value = character.data.antialiasing ?? true;
 
         checkbox.onChange = (ev:UIEvent) ->
         {
@@ -209,8 +203,6 @@ class CharacterEditorState extends MusicBeatState
 
             character.antialiasing = character.data.antialiasing;
         }
-
-        numberStepper.value = character.data.scale?.x ?? 1.0;
 
         numberStepper.onChange = (ev:UIEvent) ->
         {
@@ -224,8 +216,6 @@ class CharacterEditorState extends MusicBeatState
             character.updateHitbox();
         }
 
-        _numberStepper.value = character.data.scale?.y ?? 1.0;
-
         _numberStepper.onChange = (ev:UIEvent) ->
         {
             if (character.data.scale == null)
@@ -238,16 +228,12 @@ class CharacterEditorState extends MusicBeatState
             character.updateHitbox();
         }
 
-        _checkbox.value = character.data.flipX ?? false;
-
         _checkbox.onChange = (ev:UIEvent) ->
         {
             character.data.flipX = _checkbox.value;
 
             character.flipX = character.data.flipX;
         }
-
-        __checkbox.value = character.data.flipX ?? false;
 
         __checkbox.onChange = (ev:UIEvent) ->
         {
@@ -256,7 +242,17 @@ class CharacterEditorState extends MusicBeatState
             character.flipY = character.data.flipY;
         }
 
-        __numberStepper.value = character.data.danceInterval ?? 1.0;
+        _textfield.registerEvent(FocusEvent.FOCUS_OUT, (ev:FocusEvent) ->
+        {
+            if (_textfield.text.length < 1)
+                return;
+            
+            character.data.danceSteps = _textfield.text.split(",");
+
+            character.danceSteps = _textfield.text.split(",");
+
+            character.danceStep = 0;
+        });
 
         __numberStepper.onChange = (ev:UIEvent) ->
         {
@@ -264,8 +260,6 @@ class CharacterEditorState extends MusicBeatState
 
             character.danceInterval = character.data.danceInterval;
         }
-
-        ___numberStepper.value = character.data.singDuration ?? 8.0;
 
         ___numberStepper.onChange = (ev:UIEvent) ->
         {
@@ -276,33 +270,23 @@ class CharacterEditorState extends MusicBeatState
 
         _button.onClick = (ev:MouseEvent) ->
         {
-            var fileRef:FileReference = new FileReference();
+            fileRef = new FileReference();
 
-            fileRef.addEventListener(Event.COMPLETE, onSave);
-
-            fileRef.addEventListener(Event.CANCEL, onCancel);
-
-            fileRef.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
-
-            fileRef.save(character.data, '${character.data.name}.json');
+            fileRef.save(Json.stringify(character.data), Paths.json(character.data.name));
         }
 
-        _textfield.text = character.data.format;
-
-        __textfield.text = character.data.png;
-
-        ___textfield.text = character.data.png;
+        refreshAssetsTab();
 
         __button.onClick = (ev:MouseEvent) ->
         {
-            if (character.data.format == _textfield.text && character.data.png == __textfield.text && character.data.xml == ___textfield.text)
+            if (character.data.format == __textfield.text && character.data.png == ___textfield.text && character.data.xml == ____textfield.text)
                 return;
 
-            character.data.format = _textfield.text;
+            character.data.format = __textfield.text;
 
-            character.data.png = __textfield.text;
+            character.data.png = ___textfield.text;
 
-            character.data.xml = ___textfield.text;
+            character.data.xml = ____textfield.text;
 
             switch (character.data.format ?? "".toLowerCase():String)
             {
@@ -312,29 +296,241 @@ class CharacterEditorState extends MusicBeatState
                 case "texturepackerxml":
                     character.frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(character.data.png), true), Paths.xml(character.data.xml));
             }
+
+            character.screenCenter();
         }
+
+        refreshAnimationsTab();
+
+        ___button.onClick = (ev:MouseEvent) -> saveAnimation();
+
+        ____button.onClick = (ev:MouseEvent) -> deleteAnimation();
     }
 
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
 
-        if (FlxG.keys.justPressed.ENTER)
+        if (FlxG.keys.justPressed.W && FocusManager.instance.focus == null)
+        {
+            animationIndex = FlxMath.wrap(animationIndex - 1, 0, character.data.animations.length - 1);
+
+            character.animation.play(character.data.animations[animationIndex].name);
+        }
+
+        if (FlxG.keys.justPressed.S && FocusManager.instance.focus == null)
+        {
+            animationIndex = FlxMath.wrap(animationIndex + 1, 0, character.data.animations.length - 1);
+
+            character.animation.play(character.data.animations[animationIndex].name);
+        }
+
+        if (FlxG.keys.justPressed.UP && FocusManager.instance.focus == null)
+            offsetAnimation(0.0, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0);
+
+        if (FlxG.keys.justPressed.LEFT && FocusManager.instance.focus == null)
+            offsetAnimation(FlxG.keys.pressed.SHIFT ? -10.0 : -1.0, 0.0);
+
+        if (FlxG.keys.justPressed.DOWN && FocusManager.instance.focus == null)
+            offsetAnimation(0.0, FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
+
+        if (FlxG.keys.justPressed.RIGHT && FocusManager.instance.focus == null)
+            offsetAnimation(FlxG.keys.pressed.SHIFT ? 10.0 : 1.0, 0.0);
+
+        if (FlxG.keys.justPressed.SPACE && FocusManager.instance.focus == null)
+            character.animation.play(character.data.animations[animationIndex].name, true);
+
+        if (FlxG.keys.anyJustPressed([W, S, SPACE]) && FocusManager.instance.focus == null)
+            refreshAnimationsTab();
+
+        if (FlxG.keys.justPressed.ENTER && FocusManager.instance.focus == null)
             FlxG.switchState(() -> new GameState());
     }
 
-    public function onSave(ev:Event):Void
+    override function destroy():Void
     {
-        fileRef = null;
+        super.destroy();
+
+        // AssetMan.clearCache();
     }
 
-    public function onCancel(ev:Event):Void
+    public function refreshMainTab():Void
     {
-        fileRef = null;
+        textfield.text = character.data.name;
+
+        checkbox.value = character.data.antialiasing ?? true;
+
+        numberStepper.value = character.data.scale?.x ?? 1.0;
+
+        _numberStepper.value = character.data.scale?.x ?? 1.0;
+
+        _checkbox.value = character.data.flipX ?? false;
+
+        __checkbox.value = character.data.flipY ?? false;
+
+        _textfield.text = character.data.danceSteps.toString();
+
+        _textfield.text = _textfield.text.substring(1, _textfield.text.length - 1);
+
+        __numberStepper.value = character.data.danceInterval ?? 1.0;
+
+        ___numberStepper.value = character.data.danceInterval ?? 8.0;
     }
 
-    public function onIOError(io:IOErrorEvent):Void
+    public function refreshAssetsTab():Void
     {
-        fileRef = null;
+        __textfield.text = character.data.format;
+
+        ___textfield.text = character.data.png;
+
+        ____textfield.text = character.data.xml;
+    }
+
+    public function refreshAnimationsTab():Void
+    {
+        _____textfield.text = character.data.animations[animationIndex].name;
+
+        ______textfield.text = character.data.animations[animationIndex].prefix;
+
+        _______textfield.text = character.data.animations[animationIndex].indices.toString();
+
+        _______textfield.text = _______textfield.text.substring(1, _______textfield.text.length - 1);
+
+        ____numberStepper.value = character.data.animations[animationIndex].frameRate ?? 24.0;
+
+        ___checkbox.value = character.data.animations[animationIndex].looped ?? false;
+
+        ____checkbox.value = character.data.animations[animationIndex].flipX ?? false;
+
+        _____checkbox.value = character.data.animations[animationIndex].flipY ?? false;
+    }
+
+    public function saveAnimation():Void
+    {
+        if (_______textfield.text.length > 0)
+        {
+            var indices:Array<String> = _______textfield.text.split(",");
+
+            var _indices:Array<Int> = new Array<Int>();
+
+            for (i in 0 ... indices.length)
+                _indices.push(Std.parseInt(indices[i]));
+
+            var animation:CharacterAnimationData = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
+
+            if (animation == null)
+            {
+                character.data.animations.push(
+                {
+                    name: _____textfield.text,
+                    
+                    prefix: ______textfield.text,
+                    
+                    indices: _indices,
+                    
+                    frameRate: ____numberStepper.value,
+                    
+                    looped: ___checkbox.value,
+                    
+                    flipX: ____checkbox.value,
+                    
+                    flipY: _____checkbox.value
+                });
+
+                animation = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
+            }
+            else
+            {
+                animation.prefix = ______textfield.text;
+
+                animation.indices = _indices;
+
+                animation.frameRate = ____numberStepper.value;
+
+                animation.looped = ___checkbox.value;
+
+                animation.flipX = ____checkbox.value;
+
+                animation.flipY = _____checkbox.value;
+            }
+
+            character.animation.addByIndices(animation.name, animation.prefix, animation.indices, "", animation.frameRate, animation.looped, animation.flipX, animation.flipY);
+
+            character.animation.play(animation.name, true);
+        }
+        else
+        {
+            var animation:CharacterAnimationData = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
+
+            if (animation == null)
+            {
+                character.data.animations.push(
+                {
+                    name: _____textfield.text,
+                    
+                    prefix: ______textfield.text,
+                    
+                    indices: new Array<Int>(),
+                    
+                    frameRate: ____numberStepper.value,
+                    
+                    looped: ___checkbox.value,
+                    
+                    flipX: ____checkbox.value,
+                    
+                    flipY: _____checkbox.value
+                });
+
+                animation = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
+            }
+            else
+            {
+                animation.prefix = ______textfield.text;
+
+                animation.indices = new Array<Int>();
+
+                animation.frameRate = ____numberStepper.value;
+
+                animation.looped = ___checkbox.value;
+
+                animation.flipX = ____checkbox.value;
+
+                animation.flipY = _____checkbox.value;
+            }
+
+            character.animation.addByPrefix(animation.name, animation.prefix, animation.frameRate, animation.looped, animation.flipX, animation.flipY);
+
+            character.animation.play(animation.name, true);
+        }
+    }
+
+    public function deleteAnimation():Void
+    {
+        var animation:CharacterAnimationData = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
+
+        if (animation == null)
+            return;
+
+        character.data.animations.remove(animation);
+
+        character.animation.remove(animation.name);
+
+        animationIndex = 0;
+
+        character.animation.play(character.data.animations[animationIndex].name);
+
+        refreshAnimationsTab();
+    }
+
+    public function offsetAnimation(x:Float = 0.0, y:Float = 0.0):Void
+    {
+        var animation:CharacterAnimationData = character.data.animations[animationIndex];
+
+        if (animation.offsets == null)
+            animation.offsets = {x: 0.0, y: 0.0};
+
+        animation.offsets.x += x;
+
+        animation.offsets.y += y;
     }
 }

@@ -31,13 +31,19 @@
                     <checkbox id="__checkbox" text="Flip Y" />
 
                     <hbox id="___hbox">
-                        <label id="___label" text="Dance Interval" verticalAlign="center" />
+                        <label id="___label" text="Dance Steps" verticalAlign="center" />
+
+                        <textfield id="_textfield" />
+                    </hbox>
+
+                    <hbox id="____hbox">
+                        <label id="____label" text="Dance Interval" verticalAlign="center" />
 
                         <number-stepper id="__number-stepper" step="1.0" />
                     </hbox>
 
-                    <hbox id="____hbox">
-                        <label id="____label" text="Sing Duration" verticalAlign="center" />
+                    <hbox id="_____hbox">
+                        <label id="_____label" text="Sing Duration" verticalAlign="center" />
 
                         <number-stepper id="___number-stepper" step="0.5" />
                     </hbox>
@@ -48,22 +54,22 @@
 
             <box id="_box" text="Assets">
                 <vbox id="__vbox" style="padding:10px; spacing:10px">
-                    <hbox id="_____hbox">
-                        <label id="_____label" text="Format:" verticalAlign="center" />
-
-                        <textfield id="_textfield" />
-                    </hbox>
-
                     <hbox id="______hbox">
-                        <label id="______label" text="Path to .png:" verticalAlign="center" />
+                        <label id="______label" text="Format" verticalAlign="center" />
 
                         <textfield id="__textfield" />
                     </hbox>
 
                     <hbox id="_______hbox">
-                        <label id="_______label" text="Path to .xml:" verticalAlign="center" />
+                        <label id="_______label" text="Path to .png" verticalAlign="center" />
 
                         <textfield id="___textfield" />
+                    </hbox>
+
+                    <hbox id="________hbox">
+                        <label id="________label" text="Path to .xml" verticalAlign="center" />
+
+                        <textfield id="____textfield" />
                     </hbox>
 
                     <button id="__button" text="Refresh" />
@@ -72,7 +78,39 @@
 
             <box id="__box" text="Animations">
                 <vbox id="___vbox" style="padding:10px; spacing:10px">
+                    <hbox id="_________hbox">
+                        <label id="_________label" text="Name" verticalAlign="center" />
 
+                        <textfield id="_____textfield" />
+                    </hbox>
+
+                    <hbox id="__________hbox">
+                        <label id="__________label" text="Prefix" verticalAlign="center" />
+
+                        <textfield id="______textfield" />
+                    </hbox>
+
+                    <hbox id="___________hbox">
+                        <label id="___________label" text="Indices" verticalAlign="center" />
+
+                        <textfield id="_______textfield" />
+                    </hbox>
+
+                    <hbox id="____________hbox">
+                        <label id="____________label" text="Frame Rate" verticalAlign="center" />
+
+                        <number-stepper id="____number-stepper" step="1" />
+                    </hbox>
+
+                    <checkbox id="___checkbox" text="Looped" />
+
+                    <checkbox id="____checkbox" text="Flip X" />
+
+                    <checkbox id="_____checkbox" text="Flip Y" />
+
+                    <button id="___button" text="Save" />
+
+                    <button id="____button" text="Delete" />
                 </vbox>
             </box>
         </tabview>

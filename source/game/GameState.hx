@@ -321,7 +321,7 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("Bad Time");
+        loadSong("Expurgation");
 
         countdown = new Countdown(conductor);
         
@@ -620,7 +620,11 @@ class GameState extends MusicBeatState
         }
 
         if (Inputs.checkStatus("DEBUG:0", JUST_PRESSED))
+        {
+            // AssetMan.clearCache();
+            
             FlxG.switchState(() -> new CharacterEditorState());
+        }
         
         if (FlxG.keys.justPressed.ESCAPE)
             FlxG.resetState();

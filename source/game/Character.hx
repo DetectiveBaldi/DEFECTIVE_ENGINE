@@ -49,7 +49,8 @@ class Character extends FlxSprite
         if (this.conductor != null)
             this.conductor.beatHit.remove(beatHit);
 
-        conductor.beatHit.add(beatHit);
+        if (conductor != null)
+            conductor.beatHit.add(beatHit);
 
         return this.conductor = conductor;
     }
@@ -140,13 +141,14 @@ class Character extends FlxSprite
         dance();
 
         this.conductor = conductor;
-
-        conductor.beatHit.add(beatHit);
     }
 
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
+
+        if (conductor == null)
+            return;
 
         if (Inputs.inputsJustPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) && role == PLAYABLE)
             singCount = 0.0;
@@ -175,7 +177,7 @@ class Character extends FlxSprite
     {
         super.destroy();
 
-        conductor.beatHit.remove(beatHit);
+        conductor = null;
     }
 
     override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
@@ -184,7 +186,7 @@ class Character extends FlxSprite
 
         for (i in 0 ... data.animations.length)
             if (animation.name ?? "" == data.animations[i].name)
-                output.subtract(data.animations[i].offsets?.x ?? 0.0, data.animations[i].offsets?.y ?? 0.0);
+                output.add(data.animations[i].offsets?.x ?? 0.0, data.animations[i].offsets?.y ?? 0.0);
 
         return output;
     }
@@ -225,13 +227,32 @@ typedef CharacterData =
 
     var ?flipY:Null<Bool>;
 
-    var animations:Array<{?offsets:Null<{?x:Null<Float>, ?y:Null<Float>}>, name:String, prefix:String, indices:Array<Int>, ?frameRate:Null<Float>, ?looped:Null<Bool>, ?flipX:Null<Bool>, ?flipY:Null<Bool>}>;
+    var animations:Array<CharacterAnimationData>;
 
     var danceSteps:Array<String>;
 
     var ?danceInterval:Float;
 
     var ?singDuration:Null<Float>;
+};
+
+typedef CharacterAnimationData =
+{
+    var ?offsets:Null<{?x:Null<Float>, ?y:Null<Float>}>;
+    
+    var name:String;
+    
+    var prefix:String;
+    
+    var indices:Array<Int>;
+    
+    var ?frameRate:Null<Float>;
+    
+    var ?looped:Null<Bool>;
+    
+    var ?flipX:Null<Bool>;
+    
+    var ?flipY:Null<Bool>;
 };
 
 enum abstract CharacterRole(String) from String to String

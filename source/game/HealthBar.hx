@@ -72,7 +72,8 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
         if (this.conductor != null)
             this.conductor.beatHit.remove(beatHit);
 
-        conductor.beatHit.add(beatHit);
+        if (conductor != null)
+            conductor.beatHit.add(beatHit);
 
         return this.conductor = conductor;
     }
