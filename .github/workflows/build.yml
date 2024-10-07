@@ -11,7 +11,7 @@ jobs:
       - uses: krdlab/setup-haxe@master
         with:
           haxe-version: 4.3.6
-      - name: Setup Dependencies
+      - name: Install Dependencies
         run: |
           haxelib install hxcpp --quiet
           haxelib install format --quiet
@@ -43,7 +43,7 @@ jobs:
       - uses: krdlab/setup-haxe@master
         with:
           haxe-version: 4.3.6
-      - name: Setup Dependencies
+      - name: Install Dependencies
         run: |
           haxelib install hxcpp --quiet
           haxelib install format --quiet
@@ -64,10 +64,6 @@ jobs:
         with:
           name: Defective Engine (HTML5)
           path: bin/html5/bin
-      - name: Publish to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: bin/html5/bin
 
   Windows:
     runs-on: windows-latest
@@ -77,7 +73,7 @@ jobs:
       - uses: krdlab/setup-haxe@master
         with:
           haxe-version: 4.3.6
-      - name: Setup Dependencies
+      - name: Install Dependencies
         run: |
           haxelib install hxcpp --quiet
           haxelib install format --quiet
