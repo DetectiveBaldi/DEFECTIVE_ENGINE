@@ -48,8 +48,6 @@ class OpeningState extends FlxState
             FlxG.console.registerClass(Preferences);
         #end
 
-        FlxSprite.defaultAntialiasing = true;
-
         Toolkit.init();
 
         Toolkit.theme = Theme.DARK;

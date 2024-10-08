@@ -56,6 +56,8 @@ class Strum extends FlxSprite
     public function new(x:Float = 0.0, y:Float = 0.0, conductor:Conductor):Void
     {
         super(x, y);
+
+        antialiasing = true;
         
         textureData = Json.parse(AssetMan.text(Paths.json("assets/data/game/notes/strums/classic")));
 

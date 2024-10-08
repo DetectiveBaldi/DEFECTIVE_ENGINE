@@ -90,6 +90,8 @@ class Countdown extends FlxContainer
 
         sprite = new FlxSprite().loadGraphic(AssetMan.graphic(Paths.png("assets/images/ui/countdown"), true), true, 1000, 500);
 
+        sprite.antialiasing = true;
+
         sprite.animation.add("ready", [0], 0.0, false);
 
         sprite.animation.add("set", [1], 0.0, false);
