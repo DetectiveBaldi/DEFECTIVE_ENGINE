@@ -95,7 +95,7 @@
                     <hbox id="________hbox">
                         <label id="____________label" text="Indices" verticalAlign="center" />
 
-                        <textfield id="_______textfield" />
+                        <textfield id="_______textfield" width="200" />
                     </hbox>
 
                     <hbox id="_________hbox">

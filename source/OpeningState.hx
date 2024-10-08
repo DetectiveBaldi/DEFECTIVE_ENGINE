@@ -38,6 +38,10 @@ class OpeningState extends FlxState
 
         FlxG.fixedTimestep = false;
 
+        #if html5
+            FlxG.stage.window.element.style.setProperty("image-rendering", "pixelated");
+        #end
+
         FlxG.updateFramerate = MathUtil.maxInt(FlxG.stage.window.displayMode.refreshRate, 144);
 
         FlxG.drawFramerate = MathUtil.maxInt(FlxG.stage.window.displayMode.refreshRate, 144);

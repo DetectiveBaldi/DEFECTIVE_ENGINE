@@ -436,7 +436,9 @@ class CharacterEditorState extends UIState
 
         _______textfield.text = character.data.animations[animationIndex]?.indices?.toString() ?? new Array<Int>().toString();
 
-        _______textfield.text = _______textfield.text.substring(1, _______textfield.text.length - 1);
+        #if !html5
+            _______textfield.text = _______textfield.text.substring(1, _______textfield.text.length - 1);
+        #end
 
         ____numberStepper.value = character.data.animations[animationIndex]?.frameRate ?? 24.0;
 
