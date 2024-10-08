@@ -82,42 +82,47 @@ class Character extends FlxSprite
 
         for (i in 0 ... data.animations.length)
         {
-            if (data.animations[i].indices.length > 0)
+            var _animation:CharacterAnimationData = data.animations[i];
+
+            if (animation.exists(_animation.name))
+                throw "game.Character: Invalid animation name!";
+
+            if (_animation.indices.length > 0)
             {
                 animation.addByIndices
                 (
-                    data.animations[i].name,
+                    _animation.name,
 
-                    data.animations[i].prefix,
+                    _animation.prefix,
 
-                    data.animations[i].indices,
+                    _animation.indices,
 
                     "",
 
-                    data.animations[i].frameRate ?? 24.0,
+                    _animation.frameRate ?? 24.0,
 
-                    data.animations[i].looped ?? false,
+                    _animation.looped ?? false,
 
-                    data.animations[i].flipX ?? false,
+                    _animation.flipX ?? false,
 
-                    data.animations[i].flipY ?? false
+                    _animation.flipY ?? false
                 );
             }
             else
             {
                 animation.addByPrefix
                 (
-                    data.animations[i].name,
+                    _animation.name,
 
-                    data.animations[i].prefix,
+                    _animation.prefix,
 
-                    data.animations[i].frameRate ?? 24.0,
+                    _animation.frameRate ?? 24.0,
 
-                    data.animations[i].looped ?? false,
+                    _animation.looped ?? false,
 
-                    data.animations[i].flipX ?? false,
+                    _animation.flipX ?? false,
 
-                    data.animations[i].flipY ?? false
+                    _animation.flipY ?? false
                 );
             }
         }
@@ -185,8 +190,12 @@ class Character extends FlxSprite
         var output:FlxPoint = super.getScreenPosition(result, camera);
 
         for (i in 0 ... data.animations.length)
-            if (animation.name ?? "" == data.animations[i].name)
-                output.add(data.animations[i].offsets?.x ?? 0.0, data.animations[i].offsets?.y ?? 0.0);
+        {
+            var _animation:CharacterAnimationData = data.animations[i];
+            
+            if (animation.name ?? "" == _animation.name)
+                output.add(_animation.offsets?.x ?? 0.0, _animation.offsets?.y ?? 0.0);
+        }
 
         return output;
     }

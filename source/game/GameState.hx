@@ -621,7 +621,7 @@ class GameState extends MusicBeatState
 
         if (Inputs.checkStatus("DEBUG:0", JUST_PRESSED))
         {
-            // AssetMan.clearCache();
+            AssetMan.clearCache();
             
             FlxG.switchState(() -> new CharacterEditorState());
         }

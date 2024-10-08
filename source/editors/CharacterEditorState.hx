@@ -2,10 +2,6 @@ package editors;
 
 import haxe.Json;
 
-import openfl.events.Event;
-import openfl.events.IOErrorEvent;
-
-import openfl.net.FileFilter;
 import openfl.net.FileReference;
 
 import flixel.FlxCamera;
@@ -14,14 +10,19 @@ import flixel.FlxObject;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 
+import flixel.group.FlxContainer.FlxTypedContainer;
+
 import flixel.math.FlxMath;
+
+import flixel.text.FlxText;
+
+import flixel.util.FlxColor;
 
 import flixel.addons.display.FlxBackdrop;
 import flixel.addons.display.FlxGridOverlay;
 
 import haxe.ui.backend.flixel.UIState;
 
-import haxe.ui.events.FocusEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 
@@ -32,6 +33,8 @@ import core.Paths;
 
 import game.Character;
 import game.GameState;
+
+using StringTools;
 
 using util.ArrayUtil;
 
@@ -46,13 +49,9 @@ class CharacterEditorState extends UIState
         return FlxG.camera;
     }
 
-    public var gameCameraTarget:FlxObject;
-
-    public var gameCameraZoom:Float;
-
     public var hudCamera:FlxCamera;
 
-    public var hudCameraZoom:Float;
+    public var messages:FlxTypedContainer<FlxText>;
 
     public var character:Character;
 
@@ -68,23 +67,17 @@ class CharacterEditorState extends UIState
 
         gameCamera.zoom = 0.75;
 
-        gameCameraTarget = new FlxObject();
-
-        gameCameraTarget.screenCenter();
-
-        add(gameCameraTarget);
-
-        gameCamera.follow(gameCameraTarget, LOCKON, 0.05);
-
-        gameCameraZoom = gameCamera.zoom;
-
         hudCamera = new FlxCamera();
 
         hudCamera.bgColor.alpha = 0;
 
         FlxG.cameras.add(hudCamera, false);
 
-        hudCameraZoom = hudCamera.zoom;
+        messages = new FlxTypedContainer<FlxText>();
+
+        messages.camera = hudCamera;
+
+        add(messages);
 
         var background:FlxBackdrop = new FlxBackdrop(FlxGridOverlay.createGrid(32, 32, 64, 64, true, 0xFFE7E6E6, 0xFFD9D5D5));
 
@@ -109,6 +102,15 @@ class CharacterEditorState extends UIState
 
         button.onClick = (ev:MouseEvent) ->
         {
+            if (!Paths.exists(Paths.json('assets/data/game/characters/${textfield.text}')))
+            {
+                var warn:FlxText = message("The requested character file could not be located!");
+
+                warn.color = FlxColor.RED;
+
+                return;
+            }
+
             character.data = Json.parse(AssetMan.text(Paths.json('assets/data/game/characters/${textfield.text}')));
 
             switch (character.data.format ?? "".toLowerCase():String)
@@ -125,6 +127,8 @@ class CharacterEditorState extends UIState
             character.scale.set(character.data.scale?.x ?? 1.0, character.data.scale?.y ?? 1.0);
 
             character.updateHitbox();
+
+            character.screenCenter();
 
             character.flipX = character.data.flipX ?? false;
 
@@ -188,8 +192,6 @@ class CharacterEditorState extends UIState
 
             character.dance();
 
-            character.screenCenter();
-
             refreshMainTab();
 
             refreshAssetsTab();
@@ -214,6 +216,8 @@ class CharacterEditorState extends UIState
             character.scale.x = character.data.scale.x;
 
             character.updateHitbox();
+
+            character.screenCenter();
         }
 
         _numberStepper.onChange = (ev:UIEvent) ->
@@ -226,6 +230,8 @@ class CharacterEditorState extends UIState
             character.scale.y = character.data.scale.y;
 
             character.updateHitbox();
+
+            character.screenCenter();
         }
 
         _checkbox.onChange = (ev:UIEvent) ->
@@ -242,7 +248,7 @@ class CharacterEditorState extends UIState
             character.flipY = character.data.flipY;
         }
 
-        _textfield.registerEvent(FocusEvent.FOCUS_OUT, (ev:FocusEvent) ->
+        _textfield.onChange = (ev:UIEvent) ->
         {
             if (_textfield.text.length < 1)
                 return;
@@ -252,7 +258,7 @@ class CharacterEditorState extends UIState
             character.danceSteps = _textfield.text.split(",");
 
             character.danceStep = 0;
-        });
+        };
 
         __numberStepper.onChange = (ev:UIEvent) ->
         {
@@ -297,51 +303,64 @@ class CharacterEditorState extends UIState
                     character.frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(character.data.png), true), Paths.xml(character.data.xml));
             }
 
-            character.screenCenter();
-        }
+            clearAnimations();
 
-        refreshAnimationsTab();
+            character.screenCenter();
+
+            tabview.selectedPage = __box;
+        }
 
         ___button.onClick = (ev:MouseEvent) -> saveAnimation();
 
         ____button.onClick = (ev:MouseEvent) -> deleteAnimation();
+
+        _____button.onClick = (ev:MouseEvent) -> clearAnimations();
+
+        refreshAnimationsTab();
     }
 
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
 
-        if (FlxG.keys.justPressed.W && FocusManager.instance.focus == null)
-        {
-            animationIndex = FlxMath.wrap(animationIndex - 1, 0, character.data.animations.length - 1);
+        var i:Int = messages.members.length - 1;
 
-            character.animation.play(character.data.animations[animationIndex].name);
+        while (i >= 0.0)
+        {
+            var msg:FlxText = messages.members[i];
+
+            if (!msg.isOnScreen())
+                messages.remove(msg, true).destroy();
+
+            i--;
         }
 
-        if (FlxG.keys.justPressed.S && FocusManager.instance.focus == null)
+        if (character.data.animations.length > 0.0)
         {
-            animationIndex = FlxMath.wrap(animationIndex + 1, 0, character.data.animations.length - 1);
+            if (FlxG.keys.justPressed.W && FocusManager.instance.focus == null)
+                character.animation.play(character.data.animations[animationIndex = FlxMath.wrap(animationIndex - 1, 0, character.data.animations.length - 1)].name, true);
 
-            character.animation.play(character.data.animations[animationIndex].name);
+            if (FlxG.keys.justPressed.S && FocusManager.instance.focus == null)
+                character.animation.play(character.data.animations[animationIndex = FlxMath.wrap(animationIndex - 1, 0, character.data.animations.length - 1)].name, true);
+
+            if (FlxG.keys.justPressed.UP && FocusManager.instance.focus == null)
+                offsetAnimation(0.0, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0);
+
+            if (FlxG.keys.justPressed.LEFT && FocusManager.instance.focus == null)
+                offsetAnimation(FlxG.keys.pressed.SHIFT ? -10.0 : -1.0, 0.0);
+
+            if (FlxG.keys.justPressed.DOWN && FocusManager.instance.focus == null)
+                offsetAnimation(0.0, FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
+
+            if (FlxG.keys.justPressed.RIGHT && FocusManager.instance.focus == null)
+                offsetAnimation(FlxG.keys.pressed.SHIFT ? 10.0 : 1.0, 0.0);
+
+            if (FlxG.keys.justPressed.SPACE && FocusManager.instance.focus == null)
+                character.animation.play(character.data.animations[animationIndex].name, true);
+
+            if (FlxG.keys.anyJustPressed([W, S, SPACE]) && FocusManager.instance.focus == null)
+                refreshAnimationsTab();
         }
-
-        if (FlxG.keys.justPressed.UP && FocusManager.instance.focus == null)
-            offsetAnimation(0.0, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0);
-
-        if (FlxG.keys.justPressed.LEFT && FocusManager.instance.focus == null)
-            offsetAnimation(FlxG.keys.pressed.SHIFT ? -10.0 : -1.0, 0.0);
-
-        if (FlxG.keys.justPressed.DOWN && FocusManager.instance.focus == null)
-            offsetAnimation(0.0, FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
-
-        if (FlxG.keys.justPressed.RIGHT && FocusManager.instance.focus == null)
-            offsetAnimation(FlxG.keys.pressed.SHIFT ? 10.0 : 1.0, 0.0);
-
-        if (FlxG.keys.justPressed.SPACE && FocusManager.instance.focus == null)
-            character.animation.play(character.data.animations[animationIndex].name, true);
-
-        if (FlxG.keys.anyJustPressed([W, S, SPACE]) && FocusManager.instance.focus == null)
-            refreshAnimationsTab();
 
         if (FlxG.keys.justPressed.ENTER && FocusManager.instance.focus == null)
             FlxG.switchState(() -> new GameState());
@@ -351,7 +370,26 @@ class CharacterEditorState extends UIState
     {
         super.destroy();
 
-        // AssetMan.clearCache();
+        AssetMan.clearCache();
+    }
+
+    public function message(content:String):FlxText
+    {
+        var output:FlxText = new FlxText(0.0, 0.0, FlxG.width, content, 24);
+
+        output.setBorderStyle(SHADOW, FlxColor.BLACK, 3.5);
+
+        output.moves = true;
+
+        output.acceleration.set(0.0, 550.0);
+
+        output.velocity.set(-FlxG.random.int(0, 100), -FlxG.random.int(0, 100));
+
+        output.setPosition(50.0, 450.0);
+
+        messages.add(output);
+
+        return output;
     }
 
     public function refreshMainTab():Void
@@ -369,8 +407,10 @@ class CharacterEditorState extends UIState
         __checkbox.value = character.data.flipY ?? false;
 
         _textfield.text = character.data.danceSteps.toString();
-
-        _textfield.text = _textfield.text.substring(1, _textfield.text.length - 1);
+        
+        #if !html5
+           _textfield.text = _textfield.text.substring(1, _textfield.text.length - 1);
+        #end
 
         __numberStepper.value = character.data.danceInterval ?? 1.0;
 
@@ -388,138 +428,126 @@ class CharacterEditorState extends UIState
 
     public function refreshAnimationsTab():Void
     {
-        _____textfield.text = character.data.animations[animationIndex].name;
+        _________label.text = 'Offsets: (${character.data.animations[animationIndex]?.offsets?.x ?? 0.0}, ${character.data.animations[animationIndex]?.offsets?.y ?? 0.0})';
 
-        ______textfield.text = character.data.animations[animationIndex].prefix;
+        _____textfield.text = character.data.animations[animationIndex]?.name ?? "";
 
-        _______textfield.text = character.data.animations[animationIndex].indices.toString();
+        ______textfield.text = character.data.animations[animationIndex]?.prefix ?? "";
+
+        _______textfield.text = character.data.animations[animationIndex]?.indices?.toString() ?? new Array<Int>().toString();
 
         _______textfield.text = _______textfield.text.substring(1, _______textfield.text.length - 1);
 
-        ____numberStepper.value = character.data.animations[animationIndex].frameRate ?? 24.0;
+        ____numberStepper.value = character.data.animations[animationIndex]?.frameRate ?? 24.0;
 
-        ___checkbox.value = character.data.animations[animationIndex].looped ?? false;
+        ___checkbox.value = character.data.animations[animationIndex]?.looped ?? false;
 
-        ____checkbox.value = character.data.animations[animationIndex].flipX ?? false;
+        ____checkbox.value = character.data.animations[animationIndex]?.flipX ?? false;
 
-        _____checkbox.value = character.data.animations[animationIndex].flipY ?? false;
+        _____checkbox.value = character.data.animations[animationIndex]?.flipY ?? false;
     }
 
     public function saveAnimation():Void
     {
+        var animation:CharacterAnimationData = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
+
+        var indices:Array<Int> = new Array<Int>();
+
         if (_______textfield.text.length > 0)
+            indices = _______textfield.text.split(",").map(Std.parseInt);
+
+        if (animation == null)
         {
-            var indices:Array<String> = _______textfield.text.split(",");
+            character.data.animations.push
+            ({
+                name: _____textfield.text,
 
-            var _indices:Array<Int> = new Array<Int>();
+                prefix: ______textfield.text,
 
-            for (i in 0 ... indices.length)
-                _indices.push(Std.parseInt(indices[i]));
+                indices: indices,
 
-            var animation:CharacterAnimationData = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
+                frameRate: ____numberStepper.value,
 
-            if (animation == null)
-            {
-                character.data.animations.push(
-                {
-                    name: _____textfield.text,
-                    
-                    prefix: ______textfield.text,
-                    
-                    indices: _indices,
-                    
-                    frameRate: ____numberStepper.value,
-                    
-                    looped: ___checkbox.value,
-                    
-                    flipX: ____checkbox.value,
-                    
-                    flipY: _____checkbox.value
-                });
+                looped: ___checkbox.value,
 
-                animation = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
-            }
-            else
-            {
-                animation.prefix = ______textfield.text;
+                flipX: ____checkbox.value,
 
-                animation.indices = _indices;
+                flipY: _____checkbox.value
+            });
 
-                animation.frameRate = ____numberStepper.value;
-
-                animation.looped = ___checkbox.value;
-
-                animation.flipX = ____checkbox.value;
-
-                animation.flipY = _____checkbox.value;
-            }
-
-            character.animation.addByIndices(animation.name, animation.prefix, animation.indices, "", animation.frameRate, animation.looped, animation.flipX, animation.flipY);
-
-            character.animation.play(animation.name, true);
+            animation = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
         }
         else
         {
-            var animation:CharacterAnimationData = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
+            animation.prefix = ______textfield.text;
 
-            if (animation == null)
-            {
-                character.data.animations.push(
-                {
-                    name: _____textfield.text,
-                    
-                    prefix: ______textfield.text,
-                    
-                    indices: new Array<Int>(),
-                    
-                    frameRate: ____numberStepper.value,
-                    
-                    looped: ___checkbox.value,
-                    
-                    flipX: ____checkbox.value,
-                    
-                    flipY: _____checkbox.value
-                });
+            animation.indices = indices;
 
-                animation = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
-            }
-            else
-            {
-                animation.prefix = ______textfield.text;
+            animation.frameRate = ____numberStepper.value;
 
-                animation.indices = new Array<Int>();
+            animation.looped = ___checkbox.value;
 
-                animation.frameRate = ____numberStepper.value;
+            animation.flipX = ____checkbox.value;
 
-                animation.looped = ___checkbox.value;
+            animation.flipY = _____checkbox.value;
+        }
 
-                animation.flipX = ____checkbox.value;
-
-                animation.flipY = _____checkbox.value;
-            }
-
+        if (indices.length > 0)
+            character.animation.addByIndices(animation.name, animation.prefix, animation.indices, "", animation.frameRate, animation.looped, animation.flipX, animation.flipY);
+        else
             character.animation.addByPrefix(animation.name, animation.prefix, animation.frameRate, animation.looped, animation.flipX, animation.flipY);
 
-            character.animation.play(animation.name, true);
-        }
+        character.animation.play(animation.name, true);
+
     }
 
     public function deleteAnimation():Void
     {
-        var animation:CharacterAnimationData = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
+        if (character.data.animations.length <= 0.0)
+        {
+            var warn:FlxText = message("No animation to delete!");
 
-        if (animation == null)
+            warn.color = FlxColor.RED;
+
             return;
+        }
+
+        var animation:CharacterAnimationData = character.data.animations[animationIndex];
 
         character.data.animations.remove(animation);
 
-        character.animation.remove(animation.name);
+        if (character.animation.exists(animation.name))
+            character.animation.remove(animation.name);
 
         animationIndex = 0;
 
-        character.animation.play(character.data.animations[animationIndex].name);
+        if (character.data.animations.length > 0.0)
+            character.animation.play(character.data.animations[animationIndex].name);
+        else
+            character.animation.destroyAnimations();
 
         refreshAnimationsTab();
+    }
+
+    public function clearAnimations():Void
+    {
+        if (character.data.animations.length <= 0.0)
+        {
+            var warn:FlxText = message("No animations to clear!");
+
+            warn.color = FlxColor.RED;
+
+            return;
+        }
+
+        var i:Int = character.data.animations.length - 1;
+
+        while (i >= 0.0)
+        {
+            deleteAnimation();
+
+            i--;
+        }
     }
 
     public function offsetAnimation(x:Float = 0.0, y:Float = 0.0):Void
@@ -532,5 +560,7 @@ class CharacterEditorState extends UIState
         animation.offsets.x += x;
 
         animation.offsets.y += y;
+
+        _________label.text = 'Offsets: (${character.data.animations[animationIndex]?.offsets?.x ?? 0.0}, ${character.data.animations[animationIndex]?.offsets?.y ?? 0.0})';
     }
 }

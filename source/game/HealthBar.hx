@@ -141,19 +141,11 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
 
     public dynamic function scaleIcons():Void
     {
-        var opponentIconScale:FlxPoint = FlxPoint.get(FlxMath.lerp(opponentIcon.scale.x, opponentIcon.textureData.scale?.x ?? 1.0, 0.15), FlxMath.lerp(opponentIcon.scale.x, opponentIcon.textureData.scale?.y ?? 1.0, 0.15));
-
-        opponentIcon.scale.copyFrom(opponentIconScale);
-
-        opponentIconScale.put();
+        opponentIcon.scale.set(FlxMath.lerp(opponentIcon.scale.x, opponentIcon.textureData.scale?.x ?? 1.0, 0.15), FlxMath.lerp(opponentIcon.scale.y, opponentIcon.textureData.scale?.y ?? 1.0, 0.15));
 
         opponentIcon.updateHitbox();
 
-        var playerIconScale:FlxPoint = FlxPoint.get(FlxMath.lerp(playerIcon.scale.x, playerIcon.textureData.scale?.x ?? 1.0, 0.15), FlxMath.lerp(playerIcon.scale.y, playerIcon.textureData.scale?.y ?? 1.0, 0.15));
-
-        playerIcon.scale.copyFrom(playerIconScale);
-
-        playerIconScale.put();
+        playerIcon.scale.set(FlxMath.lerp(playerIcon.scale.x, playerIcon.textureData.scale?.x ?? 1.0, 0.15), FlxMath.lerp(playerIcon.scale.y, playerIcon.textureData.scale?.y ?? 1.0, 0.15));
 
         playerIcon.updateHitbox();
     }
@@ -182,7 +174,11 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
     {
         opponentIcon.scale *= FlxMath.lerp(1.35, 1.05, health / 100.0);
 
+        opponentIcon.updateHitbox();
+
         playerIcon.scale *= FlxMath.lerp(1.05, 1.35, health / 100.0);
+
+        playerIcon.updateHitbox();
     }
 }
 
