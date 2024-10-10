@@ -261,13 +261,9 @@ class CharacterEditorState extends UIState
         _button.onClick = (ev:MouseEvent) ->
         {
             #if html5
-                new openfl.net.FileReference().save(Json.stringify(character.data));
-
-                Logger.logInfo("Character was saved!");
+                new openfl.net.FileReference().save(Json.stringify(character.data), Paths.json(character.data.name));
             #else
-                sys.io.File.saveContent('assets/data/game/characters/${character.data.name}.json', Json.stringify(character.data));
-
-                Logger.logInfo('Character was saved to "assets/data/game/characters/${character.data.name}"!');
+                sys.io.File.saveContent(Paths.json('assets/data/game/characters/${character.data.name}'), Json.stringify(character.data));
             #end
         }
 
