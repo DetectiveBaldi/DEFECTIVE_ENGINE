@@ -1,17 +1,20 @@
 package;
 
 import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.FlxState;
 
 import flixel.util.typeLimit.NextState;
 
 import haxe.ui.Toolkit;
 
+import haxe.ui.focus.FocusManager;
+
 import haxe.ui.themes.Theme;
 
 import core.AssetMan;
 import core.Preferences;
+
+import plugins.Logger;
 
 import ui.PerfTracker;
 
@@ -38,10 +41,6 @@ class OpeningState extends FlxState
 
         FlxG.fixedTimestep = false;
 
-        #if html5
-            FlxG.stage.window.element.style.setProperty("image-rendering", "pixelated");
-        #end
-
         FlxG.updateFramerate = MathUtil.maxInt(FlxG.stage.window.displayMode.refreshRate, 144);
 
         FlxG.drawFramerate = MathUtil.maxInt(FlxG.stage.window.displayMode.refreshRate, 144);
@@ -52,9 +51,15 @@ class OpeningState extends FlxState
             FlxG.console.registerClass(Preferences);
         #end
 
+        FlxG.plugins.drawOnTop = true;
+
+        FlxG.plugins.addPlugin(new Logger());
+
         Toolkit.init();
 
         Toolkit.theme = Theme.DARK;
+
+        FocusManager.instance.autoFocus = false;
 
         AssetMan.init();
 

@@ -2,21 +2,13 @@ package editors;
 
 import haxe.Json;
 
-import openfl.net.FileReference;
-
 import flixel.FlxCamera;
 import flixel.FlxG;
-import flixel.FlxObject;
 
 import flixel.graphics.frames.FlxAtlasFrames;
-
-import flixel.group.FlxContainer.FlxTypedContainer;
+import flixel.graphics.frames.FlxFrame;
 
 import flixel.math.FlxMath;
-
-import flixel.text.FlxText;
-
-import flixel.util.FlxColor;
 
 import flixel.addons.display.FlxBackdrop;
 import flixel.addons.display.FlxGridOverlay;
@@ -33,6 +25,8 @@ import core.Paths;
 
 import game.Character;
 import game.GameState;
+
+import plugins.Logger;
 
 using StringTools;
 
@@ -51,13 +45,9 @@ class CharacterEditorState extends UIState
 
     public var hudCamera:FlxCamera;
 
-    public var messages:FlxTypedContainer<FlxText>;
-
     public var character:Character;
 
     public var animationIndex:Int;
-
-    public var fileRef:FileReference;
 
     override function create():Void
     {
@@ -72,12 +62,6 @@ class CharacterEditorState extends UIState
         hudCamera.bgColor.alpha = 0;
 
         FlxG.cameras.add(hudCamera, false);
-
-        messages = new FlxTypedContainer<FlxText>();
-
-        messages.camera = hudCamera;
-
-        add(messages);
 
         var background:FlxBackdrop = new FlxBackdrop(FlxGridOverlay.createGrid(32, 32, 64, 64, true, 0xFFE7E6E6, 0xFFD9D5D5));
 
@@ -95,18 +79,13 @@ class CharacterEditorState extends UIState
 
         refreshMainTab();
 
-        textfield.onChange = (ev:UIEvent) ->
-        {
-            character.data.name = textfield.text;
-        }
+        textfield.onChange = (ev:UIEvent) -> character.data.name = textfield.text;
 
         button.onClick = (ev:MouseEvent) ->
         {
             if (!Paths.exists(Paths.json('assets/data/game/characters/${textfield.text}')))
             {
-                var warn:FlxText = message("The requested character file could not be located!");
-
-                warn.color = FlxColor.RED;
+                Logger.logError("The requested file(s) do not exist!");
 
                 return;
             }
@@ -136,42 +115,47 @@ class CharacterEditorState extends UIState
 
             for (i in 0 ... character.data.animations.length)
             {
-                if (character.data.animations[i].indices.length > 0)
+                var _animation:CharacterAnimationData = character.data.animations[i];
+    
+                if (character.animation.exists(_animation.name))
+                    throw "game.Character: Invalid animation name!";
+    
+                if (_animation.indices.length > 0)
                 {
                     character.animation.addByIndices
                     (
-                        character.data.animations[i].name,
-
-                        character.data.animations[i].prefix,
-
-                        character.data.animations[i].indices,
-
+                        _animation.name,
+    
+                        _animation.prefix,
+    
+                        _animation.indices,
+    
                         "",
-
-                        character.data.animations[i].frameRate ?? 24.0,
-
-                        character.data.animations[i].looped ?? false,
-
-                        character.data.animations[i].flipX ?? false,
-
-                        character.data.animations[i].flipY ?? false
+    
+                        _animation.frameRate ?? 24.0,
+    
+                        _animation.looped ?? false,
+    
+                        _animation.flipX ?? false,
+    
+                        _animation.flipY ?? false
                     );
                 }
                 else
                 {
                     character.animation.addByPrefix
                     (
-                        character.data.animations[i].name,
-
-                        character.data.animations[i].prefix,
-
-                        character.data.animations[i].frameRate ?? 24.0,
-
-                        character.data.animations[i].looped ?? false,
-
-                        character.data.animations[i].flipX ?? false,
-
-                        character.data.animations[i].flipY ?? false
+                        _animation.name,
+    
+                        _animation.prefix,
+    
+                        _animation.frameRate ?? 24.0,
+    
+                        _animation.looped ?? false,
+    
+                        _animation.flipX ?? false,
+    
+                        _animation.flipY ?? false
                     );
                 }
             }
@@ -276,9 +260,15 @@ class CharacterEditorState extends UIState
 
         _button.onClick = (ev:MouseEvent) ->
         {
-            fileRef = new FileReference();
+            #if html5
+                new openfl.net.FileReference().save(Json.stringify(character.data));
 
-            fileRef.save(Json.stringify(character.data), Paths.json(character.data.name));
+                Logger.logInfo("Character was saved!");
+            #else
+                sys.io.File.saveContent('assets/data/game/characters/${character.data.name}.json', Json.stringify(character.data));
+
+                Logger.logInfo('Character was saved to "assets/data/game/characters/${character.data.name}"!');
+            #end
         }
 
         refreshAssetsTab();
@@ -286,7 +276,18 @@ class CharacterEditorState extends UIState
         __button.onClick = (ev:MouseEvent) ->
         {
             if (character.data.format == __textfield.text && character.data.png == ___textfield.text && character.data.xml == ____textfield.text)
+            {
+                Logger.logError("The requested format and file(s) are in use!");
+                
                 return;
+            }
+
+            if (!Paths.exists(Paths.png(___textfield.text)) || !Paths.exists(Paths.xml(____textfield.text)))
+            {
+                Logger.logError("The requested file(s) do not exist!");
+
+                return;
+            }
 
             character.data.format = __textfield.text;
 
@@ -303,7 +304,7 @@ class CharacterEditorState extends UIState
                     character.frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(character.data.png), true), Paths.xml(character.data.xml));
             }
 
-            clearAnimations();
+            character.animation.destroyAnimations();
 
             character.screenCenter();
 
@@ -314,8 +315,6 @@ class CharacterEditorState extends UIState
 
         ____button.onClick = (ev:MouseEvent) -> deleteAnimation();
 
-        _____button.onClick = (ev:MouseEvent) -> clearAnimations();
-
         refreshAnimationsTab();
     }
 
@@ -323,73 +322,47 @@ class CharacterEditorState extends UIState
     {
         super.update(elapsed);
 
-        var i:Int = messages.members.length - 1;
-
-        while (i >= 0.0)
+        if (FocusManager.instance.focus == null)
         {
-            var msg:FlxText = messages.members[i];
+            if (character.data.animations.length > 0.0)
+            {
+                if (FlxG.keys.justPressed.W)
+                    character.animation.play(character.data.animations[animationIndex = FlxMath.wrap(animationIndex - 1, 0, character.data.animations.length - 1)].name, true);
 
-            if (!msg.isOnScreen())
-                messages.remove(msg, true).destroy();
+                if (FlxG.keys.justPressed.S)
+                    character.animation.play(character.data.animations[animationIndex = FlxMath.wrap(animationIndex + 1, 0, character.data.animations.length - 1)].name, true);
 
-            i--;
+                if (FlxG.keys.justPressed.UP)
+                    offsetAnimation(0.0, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0);
+
+                if (FlxG.keys.justPressed.LEFT)
+                    offsetAnimation(FlxG.keys.pressed.SHIFT ? -10.0 : -1.0, 0.0);
+
+                if (FlxG.keys.justPressed.DOWN)
+                    offsetAnimation(0.0, FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
+
+                if (FlxG.keys.justPressed.RIGHT)
+                    offsetAnimation(FlxG.keys.pressed.SHIFT ? 10.0 : 1.0, 0.0);
+
+                if (FlxG.keys.justPressed.SPACE)
+                    character.animation.play(character.data.animations[animationIndex].name, true);
+
+                if (FlxG.keys.anyJustPressed([W, S, SPACE]))
+                    refreshAnimationsTab();
+
+                if (FlxG.keys.justPressed.ENTER)
+                    FlxG.switchState(() -> new GameState());
+            }
         }
-
-        if (character.data.animations.length > 0.0)
-        {
-            if (FlxG.keys.justPressed.W && FocusManager.instance.focus == null)
-                character.animation.play(character.data.animations[animationIndex = FlxMath.wrap(animationIndex - 1, 0, character.data.animations.length - 1)].name, true);
-
-            if (FlxG.keys.justPressed.S && FocusManager.instance.focus == null)
-                character.animation.play(character.data.animations[animationIndex = FlxMath.wrap(animationIndex - 1, 0, character.data.animations.length - 1)].name, true);
-
-            if (FlxG.keys.justPressed.UP && FocusManager.instance.focus == null)
-                offsetAnimation(0.0, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0);
-
-            if (FlxG.keys.justPressed.LEFT && FocusManager.instance.focus == null)
-                offsetAnimation(FlxG.keys.pressed.SHIFT ? -10.0 : -1.0, 0.0);
-
-            if (FlxG.keys.justPressed.DOWN && FocusManager.instance.focus == null)
-                offsetAnimation(0.0, FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
-
-            if (FlxG.keys.justPressed.RIGHT && FocusManager.instance.focus == null)
-                offsetAnimation(FlxG.keys.pressed.SHIFT ? 10.0 : 1.0, 0.0);
-
-            if (FlxG.keys.justPressed.SPACE && FocusManager.instance.focus == null)
-                character.animation.play(character.data.animations[animationIndex].name, true);
-
-            if (FlxG.keys.anyJustPressed([W, S, SPACE]) && FocusManager.instance.focus == null)
-                refreshAnimationsTab();
-        }
-
-        if (FlxG.keys.justPressed.ENTER && FocusManager.instance.focus == null)
-            FlxG.switchState(() -> new GameState());
     }
 
     override function destroy():Void
     {
         super.destroy();
 
+        FlxG.mouse.visible = false;
+
         AssetMan.clearCache();
-    }
-
-    public function message(content:String):FlxText
-    {
-        var output:FlxText = new FlxText(0.0, 0.0, FlxG.width, content, 24);
-
-        output.setBorderStyle(SHADOW, FlxColor.BLACK, 3.5);
-
-        output.moves = true;
-
-        output.acceleration.set(0.0, 550.0);
-
-        output.velocity.set(-FlxG.random.int(0, 100), -FlxG.random.int(0, 100));
-
-        output.setPosition(50.0, 450.0);
-
-        messages.add(output);
-
-        return output;
     }
 
     public function refreshMainTab():Void
@@ -414,7 +387,7 @@ class CharacterEditorState extends UIState
 
         __numberStepper.value = character.data.danceInterval ?? 1.0;
 
-        ___numberStepper.value = character.data.danceInterval ?? 8.0;
+        ___numberStepper.value = character.data.singDuration ?? 8.0;
     }
 
     public function refreshAssetsTab():Void
@@ -451,12 +424,26 @@ class CharacterEditorState extends UIState
 
     public function saveAnimation():Void
     {
-        var animation:CharacterAnimationData = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
+        var frames:Array<FlxFrame> = new Array<FlxFrame>();
+
+        @:privateAccess
+            character.animation.findByPrefix(frames, ______textfield.text);
+        
+        if (frames.length <= 0.0)
+        {
+            Logger.logError("Invalid frames detected!");
+
+            return;
+        }
 
         var indices:Array<Int> = new Array<Int>();
 
-        if (_______textfield.text.length > 0)
-            indices = _______textfield.text.split(",").map(Std.parseInt);
+        var _indices:Array<String> = _______textfield.text.split(",");
+
+        for (i in 0 ... _indices.length)
+            indices.push(Std.parseInt(_indices[i]));
+
+        var animation:CharacterAnimationData = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
 
         if (animation == null)
         {
@@ -501,15 +488,16 @@ class CharacterEditorState extends UIState
 
         character.animation.play(animation.name, true);
 
+        refreshAnimationsTab();
+
+        Logger.logInfo('Saved "${animation.name}"!');
     }
 
     public function deleteAnimation():Void
     {
-        if (character.data.animations.length <= 0.0)
+        if (character.data.animations.length <= 1.0)
         {
-            var warn:FlxText = message("No animation to delete!");
-
-            warn.color = FlxColor.RED;
+            Logger.logError("You must have at least one animation!");
 
             return;
         }
@@ -529,27 +517,8 @@ class CharacterEditorState extends UIState
             character.animation.destroyAnimations();
 
         refreshAnimationsTab();
-    }
 
-    public function clearAnimations():Void
-    {
-        if (character.data.animations.length <= 0.0)
-        {
-            var warn:FlxText = message("No animations to clear!");
-
-            warn.color = FlxColor.RED;
-
-            return;
-        }
-
-        var i:Int = character.data.animations.length - 1;
-
-        while (i >= 0.0)
-        {
-            deleteAnimation();
-
-            i--;
-        }
+        Logger.logInfo('Deleted "${animation.name}"!');
     }
 
     public function offsetAnimation(x:Float = 0.0, y:Float = 0.0):Void

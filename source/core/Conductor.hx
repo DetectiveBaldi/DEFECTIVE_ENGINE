@@ -67,6 +67,8 @@ class Conductor extends FlxBasic
     {
         super();
 
+        visible = false;
+
         decimalStep = -1.0;
 
         decimalBeat = -1.0;

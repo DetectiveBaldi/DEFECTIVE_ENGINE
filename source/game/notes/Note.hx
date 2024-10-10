@@ -12,6 +12,8 @@ import core.Paths;
 
 class Note extends FlxSprite
 {
+    public static var inputs:Array<String> = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
+    
     public static var directions:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 
     public var parent:Note;
@@ -44,6 +46,8 @@ class Note extends FlxSprite
             animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldTail", Note.directions[i].toLowerCase() + "HoldTail0", 24.0, false);
         }
 
+        antialiasing = textureData.antialiasing ?? true;
+
         return this.textureData = textureData;
     }
 
@@ -61,7 +65,7 @@ class Note extends FlxSprite
     {
         super(x, y);
 
-        antialiasing = true;
+        active = false;
 
         children = new Array<Note>();
 
@@ -103,4 +107,6 @@ typedef NoteTextureData =
     var png:String;
 
     var xml:String;
+
+    var ?antialiasing:Null<Bool>;
 };

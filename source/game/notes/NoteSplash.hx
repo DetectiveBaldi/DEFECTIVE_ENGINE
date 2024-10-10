@@ -35,6 +35,8 @@ class NoteSplash extends FlxSprite
                 frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureData.png), true), Paths.xml(textureData.xml));
         }
 
+        antialiasing = textureData.antialiasing ?? true;
+
         for (i in 0 ... textureData.animations.length)
         {
             for (j in 0 ... NoteSplash.directions.length)
@@ -65,8 +67,6 @@ class NoteSplash extends FlxSprite
     {
         super(x, y);
 
-        antialiasing = true;
-
         textureData = Json.parse(AssetMan.text(Paths.json("assets/data/game/notes/noteSplashes/classic")));
 
         direction = -1;
@@ -91,6 +91,8 @@ typedef NoteSplashTextureData =
     var png:String;
 
     var xml:String;
+
+    var ?antialiasing:Null<Bool>;
 
     var animations:Array<{?offsets:Null<{?x:Null<Float>, ?y:Null<Float>}>, prefix:String, ?frameRate:Null<Float>, ?looped:Null<Bool>, ?flipX:Null<Bool>, ?flipY:Null<Bool>}>;
 }

@@ -44,6 +44,8 @@ class Strum extends FlxSprite
             animation.addByPrefix(Strum.directions[i].toLowerCase() + "Confirm", Strum.directions[i].toLowerCase() + "Confirm0", 24.0, false);
         }
 
+        antialiasing = textureData.antialiasing ?? true;
+
         return this.textureData = textureData;
     }
 
@@ -56,8 +58,6 @@ class Strum extends FlxSprite
     public function new(x:Float = 0.0, y:Float = 0.0, conductor:Conductor):Void
     {
         super(x, y);
-
-        antialiasing = true;
         
         textureData = Json.parse(AssetMan.text(Paths.json("assets/data/game/notes/strums/classic")));
 
@@ -105,4 +105,6 @@ typedef StrumTextureData =
     var png:String;
 
     var xml:String;
+
+    var ?antialiasing:Null<Bool>;
 };

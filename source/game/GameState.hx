@@ -135,8 +135,6 @@ class GameState extends MusicBeatState
     {
         super.create();
 
-        FlxG.mouse.visible = false;
-
         gameCamera.zoom = 0.75;
 
         gameCameraTarget = new FlxObject();
@@ -321,7 +319,7 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("Expurgation");
+        loadSong("Crossed Out");
 
         countdown = new Countdown(conductor);
         

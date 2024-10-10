@@ -16,6 +16,8 @@ import core.Conductor;
 import core.Inputs;
 import core.Paths;
 
+import game.notes.Note;
+
 using StringTools;
 
 class Character extends FlxSprite
@@ -155,7 +157,7 @@ class Character extends FlxSprite
         if (conductor == null)
             return;
 
-        if (Inputs.inputsJustPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) && role == PLAYABLE)
+        if (Inputs.inputsJustPressed(Note.inputs) && role == PLAYABLE)
             singCount = 0.0;
 
         if (animation.name?.startsWith("Sing"))
@@ -167,7 +169,7 @@ class Character extends FlxSprite
             if (animation.name?.endsWith("MISS"))
                 requiredTime *= FlxG.random.float(1.35, 1.85);
 
-            if (singCount >= requiredTime && (role == PLAYABLE ? !Inputs.inputsPressed(["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"]) : true))
+            if (singCount >= requiredTime && (role == PLAYABLE ? !Inputs.inputsPressed(Note.inputs) : true))
             {
                 singCount = 0.0;
                 

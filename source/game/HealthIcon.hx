@@ -29,6 +29,8 @@ class HealthIcon extends FlxSprite
     {
         super(x, y);
 
+        active = false;
+
         textureData = Json.parse(AssetMan.text(Paths.json(path)));
     }
 }

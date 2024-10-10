@@ -7,18 +7,6 @@ import core.Paths;
 
 class Chart
 {
-    public var name:String;
-
-    public var tempo:Float;
-
-    public var speed:Float;
-
-    public var notes:Array<ParsedNote>;
-
-    public var events:Array<ParsedEvent>;
-
-    public var timeChanges:Array<ParsedTimeChange>;
-
     public static function build(path:String):Chart
     {
         var output:Chart = new Chart();
@@ -39,6 +27,18 @@ class Chart
 
         return output;
     }
+
+    public var name:String;
+
+    public var tempo:Float;
+
+    public var speed:Float;
+
+    public var notes:Array<ParsedNote>;
+
+    public var events:Array<ParsedEvent>;
+
+    public var timeChanges:Array<ParsedTimeChange>;
 
     public function new():Void
     {

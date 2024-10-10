@@ -5,7 +5,6 @@ import flixel.FlxSprite;
 import flixel.group.FlxContainer.FlxTypedContainer;
 
 import flixel.math.FlxMath;
-import flixel.math.FlxPoint;
 
 import flixel.ui.FlxBar;
 

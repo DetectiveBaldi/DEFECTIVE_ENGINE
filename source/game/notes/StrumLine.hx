@@ -6,6 +6,8 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 
 import core.Conductor;
 
+import game.notes.Note;
+
 class StrumLine extends FlxTypedSpriteContainer<Strum>
 {
     public var lane:Int;
@@ -52,7 +54,7 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
 
         spacing = 116.0;
 
-        inputs = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
+        inputs = Note.inputs;
 
         artificial = false;
 

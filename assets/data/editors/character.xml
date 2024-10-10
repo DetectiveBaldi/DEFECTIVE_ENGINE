@@ -116,8 +116,6 @@
                         <button id="___button" text="Save" />
 
                         <button id="____button" text="Delete" />
-
-                        <button id="_____button" text="Clear" />
                     </hbox>
                 </vbox>
             </box>
