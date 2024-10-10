@@ -11,6 +11,8 @@ import flixel.FlxObject;
 
 import flixel.group.FlxContainer.FlxTypedContainer;
 
+import flixel.input.keyboard.FlxKey;
+
 import flixel.math.FlxMath;
 
 import flixel.sound.FlxSound;
@@ -130,6 +132,8 @@ class GameState extends MusicBeatState
     public var countdown:Countdown;
 
     public var songStarted:Bool;
+
+    public var debugInputs:Map<String, Input>;
 
     override function create():Void
     {
@@ -372,6 +376,11 @@ class GameState extends MusicBeatState
         add(countdown);
 
         songStarted = false;
+
+        debugInputs =
+        [
+            "EDITORS:CHARACTER" => {name: "EDITORS:CHARACTER", keys: [FlxKey.SEVEN]}
+        ];
     }
 
     override function update(elapsed:Float):Void
@@ -391,7 +400,7 @@ class GameState extends MusicBeatState
 
             for (j in 0 ... strumLine.inputs.length)
             {
-                var input:String = strumLine.inputs[j];
+                var input:Input = strumLine.inputs[j];
 
                 if (Inputs.checkStatus(input, JUST_PRESSED))
                 {
@@ -617,7 +626,7 @@ class GameState extends MusicBeatState
                 startSong();
         }
 
-        if (Inputs.checkStatus("DEBUG:0", JUST_PRESSED))
+        if (Inputs.checkStatus(debugInputs["EDITORS:CHARACTER"], JUST_PRESSED))
         {
             AssetMan.clearCache();
             

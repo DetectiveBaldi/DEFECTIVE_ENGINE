@@ -8,6 +8,8 @@ import flixel.FlxSprite;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 
+import flixel.input.keyboard.FlxKey;
+
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 
@@ -56,6 +58,8 @@ class Character extends FlxSprite
 
         return this.conductor = conductor;
     }
+
+    public var inputs:Array<Input>;
 
     public function new(x:Float = 0.0, y:Float = 0.0, path:String, role:CharacterRole, conductor:Conductor):Void
     {
@@ -148,6 +152,17 @@ class Character extends FlxSprite
         dance();
 
         this.conductor = conductor;
+
+        inputs =
+        [
+            {name: "NOTE:LEFT", keys: [FlxKey.Z, FlxKey.A, FlxKey.LEFT]},
+
+            {name: "NOTE:DOWN", keys: [FlxKey.X, FlxKey.S, FlxKey.DOWN]},
+
+            {name: "NOTE:UP", keys: [FlxKey.PERIOD, FlxKey.W, FlxKey.UP]},
+
+            {name: "NOTE:RIGHT", keys: [FlxKey.SLASH, FlxKey.D, FlxKey.RIGHT]}
+        ];
     }
 
     override function update(elapsed:Float):Void
@@ -157,7 +172,7 @@ class Character extends FlxSprite
         if (conductor == null)
             return;
 
-        if (Inputs.inputsJustPressed(Note.inputs) && role == PLAYABLE)
+        if (Inputs.inputsJustPressed(inputs) && role == PLAYABLE)
             singCount = 0.0;
 
         if (animation.name?.startsWith("Sing"))
@@ -169,7 +184,7 @@ class Character extends FlxSprite
             if (animation.name?.endsWith("MISS"))
                 requiredTime *= FlxG.random.float(1.35, 1.85);
 
-            if (singCount >= requiredTime && (role == PLAYABLE ? !Inputs.inputsPressed(Note.inputs) : true))
+            if (singCount >= requiredTime && (role == PLAYABLE ? !Inputs.inputsPressed(inputs) : true))
             {
                 singCount = 0.0;
                 

@@ -12,8 +12,6 @@ import core.Paths;
 
 class Note extends FlxSprite
 {
-    public static var inputs:Array<String> = ["NOTE:LEFT", "NOTE:DOWN", "NOTE:UP", "NOTE:RIGHT"];
-    
     public static var directions:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 
     public var parent:Note;

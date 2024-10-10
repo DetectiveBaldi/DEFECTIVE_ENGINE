@@ -78,7 +78,7 @@
 
             <box id="__box" text="Animations">
                 <vbox id="___vbox" style="padding:10px; spacing:10px">
-                    <label id="_________label" style="font-size: 8px;" verticalAlign="center" />
+                    <label id="_________label" verticalAlign="center" />
 
                     <hbox id="______hbox">
                         <label id="__________label" text="Name" verticalAlign="center" />
@@ -95,7 +95,7 @@
                     <hbox id="________hbox">
                         <label id="____________label" text="Indices" verticalAlign="center" />
 
-                        <textfield id="_______textfield" width="200" />
+                        <textarea id="textarea" style="height:auto; max-height:60px;" />
                     </hbox>
 
                     <hbox id="_________hbox">

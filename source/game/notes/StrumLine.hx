@@ -2,11 +2,12 @@ package game.notes;
 
 import flixel.group.FlxSpriteContainer.FlxTypedSpriteContainer;
 
+import flixel.input.keyboard.FlxKey;
+
 import flixel.util.FlxSignal.FlxTypedSignal;
 
 import core.Conductor;
-
-import game.notes.Note;
+import core.Inputs;
 
 class StrumLine extends FlxTypedSpriteContainer<Strum>
 {
@@ -22,8 +23,6 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
 
         return this.spacing = spacing;
     }
-
-    public var inputs:Array<String>;
 
     public var artificial:Bool;
 
@@ -46,6 +45,8 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
         return this.conductor = conductor;
     }
 
+    public var inputs:Array<Input>;
+
     public function new(conductor:Conductor):Void
     {
         super();
@@ -53,8 +54,6 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
         lane = -1;
 
         spacing = 116.0;
-
-        inputs = Note.inputs;
 
         artificial = false;
 
@@ -86,6 +85,17 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
             
             add(strum);
         }
+
+        inputs =
+        [
+            {name: "NOTE:LEFT", keys: [FlxKey.Z, FlxKey.A, FlxKey.LEFT]},
+
+            {name: "NOTE:DOWN", keys: [FlxKey.X, FlxKey.S, FlxKey.DOWN]},
+
+            {name: "NOTE:UP", keys: [FlxKey.PERIOD, FlxKey.W, FlxKey.UP]},
+
+            {name: "NOTE:RIGHT", keys: [FlxKey.SLASH, FlxKey.D, FlxKey.RIGHT]}
+        ];
     }
 
     override function destroy():Void

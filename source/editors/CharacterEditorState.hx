@@ -262,8 +262,12 @@ class CharacterEditorState extends UIState
         {
             #if html5
                 new openfl.net.FileReference().save(Json.stringify(character.data), Paths.json(character.data.name));
+
+                Logger.logInfo('Character saved to "${Paths.json(character.data.name)}".');
             #else
                 sys.io.File.saveContent(Paths.json('assets/data/game/characters/${character.data.name}'), Json.stringify(character.data));
+
+                Logger.logInfo('Character saved to "${Paths.json('assets/data/game/characters/${character.data.name}')}".');
             #end
         }
 
@@ -307,11 +311,11 @@ class CharacterEditorState extends UIState
             tabview.selectedPage = __box;
         }
 
+        refreshAnimationsTab();
+
         ___button.onClick = (ev:MouseEvent) -> saveAnimation();
 
         ____button.onClick = (ev:MouseEvent) -> deleteAnimation();
-
-        refreshAnimationsTab();
     }
 
     override function update(elapsed:Float):Void
@@ -343,7 +347,7 @@ class CharacterEditorState extends UIState
                 if (FlxG.keys.justPressed.SPACE)
                     character.animation.play(character.data.animations[animationIndex].name, true);
 
-                if (FlxG.keys.anyJustPressed([W, S, SPACE]))
+                if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S || FlxG.keys.justPressed.SPACE)
                     refreshAnimationsTab();
 
                 if (FlxG.keys.justPressed.ENTER)
@@ -369,7 +373,7 @@ class CharacterEditorState extends UIState
 
         numberStepper.value = character.data.scale?.x ?? 1.0;
 
-        _numberStepper.value = character.data.scale?.x ?? 1.0;
+        _numberStepper.value = character.data.scale?.y ?? 1.0;
 
         _checkbox.value = character.data.flipX ?? false;
 
@@ -403,10 +407,10 @@ class CharacterEditorState extends UIState
 
         ______textfield.text = character.data.animations[animationIndex]?.prefix ?? "";
 
-        _______textfield.text = character.data.animations[animationIndex]?.indices?.toString() ?? new Array<Int>().toString();
+        textarea.text = character.data.animations[animationIndex]?.indices?.toString() ?? new Array<Int>().toString();
 
         #if !html5
-            _______textfield.text = _______textfield.text.substring(1, _______textfield.text.length - 1);
+            textarea.text = textarea.text.substring(1, textarea.text.length - 1);
         #end
 
         ____numberStepper.value = character.data.animations[animationIndex]?.frameRate ?? 24.0;
@@ -432,12 +436,15 @@ class CharacterEditorState extends UIState
             return;
         }
 
-        var indices:Array<Int> = new Array<Int>();
+        var indices:Array<String> = textarea.text.split(",");
 
-        var _indices:Array<String> = _______textfield.text.split(",");
+        var _indices:Array<Int> = new Array<Int>();
 
-        for (i in 0 ... _indices.length)
-            indices.push(Std.parseInt(_indices[i]));
+        if (textarea.text.length > 0)
+        {
+            for (i in 0 ... indices.length)
+                _indices.push(Std.parseInt(indices[i]));
+        }
 
         var animation:CharacterAnimationData = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
 
@@ -449,7 +456,7 @@ class CharacterEditorState extends UIState
 
                 prefix: ______textfield.text,
 
-                indices: indices,
+                indices: _indices,
 
                 frameRate: ____numberStepper.value,
 
@@ -466,7 +473,7 @@ class CharacterEditorState extends UIState
         {
             animation.prefix = ______textfield.text;
 
-            animation.indices = indices;
+            animation.indices = _indices;
 
             animation.frameRate = ____numberStepper.value;
 
@@ -477,7 +484,7 @@ class CharacterEditorState extends UIState
             animation.flipY = _____checkbox.value;
         }
 
-        if (indices.length > 0)
+        if (_indices.length > 0.0)
             character.animation.addByIndices(animation.name, animation.prefix, animation.indices, "", animation.frameRate, animation.looped, animation.flipX, animation.flipY);
         else
             character.animation.addByPrefix(animation.name, animation.prefix, animation.frameRate, animation.looped, animation.flipX, animation.flipY);
