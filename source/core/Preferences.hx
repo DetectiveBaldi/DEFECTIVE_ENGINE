@@ -14,6 +14,8 @@ class Preferences
 
     public static var ghostTapping:Bool;
 
+    public static var gameModifiers:Map<String, Any>;
+
     public static function init():Void
     {
         gpuCaching = true;
@@ -26,9 +28,13 @@ class Preferences
 
         ghostTapping = true;
 
+        gameModifiers = new Map<String, Any>();
+
+        gameModifiers["shuffle"] = true;
+        
         if (FlxG.save.data.preferences == null)
         {
-            FlxG.save.data.preferences = {gpuCaching: gpuCaching, soundStreaming: soundStreaming, downScroll: downScroll, middleScroll: middleScroll, ghostTapping: ghostTapping};
+            FlxG.save.data.preferences = {gpuCaching: gpuCaching, soundStreaming: soundStreaming, downScroll: downScroll, middleScroll: middleScroll, ghostTapping: ghostTapping, gameModifiers: gameModifiers};
 
             FlxG.save.flush();
         }

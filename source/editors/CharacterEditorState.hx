@@ -306,6 +306,8 @@ class CharacterEditorState extends UIState
 
             character.animation.destroyAnimations();
 
+            character.updateHitbox();
+
             character.screenCenter();
 
             tabview.selectedPage = __box;

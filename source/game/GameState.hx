@@ -377,10 +377,9 @@ class GameState extends MusicBeatState
 
         songStarted = false;
 
-        debugInputs =
-        [
-            "EDITORS:CHARACTER" => {name: "EDITORS:CHARACTER", keys: [FlxKey.SEVEN]}
-        ];
+        debugInputs = new Map<String, Input>();
+
+        debugInputs["EDITORS:CHARACTER"] = {name: "EDITORS:CHARACTER", keys: [FlxKey.SEVEN]};
     }
 
     override function update(elapsed:Float):Void
@@ -653,6 +652,21 @@ class GameState extends MusicBeatState
         chart.speed = FlxMath.bound(chart.speed, 0.0, 1.45);
 
         ArraySort.sort(chart.notes, (note:ParsedNote, _note:ParsedNote) -> Std.int(note.time - _note.time));
+
+        if (Preferences.gameModifiers["shuffle"])
+        {
+            var shuffledDirections:Array<Int> = new Array<Int>();
+
+            for (i in 0 ... 4)
+                shuffledDirections.push(FlxG.random.int(0, 4 - 1, shuffledDirections));
+
+            for (i in 0 ... chart.notes.length)
+            {
+                var note:ParsedNote = chart.notes[i];
+
+                note.direction = shuffledDirections[note.direction];
+            }
+        }
 
         ArraySort.sort(chart.events, (event:ParsedEvent, _event:ParsedEvent) -> Std.int(event.time - _event.time));
 
