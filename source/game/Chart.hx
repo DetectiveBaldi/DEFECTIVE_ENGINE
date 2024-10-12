@@ -96,8 +96,4 @@ typedef ParsedTimeChange = TimedObject &
     var tempo:Float;
 
     var step:Float;
-
-    var beat:Float;
-
-    var section:Float;
 };

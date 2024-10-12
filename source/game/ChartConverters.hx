@@ -45,7 +45,7 @@ class FunkConverter
         {
             var timeChange:FunkTimeChange = timeChanges[i];
 
-            output.timeChanges.push({time: timeChange.t, tempo: timeChange.bpm, step: 0.0, beat: 0.0, section: 0.0});
+            output.timeChanges.push({time: timeChange.t, tempo: timeChange.bpm, step: 0.0});
         }
 
         return output;
@@ -60,15 +60,15 @@ class PsychConverter
 
         var parsed:Dynamic = Json.parse(AssetMan.text(Paths.json(path)));
 
-        output.name = parsed.song.song;
+        output.name = parsed.song;
 
-        output.tempo = parsed.song.bpm;
+        output.tempo = parsed.bpm;
 
-        output.speed = parsed.song.speed;
+        output.speed = parsed.speed;
 
-        for (i in 0 ... parsed.song.notes.length)
+        for (i in 0 ... parsed.notes.length)
         {
-            var section:Dynamic = parsed.song.notes[i];
+            var section:Dynamic = parsed.notes[i];
 
             var _section:PsychSection =
             {
@@ -78,7 +78,7 @@ class PsychConverter
                     {
                         var note:Array<Dynamic> = section.sectionNotes[j];
 
-                        {time: note[0], direction: note[1], length: cast note[2]}
+                        {time: note[0], direction: note[1], length: note[2]}
                     }
                 ],
 
@@ -97,7 +97,7 @@ class PsychConverter
             {
                 var note:PsychNote = _section.sectionNotes[j];
 
-                output.notes.push({time: note.time, speed: 1.0, direction: note.direction % 4, lane: 1 - Math.floor((_section.mustHitSection ? note.direction : (note.direction >= 4.0) ? note.direction - 4 : note.direction + 4) * 0.25), length: note.length});
+                output.notes.push({time: note.time, speed: 1.0, direction: note.direction % 4, lane: 1 - Math.floor(note.direction * 0.25), length: note.length});
             }
         }
 
@@ -105,9 +105,9 @@ class PsychConverter
 
         var tempo:Float = output.tempo;
 
-        for (i in 0 ... parsed.song.notes.length)
+        for (i in 0 ... parsed.notes.length)
         {
-            var section:Dynamic = parsed.song.notes[i];
+            var section:Dynamic = parsed.notes[i];
 
             var _section:PsychSection =
             {
@@ -117,7 +117,7 @@ class PsychConverter
                     {
                         var note:Array<Dynamic> = section.sectionNotes[j];
 
-                        {time: note[0], direction: note[1], length: cast note[2]}
+                        {time: note[0], direction: note[1], length: note[2]}
                     }
                 ],
 
@@ -132,13 +132,13 @@ class PsychConverter
 
             TimingUtil.sort(_section.sectionNotes);
 
-            time += (((1.0 / tempo) * 60.0) * 1000.0) * (Math.round(_section.sectionBeats * 4.0) * 0.25);
+            time += (60 / tempo * 1000.0) * (Math.round(_section.sectionBeats * 4.0) * 0.25);
 
             if (_section.changeBPM)
             {
                 tempo = _section.bpm;
 
-                output.timeChanges.push({time: time, tempo: tempo, step: 0.0, beat: 0.0, section: 0.0});
+                output.timeChanges.push({time: time, tempo: tempo, step: 0.0});
             }
         }
 

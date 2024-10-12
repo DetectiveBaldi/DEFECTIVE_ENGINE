@@ -676,7 +676,7 @@ class GameState extends MusicBeatState
 
         conductor.tempo = chart.tempo;
 
-        conductor.timeChange = {time: 0.0, tempo: chart.tempo, step: 0.0, beat: 0.0, section: 0.0};
+        conductor.timeChange = {time: 0.0, tempo: chart.tempo, step: 0.0};
 
         conductor.timeChanges = chart.timeChanges;
 
