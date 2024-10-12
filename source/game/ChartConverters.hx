@@ -103,7 +103,7 @@ class PsychConverter
 
         var time:Float = 0.0;
 
-        var tempo:Float = 0.0;
+        var tempo:Float = output.tempo;
 
         for (i in 0 ... parsed.song.notes.length)
         {
