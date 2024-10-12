@@ -174,9 +174,7 @@ class Conductor extends FlxBasic
     {
         var _timeChange:ParsedTimeChange = timeChanges[0];
 
-        var i:Int = 1;
-
-        while (i < timeChanges.length - 1.0)
+        for (i in 1 ... timeChanges.length)
         {
             var __timeChange:ParsedTimeChange = timeChanges[i];
 
@@ -184,8 +182,6 @@ class Conductor extends FlxBasic
                 break;
 
             _timeChange = __timeChange;
-
-            i++;
         }
 
         return _timeChange;

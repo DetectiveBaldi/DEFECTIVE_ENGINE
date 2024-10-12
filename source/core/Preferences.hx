@@ -30,7 +30,7 @@ class Preferences
 
         gameModifiers = new Map<String, Any>();
 
-        gameModifiers["shuffle"] = true;
+        gameModifiers["shuffle"] = false;
         
         if (FlxG.save.data.preferences == null)
         {

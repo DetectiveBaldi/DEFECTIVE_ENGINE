@@ -88,7 +88,7 @@ class Character extends FlxSprite
 
         for (i in 0 ... data.animations.length)
         {
-            var _animation:CharacterAnimationData = data.animations[i];
+            var _animation:CharacterFrameSet = data.animations[i];
 
             if (animation.exists(_animation.name))
                 throw "game.Character: Invalid animation name!";
@@ -208,10 +208,10 @@ class Character extends FlxSprite
 
         for (i in 0 ... data.animations.length)
         {
-            var _animation:CharacterAnimationData = data.animations[i];
+            var _animation:CharacterFrameSet = data.animations[i];
             
             if (animation.name ?? "" == _animation.name)
-                output.add(_animation.offsets?.x ?? 0.0, _animation.offsets?.y ?? 0.0);
+                output.add(_animation.offset?.x ?? 0.0, _animation.offset?.y ?? 0.0);
         }
 
         return output;
@@ -253,7 +253,7 @@ typedef CharacterData =
 
     var ?flipY:Null<Bool>;
 
-    var animations:Array<CharacterAnimationData>;
+    var animations:Array<CharacterFrameSet>;
 
     var danceSteps:Array<String>;
 
@@ -262,10 +262,8 @@ typedef CharacterData =
     var ?singDuration:Null<Float>;
 };
 
-typedef CharacterAnimationData =
+typedef CharacterFrameSet =
 {
-    var ?offsets:Null<{?x:Null<Float>, ?y:Null<Float>}>;
-    
     var name:String;
     
     var prefix:String;
@@ -279,6 +277,8 @@ typedef CharacterAnimationData =
     var ?flipX:Null<Bool>;
     
     var ?flipY:Null<Bool>;
+
+    var ?offset:Null<{?x:Null<Float>, ?y:Null<Float>}>;
 };
 
 enum abstract CharacterRole(String) from String to String

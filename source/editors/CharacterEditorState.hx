@@ -2,6 +2,8 @@ package editors;
 
 import haxe.Json;
 
+import lime.system.Clipboard;
+
 import flixel.FlxCamera;
 import flixel.FlxG;
 
@@ -73,15 +75,28 @@ class CharacterEditorState extends UIState
 
         add(character);
 
-        animationIndex = character.data.animations.indexOf(character.data.animations.getFirst((animation:CharacterAnimationData) -> character.animation.name == animation.name));
+        animationIndex = character.data.animations.indexOf(character.data.animations.getFirst((animation:CharacterFrameSet) -> character.animation.name == animation.name));
 
-        vbox.camera = hudCamera;
+        root.camera = hudCamera;
 
         refreshMainTab();
 
         textfield.onChange = (ev:UIEvent) -> character.data.name = textfield.text;
 
         button.onClick = (ev:MouseEvent) ->
+        {
+            #if html5
+                new openfl.net.FileReference().save(Json.stringify(character.data), Paths.json(character.data.name));
+
+                Logger.logInfo('Character saved to "${Paths.json(character.data.name)}".');
+            #else
+                sys.io.File.saveContent(Paths.json('assets/data/game/characters/${character.data.name}'), Json.stringify(character.data));
+
+                Logger.logInfo('Character saved to "${Paths.json('assets/data/game/characters/${character.data.name}')}".');
+            #end
+        }
+
+        _button.onClick = (ev:MouseEvent) ->
         {
             if (!Paths.exists(Paths.json('assets/data/game/characters/${textfield.text}')))
             {
@@ -115,7 +130,7 @@ class CharacterEditorState extends UIState
 
             for (i in 0 ... character.data.animations.length)
             {
-                var _animation:CharacterAnimationData = character.data.animations[i];
+                var _animation:CharacterFrameSet = character.data.animations[i];
     
                 if (character.animation.exists(_animation.name))
                     throw "game.Character: Invalid animation name!";
@@ -258,19 +273,6 @@ class CharacterEditorState extends UIState
             character.singDuration = character.data.singDuration;
         }
 
-        _button.onClick = (ev:MouseEvent) ->
-        {
-            #if html5
-                new openfl.net.FileReference().save(Json.stringify(character.data), Paths.json(character.data.name));
-
-                Logger.logInfo('Character saved to "${Paths.json(character.data.name)}".');
-            #else
-                sys.io.File.saveContent(Paths.json('assets/data/game/characters/${character.data.name}'), Json.stringify(character.data));
-
-                Logger.logInfo('Character saved to "${Paths.json('assets/data/game/characters/${character.data.name}')}".');
-            #end
-        }
-
         refreshAssetsTab();
 
         __button.onClick = (ev:MouseEvent) ->
@@ -318,6 +320,26 @@ class CharacterEditorState extends UIState
         ___button.onClick = (ev:MouseEvent) -> saveAnimation();
 
         ____button.onClick = (ev:MouseEvent) -> deleteAnimation();
+
+        _____button.onClick = (ev:MouseEvent) ->
+        {
+            var animation:CharacterFrameSet = character.data.animations[animationIndex];
+
+            Clipboard.text = Json.stringify(animation.offset);
+
+            Logger.logInfo("Current animation offset copied to clipboard.");
+        }
+
+        ______button.onClick = (ev:MouseEvent) ->
+        {
+            var animation:CharacterFrameSet = character.data.animations[animationIndex];
+
+            var offset:Null<{?x:Null<Float>, ?y:Null<Float>}> = Json.parse(Clipboard.text);
+
+            setFrameSetOffset(animation, offset?.x ?? 0.0, offset?.y ?? 0.0);
+
+            Logger.logInfo("Copied offset successfully applied to current animation.");
+        }
     }
 
     override function update(elapsed:Float):Void
@@ -326,35 +348,35 @@ class CharacterEditorState extends UIState
 
         if (FocusManager.instance.focus == null)
         {
-            if (character.data.animations.length > 0.0)
+            if (FlxG.keys.justPressed.W)
+                animationIndex = FlxMath.wrap(animationIndex - 1, 0, character.data.animations.length - 1);
+
+            if (FlxG.keys.justPressed.S)
+                animationIndex = FlxMath.wrap(animationIndex + 1, 0, character.data.animations.length - 1);
+
+            var animation:CharacterFrameSet = character.data.animations[animationIndex];
+
+            if (FlxG.keys.justPressed.UP)
+                addFrameSetOffset(animation, 0.0, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0);
+
+            if (FlxG.keys.justPressed.LEFT)
+                addFrameSetOffset(animation, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0, 0.0);
+
+            if (FlxG.keys.justPressed.DOWN)
+                addFrameSetOffset(animation, 0.0, FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
+
+            if (FlxG.keys.justPressed.RIGHT)
+                addFrameSetOffset(animation, FlxG.keys.pressed.SHIFT ? 10.0 : 1.0, 0.0);
+
+            if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S || FlxG.keys.justPressed.SPACE)
             {
-                if (FlxG.keys.justPressed.W)
-                    character.animation.play(character.data.animations[animationIndex = FlxMath.wrap(animationIndex - 1, 0, character.data.animations.length - 1)].name, true);
+                character.animation.play(animation.name, true);
 
-                if (FlxG.keys.justPressed.S)
-                    character.animation.play(character.data.animations[animationIndex = FlxMath.wrap(animationIndex + 1, 0, character.data.animations.length - 1)].name, true);
-
-                if (FlxG.keys.justPressed.UP)
-                    offsetAnimation(0.0, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0);
-
-                if (FlxG.keys.justPressed.LEFT)
-                    offsetAnimation(FlxG.keys.pressed.SHIFT ? -10.0 : -1.0, 0.0);
-
-                if (FlxG.keys.justPressed.DOWN)
-                    offsetAnimation(0.0, FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
-
-                if (FlxG.keys.justPressed.RIGHT)
-                    offsetAnimation(FlxG.keys.pressed.SHIFT ? 10.0 : 1.0, 0.0);
-
-                if (FlxG.keys.justPressed.SPACE)
-                    character.animation.play(character.data.animations[animationIndex].name, true);
-
-                if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S || FlxG.keys.justPressed.SPACE)
-                    refreshAnimationsTab();
-
-                if (FlxG.keys.justPressed.ENTER)
-                    FlxG.switchState(() -> new GameState());
+                refreshAnimationsTab();
             }
+
+            if (FlxG.keys.justPressed.ENTER)
+                FlxG.switchState(() -> new GameState());
         }
     }
 
@@ -403,25 +425,27 @@ class CharacterEditorState extends UIState
 
     public function refreshAnimationsTab():Void
     {
-        _________label.text = 'Offsets: (${character.data.animations[animationIndex]?.offsets?.x ?? 0.0}, ${character.data.animations[animationIndex]?.offsets?.y ?? 0.0})';
+        var animation:CharacterFrameSet = character.data.animations[animationIndex];
 
-        _____textfield.text = character.data.animations[animationIndex]?.name ?? "";
+        _____textfield.text = animation.name ?? "";
 
-        ______textfield.text = character.data.animations[animationIndex]?.prefix ?? "";
+        ______textfield.text = animation.prefix ?? "";
 
-        textarea.text = character.data.animations[animationIndex]?.indices?.toString() ?? new Array<Int>().toString();
+        textarea.text = animation.indices?.toString() ?? new Array<Int>().toString();
 
         #if !html5
             textarea.text = textarea.text.substring(1, textarea.text.length - 1);
         #end
 
-        ____numberStepper.value = character.data.animations[animationIndex]?.frameRate ?? 24.0;
+        ____numberStepper.value = animation.frameRate ?? 24.0;
 
-        ___checkbox.value = character.data.animations[animationIndex]?.looped ?? false;
+        ___checkbox.value = animation.looped ?? false;
 
-        ____checkbox.value = character.data.animations[animationIndex]?.flipX ?? false;
+        ____checkbox.value = animation.flipX ?? false;
 
-        _____checkbox.value = character.data.animations[animationIndex]?.flipY ?? false;
+        _____checkbox.value = animation.flipY ?? false;
+
+        _____________label.text = 'Offset: (${animation.offset?.x ?? 0.0}, ${animation.offset?.y ?? 0.0})';
     }
 
     public function saveAnimation():Void
@@ -448,7 +472,7 @@ class CharacterEditorState extends UIState
                 _indices.push(Std.parseInt(indices[i]));
         }
 
-        var animation:CharacterAnimationData = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
+        var animation:CharacterFrameSet = character.data.animations.getFirst((animation:CharacterFrameSet) -> _____textfield.text == animation.name);
 
         if (animation == null)
         {
@@ -469,7 +493,9 @@ class CharacterEditorState extends UIState
                 flipY: _____checkbox.value
             });
 
-            animation = character.data.animations.getFirst((animation:CharacterAnimationData) -> _____textfield.text == animation.name);
+            animationIndex = character.data.animations.length - 1;
+
+            animation = character.data.animations.getFirst((animation:CharacterFrameSet) -> _____textfield.text == animation.name);
         }
         else
         {
@@ -507,7 +533,7 @@ class CharacterEditorState extends UIState
             return;
         }
 
-        var animation:CharacterAnimationData = character.data.animations[animationIndex];
+        var animation:CharacterFrameSet = character.data.animations[animationIndex];
 
         character.data.animations.remove(animation);
 
@@ -516,8 +542,10 @@ class CharacterEditorState extends UIState
 
         animationIndex = 0;
 
+        animation = character.data.animations[animationIndex];
+
         if (character.data.animations.length > 0.0)
-            character.animation.play(character.data.animations[animationIndex].name);
+            character.animation.play(animation.name, true);
         else
             character.animation.destroyAnimations();
 
@@ -526,17 +554,23 @@ class CharacterEditorState extends UIState
         Logger.logInfo('Deleted "${animation.name}"!');
     }
 
-    public function offsetAnimation(x:Float = 0.0, y:Float = 0.0):Void
+    public function setFrameSetOffset(animation:CharacterFrameSet, x:Float = 0.0, y:Float = 0.0):Void
     {
-        var animation:CharacterAnimationData = character.data.animations[animationIndex];
+        if (animation.offset == null)
+            animation.offset = {x: 0.0, y: 0.0};
 
-        if (animation.offsets == null)
-            animation.offsets = {x: 0.0, y: 0.0};
+        animation.offset.x = x;
 
-        animation.offsets.x += x;
+        animation.offset.y = y;
 
-        animation.offsets.y += y;
+        _____________label.text = 'Offset: (${animation.offset?.x ?? 0.0}, ${animation.offset?.y ?? 0.0})';
+    }
 
-        _________label.text = 'Offsets: (${character.data.animations[animationIndex]?.offsets?.x ?? 0.0}, ${character.data.animations[animationIndex]?.offsets?.y ?? 0.0})';
+    public function addFrameSetOffset(animation:CharacterFrameSet, x:Float = 0.0, y:Float = 0.0):Void
+    {
+        if (animation.offset == null)
+            animation.offset = {x: 0.0, y: 0.0};
+
+        setFrameSetOffset(animation, animation.offset.x + x, animation.offset.y + y);
     }
 }

@@ -53,8 +53,6 @@ class OpeningState extends FlxState
 
         FlxG.plugins.drawOnTop = true;
 
-        FlxG.plugins.addPlugin(new Logger());
-
         Toolkit.init();
 
         Toolkit.theme = Theme.DARK;
@@ -67,9 +65,9 @@ class OpeningState extends FlxState
 
         Preferences.load();
 
-        var perfTracker:PerfTracker = new PerfTracker(10.0, 5.0);
+        FlxG.plugins.addPlugin(new Logger());
         
-        FlxG.game.addChild(perfTracker);
+        FlxG.game.addChild(new PerfTracker(10.0, 5.0));
 
         FlxG.switchState(nextState);
     }
