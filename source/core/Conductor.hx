@@ -83,9 +83,9 @@ class Conductor extends FlxBasic
 
         tempo = 150.0;
 
-        timeChange = {tempo: tempo, time: 0.0, step: 0.0, beat: 0.0, section: 0.0};
+        timeChange = {time: 0.0, tempo: tempo, step: 0.0, beat: 0.0, section: 0.0};
 
-        timeChanges = [{tempo: tempo, time: 0.0, step: 0.0, beat: 0.0, section: 0.0}];
+        timeChanges = new Array<ParsedTimeChange>();
 
         time = 0.0;
     }
@@ -117,9 +117,9 @@ class Conductor extends FlxBasic
 
                 timeChange.section = timeChange.section * 0.25;
 
-                timeChange.tempo = _timeChange.tempo;
-                
                 timeChange.time = _timeChange.time;
+
+                timeChange.tempo = _timeChange.tempo;
 
                 tempo = timeChange.tempo;
 
@@ -163,18 +163,18 @@ class Conductor extends FlxBasic
 
         tempo = 150.0;
 
-        timeChange = {tempo: tempo, time: 0.0, step: 0.0, beat: 0.0, section: 0.0};
+        timeChange = {time: 0.0, tempo: tempo, step: 0.0, beat: 0.0, section: 0.0};
 
-        timeChanges = [{tempo: tempo, time: 0.0, step: 0.0, beat: 0.0, section: 0.0}];
+        timeChanges = new Array<ParsedTimeChange>();
 
         time = 0.0;
     }
 
-    public function findTimeChangeAt(_time:Float):ParsedTimeChange
+    public function findTimeChangeAt(_tempo:Float, _time:Float):ParsedTimeChange
     {
-        var _timeChange:ParsedTimeChange = timeChanges[0];
+        var _timeChange:ParsedTimeChange = {tempo: _tempo, time: 0.0, step: 0.0, beat: 0.0, section: 0.0};
 
-        for (i in 1 ... timeChanges.length)
+        for (i in 0 ... timeChanges.length)
         {
             var __timeChange:ParsedTimeChange = timeChanges[i];
 

@@ -5,23 +5,34 @@ import haxe.Json;
 import core.AssetMan;
 import core.Paths;
 
+import util.TimingUtil;
+
+import util.TimingUtil.SimpleTimedObject;
+import util.TimingUtil.TimedObject;
+
 class FunkConverter
 {
-    public static function build(chartPath:String, metaPath:String, difficulty:String):Chart
+    public static function build(chartPath:String, metaPath:String, level:String):Chart
     {
         var output:Chart = new Chart();
 
         var parsedChart:Dynamic = Json.parse(AssetMan.text(Paths.json(chartPath)));
 
+        var notes:Array<FunkNote> = Reflect.field(parsedChart.notes, level);
+
+        TimingUtil.sortSimple(notes);
+
         var parsedMeta:Dynamic = Json.parse(AssetMan.text(Paths.json(metaPath)));
+
+        var timeChanges:Array<FunkTimeChange> = parsedMeta.timeChanges;
+
+        TimingUtil.sortSimple(timeChanges);
 
         output.name = parsedMeta.songName;
 
-        output.tempo = parsedMeta.timeChanges[0].bpm;
+        output.tempo = timeChanges.shift().bpm;
 
-        output.speed = Reflect.field(parsedChart.scrollSpeed, difficulty);
-
-        var notes:Array<FunkNote> = Reflect.field(parsedChart.notes, difficulty);
+        output.speed = Reflect.field(parsedChart.scrollSpeed, level);
 
         for (i in 0 ... notes.length)
         {
@@ -30,13 +41,11 @@ class FunkConverter
             output.notes.push({time: note.t, speed: 1.0, direction: note.d % 4, lane: 1 - Math.floor(note.d * 0.25), length: note.l});
         }
 
-        output.timeChanges.resize(0);
-
-        for (i in 0 ... parsedMeta.timeChanges.length)
+        for (i in 0 ... timeChanges.length)
         {
-            var timeChange:FunkTimeChange = parsedMeta.timeChanges[i];
+            var timeChange:FunkTimeChange = timeChanges[i];
 
-            output.timeChanges.push({tempo: timeChange.bpm, time: timeChange.t, step: 0.0, beat: 0.0, section: 0.0});
+            output.timeChanges.push({time: timeChange.t, tempo: timeChange.bpm, step: 0.0, beat: 0.0, section: 0.0});
         }
 
         return output;
@@ -81,6 +90,8 @@ class PsychConverter
 
                 bpm: section.bpm
             };
+            
+            TimingUtil.sort(_section.sectionNotes);
 
             for (j in 0 ... _section.sectionNotes.length)
             {
@@ -90,13 +101,9 @@ class PsychConverter
             }
         }
 
-        output.timeChanges.resize(0);
-        
-        output.timeChanges.push({time: 0.0, tempo: output.tempo, step: 0.0, beat: 0.0, section: 0.0});
-
-        var tempo:Float = output.tempo;
-
         var time:Float = 0.0;
+
+        var tempo:Float = 0.0;
 
         for (i in 0 ... parsed.song.notes.length)
         {
@@ -123,24 +130,24 @@ class PsychConverter
                 bpm: section.bpm
             };
 
+            TimingUtil.sort(_section.sectionNotes);
+
+            time += (((1.0 / tempo) * 60.0) * 1000.0) * (Math.round(_section.sectionBeats * 4.0) * 0.25);
+
             if (_section.changeBPM)
             {
                 tempo = _section.bpm;
 
-                output.timeChanges.push({tempo: tempo, time: time, step: 0.0, beat: 0.0, section: 0.0});
+                output.timeChanges.push({time: time, tempo: tempo, step: 0.0, beat: 0.0, section: 0.0});
             }
-            
-            time += (((1.0 / tempo) * 60.0) * 1000.0) * (Math.round(_section.sectionBeats * 4.0) * 0.25);
         }
 
         return output;
     }
 }
 
-typedef FunkNote =
+typedef FunkNote = SimpleTimedObject &
 {
-    var t:Float;
-
     var d:Int;
 
     var l:Float;
@@ -148,19 +155,15 @@ typedef FunkNote =
     var k:String;
 };
 
-typedef FunkEvent =
+typedef FunkEvent = SimpleTimedObject &
 {
-    var t:Float;
-
     var e:String;
 
     var v:Dynamic;
 };
 
-typedef FunkTimeChange =
+typedef FunkTimeChange = SimpleTimedObject &
 {
-    var t:Float;
-
     var b:Float;
 
     var bpm:Float;
@@ -185,19 +188,15 @@ typedef PsychSection =
     var bpm:Float;
 };
 
-typedef PsychNote =
+typedef PsychNote = TimedObject &
 {
-    var time:Float;
-
     var direction:Int;
 
     var length:Float;
 };
 
-typedef PsychEvent =
+typedef PsychEvent = TimedObject &
 {
-    var time:Float;
-
     var name:String;
 
     var value1:String;

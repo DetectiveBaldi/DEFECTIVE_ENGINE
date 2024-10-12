@@ -47,6 +47,8 @@ import game.stages.Week1;
 
 import ui.Countdown;
 
+import util.TimingUtil;
+
 using StringTools;
 
 class GameState extends MusicBeatState
@@ -323,7 +325,7 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("Crossed Out");
+        loadSong("Darnell (BF Mix)");
 
         countdown = new Countdown(conductor);
         
@@ -536,7 +538,7 @@ class GameState extends MusicBeatState
 
             notes.add(_note);
 
-            for (k in 0 ... Math.floor(note.length / (((60 / conductor.findTimeChangeAt(note.time).tempo) * 1000.0) * 0.25)))
+            for (k in 0 ... Math.floor(note.length / (((60 / conductor.findTimeChangeAt(chart.tempo, note.time).tempo) * 1000.0) * 0.25)))
             {
                 var sustain:Note = new Note();
 
@@ -544,7 +546,7 @@ class GameState extends MusicBeatState
 
                 _note.children.push(sustain);
 
-                sustain.time = _note.time + ((((60 / conductor.findTimeChangeAt(note.time).tempo) * 1000.0) * 0.25) * (k + 1));
+                sustain.time = _note.time + ((((60 / conductor.findTimeChangeAt(chart.tempo, note.time).tempo) * 1000.0) * 0.25) * (k + 1));
 
                 sustain.speed = _note.speed;
 
@@ -556,7 +558,7 @@ class GameState extends MusicBeatState
 
                 sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
 
-                if (k >= Math.floor(sustain.length / (((60 / conductor.findTimeChangeAt(note.time).tempo) * 1000.0) * 0.25)) - 1)
+                if (k >= Math.floor(sustain.length / (((60 / conductor.findTimeChangeAt(chart.tempo, note.time).tempo) * 1000.0) * 0.25)) - 1)
                     sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
 
                 sustain.flipY = Preferences.downScroll;
@@ -647,11 +649,11 @@ class GameState extends MusicBeatState
 
     public function loadSong(name:String):Void
     {
-        chart = Chart.build('assets/data/game/songs/${name}/chart');
+        chart = FunkConverter.build('assets/data/game/songs/${name}/chart', 'assets/data/game/songs/${name}/meta', "hard");
 
         chart.speed = FlxMath.bound(chart.speed, 0.0, 1.45);
 
-        ArraySort.sort(chart.notes, (note:ParsedNote, _note:ParsedNote) -> Std.int(note.time - _note.time));
+        TimingUtil.sort(chart.notes);
 
         if (Preferences.gameModifiers["shuffle"])
         {
@@ -668,13 +670,13 @@ class GameState extends MusicBeatState
             }
         }
 
-        ArraySort.sort(chart.events, (event:ParsedEvent, _event:ParsedEvent) -> Std.int(event.time - _event.time));
+        TimingUtil.sort(chart.events);
 
-        ArraySort.sort(chart.timeChanges, (timeChange:ParsedTimeChange, _timeChange:ParsedTimeChange) -> Std.int(timeChange.time - _timeChange.time));
+        TimingUtil.sort(chart.timeChanges);
 
         conductor.tempo = chart.tempo;
 
-        conductor.timeChange = chart.timeChanges[0];
+        conductor.timeChange = {time: 0.0, tempo: chart.tempo, step: 0.0, beat: 0.0, section: 0.0};
 
         conductor.timeChanges = chart.timeChanges;
 
@@ -686,18 +688,18 @@ class GameState extends MusicBeatState
 
         eventIndex = 0;
 
-        instrumental = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Instrumental'), true), 1.0, true);
+        instrumental = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Instrumental'), true));
 
         if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Main')))
-            mainVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Main'), true), 1.0, true);
+            mainVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Main'), true));
 
         if (mainVocals == null)
         {
             if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent')))
-                opponentVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.ogg #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent'), true), 1.0, true);
+                opponentVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.ogg #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent'), true));
 
             if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player')))
-                playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.ogg #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player'), true), 1.0, true);
+                playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.ogg #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player'), true));
         }
     }
 

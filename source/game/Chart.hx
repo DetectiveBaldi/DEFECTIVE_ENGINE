@@ -5,6 +5,8 @@ import haxe.Json;
 import core.AssetMan;
 import core.Paths;
 
+import util.TimingUtil.TimedObject;
+
 class Chart
 {
     public static function build(path:String):Chart
@@ -52,7 +54,7 @@ class Chart
 
         events = new Array<ParsedEvent>();
 
-        timeChanges = [{tempo: tempo, time: 0.0, step: 0.0, beat: 0.0, section: 0.0}];
+        timeChanges = new Array<ParsedTimeChange>();
     }
 }
 
@@ -71,10 +73,8 @@ typedef ParsedChart =
     var timeChanges:Array<ParsedTimeChange>;
 };
 
-typedef ParsedNote =
+typedef ParsedNote = TimedObject &
 {
-    var time:Float;
-
     var speed:Float;
 
     var direction:Int;
@@ -84,24 +84,20 @@ typedef ParsedNote =
     var length:Float;
 };
 
-typedef ParsedEvent =
+typedef ParsedEvent = TimedObject &
 {
-    var time:Float;
-
     var name:String;
 
     var value:Dynamic;
 };
 
-typedef ParsedTimeChange =
+typedef ParsedTimeChange = TimedObject &
 {
     var tempo:Float;
-    
-    var time:Float;
 
-    var ?step:Null<Float>;
+    var step:Float;
 
-    var ?beat:Null<Float>;
+    var beat:Float;
 
-    var ?section:Null<Float>;
+    var section:Float;
 };
