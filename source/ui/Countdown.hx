@@ -142,6 +142,9 @@ class Countdown extends FlxContainer
 
     public function start():Void
     {
+        if (conductor == null)
+            return;
+        
         @:privateAccess
         {
             for (i in 0 ... timers._timers.length)
