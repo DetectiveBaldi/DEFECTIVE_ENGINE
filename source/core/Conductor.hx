@@ -177,10 +177,8 @@ class Conductor extends FlxBasic
         {
             var __timeChange:ParsedTimeChange = timeChanges[i];
 
-            if (__timeChange.time < _time)
-                break;
-
-            _timeChange = __timeChange;
+            if (_time >= __timeChange.time)
+                _timeChange = __timeChange;
         }
 
         return _timeChange;

@@ -538,7 +538,7 @@ class GameState extends MusicBeatState
 
             notes.add(_note);
 
-            for (k in 0 ... Math.floor(note.length / (((60 / conductor.findTimeChangeAt(chart.tempo, note.time).tempo) * 1000.0) * 0.25)))
+            for (k in 0 ... Math.round(note.length / (((60 / conductor.findTimeChangeAt(chart.tempo, note.time).tempo) * 1000.0) * 0.25)))
             {
                 var sustain:Note = new Note();
 
