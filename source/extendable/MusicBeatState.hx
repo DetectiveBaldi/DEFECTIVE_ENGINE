@@ -3,7 +3,6 @@ package extendable;
 import haxe.ui.backend.flixel.UIState;
 
 import core.Conductor;
-import core.Inputs;
 
 /**
  * An extended `haxe.ui.backend.flixel.UIState` which, when created, initializes a single `core.Conductor` instance.
