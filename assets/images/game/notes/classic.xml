@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<TextureAtlas imagePath="classic.png" width="160" height="1216" scale="1" format="RGBA8888">
-	<sprite n="down0000" x="0" y="0" w="160" h="160" pX="0.5" pY="0.5"/>
-	<sprite n="left0000" x="0" y="160" w="160" h="160" pX="0.5" pY="0.5"/>
-	<sprite n="right0000" x="0" y="320" w="160" h="160" pX="0.5" pY="0.5"/>
-	<sprite n="up0000" x="0" y="480" w="160" h="160" pX="0.5" pY="0.5"/>
-	<sprite n="downHoldTail0000" x="0" y="640" w="72" h="72" pX="0.5" pY="0.5"/>
-	<sprite n="downHoldPiece0000" x="0" y="712" w="72" h="72" pX="0.5" pY="0.5"/>
-	<sprite n="leftHoldTail0000" x="0" y="784" w="72" h="72" pX="0.5" pY="0.5"/>
-	<sprite n="leftHoldPiece0000" x="0" y="856" w="72" h="72" pX="0.5" pY="0.5"/>
-	<sprite n="rightHoldTail0000" x="0" y="928" w="72" h="72" pX="0.5" pY="0.5"/>
-	<sprite n="rightHoldPiece0000" x="0" y="1000" w="72" h="72" pX="0.5" pY="0.5"/>
-	<sprite n="upHoldTail0000" x="0" y="1072" w="72" h="72" pX="0.5" pY="0.5"/>
-	<sprite n="upHoldPiece0000" x="0" y="1144" w="72" h="72" pX="0.5" pY="0.5"/>
+<TextureAtlas imagePath="classic.png" width="720" height="960" scale="1" format="RGBA8888">
+    <sprite n="down0000" x="0" y="0" w="240" h="240" pX="0.5" pY="0.5"/>
+    <sprite n="downHoldPiece0000" x="240" y="0" w="240" h="240" pX="0.5" pY="0.5"/>
+    <sprite n="downHoldTail0000" x="480" y="0" w="240" h="240" pX="0.5" pY="0.5"/>
+    <sprite n="left0000" x="0" y="240" w="240" h="240" pX="0.5" pY="0.5"/>
+    <sprite n="leftHoldPiece0000" x="240" y="240" w="240" h="240" pX="0.5" pY="0.5"/>
+    <sprite n="leftHoldTail0000" x="480" y="240" w="240" h="240" pX="0.5" pY="0.5"/>
+    <sprite n="right0000" x="0" y="480" w="240" h="240" pX="0.5" pY="0.5"/>
+    <sprite n="rightHoldPiece0000" x="240" y="480" w="240" h="240" pX="0.5" pY="0.5"/>
+    <sprite n="rightHoldTail0000" x="480" y="480" w="240" h="240" pX="0.5" pY="0.5"/>
+    <sprite n="up0000" x="0" y="720" w="240" h="240" pX="0.5" pY="0.5"/>
+    <sprite n="upHoldPiece0000" x="240" y="720" w="240" h="240" pX="0.5" pY="0.5"/>
+    <sprite n="upHoldTail0000" x="480" y="720" w="240" h="240" pX="0.5" pY="0.5"/>
 </TextureAtlas>

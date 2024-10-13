@@ -477,7 +477,7 @@ class GameState extends MusicBeatState
 
             note.alpha = strum.alpha;
 
-            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.getMidpoint().y - note.height * 0.5 - (conductor.time - note.time) * chartSpeed * note.speed * (Preferences.downScroll ? -1.0 : 1.0));
+            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * chartSpeed * note.speed * (Preferences.downScroll ? -1.0 : 1.0));
         }
 
         while (noteIndex < chart.notes.length)
