@@ -760,7 +760,7 @@ class GameState extends MusicBeatState
 
                     noteSplash.animation.onFinish.add((name:String) -> noteSplash.kill());
 
-                    noteSplash.animation.play('${FlxG.random.getObject(noteSplash.textureData.animations).prefix} ${NoteSplash.directions[noteSplash.direction].toLowerCase()}');
+                    noteSplash.animation.play('${FlxG.random.getObject(noteSplash.textureData.animations).prefix} ${NoteSplash.directions[noteSplash.direction].toLowerCase()}', false, FlxG.random.bool());
 
                     noteSplash.scale.set(0.685, 0.685);
 
