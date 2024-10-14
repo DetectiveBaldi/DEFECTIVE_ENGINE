@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<TextureAtlas imagePath="classic.png" width="2880" height="1440" scale="1" format="RGBA8888">
-    <sprite n="note impact 0 down0000" x="0" y="0" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 0 down0001" x="360" y="0" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 0 down0002" x="720" y="0" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 0 down0003" x="1080" y="0" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 0 up0000" x="1440" y="0" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 0 up0001" x="1800" y="0" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 0 up0002" x="2160" y="0" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 0 up0003" x="2520" y="0" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 0 left0000" x="0" y="360" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 0 left0001" x="360" y="360" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 0 left0002" x="720" y="360" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 0 left0003" x="1080" y="360" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 0 right0000" x="1440" y="360" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 0 right0001" x="1800" y="360" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 0 right0002" x="2160" y="360" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 0 right0003" x="2520" y="360" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 1 down0000" x="0" y="720" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 1 down0001" x="360" y="720" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 1 down0002" x="720" y="720" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 1 down0003" x="1080" y="720" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 1 up0000" x="1440" y="720" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 1 up0001" x="1800" y="720" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 1 up0002" x="2160" y="720" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 1 up0003" x="2520" y="720" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 1 left0000" x="0" y="1080" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 1 left0001" x="360" y="1080" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 1 left0002" x="720" y="1080" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 1 left0003" x="1080" y="1080" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 1 right0000" x="1440" y="1080" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 1 right0001" x="1800" y="1080" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 1 right0002" x="2160" y="1080" w="360" h="360" pX="0.5" pY="0.5"/>
-    <sprite n="note impact 1 right0003" x="2520" y="1080" w="360" h="360" pX="0.5" pY="0.5"/>
+<TextureAtlas imagePath="classic.png" width="2880" height="1440">
+	<SubTexture name="note impact 0 down0000" x="0" y="0" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 0 down0001" x="360" y="0" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 0 down0002" x="720" y="0" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 0 down0003" x="1080" y="0" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 0 up0000" x="1440" y="0" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 0 up0001" x="1800" y="0" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 0 up0002" x="2160" y="0" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 0 up0003" x="2520" y="0" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 0 left0000" x="0" y="360" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 0 left0001" x="360" y="360" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 0 left0002" x="720" y="360" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 0 left0003" x="1080" y="360" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 0 right0000" x="1440" y="360" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 0 right0001" x="1800" y="360" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 0 right0002" x="2160" y="360" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 0 right0003" x="2520" y="360" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 1 down0000" x="0" y="720" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 1 down0001" x="360" y="720" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 1 down0002" x="720" y="720" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 1 down0003" x="1080" y="720" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 1 up0000" x="1440" y="720" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 1 up0001" x="1800" y="720" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 1 up0002" x="2160" y="720" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 1 up0003" x="2520" y="720" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 1 left0000" x="0" y="1080" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 1 left0001" x="360" y="1080" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 1 left0002" x="720" y="1080" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 1 left0003" x="1080" y="1080" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 1 right0000" x="1440" y="1080" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 1 right0001" x="1800" y="1080" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 1 right0002" x="2160" y="1080" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
+	<SubTexture name="note impact 1 right0003" x="2520" y="1080" width="360" height="360" frameX="-0" frameY="-0" frameWidth="360" frameHeight="360"/>
 </TextureAtlas>

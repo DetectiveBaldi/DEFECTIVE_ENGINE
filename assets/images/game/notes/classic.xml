@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<TextureAtlas imagePath="classic.png" width="720" height="960" scale="1" format="RGBA8888">
-    <sprite n="down0000" x="0" y="0" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="downHoldPiece0000" x="240" y="0" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="downHoldTail0000" x="480" y="0" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="left0000" x="0" y="240" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="leftHoldPiece0000" x="240" y="240" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="leftHoldTail0000" x="480" y="240" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="right0000" x="0" y="480" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="rightHoldPiece0000" x="240" y="480" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="rightHoldTail0000" x="480" y="480" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="up0000" x="0" y="720" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="upHoldPiece0000" x="240" y="720" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="upHoldTail0000" x="480" y="720" w="240" h="240" pX="0.5" pY="0.5"/>
+<TextureAtlas imagePath="classic.png" width="720" height="960">
+	<SubTexture name="down0000" x="0" y="0" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="downHoldPiece0000" x="240" y="0" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="downHoldTail0000" x="480" y="0" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="left0000" x="0" y="240" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="leftHoldPiece0000" x="240" y="240" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="leftHoldTail0000" x="480" y="240" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="right0000" x="0" y="480" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="rightHoldPiece0000" x="240" y="480" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="rightHoldTail0000" x="480" y="480" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="up0000" x="0" y="720" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="upHoldPiece0000" x="240" y="720" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="upHoldTail0000" x="480" y="720" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
 </TextureAtlas>

@@ -1,27 +1,27 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<TextureAtlas imagePath="classic.png" width="1200" height="1200" scale="1" format="RGBA8888">
-    <sprite n="leftStatic0000" x="0" y="0" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="downStatic0000" x="240" y="0" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="upStatic0000" x="480" y="0" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="rightStatic0000" x="720" y="0" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="downConfirm0000" x="960" y="0" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="downConfirm0001" x="0" y="240" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="downConfirm0002" x="240" y="240" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="downPress0000" x="480" y="240" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="downPress0001" x="720" y="240" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="leftConfirm0000" x="960" y="240" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="leftConfirm0001" x="0" y="480" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="leftConfirm0002" x="240" y="480" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="leftPress0000" x="480" y="480" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="leftPress0001" x="720" y="480" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="rightConfirm0000" x="960" y="480" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="rightConfirm0001" x="0" y="720" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="rightConfirm0002" x="240" y="720" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="rightPress0000" x="480" y="720" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="rightPress0001" x="720" y="720" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="upConfirm0000" x="960" y="720" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="upConfirm0001" x="0" y="960" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="upConfirm0002" x="240" y="960" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="upPress0000" x="480" y="960" w="240" h="240" pX="0.5" pY="0.5"/>
-    <sprite n="upPress0001" x="720" y="960" w="240" h="240" pX="0.5" pY="0.5"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="classic.png" width="960" height="1440">
+	<SubTexture name="leftStatic0000" x="0" y="0" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="downStatic0000" x="240" y="0" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="upStatic0000" x="480" y="0" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="rightStatic0000" x="720" y="0" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="downConfirm0000" x="0" y="240" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="downConfirm0001" x="240" y="240" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="downConfirm0002" x="480" y="240" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="downPress0000" x="720" y="240" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="downPress0001" x="0" y="480" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="leftConfirm0000" x="240" y="480" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="leftConfirm0001" x="480" y="480" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="leftConfirm0002" x="720" y="480" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="leftPress0000" x="0" y="720" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="leftPress0001" x="240" y="720" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="rightConfirm0000" x="480" y="720" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="rightConfirm0001" x="720" y="720" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="rightConfirm0002" x="0" y="960" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="rightPress0000" x="240" y="960" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="rightPress0001" x="480" y="960" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="upConfirm0000" x="720" y="960" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="upConfirm0001" x="0" y="1200" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="upConfirm0002" x="240" y="1200" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="upPress0000" x="480" y="1200" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="upPress0001" x="720" y="1200" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
 </TextureAtlas>
