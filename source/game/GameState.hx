@@ -579,7 +579,7 @@ class GameState extends MusicBeatState
             noteIndex++;
         }
 
-        if (eventIndex < chart.events.length)
+        while (eventIndex < chart.events.length)
         {
             var event:ParsedEvent = chart.events[eventIndex];
 
