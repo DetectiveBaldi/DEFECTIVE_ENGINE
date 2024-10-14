@@ -378,6 +378,11 @@ class CharacterEditorState extends UIState
             if (FlxG.keys.justPressed.ENTER)
                 FlxG.switchState(() -> new GameState());
         }
+        else
+        {
+            if (FlxG.keys.justPressed.ENTER)
+                FocusManager.instance.focus = null;
+        }
     }
 
     override function destroy():Void
