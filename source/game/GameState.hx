@@ -663,6 +663,21 @@ class GameState extends MusicBeatState
             }
         }
 
+        if (Preferences.gameModifiers["mirror"])
+        {
+            var mirroredDirections:Array<Int> = new Array<Int>();
+
+            for (i in 0 ... 4)
+                mirroredDirections.insert(0, i);
+
+            for (i in 0 ... chart.notes.length)
+            {
+                var note:ParsedNote = chart.notes[i];
+
+                note.direction = mirroredDirections[note.direction];
+            }
+        }
+
         TimingUtil.sort(chart.events);
 
         TimingUtil.sort(chart.timeChanges);

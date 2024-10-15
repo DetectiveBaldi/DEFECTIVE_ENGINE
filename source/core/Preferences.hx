@@ -31,6 +31,8 @@ class Preferences
         gameModifiers = new Map<String, Any>();
 
         gameModifiers["shuffle"] = false;
+
+        gameModifiers["mirror"] = false;
         
         if (FlxG.save.data.preferences == null)
         {
