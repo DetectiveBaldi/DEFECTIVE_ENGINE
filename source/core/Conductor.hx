@@ -11,11 +11,29 @@ import game.Chart.ParsedTimeChange;
  */
 class Conductor extends FlxBasic
 {
-    public var decimalStep:Float;
+    public var decimalStep(get, never):Float;
 
-    public var decimalBeat:Float;
+    @:noCompletion
+    function get_decimalStep():Float
+    {
+        return ((time - timeChange.time) / (crotchet * 0.25)) + timeChange.step;
+    }
 
-    public var decimalSection:Float;
+    public var decimalBeat(get, never):Float;
+
+    @:noCompletion
+    function get_decimalBeat():Float
+    {
+        return decimalStep * 0.25;
+    }
+
+    public var decimalSection(get, never):Float;
+
+    @:noCompletion
+    function get_decimalSection():Float
+    {
+        return decimalBeat * 0.25;
+    }
     
     public var step(get, never):Int;
 
@@ -57,23 +75,17 @@ class Conductor extends FlxBasic
         return (60.0 / tempo) * 1000.0;
     }
 
+    public var time:Float;
+
     public var timeChange:ParsedTimeChange;
 
     public var timeChanges:Array<ParsedTimeChange>;
-
-    public var time:Float;
 
     public function new():Void
     {
         super();
 
         visible = false;
-
-        decimalStep = -1.0;
-
-        decimalBeat = -1.0;
-
-        decimalSection = -1.0;
 
         stepHit = new FlxTypedSignal<(step:Int)->Void>();
 
@@ -83,25 +95,22 @@ class Conductor extends FlxBasic
 
         tempo = 150.0;
 
+        time = 0.0;
+
         timeChange = {time: 0.0, tempo: tempo, step: 0.0};
 
         timeChanges = new Array<ParsedTimeChange>();
-
-        time = 0.0;
     }
 
     override function update(elapsed:Float):Void
-    {
-        time += elapsed * 1000.0;
-
-        if (time < 0.0)
-            return;
-        
+    {   
         var lastStep:Int = step;
 
         var lastBeat:Int = beat;
 
         var lastSection:Int = section;
+
+        time += elapsed * 1000.0;
 
         var i:Int = timeChanges.length - 1;
 
@@ -128,12 +137,6 @@ class Conductor extends FlxBasic
             i--;
         }
 
-        decimalStep = ((time - timeChange.time) / (crotchet * 0.25)) + timeChange.step;
-
-        decimalBeat = decimalStep * 0.25;
-
-        decimalSection = decimalBeat * 0.25;
-
         if (step != lastStep)
             stepHit.dispatch(step);
 
@@ -147,12 +150,6 @@ class Conductor extends FlxBasic
     override function destroy():Void
     {
         super.destroy();
-        
-        decimalStep = -1.0;
-
-        decimalBeat = -1.0;
-
-        decimalSection = -1.0;
 
         stepHit = new FlxTypedSignal<(step:Int)->Void>();
 
@@ -162,11 +159,11 @@ class Conductor extends FlxBasic
 
         tempo = 150.0;
 
+        time = 0.0;
+
         timeChange = {time: 0.0, tempo: tempo, step: 0.0};
 
         timeChanges = new Array<ParsedTimeChange>();
-
-        time = 0.0;
     }
 
     public function findTimeChangeAt(_tempo:Float, _time:Float):ParsedTimeChange

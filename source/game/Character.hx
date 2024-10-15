@@ -151,6 +151,8 @@ class Character extends FlxSprite
 
         dance();
 
+        animation.finish();
+
         this.conductor = conductor;
 
         inputs =

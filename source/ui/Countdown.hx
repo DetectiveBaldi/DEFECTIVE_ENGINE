@@ -12,8 +12,6 @@ import flixel.tweens.FlxTween.FlxTweenManager;
 
 import flixel.util.FlxSignal;
 import flixel.util.FlxSignal.FlxTypedSignal;
-import flixel.util.FlxTimer;
-import flixel.util.FlxTimer.FlxTimerManager;
 
 import core.AssetMan;
 import core.Conductor;
@@ -24,19 +22,33 @@ import core.Paths;
  */
 class Countdown extends FlxContainer
 {
-    public var timers:FlxTimerManager;
+    public var conductor(default, set):Conductor;
 
-    public var tweens:FlxTweenManager;
+    @:noCompletion
+    function set_conductor(conductor:Conductor):Conductor
+    {
+        if (this.conductor != null)
+            this.conductor.beatHit.remove(beatHit);
+
+        if (conductor != null)
+            conductor.beatHit.add(beatHit);
+
+        return this.conductor = conductor;
+    }
 
     public var started:Bool;
 
     public var onStart:FlxSignal;
 
-    public var paused:Bool;
-
     public var tick:Int;
 
     public var onTick:FlxTypedSignal<(tick:Int)->Void>;
+
+    public var paused:Bool;
+
+    public var onPause:FlxSignal;
+
+    public var onResume:FlxSignal;
 
     public var finished:Bool;
 
@@ -45,6 +57,8 @@ class Countdown extends FlxContainer
     public var skipped:Bool;
 
     public var onSkip:FlxSignal;
+
+    public var tweens:FlxTweenManager;
 
     public var sprite:FlxSprite;
 
@@ -56,29 +70,25 @@ class Countdown extends FlxContainer
 
     public var go:FlxSound;
 
-    public var conductor:Conductor;
-
     public function new(conductor:Conductor):Void
     {
         super();
 
-        timers = new FlxTimerManager();
-
-        add(timers);
-
-        tweens = new FlxTweenManager();
-
-        add(tweens);
+        this.conductor = conductor;
 
         started = false;
 
         onStart = new FlxSignal();
 
-        paused = false;
-
         tick = 0;
 
         onTick = new FlxTypedSignal<(tick:Int)->Void>();
+
+        paused = false;
+
+        onPause = new FlxSignal();
+
+        onResume = new FlxSignal();
 
         finished = false;
 
@@ -87,6 +97,10 @@ class Countdown extends FlxContainer
         skipped = false;
 
         onSkip = new FlxSignal();
+
+        tweens = new FlxTweenManager();
+
+        add(tweens);
 
         sprite = new FlxSprite().loadGraphic(AssetMan.graphic(Paths.png("assets/images/ui/countdown"), true), true, 1000, 500);
 
@@ -115,8 +129,6 @@ class Countdown extends FlxContainer
         one = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/one"), false), 0.65);
 
         go = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/go"), false), 0.65);
-
-        this.conductor = conductor;
     }
 
     override function destroy():Void
@@ -142,20 +154,6 @@ class Countdown extends FlxContainer
 
     public function start():Void
     {
-        if (conductor == null)
-            return;
-        
-        @:privateAccess
-        {
-            for (i in 0 ... timers._timers.length)
-                timers._timers[i].cancel();
-
-            for (i in 0 ... tweens._tweens.length)
-                tweens._tweens[i].cancel();
-        }
-
-        started = false;
-
         paused = false;
 
         tick = 0;
@@ -163,6 +161,12 @@ class Countdown extends FlxContainer
         finished = false;
 
         skipped = false;
+
+        @:privateAccess
+        {
+            for (i in 0 ... tweens._tweens.length)
+                tweens._tweens[i].cancel();
+        }
 
         sprite.alpha = 0.0;
 
@@ -173,58 +177,6 @@ class Countdown extends FlxContainer
         one.stop();
 
         go.stop();
-
-        new FlxTimer(timers).start(conductor.crotchet * 0.001, (timer:FlxTimer) ->
-        {
-            switch (timer.elapsedLoops:Int)
-            {
-                case 1:
-                    three.play();
-
-                case 2:
-                {
-                    sprite.animation.play("ready");
-
-                    two.play();
-                }
-
-                case 3:
-                {
-                    sprite.animation.play("set");
-
-                    one.play();
-                }
-
-                case 4:
-                {
-                    sprite.animation.play("go");
-
-                    go.play();
-                }
-
-                case 5:
-                {
-                    finished = true;
-
-                    onFinish.dispatch();
-                }
-            }
-
-            tick++;
-
-            onTick.dispatch(tick);
-
-            if (tick > 1.0 && !finished)
-            {
-                @:privateAccess
-                    for (i in 0 ... tweens._tweens.length)
-                        tweens._tweens[i].cancel();
-                
-                sprite.alpha = 1;
-                
-                tweens.tween(sprite, {alpha: 0.0}, conductor.crotchet * 0.001, {ease: FlxEase.circInOut});
-            }
-        }, 5);
 
         started = true;
 
@@ -236,11 +188,7 @@ class Countdown extends FlxContainer
         if (!started || paused || finished || skipped)
             return;
 
-        timers.active = false;
-
         tweens.active = false;
-
-        paused = true;
 
         three.pause();
 
@@ -249,6 +197,10 @@ class Countdown extends FlxContainer
         one.pause();
 
         go.pause();
+
+        paused = true;
+
+        onPause.dispatch();
     }
 
     public function resume():Void
@@ -256,11 +208,7 @@ class Countdown extends FlxContainer
         if (!started || !paused || finished || skipped)
             return;
 
-        timers.active = true;
-
         tweens.active = true;
-
-        paused = false;
 
         three.resume();
 
@@ -269,6 +217,10 @@ class Countdown extends FlxContainer
         one.resume();
 
         go.resume();
+
+        paused = false;
+
+        onResume.dispatch();
     }
 
     public function skip():Void
@@ -278,16 +230,9 @@ class Countdown extends FlxContainer
 
         @:privateAccess
         {
-            for (i in 0 ... timers._timers.length)
-                timers._timers[i].cancel();
-
             for (i in 0 ... tweens._tweens.length)
                 tweens._tweens[i].cancel();
         }
-
-        skipped = true;
-
-        onSkip.dispatch();
 
         sprite.alpha = 0.0;
 
@@ -298,5 +243,66 @@ class Countdown extends FlxContainer
         one.stop();
 
         go.stop();
+
+        skipped = true;
+
+        onSkip.dispatch();
+    }
+
+    public function beatHit(beat:Int):Void
+    {
+        if (!started || paused || finished || skipped)
+            return;
+
+        tick++;
+
+        onTick.dispatch(tick);
+
+        switch (tick:Int)
+        {
+            case 1:
+                three.play();
+
+            case 2:
+            {
+                sprite.animation.play("ready");
+
+                two.play();
+            }
+
+            case 3:
+            {
+                sprite.animation.play("set");
+
+                one.play();
+            }
+
+            case 4:
+            {
+                sprite.animation.play("go");
+
+                go.play();
+            }
+
+            case 5:
+            {
+                finished = true;
+
+                onFinish.dispatch();
+            }
+        }
+
+        if (tick > 1.0 && !finished)
+        {
+            @:privateAccess
+            {
+                for (i in 0 ... tweens._tweens.length)
+                    tweens._tweens[i].cancel();
+            }
+            
+            sprite.alpha = 1.0;
+            
+            tweens.tween(sprite, {alpha: 0.0}, conductor.crotchet * 0.001, {ease: FlxEase.circInOut});
+        }
     }
 }
