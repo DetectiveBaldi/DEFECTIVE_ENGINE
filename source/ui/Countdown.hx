@@ -254,37 +254,33 @@ class Countdown extends FlxContainer
         if (!started || paused || finished || skipped)
             return;
 
-        tick++;
-
-        onTick.dispatch(tick);
-
         switch (tick:Int)
         {
-            case 1:
+            case 0:
                 three.play();
 
-            case 2:
+            case 1:
             {
                 sprite.animation.play("ready");
 
                 two.play();
             }
 
-            case 3:
+            case 2:
             {
                 sprite.animation.play("set");
 
                 one.play();
             }
 
-            case 4:
+            case 3:
             {
                 sprite.animation.play("go");
 
                 go.play();
             }
 
-            case 5:
+            case 4:
             {
                 finished = true;
 
@@ -292,7 +288,7 @@ class Countdown extends FlxContainer
             }
         }
 
-        if (tick > 1.0 && !finished)
+        if (tick > 0.0)
         {
             @:privateAccess
             {
@@ -304,5 +300,9 @@ class Countdown extends FlxContainer
             
             tweens.tween(sprite, {alpha: 0.0}, conductor.crotchet * 0.001, {ease: FlxEase.circInOut});
         }
+
+        tick++;
+
+        onTick.dispatch(tick);
     }
 }
