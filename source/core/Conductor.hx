@@ -7,7 +7,7 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 import game.Chart.ParsedTimeChange;
 
 /**
- * A class which handles musical timing events throughout the game. It is the heart of `game.GameState`.
+ * A class which handles musical timing events throughout the game. It is the heart of `game.GameScreen`.
  */
 class Conductor extends FlxBasic
 {

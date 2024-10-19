@@ -5,11 +5,11 @@ import flixel.FlxCamera;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 
-import game.GameState;
+import game.GameScreen;
 
 class CameraZoomEvent
 {
-    public static function dispatch(game:GameState, camera:String, zoom:Float, duration:Float, ease:String):Void
+    public static function dispatch(game:GameScreen, camera:String, zoom:Float, duration:Float, ease:String):Void
     {
         var _camera:FlxCamera = Reflect.getProperty(game, camera);
 

@@ -51,7 +51,7 @@ import util.TimingUtil;
 
 using StringTools;
 
-class GameState extends MusicBeatState
+class GameScreen extends MusicBeatState
 {
     public var gameCamera(get, never):FlxCamera;
     
@@ -115,6 +115,8 @@ class GameState extends MusicBeatState
 
     public var noteSplashes:FlxTypedContainer<NoteSplash>;
 
+    public var name:String;
+
     public var chart:Chart;
 
     public var chartSpeed:Float;
@@ -134,6 +136,13 @@ class GameState extends MusicBeatState
     public var songStarted:Bool;
 
     public var debugInputs:Map<String, Input>;
+
+    public function new(name:String):Void
+    {
+        super();
+
+        this.name = name;
+    }
 
     override function create():Void
     {
@@ -319,7 +328,7 @@ class GameState extends MusicBeatState
 
         add(noteSplashes);
 
-        loadSong("Darnell (BF Mix)");
+        loadSong(name);
 
         var countdown:Countdown = new Countdown(conductor);
         
@@ -644,7 +653,7 @@ class GameState extends MusicBeatState
 
     public function loadSong(name:String):Void
     {
-        chart = FunkConverter.build('assets/data/game/songs/${name}/chart', 'assets/data/game/songs/${name}/meta', "hard");
+        chart = Chart.build('assets/data/game/songs/${name}/chart');
 
         chart.speed = FlxMath.bound(chart.speed, 0.0, 1.45);
 

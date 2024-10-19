@@ -39,7 +39,7 @@ import core.AssetMan;
 import core.Paths;
 
 import game.Character;
-import game.GameState;
+import game.GameScreen;
 
 using StringTools;
 
@@ -393,7 +393,7 @@ class CharacterEditorState extends FlxState
             }
 
             if (FlxG.keys.justPressed.ENTER)
-                FlxG.switchState(() -> new GameState());
+                FlxG.switchState(() -> new GameScreen("Bopeebo"));
         }
     }
 
