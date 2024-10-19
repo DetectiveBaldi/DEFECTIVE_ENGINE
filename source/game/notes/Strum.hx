@@ -16,10 +16,12 @@ class Strum extends FlxSprite
 {
     public static var directions:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 
+    public var conductor:Conductor;
+
     public var parent:StrumLine;
 
     /**
-     * A structure containing texture-related information about this `Strum`, such as .png and .xml locations.
+     * A structure containing texture-related information about `this` `Strum`, such as .png and .xml locations.
      */
     public var textureData(default, set):StrumTextureData;
 
@@ -53,19 +55,17 @@ class Strum extends FlxSprite
 
     public var confirmCount:Float;
 
-    public var conductor:Conductor;
-
-    public function new(x:Float = 0.0, y:Float = 0.0, conductor:Conductor):Void
+    public function new(conductor:Conductor, x:Float = 0.0, y:Float = 0.0):Void
     {
         super(x, y);
+
+        this.conductor = conductor;
         
         textureData = Json.parse(AssetMan.text(Paths.json("assets/data/game/notes/strums/classic")));
 
         direction = -1;
 
         confirmCount = 0.0;
-
-        this.conductor = conductor;
     }
 
     override function update(elapsed:Float):Void
@@ -75,7 +75,7 @@ class Strum extends FlxSprite
         if (conductor == null)
             return;
 
-        if (animation.name?.endsWith("Confirm"))
+        if ((animation.name ?? "").endsWith("Confirm"))
         {
             confirmCount += elapsed;
 
@@ -88,13 +88,6 @@ class Strum extends FlxSprite
         }
         else
             confirmCount = 0.0;
-    }
-
-    override function destroy():Void
-    {
-        super.destroy();
-
-        conductor = null;
     }
 }
 

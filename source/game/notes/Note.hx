@@ -19,7 +19,7 @@ class Note extends FlxSprite
     public var children:Array<Note>;
 
     /**
-     * A structure containing texture-related information about this `Note`, such as .png and .xml locations.
+     * A structure containing texture-related information about `this` `Note`, such as .png and .xml locations.
      */
     public var textureData(default, set):NoteTextureData;
     
@@ -82,19 +82,18 @@ class Note extends FlxSprite
 
     override function isOnScreen(?camera:FlxCamera):Bool
     {
-        if (super.isOnScreen(camera))
-            return true;
-
         for (i in 0 ... children.length)
         {
             var sustain:Note = children[i];
 
             if (sustain.exists && sustain.visible)
+            {
                 if (sustain.isOnScreen(camera))
                     return true;
+            }
         }
 
-        return false;
+        return super.isOnScreen(camera);
     }
 }
 
@@ -107,4 +106,4 @@ typedef NoteTextureData =
     var xml:String;
 
     var ?antialiasing:Null<Bool>;
-};
+ };

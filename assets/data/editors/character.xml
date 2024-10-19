@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<vbox>
-    <vbox id="vbox" style="padding:15px;">
-        <tabview id="tabview" width="375" height="425" styleName="full-width-buttons">
+<box>
+    <vbox id="vbox" style="padding:25px;">
+        <tabview id="tabview" width="375" height="435" styleName="full-width-buttons">
             <box id="box" text="Main">
                 <vbox id="_vbox" style="padding:10px; spacing:10px">
                     <hbox id="hbox">
@@ -10,23 +10,15 @@
                         <textfield id="textfield" />
                     </hbox>
 
-                    <hbox id="_hbox">
-                        <button id="button" text="Save" />
-
-                        <button id="_button" text="Refresh" />
-                    </hbox>
-
-                    <menu-separator id="menu-separator" />
-
                     <checkbox id="checkbox" text="Anti-Aliasing" />
 
-                    <hbox id="__hbox">
+                    <hbox id="_hbox">
                         <label id="_label" text="Scale X" verticalAlign="center" />
 
                         <number-stepper id="number-stepper" step="0.05" />
                     </hbox>
 
-                    <hbox id="___hbox">
+                    <hbox id="__hbox">
                         <label id="__label" text="Scale Y" verticalAlign="center" />
 
                         <number-stepper id="_number-stepper" step="0.05" />
@@ -36,22 +28,28 @@
 
                     <checkbox id="__checkbox" text="Flip Y" />
 
-                    <hbox id="____hbox">
+                    <hbox id="___hbox">
                         <label id="___label" text="Dance Steps" verticalAlign="center" />
 
                         <textfield id="_textfield" />
                     </hbox>
 
-                    <hbox id="_____hbox">
+                    <hbox id="____hbox">
                         <label id="____label" text="Dance Interval" verticalAlign="center" />
 
                         <number-stepper id="__number-stepper" step="1.0" />
                     </hbox>
 
-                    <hbox id="______hbox">
+                    <hbox id="_____hbox">
                         <label id="_____label" text="Sing Duration" verticalAlign="center" />
 
                         <number-stepper id="___number-stepper" step="0.5" />
+                    </hbox>
+
+                    <hbox id="______hbox">
+                        <button id="button" text="Save" />
+
+                        <button id="_button" text="Refresh" />
                     </hbox>
                 </vbox>
             </box>
@@ -70,13 +68,11 @@
 
                     <textfield id="____textfield" width="250" />
 
-                    <menu-separator id="__menu-separator" />
-
                     <button id="__button" text="Refresh" />
                 </vbox>
             </box>
 
-            <box id="__box" text="Animations">
+            <box id="__box" text="Frames">
                 <vbox id="___vbox" style="padding:10px; spacing:10px">
                     <hbox id="_______hbox">
                         <label id="_________label" text="Name" verticalAlign="center" />
@@ -85,26 +81,18 @@
                     </hbox>
 
                     <hbox id="________hbox">
-                        <button id="___button" text="Save" />
-
-                        <button id="____button" text="Delete" />
-                    </hbox>
-
-                    <menu-separator id="___menu-separator" />
-
-                    <hbox id="_________hbox">
                         <label id="__________label" text="Prefix" verticalAlign="center" />
 
                         <textfield id="______textfield" />
                     </hbox>
 
-                    <hbox id="__________hbox">
+                    <hbox id="_________hbox">
                         <label id="___________label" text="Indices" verticalAlign="center" />
 
                         <textarea id="textarea" style="height:auto; max-height:60px;" restrictChars="0-9," />
                     </hbox>
 
-                    <hbox id="___________hbox">
+                    <hbox id="__________hbox">
                         <label id="____________label" text="Frame Rate" verticalAlign="center" />
 
                         <number-stepper id="____number-stepper" step="1" />
@@ -116,15 +104,15 @@
 
                     <checkbox id="_____checkbox" text="Flip Y" />
 
-                    <hbox id="____________hbox">
-                        <label id="_____________label" verticalAlign="center" />
+                    <label id="_____________label" verticalAlign="center" />
 
-                        <button id="_____button" text="Copy" />
+                    <hbox id="___________hbox">
+                        <button id="___button" text="Save" />
 
-                        <button id="______button" text="Paste" />
+                        <button id="____button" text="Delete" />
                     </hbox>
                 </vbox>
             </box>
         </tabview>
     </vbox>
-</vbox>
+</box>

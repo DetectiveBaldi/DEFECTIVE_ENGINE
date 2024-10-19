@@ -7,7 +7,7 @@
 
     "xml": "assets/images/game/characters/BOYFRIEND",
 
-    "animations":
+    "frames":
     [
         {"name": "dance", "prefix": "BF idle dance0", "indices": [], "offset": {"x": 5.0, "y": 0.0}},
 

@@ -23,11 +23,11 @@ class ArrayUtil
 
     public static function getLast<T>(arr:Array<T>, func:(T)->Bool):T
     {
-        var output:Null<T> = null;
+        var output:T = null;
 
         var i:Int = arr.length - 1;
 
-        while (i >=  0.0)
+        while (i >= 0.0)
         {
             var t:T = arr[i];
 

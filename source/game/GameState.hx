@@ -170,7 +170,7 @@ class GameState extends MusicBeatState
 
         add(spectatorGroup);
 
-        spectator = new Character(0.0, 0.0, "assets/data/game/characters/GIRLFRIEND", ARTIFICIAL, conductor);
+        spectator = new Character(conductor, 0.0, 0.0, "assets/data/game/characters/GIRLFRIEND", ARTIFICIAL);
 
         spectator.skipSing = true;
 
@@ -186,7 +186,7 @@ class GameState extends MusicBeatState
 
         add(opponentGroup);
 
-        opponent = new Character(0.0, 0.0, "assets/data/game/characters/BOYFRIEND_PIXEL", ARTIFICIAL, conductor);
+        opponent = new Character(conductor, 0.0, 0.0, "assets/data/game/characters/BOYFRIEND_PIXEL", ARTIFICIAL);
 
         opponent.setPosition(15.0, 50.0);
 
@@ -200,7 +200,7 @@ class GameState extends MusicBeatState
 
         add(playerGroup);
 
-        player = new Character(0.0, 0.0, "assets/data/game/characters/BOYFRIEND", PLAYABLE, conductor);
+        player = new Character(conductor, 0.0, 0.0, "assets/data/game/characters/BOYFRIEND", PLAYABLE);
 
         player.setPosition(FlxG.width - player.width - 15.0, 385.0);
 
@@ -231,7 +231,7 @@ class GameState extends MusicBeatState
             {name: "Shit", timing: Math.POSITIVE_INFINITY, health: -2.5, bonus: 0.0, score: 50, hits: 0}
         ];
 
-        healthBar = new HealthBar(RIGHT_TO_LEFT, conductor);
+        healthBar = new HealthBar(conductor, 0.0, 0.0, RIGHT_TO_LEFT, 600, 25);
 
         healthBar.camera = hudCamera;
 
@@ -247,15 +247,11 @@ class GameState extends MusicBeatState
 
         scoreTxt.camera = hudCamera;
 
-        scoreTxt.antialiasing = false;
+        scoreTxt.font = Paths.ttf("assets/fonts/VCR OSD Mono");
 
         scoreTxt.alignment = CENTER;
 
-        scoreTxt.borderStyle = SHADOW;
-
-        scoreTxt.borderColor = FlxColor.BLACK;
-
-        scoreTxt.borderSize = 5.0;
+        scoreTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 2.2);
 
         scoreTxt.setPosition((FlxG.width - scoreTxt.width) * 0.5, Preferences.downScroll ? 25.0 : (FlxG.height - scoreTxt.height) - 25.0);
 
@@ -554,7 +550,7 @@ class GameState extends MusicBeatState
 
                 sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
 
-                if (k >= Math.floor(sustain.length / (((60 / conductor.findTimeChangeAt(chart.tempo, note.time).tempo) * 1000.0) * 0.25)) - 1)
+                if (k >= Math.round(sustain.length / (((60 / conductor.findTimeChangeAt(chart.tempo, note.time).tempo) * 1000.0) * 0.25)) - 1)
                     sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
 
                 sustain.flipY = Preferences.downScroll;
@@ -600,19 +596,25 @@ class GameState extends MusicBeatState
         if (songStarted)
         {
             if (Math.abs(instrumental.time - conductor.time) >= 25.0)
-                conductor.time = instrumental.time;
+                instrumental.time = conductor.time;
 
             if (mainVocals != null)
-                if (Math.abs(instrumental.time - mainVocals.time) >= 5.0)
+            {
+                if (Math.abs(mainVocals.time - instrumental.time) >= 5.0)
                     mainVocals.time = instrumental.time;
+            }
 
             if (opponentVocals != null)
-                if (Math.abs(instrumental.time - opponentVocals.time) >= 5.0)
+            {
+                if (Math.abs(opponentVocals.time - instrumental.time) >= 5.0)
                     opponentVocals.time = instrumental.time;
+            }
 
             if (playerVocals != null)
-                if (Math.abs(instrumental.time - playerVocals.time) >= 5.0)
+            {
+                if (Math.abs(playerVocals.time - instrumental.time) >= 5.0)
                     playerVocals.time = instrumental.time;
+            }
         }
         else
         {
@@ -706,10 +708,10 @@ class GameState extends MusicBeatState
         if (mainVocals == null)
         {
             if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent')))
-                opponentVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.ogg #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent'), true));
+                opponentVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent'), true));
 
             if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player')))
-                playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.ogg #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player'), true));
+                playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player'), true));
         }
     }
 
@@ -747,20 +749,20 @@ class GameState extends MusicBeatState
         if (!strumLine.artificial)
         {
             var judgement:Judgement = Judgement.guage(judgements, Math.abs(conductor.time - note.time));
-
-            score += note.animation.name.contains("Hold") ? 5 : judgement.score;
-
-            scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
                 
             if (!note.animation.name.contains("Hold"))
             {
+                score += judgement.score;
+
                 hits++;
 
                 bonus += judgement.bonus;
                 
                 combo++;
 
-                healthBar.health = FlxMath.bound(healthBar.health + judgement.health, 0.0, 100.0);
+                healthBar.value = FlxMath.bound(healthBar.value + judgement.health, healthBar.bar.min, healthBar.bar.max);
+
+                scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
                 if (judgement.name == "Epic!" || judgement.name == "Sick!")
                 {
@@ -770,7 +772,7 @@ class GameState extends MusicBeatState
 
                     noteSplash.animation.onFinish.add((name:String) -> noteSplash.kill());
 
-                    noteSplash.animation.play('${FlxG.random.getObject(noteSplash.textureData.animations).prefix} ${NoteSplash.directions[noteSplash.direction].toLowerCase()}', false, FlxG.random.bool());
+                    noteSplash.animation.play('${FlxG.random.getObject(noteSplash.textureData.frames).prefix} ${NoteSplash.directions[noteSplash.direction].toLowerCase()}', false, FlxG.random.bool());
 
                     noteSplash.scale.set(0.685, 0.685);
 
@@ -791,13 +793,13 @@ class GameState extends MusicBeatState
 
     public function noteMiss(note:Note):Void
     {
-        score -= note.animation.name.contains("Hold") ? 25 : 650;
+        score -= 650;
 
         misses++;
 
         combo = 0;
 
-        healthBar.health = FlxMath.bound(healthBar.health - 3.5, 0.0, 100.0);
+        healthBar.value = FlxMath.bound(healthBar.value - 3.5, healthBar.bar.min, healthBar.bar.max);
 
         scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
@@ -882,7 +884,7 @@ class GameState extends MusicBeatState
 
         combo = 0;
 
-        healthBar.health = FlxMath.bound(healthBar.health - 4.5, 0.0, 100.0);
+        healthBar.value = FlxMath.bound(healthBar.value - 4.5, healthBar.bar.min, healthBar.bar.max);
 
         scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 

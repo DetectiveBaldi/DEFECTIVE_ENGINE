@@ -7,7 +7,7 @@
 
     "xml": "assets/images/game/characters/GIRLFRIEND",
 
-    "animations":
+    "frames":
     [
         {"name": "danceLeft", "prefix": "GF Dancing Beat0", "indices": [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]},
 

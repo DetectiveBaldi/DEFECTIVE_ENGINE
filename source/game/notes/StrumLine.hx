@@ -11,6 +11,19 @@ import core.Inputs;
 
 class StrumLine extends FlxTypedSpriteContainer<Strum>
 {
+    public var conductor(default, set):Conductor;
+
+    @:noCompletion
+    function set_conductor(conductor:Conductor):Conductor
+    {
+        for (i in 0 ... members.length)
+            members[i].conductor = conductor;
+        
+        return this.conductor = conductor;
+    }
+
+    public var inputs:Array<Input>;
+
     public var lane:Int;
 
     public var spacing(default, set):Float;
@@ -34,22 +47,22 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
 
     public var ghostTap:FlxTypedSignal<(direction:Int)->Void>;
 
-    public var conductor(default, set):Conductor;
-
-    @:noCompletion
-    function set_conductor(conductor:Conductor):Conductor
-    {
-        for (i in 0 ... members.length)
-            members[i].conductor = conductor;
-        
-        return this.conductor = conductor;
-    }
-
-    public var inputs:Array<Input>;
-
     public function new(conductor:Conductor):Void
     {
         super();
+
+        this.conductor = conductor;
+
+        inputs =
+        [
+            {name: "NOTE:LEFT", keys: [FlxKey.Z, FlxKey.A, FlxKey.LEFT]},
+
+            {name: "NOTE:DOWN", keys: [FlxKey.X, FlxKey.S, FlxKey.DOWN]},
+
+            {name: "NOTE:UP", keys: [FlxKey.PERIOD, FlxKey.W, FlxKey.UP]},
+
+            {name: "NOTE:RIGHT", keys: [FlxKey.SLASH, FlxKey.D, FlxKey.RIGHT]}
+        ];
 
         lane = -1;
 
@@ -64,8 +77,6 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
         noteMiss = new FlxTypedSignal<(note:Note)->Void>();
 
         ghostTap = new FlxTypedSignal<(direction:Int)->Void>();
-
-        this.conductor = conductor;
 
         for (i in 0 ... 4)
         {
@@ -85,17 +96,6 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
             
             add(strum);
         }
-
-        inputs =
-        [
-            {name: "NOTE:LEFT", keys: [FlxKey.Z, FlxKey.A, FlxKey.LEFT]},
-
-            {name: "NOTE:DOWN", keys: [FlxKey.X, FlxKey.S, FlxKey.DOWN]},
-
-            {name: "NOTE:UP", keys: [FlxKey.PERIOD, FlxKey.W, FlxKey.UP]},
-
-            {name: "NOTE:RIGHT", keys: [FlxKey.SLASH, FlxKey.D, FlxKey.RIGHT]}
-        ];
     }
 
     override function destroy():Void

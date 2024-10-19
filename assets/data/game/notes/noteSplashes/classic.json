@@ -5,7 +5,7 @@
 
     "xml": "assets/images/game/notes/noteSplashes/classic",
 
-    "animations":
+    "frames":
     [
         {"prefix": "note impact 0"},
 

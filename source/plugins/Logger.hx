@@ -8,48 +8,10 @@ import flixel.text.FlxText;
 
 import flixel.util.FlxColor;
 
+import core.Paths;
+
 class Logger extends FlxTypedContainer<FlxText>
 {
-    public static function logInfo(info:String):FlxText
-    {
-        var logger:Logger = FlxG.plugins.get(Logger);
-
-        if (logger == null)
-            throw "`plugins.Logger`: There is no available `plugins.Logger`! Use `flixel.FlxG.plugins.addPlugin` to register one.";
-
-        var output:FlxText = new FlxText(0.0, 0.0, FlxG.width, info, 24);
-
-        output.setBorderStyle(SHADOW, FlxColor.BLACK, 3.5);
-
-        output.moves = true;
-
-        output.acceleration.set(0.0, 550.0);
-
-        output.velocity.set(-FlxG.random.int(0, 100), -FlxG.random.int(0, 100));
-
-        logger.add(output);
-
-        return output;
-    }
-
-    public static function logWarning(warning:String):FlxText
-    {
-        var output:FlxText = logInfo(warning);
-
-        output.color = FlxColor.YELLOW;
-
-        return output;
-    }
-
-    public static function logError(error:String):FlxText
-    {
-        var output:FlxText = logInfo(error);
-
-        output.color = FlxColor.RED;
-
-        return output;
-    }
-
     public function new():Void
     {
         super();
@@ -70,5 +32,44 @@ class Logger extends FlxTypedContainer<FlxText>
 
             i--;
         }
+    }
+
+    public function logInfo(info:String):FlxText
+    {
+        var output:FlxText = new FlxText(0.0, 0.0, FlxG.width, '[INFO] ${info}', 24);
+
+        output.moves = true;
+
+        output.scrollFactor.set();
+
+        output.velocity.set(-FlxG.random.int(0, 100), -FlxG.random.int(0, 100));
+
+        output.acceleration.set(0.0, 550.0);
+
+        output.font = Paths.ttf("assets/fonts/VCR OSD Mono");
+
+        output.setBorderStyle(OUTLINE, FlxColor.BLACK, 2.2);
+
+        add(output);
+
+        return output;
+    }
+
+    public function logWarning(warning:String):FlxText
+    {
+        var output:FlxText = logInfo('[WARNING] ${warning}');
+
+        output.color = FlxColor.YELLOW;
+
+        return output;
+    }
+
+    public function logError(error:String):FlxText
+    {
+        var output:FlxText = logInfo('[ERROR] ${error}');
+
+        output.color = FlxColor.RED;
+
+        return output;
     }
 }

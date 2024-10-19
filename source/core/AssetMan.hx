@@ -104,12 +104,7 @@ class AssetMan
                 output = Assets.getSound(path);
             #else
                 if (Preferences.soundStreaming && soundStreaming)
-                {
-                    if (lime.media.vorbis.VorbisFile.fromFile(path) == null)
-                        output = Sound.fromFile(path);
-                    else
-                        output = Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
-                }
+                    output = Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
                 else
                     output = Sound.fromFile(path);
             #end

@@ -18,14 +18,26 @@ import core.Conductor;
 import core.Inputs;
 import core.Paths;
 
-import game.notes.Note;
-
 using StringTools;
 
 class Character extends FlxSprite
 {
+    public var conductor(default, set):Conductor;
+
+    @:noCompletion
+    function set_conductor(conductor:Conductor):Conductor
+    {
+        this.conductor?.beatHit.remove(beatHit);
+
+        conductor?.beatHit.add(beatHit);
+
+        return this.conductor = conductor;
+    }
+
+    public var inputs:Array<Input>;
+    
     /**
-     * A structure containing fundamentals about this `Character`, such as name, texture-related information, and more.
+     * A structure containing fundamentals about `this` `Character`, such as name, texture-related information, and more.
      */
     public var data:CharacterData;
 
@@ -45,35 +57,30 @@ class Character extends FlxSprite
 
     public var role:CharacterRole;
 
-    public var conductor(default, set):Conductor;
-
-    @:noCompletion
-    function set_conductor(conductor:Conductor):Conductor
-    {
-        if (this.conductor != null)
-            this.conductor.beatHit.remove(beatHit);
-
-        if (conductor != null)
-            conductor.beatHit.add(beatHit);
-
-        return this.conductor = conductor;
-    }
-
-    public var inputs:Array<Input>;
-
-    public function new(x:Float = 0.0, y:Float = 0.0, path:String, role:CharacterRole, conductor:Conductor):Void
+    public function new(conductor:Conductor, x:Float = 0.0, y:Float = 0.0, character:String, role:CharacterRole):Void
     {
         super(x, y);
+
+        this.conductor = conductor;
+
+        inputs =
+        [
+            {name: "NOTE:LEFT", keys: [FlxKey.Z, FlxKey.A, FlxKey.LEFT]},
+
+            {name: "NOTE:DOWN", keys: [FlxKey.X, FlxKey.S, FlxKey.DOWN]},
+
+            {name: "NOTE:UP", keys: [FlxKey.PERIOD, FlxKey.W, FlxKey.UP]},
+
+            {name: "NOTE:RIGHT", keys: [FlxKey.SLASH, FlxKey.D, FlxKey.RIGHT]}
+        ];
         
-        data = Json.parse(AssetMan.text(Paths.json(path)));
+        data = Json.parse(AssetMan.text(Paths.json(character)));
 
         switch (data.format ?? "".toLowerCase():String)
         {
-            case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(data.png), true), Paths.xml(data.xml));
+            case "sparrow": frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(data.png), true), Paths.xml(data.xml));
 
-            case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(data.png), true), Paths.xml(data.xml));
+            case "texturepackerxml": frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(data.png), true), Paths.xml(data.xml));
         }
 
         antialiasing = data.antialiasing ?? true;
@@ -86,49 +93,49 @@ class Character extends FlxSprite
 
         flipY = data.flipY ?? false;
 
-        for (i in 0 ... data.animations.length)
+        for (i in 0 ... data.frames.length)
         {
-            var _animation:CharacterFrameSet = data.animations[i];
+            var _frames:CharacterFramesData = data.frames[i];
 
-            if (animation.exists(_animation.name))
+            if (animation.exists(_frames.name))
                 throw "game.Character: Invalid animation name!";
 
-            if (_animation.indices.length > 0)
+            if (_frames.indices.length > 0)
             {
                 animation.addByIndices
                 (
-                    _animation.name,
+                    _frames.name,
 
-                    _animation.prefix,
+                    _frames.prefix,
 
-                    _animation.indices,
+                    _frames.indices,
 
                     "",
 
-                    _animation.frameRate ?? 24.0,
+                    _frames.frameRate ?? 24.0,
 
-                    _animation.looped ?? false,
+                    _frames.looped ?? false,
 
-                    _animation.flipX ?? false,
+                    _frames.flipX ?? false,
 
-                    _animation.flipY ?? false
+                    _frames.flipY ?? false
                 );
             }
             else
             {
                 animation.addByPrefix
                 (
-                    _animation.name,
+                    _frames.name,
 
-                    _animation.prefix,
+                    _frames.prefix,
 
-                    _animation.frameRate ?? 24.0,
+                    _frames.frameRate ?? 24.0,
 
-                    _animation.looped ?? false,
+                    _frames.looped ?? false,
 
-                    _animation.flipX ?? false,
+                    _frames.flipX ?? false,
 
-                    _animation.flipY ?? false
+                    _frames.flipY ?? false
                 );
             }
         }
@@ -152,19 +159,6 @@ class Character extends FlxSprite
         dance();
 
         animation.finish();
-
-        this.conductor = conductor;
-
-        inputs =
-        [
-            {name: "NOTE:LEFT", keys: [FlxKey.Z, FlxKey.A, FlxKey.LEFT]},
-
-            {name: "NOTE:DOWN", keys: [FlxKey.X, FlxKey.S, FlxKey.DOWN]},
-
-            {name: "NOTE:UP", keys: [FlxKey.PERIOD, FlxKey.W, FlxKey.UP]},
-
-            {name: "NOTE:RIGHT", keys: [FlxKey.SLASH, FlxKey.D, FlxKey.RIGHT]}
-        ];
     }
 
     override function update(elapsed:Float):Void
@@ -177,13 +171,13 @@ class Character extends FlxSprite
         if (Inputs.inputsJustPressed(inputs) && role == PLAYABLE)
             singCount = 0.0;
 
-        if (animation.name?.startsWith("Sing"))
+        if ((animation.name ?? "").startsWith("Sing"))
         {
             singCount += elapsed;
 
             var requiredTime:Float = singDuration * ((conductor.crotchet * 0.25) * 0.001);
 
-            if (animation.name?.endsWith("MISS"))
+            if ((animation.name ?? "").endsWith("MISS"))
                 requiredTime *= FlxG.random.float(1.35, 1.85);
 
             if (singCount >= requiredTime && (role == PLAYABLE ? !Inputs.inputsPressed(inputs) : true))
@@ -201,22 +195,28 @@ class Character extends FlxSprite
     {
         super.destroy();
 
-        conductor = null;
+        conductor?.beatHit.remove(beatHit);
     }
 
     override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
     {
         var output:FlxPoint = super.getScreenPosition(result, camera);
 
-        for (i in 0 ... data.animations.length)
+        for (i in 0 ... data.frames.length)
         {
-            var _animation:CharacterFrameSet = data.animations[i];
+            var _frames:CharacterFramesData = data.frames[i];
             
-            if (animation.name ?? "" == _animation.name)
-                output.add(_animation.offset?.x ?? 0.0, _animation.offset?.y ?? 0.0);
+            if (animation.name ?? "" == _frames.name)
+                output.add(_frames.offset?.x ?? 0.0, _frames.offset?.y ?? 0.0);
         }
 
         return output;
+    }
+
+    public function beatHit(beat:Int):Void
+    {
+        if (beat % danceInterval == 0.0)
+            dance();
     }
 
     public function dance(forceful:Bool = false):Void
@@ -224,16 +224,10 @@ class Character extends FlxSprite
         if (skipDance)
             return;
         
-        if (!forceful && animation.name?.startsWith("Sing"))
+        if (!forceful && (animation.name ?? "").startsWith("Sing"))
             return;
 
         animation.play(danceSteps[danceStep = FlxMath.wrap(danceStep + 1, 0, danceSteps.length - 1)], forceful);
-    }
-
-    public function beatHit(beat:Int):Void
-    {
-        if (beat % danceInterval == 0.0)
-            dance();
     }
 }
 
@@ -249,13 +243,13 @@ typedef CharacterData =
 
     var ?antialiasing:Null<Bool>;
 
-    var ?scale:Null<{?x:Null<Float>, ?y:Null<Float>}>;
+    var ?scale:{?x:Null<Float>, ?y:Null<Float>};
 
     var ?flipX:Null<Bool>;
 
     var ?flipY:Null<Bool>;
 
-    var animations:Array<CharacterFrameSet>;
+    var frames:Array<CharacterFramesData>;
 
     var danceSteps:Array<String>;
 
@@ -264,7 +258,7 @@ typedef CharacterData =
     var ?singDuration:Null<Float>;
 };
 
-typedef CharacterFrameSet =
+typedef CharacterFramesData =
 {
     var name:String;
     
@@ -280,7 +274,7 @@ typedef CharacterFrameSet =
     
     var ?flipY:Null<Bool>;
 
-    var ?offset:Null<{?x:Null<Float>, ?y:Null<Float>}>;
+    var ?offset:{?x:Null<Float>, ?y:Null<Float>};
 };
 
 enum abstract CharacterRole(String) from String to String

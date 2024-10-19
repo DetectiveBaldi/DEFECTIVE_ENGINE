@@ -24,6 +24,10 @@ class OpeningState extends FlxState
 {
     public var nextState:NextState;
 
+    public static var logger:Logger;
+
+    public static var perfTracker:PerfTracker;
+
     public function new(nextState:NextState):Void
     {
         super();
@@ -65,9 +69,13 @@ class OpeningState extends FlxState
 
         Preferences.load();
 
-        FlxG.plugins.addPlugin(new Logger());
+        logger = new Logger();
+
+        FlxG.plugins.addPlugin(logger);
+
+        perfTracker = new PerfTracker(10.0, 5.0);
         
-        FlxG.game.addChild(new PerfTracker(10.0, 5.0));
+        FlxG.game.addChild(perfTracker);
 
         FlxG.switchState(nextState);
     }

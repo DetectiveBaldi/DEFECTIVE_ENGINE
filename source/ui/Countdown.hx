@@ -30,8 +30,7 @@ class Countdown extends FlxContainer
         if (this.conductor != null)
             this.conductor.beatHit.remove(beatHit);
 
-        if (conductor != null)
-            conductor.beatHit.add(beatHit);
+        conductor.beatHit.add(beatHit);
 
         return this.conductor = conductor;
     }

@@ -41,5 +41,5 @@ typedef HealthIconTextureData =
 
     var ?antialiasing:Null<Bool>;
 
-    var ?scale:Null<{?x:Null<Float>, ?y:Null<Float>}>;
+    var ?scale:{?x:Null<Float>, ?y:Null<Float>};
 }

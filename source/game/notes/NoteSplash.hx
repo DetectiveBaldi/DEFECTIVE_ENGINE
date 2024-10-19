@@ -19,7 +19,7 @@ class NoteSplash extends FlxSprite
     public static var directions:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 
     /**
-     * A structure containing texture-related information about this `NoteSplash`, such as .png and .xml locations, and animation declarations.
+     * A structure containing texture-related information about `this` `NoteSplash`, such as .png and .xml locations, and animation declarations.
      */
     public var textureData(default, set):NoteSplashTextureData;
 
@@ -37,23 +37,25 @@ class NoteSplash extends FlxSprite
 
         antialiasing = textureData.antialiasing ?? true;
 
-        for (i in 0 ... textureData.animations.length)
+        for (i in 0 ... textureData.frames.length)
         {
+            var _frames:NoteSplashFramesData = textureData.frames[i];
+
             for (j in 0 ... NoteSplash.directions.length)
             {
                 animation.addByPrefix
                 (
-                    '${textureData.animations[i].prefix} ${NoteSplash.directions[j].toLowerCase()}',
+                    '${_frames.prefix} ${NoteSplash.directions[j].toLowerCase()}',
                     
-                    '${textureData.animations[i].prefix} ${NoteSplash.directions[j].toLowerCase()}',
+                    '${_frames.prefix} ${NoteSplash.directions[j].toLowerCase()}',
                     
-                    textureData.animations[i].frameRate ?? 24.0,
+                    _frames.frameRate ?? 24.0,
 
-                    textureData.animations[i].looped ?? false,
+                    _frames.looped ?? false,
 
-                    textureData.animations[i].flipX ?? false,
+                    _frames.flipX ?? false,
 
-                    textureData.animations[i].flipY ?? false
+                    _frames.flipY ?? false
                 );   
             }
         }
@@ -76,9 +78,13 @@ class NoteSplash extends FlxSprite
     {
         var output:FlxPoint = super.getScreenPosition(result, camera);
 
-        for (i in 0 ... textureData.animations.length)
-            if (animation.name?.startsWith(textureData.animations[i].prefix))
-                output.subtract(textureData.animations[i].offsets?.x ?? 0.0, textureData.animations[i].offsets?.y ?? 0.0);
+        for (i in 0 ... textureData.frames.length)
+        {
+            var _frames:NoteSplashFramesData = textureData.frames[i];
+
+            if ((animation.name ?? "").startsWith(_frames.prefix))
+                output.subtract(_frames.offset?.x ?? 0.0, _frames.offset?.y ?? 0.0);
+        }
 
         return output;
     }
@@ -94,5 +100,20 @@ typedef NoteSplashTextureData =
 
     var ?antialiasing:Null<Bool>;
 
-    var animations:Array<{?offsets:Null<{?x:Null<Float>, ?y:Null<Float>}>, prefix:String, ?frameRate:Null<Float>, ?looped:Null<Bool>, ?flipX:Null<Bool>, ?flipY:Null<Bool>}>;
-}
+    var frames:Array<NoteSplashFramesData>;
+};
+
+typedef NoteSplashFramesData =
+{   
+    var prefix:String;
+    
+    var ?frameRate:Null<Float>;
+    
+    var ?looped:Null<Bool>;
+    
+    var ?flipX:Null<Bool>;
+    
+    var ?flipY:Null<Bool>;
+
+    var ?offset:{?x:Null<Float>, ?y:Null<Float>};
+};
