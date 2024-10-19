@@ -239,7 +239,7 @@ class GameState extends MusicBeatState
 
         healthBar.playerIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/game/healthIcons/${player.data.name}')));
 
-        healthBar.bar.setPosition((FlxG.width - healthBar.bar.width) * 0.5, Preferences.downScroll ? (FlxG.height - healthBar.bar.height) - 620.0 : 620.0);
+        healthBar.bar.setPosition((FlxG.width - healthBar.bar.width) * 0.5, Preferences.downscroll ? (FlxG.height - healthBar.bar.height) - 620.0 : 620.0);
 
         add(healthBar);
 
@@ -253,7 +253,7 @@ class GameState extends MusicBeatState
 
         scoreTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 2.2);
 
-        scoreTxt.setPosition((FlxG.width - scoreTxt.width) * 0.5, Preferences.downScroll ? 25.0 : (FlxG.height - scoreTxt.height) - 25.0);
+        scoreTxt.setPosition((FlxG.width - scoreTxt.width) * 0.5, Preferences.downscroll ? 25.0 : (FlxG.height - scoreTxt.height) - 25.0);
 
         add(scoreTxt);
 
@@ -281,9 +281,9 @@ class GameState extends MusicBeatState
 
         opponentStrums.ghostTap.add(opponentGhostTap);
 
-        opponentStrums.visible = !Preferences.middleScroll;
+        opponentStrums.visible = !Preferences.middlescroll;
 
-        opponentStrums.setPosition(Preferences.middleScroll ? (FlxG.width - opponentStrums.width) * 0.5 : 45.0, Preferences.downScroll ? FlxG.height - opponentStrums.height - 15.0 : 15.0);
+        opponentStrums.setPosition(Preferences.middlescroll ? (FlxG.width - opponentStrums.width) * 0.5 : 45.0, Preferences.downscroll ? FlxG.height - opponentStrums.height - 15.0 : 15.0);
 
         strumLines.add(opponentStrums);
         
@@ -303,7 +303,7 @@ class GameState extends MusicBeatState
 
         playerStrums.ghostTap.add(playerGhostTap);
 
-        playerStrums.setPosition(Preferences.middleScroll ? (FlxG.width - playerStrums.width) * 0.5 : FlxG.width - playerStrums.width - 45.0, Preferences.downScroll ? FlxG.height - playerStrums.height - 15.0 : 15.0);
+        playerStrums.setPosition(Preferences.middlescroll ? (FlxG.width - playerStrums.width) * 0.5 : FlxG.width - playerStrums.width - 45.0, Preferences.downscroll ? FlxG.height - playerStrums.height - 15.0 : 15.0);
 
         strumLines.add(playerStrums);
 
@@ -469,7 +469,7 @@ class GameState extends MusicBeatState
 
             note.alpha = strum.alpha;
 
-            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * chartSpeed * note.speed * (Preferences.downScroll ? -1.0 : 1.0));
+            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * chartSpeed * note.speed * (Preferences.downscroll ? -1.0 : 1.0));
         }
 
         while (noteIndex < chart.notes.length)
@@ -553,7 +553,7 @@ class GameState extends MusicBeatState
                 if (k >= Math.round(sustain.length / (((60 / conductor.findTimeChangeAt(chart.tempo, note.time).tempo) * 1000.0) * 0.25)) - 1)
                     sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
 
-                sustain.flipY = Preferences.downScroll;
+                sustain.flipY = Preferences.downscroll;
 
                 sustain.scale.set(0.685, 0.685);
 

@@ -8,9 +8,9 @@ class Preferences
 
     public static var soundStreaming:Bool;
 
-    public static var downScroll:Bool;
+    public static var downscroll:Bool;
 
-    public static var middleScroll:Bool;
+    public static var middlescroll:Bool;
 
     public static var ghostTapping:Bool;
 
@@ -22,9 +22,9 @@ class Preferences
 
         soundStreaming = false;
 
-        downScroll = false;
+        downscroll = false;
 
-        middleScroll = false;
+        middlescroll = false;
 
         ghostTapping = true;
 
@@ -36,7 +36,7 @@ class Preferences
         
         if (FlxG.save.data.preferences == null)
         {
-            FlxG.save.data.preferences = {gpuCaching: gpuCaching, soundStreaming: soundStreaming, downScroll: downScroll, middleScroll: middleScroll, ghostTapping: ghostTapping, gameModifiers: gameModifiers};
+            FlxG.save.data.preferences = {gpuCaching: gpuCaching, soundStreaming: soundStreaming, downscroll: downscroll, middlescroll: middlescroll, ghostTapping: ghostTapping, gameModifiers: gameModifiers};
 
             FlxG.save.flush();
         }
