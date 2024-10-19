@@ -147,8 +147,8 @@ class AssetMan
      */
     public static function clearSounds():Void
     {
-        for (key => value in graphics)
-            removeGraphic(key);
+        for (key => value in sounds)
+            removeSound(key);
     }
 
     /**
