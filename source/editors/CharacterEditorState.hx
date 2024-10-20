@@ -28,8 +28,6 @@ import haxe.ui.components.TextField;
 import haxe.ui.containers.Box;
 import haxe.ui.containers.TabView;
 
-import haxe.ui.data.ArrayDataSource;
-
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 
@@ -462,7 +460,7 @@ class CharacterEditorState extends FlxState
 
         ui.findComponent("_____checkbox", CheckBox).value = frames.flipY ?? false;
 
-        ui.findComponent("____________label", Label).text = 'Offset: (${frames.offset?.x ?? 0.0}, ${frames.offset?.y ?? 0.0})';
+        ui.findComponent("_____________label", Label).text = 'Offset: (${frames.offset?.x ?? 0.0}, ${frames.offset?.y ?? 0.0})';
     }
 
     public function saveFrames():Void
@@ -576,13 +574,13 @@ class CharacterEditorState extends FlxState
 
         frames.offset.y = y;
 
-        ui.findComponent("____________label", Label).text = 'Offset: (${frames.offset.x ?? 0.0}, ${frames.offset.y ?? 0.0})';
+        ui.findComponent("_____________label", Label).text = 'Offset: (${frames.offset.x ?? 0.0}, ${frames.offset.y ?? 0.0})';
     }
 
     public function addFramesOffset(frames:CharacterFramesData, x:Float = 0.0, y:Float = 0.0):Void
     {
         frames.offset ??= {x: 0.0, y: 0.0};
 
-        setFramesOffset(frames, frames.offset.x ?? 0.0 + x, frames.offset.y ?? 0.0 + y);
+        setFramesOffset(frames, (frames.offset.x ?? 0.0) + x, (frames.offset.y ?? 0.0) + y);
     }
 }

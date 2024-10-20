@@ -707,20 +707,20 @@ class GameScreen extends MusicBeatState
 
         eventIndex = 0;
 
-        instrumental = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Instrumental'), true));
+        instrumental = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/game/${name}/Instrumental'), true));
 
         instrumental.onComplete = () -> endSong();
 
-        if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Main')))
-            mainVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Main'), true));
+        if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/game/${name}/Vocals-Main')))
+            mainVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/game/${name}/Vocals-Main'), true));
 
         if (mainVocals == null)
         {
-            if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent')))
-                opponentVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Opponent'), true));
+            if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/game/${name}/Vocals-Opponent')))
+                opponentVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/game/${name}/Vocals-Opponent'), true));
 
-            if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player')))
-                playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/${name}/Vocals-Player'), true));
+            if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/game/${name}/Vocals-Player')))
+                playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/songs/game/${name}/Vocals-Player'), true));
         }
     }
 
