@@ -1,6 +1,8 @@
 package core;
 
 import openfl.media.Sound;
+import openfl.media.SoundChannel;
+import openfl.media.SoundMixer;
 
 import openfl.utils.Assets;
 
@@ -33,7 +35,7 @@ class AssetMan
      * @param gpuCaching Specifies whether this graphic should be uploaded to the GPU to reduce RAM usage.
      * @return `flixel.graphics.FlxGraphic`
      */
-    public static function graphic(path:String, gpuCaching:Bool):FlxGraphic
+    public static function graphic(path:String, ?gpuCaching:Bool = true):FlxGraphic
     {
         if (graphics.exists(path))
             return graphics[path];
@@ -90,7 +92,7 @@ class AssetMan
      * @param soundStreaming Specifies whether this sound should be streamed to reduce RAM usage.
      * @return `openfl.media.Sound`
      */
-    public static function sound(path:String, soundStreaming:Bool):Sound
+    public static function sound(path:String, ?soundStreaming:Bool = true):Sound
     {
         if (sounds.exists(path))
             return sounds[path];
@@ -116,42 +118,6 @@ class AssetMan
     }
 
     /**
-     * Removes the specified sound from the sound cache.
-     * @param path The file path of the sound you want to remove.
-     */
-    public static function removeSound(path:String):Void
-    {
-        if (!sounds.exists(path))
-            return;
-
-        var sound:Sound = sounds[path];
-
-        for (i in 0 ... FlxG.sound.list.length)
-        {
-            @:privateAccess
-            {
-                if (FlxG.sound.list.members[i]._sound == sound)
-                    return;
-            }
-        }
-
-        sound.close();
-
-        Assets.cache.removeSound(path);
-
-        sounds.remove(path);
-    }
-
-    /**
-     * Clears each item from the sound cache.
-     */
-    public static function clearSounds():Void
-    {
-        for (key => value in sounds)
-            removeSound(key);
-    }
-
-    /**
      * Gets the content of the specified text file. Then, it is returned
      * @param path The file path of the text you want to recieve content from.
      * @return `String`
@@ -159,15 +125,5 @@ class AssetMan
     public static function text(path:String):String
     {
         return #if html5 Assets.getText #else sys.io.File.getContent #end (path);
-    }
-
-    /**
-     * Clears each item from the graphic and sound caches.
-     */
-    public static function clearCache():Void
-    {
-        clearGraphics();
-
-        clearSounds();
     }
 }

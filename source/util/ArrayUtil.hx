@@ -4,7 +4,7 @@ class ArrayUtil
 {
     public static function getFirst<T>(arr:Array<T>, func:(T)->Bool):T
     {
-        var output:Null<T> = null;
+        var output:T = null;
 
         for (i in 0 ... arr.length)
         {

@@ -18,7 +18,7 @@ class Week1 extends Stage<FlxBasic>
     {
         super();
 
-        background = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/week1/background"), true));
+        background = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/Week1/background")));
 
         background.antialiasing = true;
 
@@ -26,7 +26,7 @@ class Week1 extends Stage<FlxBasic>
 
         members.push(background);
 
-        foreground = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/week1/foreground"), true));
+        foreground = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/Week1/foreground")));
 
         foreground.antialiasing = true;
 
@@ -38,7 +38,7 @@ class Week1 extends Stage<FlxBasic>
         
         members.push(foreground);
 
-        curtains = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/week1/curtains"), true));
+        curtains = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/Week1/curtains")));
 
         curtains.antialiasing = true;
 

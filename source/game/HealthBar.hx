@@ -1,8 +1,6 @@
 package game;
 
-import flixel.FlxSprite;
-
-import flixel.group.FlxContainer.FlxTypedContainer;
+import flixel.group.FlxSpriteContainer;
 
 import flixel.math.FlxMath;
 
@@ -12,16 +10,16 @@ import flixel.util.FlxColor;
 
 import core.Conductor;
 
-class HealthBar extends FlxTypedContainer<FlxSprite>
+class HealthBar extends FlxSpriteContainer
 {
     public var conductor(default, set):Conductor;
 
     @:noCompletion
     function set_conductor(conductor:Conductor):Conductor
     {
-        this.conductor?.beatHit.remove(beatHit);
+        this.conductor?.beatHit?.remove(beatHit);
 
-        conductor?.beatHit.add(beatHit);
+        conductor?.beatHit?.add(beatHit);
 
         return this.conductor = conductor;
     }
@@ -146,19 +144,23 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
 
         add(bar);
 
-        value = 50.0;
+        value = max * 0.5;
 
         this.fillDirection = fillDirection;
 
-        opponentIcon = new HealthIcon(0.0, 0.0, "assets/data/game/healthIcons/BOYFRIEND_PIXEL");
+        opponentIcon = new HealthIcon(0.0, 0.0, "assets/data/game/HealthIcon/BOYFRIEND_PIXEL");
 
         opponentIcon.flipX = fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM;
 
+        opponentIcon.setPosition(bar.getMidpoint().x - opponentIcon.width * 0.5, bar.getMidpoint().y - opponentIcon.height * 0.5);
+
         add(opponentIcon);
 
-        playerIcon = new HealthIcon(0.0, 0.0, "assets/data/game/healthIcons/BOYFRIEND");
+        playerIcon = new HealthIcon(0.0, 0.0, "assets/data/game/HealthIcon/BOYFRIEND");
 
         playerIcon.flipX = !(fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM);
+
+        playerIcon.setPosition(bar.getMidpoint().x - playerIcon.width * 0.5, bar.getMidpoint().y - playerIcon.height * 0.5);
 
         add(playerIcon);
     }
@@ -178,18 +180,14 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
     {
         super.destroy();
 
-        conductor?.beatHit.remove(beatHit);
+        conductor?.beatHit?.remove(beatHit);
     }
 
     public function beatHit(beat:Int):Void
     {
-        opponentIcon.scale *= FlxMath.lerp(1.35, 1.05, value / bar.max);
+        opponentIcon.scale *= FlxMath.lerp(1.35, 1.05, value / max);
 
-        opponentIcon.updateHitbox();
-
-        playerIcon.scale *= FlxMath.lerp(1.05, 1.35, value / bar.max);
-
-        playerIcon.updateHitbox();
+        playerIcon.scale *= FlxMath.lerp(1.05, 1.35, value / max);
     }
 
     public function setRange(min:Float, max:Float):Void
@@ -201,11 +199,7 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
     {
         opponentIcon.scale.set(FlxMath.lerp(opponentIcon.scale.x, opponentIcon.textureData.scale?.x ?? 1.0, 0.15), FlxMath.lerp(opponentIcon.scale.y, opponentIcon.textureData.scale?.y ?? 1.0, 0.15));
 
-        opponentIcon.updateHitbox();
-
         playerIcon.scale.set(FlxMath.lerp(playerIcon.scale.x, playerIcon.textureData.scale?.x ?? 1.0, 0.15), FlxMath.lerp(playerIcon.scale.y, playerIcon.textureData.scale?.y ?? 1.0, 0.15));
-
-        playerIcon.updateHitbox();
     }
 
     public dynamic function positionIcons():Void
@@ -214,30 +208,30 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
         {
             case LEFT_TO_RIGHT:
             {
-                opponentIcon.setPosition(bar.x + bar.width * percent * 0.01 - 16.0, bar.getMidpoint().y - opponentIcon.height * 0.5);
+                opponentIcon.x = bar.x + bar.width * percent * 0.01 - 16.0;
 
-                playerIcon.setPosition(bar.x + bar.width * percent * 0.01 - playerIcon.width + 16.0, bar.getMidpoint().y - playerIcon.height * 0.5);
+                playerIcon.x = bar.x + bar.width * percent * 0.01 - playerIcon.width + 16.0;
             }
             
             case RIGHT_TO_LEFT:
             {
-                opponentIcon.setPosition(bar.x + bar.width * (100.0 - percent) * 0.01 - opponentIcon.width + 16.0, bar.getMidpoint().y - opponentIcon.height * 0.5);
+                opponentIcon.x = bar.x + bar.width * (100.0 - percent) * 0.01 - opponentIcon.width + 16.0;
 
-                playerIcon.setPosition(bar.x + bar.width * (100.0 - percent) * 0.01 - 16.0, bar.getMidpoint().y - playerIcon.height * 0.5);
+                playerIcon.x = bar.x + bar.width * (100.0 - percent) * 0.01 - 16.0;
             }
 
             case TOP_TO_BOTTOM:
             {
-                opponentIcon.setPosition(bar.getMidpoint().x - opponentIcon.width * 0.5, bar.y + bar.height * percent * 0.01 - 16.0);
+                opponentIcon.y = bar.y + bar.height * percent * 0.01 - 16.0;
 
-                playerIcon.setPosition(bar.getMidpoint().x - playerIcon.width * 0.5, bar.y + bar.height * percent * 0.01 - playerIcon.height + 16.0);
+                playerIcon.y = bar.y + bar.height * percent * 0.01 - playerIcon.height + 16.0;
             }
 
             case BOTTOM_TO_TOP:
             {
-                opponentIcon.setPosition(bar.getMidpoint().x - opponentIcon.width * 0.5, bar.y + bar.height * (100.0 - percent) * 0.01 - opponentIcon.height + 16.0);
+                opponentIcon.y = bar.y + bar.height * (100.0 - percent) * 0.01 - opponentIcon.height + 16.0;
 
-                playerIcon.setPosition(bar.getMidpoint().x - playerIcon.width * 0.5, bar.y + bar.height * (100.0 - percent) * 0.01 - 16.0);
+                playerIcon.y = bar.y + bar.height * (100.0 - percent) * 0.01 - 16.0;
             }
         }
     }
@@ -245,11 +239,11 @@ class HealthBar extends FlxTypedContainer<FlxSprite>
 
 enum abstract HealthBarFillDirection(String) from String to String
 {
-    var LEFT_TO_RIGHT:HealthBarFillDirection = "LEFT_TO_RIGHT";
+    var LEFT_TO_RIGHT:HealthBarFillDirection;
 
-    var RIGHT_TO_LEFT:HealthBarFillDirection = "RIGHT_TO_LEFT";
+    var RIGHT_TO_LEFT:HealthBarFillDirection;
 
-    var TOP_TO_BOTTOM:HealthBarFillDirection = "TOP_TO_BOTTOM";
+    var TOP_TO_BOTTOM:HealthBarFillDirection;
 
-    var BOTTOM_TO_TOP:HealthBarFillDirection = "BOTTOM_TO_TOP";
+    var BOTTOM_TO_TOP:HealthBarFillDirection;
 }

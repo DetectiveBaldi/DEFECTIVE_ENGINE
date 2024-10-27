@@ -18,7 +18,7 @@ import core.Conductor;
 import core.Paths;
 
 /**
- * A `flixel.group.FlxContainer` representing the countdown you see in `game.GameScreen`.
+ * A `flixel.group.FlxContainer` representing the countdown you see in `game.GameState`.
  */
 class Countdown extends FlxContainer
 {
@@ -101,7 +101,7 @@ class Countdown extends FlxContainer
 
         add(tweens);
 
-        sprite = new FlxSprite().loadGraphic(AssetMan.graphic(Paths.png("assets/images/ui/countdown"), true), true, 1000, 500);
+        sprite = new FlxSprite().loadGraphic(AssetMan.graphic(Paths.png("assets/images/ui/Countdown/countdown")), true, 1000, 500);
 
         sprite.antialiasing = true;
 
@@ -121,13 +121,13 @@ class Countdown extends FlxContainer
 
         add(sprite);
 
-        three = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/three"), false), 0.65);
+        three = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/ui/Countdown/three"), false), 0.65);
 
-        two = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/two"), false), 0.65);
+        two = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/ui/Countdown/two"), false), 0.65);
 
-        one = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/one"), false), 0.65);
+        one = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/ui/Countdown/one"), false), 0.65);
 
-        go = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/go"), false), 0.65);
+        go = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/ui/Countdown/go"), false), 0.65);
     }
 
     override function destroy():Void

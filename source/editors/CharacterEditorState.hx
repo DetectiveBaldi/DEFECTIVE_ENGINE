@@ -37,7 +37,8 @@ import core.AssetMan;
 import core.Paths;
 
 import game.Character;
-import game.GameScreen;
+
+import game.levels.Level1;
 
 using StringTools;
 
@@ -79,7 +80,7 @@ class CharacterEditorState extends FlxState
 
         add(background);
 
-        character = new Character(null, 0.0, 0.0, "assets/data/game/characters/BOYFRIEND", ARTIFICIAL);
+        character = new Character(null, 0.0, 0.0, "assets/data/game/Character/BOYFRIEND", ARTIFICIAL);
 
         character.screenCenter();
 
@@ -87,7 +88,7 @@ class CharacterEditorState extends FlxState
 
         framesIndex = character.data.frames.indexOf(character.data.frames.getFirst((frames:CharacterFramesData) -> character.animation.name == frames.name));
 
-        ui = ComponentBuilder.fromFile("assets/data/editors/character.xml");
+        ui = ComponentBuilder.fromFile("assets/data/editors/CharacterEditorState/ui.xml");
 
         ui.camera = hudCamera;
 
@@ -102,30 +103,32 @@ class CharacterEditorState extends FlxState
         #else
             ui.findComponent("button", Button).onClick = (ev:MouseEvent) ->
             {
-                sys.io.File.saveContent(Paths.json('assets/data/game/characters/${character.data.name}'), Json.stringify(character.data));
+                var path:String = Paths.json('assets/data/game/Character/${character.data.name}');
 
-                OpeningState.logger.logInfo('Character saved to "${Paths.json('assets/data/game/characters/${character.data.name}')}".');
+                sys.io.File.saveContent(path, Json.stringify(character.data));
+
+                OpeningState.logger.logInfo('Character saved to "${path}".');
             }
         #end
 
         ui.findComponent("_button", Button).onClick = (ev:MouseEvent) ->
         {
-            if (!Paths.exists(Paths.json('assets/data/game/characters/${ui.findComponent("textfield", TextField).text}')))
+            if (!Paths.exists(Paths.json('assets/data/game/Character/${ui.findComponent("textfield", TextField).text}')))
             {
                 OpeningState.logger.logError("The requested file(s) do not exist!");
 
                 return;
             }
 
-            character.data = Json.parse(AssetMan.text(Paths.json('assets/data/game/characters/${ui.findComponent("textfield", TextField).text}')));
+            character.data = Json.parse(AssetMan.text(Paths.json('assets/data/game/Character/${ui.findComponent("textfield", TextField).text}')));
 
             switch (character.data.format ?? "".toLowerCase():String)
             {
                 case "sparrow":
-                    character.frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(character.data.png), true), Paths.xml(character.data.xml));
+                    character.frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(character.data.png)), Paths.xml(character.data.xml));
 
                 case "texturepackerxml":
-                    character.frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(character.data.png), true), Paths.xml(character.data.xml));
+                    character.frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(character.data.png)), Paths.xml(character.data.xml));
             }
 
             character.antialiasing = character.data.antialiasing ?? true;
@@ -382,7 +385,7 @@ class CharacterEditorState extends FlxState
                 {
                     var frames:CharacterFramesData = character.data.frames[framesIndex];
 
-                    var offset:{?x:Null<Float>, ?y:Null<Float>} = Json.parse(Clipboard.generalClipboard.getData(TEXT_FORMAT));
+                    var offset:{?x:Float, ?y:Float} = Json.parse(Clipboard.generalClipboard.getData(TEXT_FORMAT));
 
                     setFramesOffset(frames, offset?.x ?? 0.0, offset?.y ?? 0.0);
 
@@ -391,7 +394,7 @@ class CharacterEditorState extends FlxState
             }
 
             if (FlxG.keys.justPressed.ENTER)
-                FlxG.switchState(() -> new GameScreen("Bopeebo"));
+                FlxG.switchState(() -> new Level1());
         }
     }
 
@@ -401,7 +404,7 @@ class CharacterEditorState extends FlxState
 
         FlxG.mouse.visible = false;
 
-        AssetMan.clearCache();
+        AssetMan.clearGraphics();
     }
 
     public function refreshMainTab():Void

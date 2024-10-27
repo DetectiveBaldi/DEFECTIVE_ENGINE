@@ -31,10 +31,10 @@ class Strum extends FlxSprite
         switch (textureData.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureData.png), true), Paths.xml(textureData.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
             
             case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureData.png), true), Paths.xml(textureData.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
         }
 
         for (i in 0 ... Strum.directions.length)
@@ -61,7 +61,7 @@ class Strum extends FlxSprite
 
         this.conductor = conductor;
         
-        textureData = Json.parse(AssetMan.text(Paths.json("assets/data/game/notes/strums/classic")));
+        textureData = Json.parse(AssetMan.text(Paths.json("assets/data/game/notes/Strum/classic")));
 
         direction = -1;
 
@@ -99,5 +99,5 @@ typedef StrumTextureData =
 
     var xml:String;
 
-    var ?antialiasing:Null<Bool>;
+    var ?antialiasing:Bool;
 };

@@ -29,10 +29,10 @@ class NoteSplash extends FlxSprite
         switch (textureData.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureData.png), true), Paths.xml(textureData.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
             
             case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureData.png), true), Paths.xml(textureData.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
         }
 
         antialiasing = textureData.antialiasing ?? true;
@@ -69,7 +69,7 @@ class NoteSplash extends FlxSprite
     {
         super(x, y);
 
-        textureData = Json.parse(AssetMan.text(Paths.json("assets/data/game/notes/noteSplashes/classic")));
+        textureData = Json.parse(AssetMan.text(Paths.json("assets/data/game/notes/NoteSplash/classic")));
 
         direction = -1;
     }
@@ -98,7 +98,7 @@ typedef NoteSplashTextureData =
 
     var xml:String;
 
-    var ?antialiasing:Null<Bool>;
+    var ?antialiasing:Bool;
 
     var frames:Array<NoteSplashFramesData>;
 };
@@ -107,13 +107,13 @@ typedef NoteSplashFramesData =
 {   
     var prefix:String;
     
-    var ?frameRate:Null<Float>;
+    var ?frameRate:Float;
     
-    var ?looped:Null<Bool>;
+    var ?looped:Bool;
     
-    var ?flipX:Null<Bool>;
+    var ?flipX:Bool;
     
-    var ?flipY:Null<Bool>;
+    var ?flipY:Bool;
 
-    var ?offset:{?x:Null<Float>, ?y:Null<Float>};
+    var ?offset:{?x:Float, ?y:Float};
 };

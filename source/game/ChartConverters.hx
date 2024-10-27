@@ -12,13 +12,13 @@ import util.TimingUtil.TimedObject;
 
 class FunkConverter
 {
-    public static function build(chartPath:String, metaPath:String, level:String):Chart
+    public static function build(chartPath:String, metaPath:String, difficulty:String):Chart
     {
         var output:Chart = new Chart();
 
         var parsedChart:Dynamic = Json.parse(AssetMan.text(Paths.json(chartPath)));
 
-        var notes:Array<FunkNote> = Reflect.field(parsedChart.notes, level);
+        var notes:Array<FunkNote> = Reflect.field(parsedChart.notes, difficulty);
 
         TimingUtil.sortSimple(notes);
 
@@ -28,11 +28,11 @@ class FunkConverter
 
         TimingUtil.sortSimple(timeChanges);
 
-        output.name = parsedMeta.songName;
+        output.id = parsedMeta.songName;
 
         output.tempo = timeChanges.shift().bpm;
 
-        output.speed = Reflect.field(parsedChart.scrollSpeed, level);
+        output.speed = Reflect.field(parsedChart.scrollSpeed, difficulty);
 
         for (i in 0 ... notes.length)
         {
@@ -60,7 +60,7 @@ class PsychConverter
 
         var parsed:Dynamic = Json.parse(AssetMan.text(Paths.json(path)));
 
-        output.name = parsed.song;
+        output.id = parsed.song;
 
         output.tempo = parsed.bpm;
 

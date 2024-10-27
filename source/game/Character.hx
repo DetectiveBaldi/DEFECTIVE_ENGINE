@@ -27,9 +27,9 @@ class Character extends FlxSprite
     @:noCompletion
     function set_conductor(conductor:Conductor):Conductor
     {
-        this.conductor?.beatHit.remove(beatHit);
+        this.conductor?.beatHit?.remove(beatHit);
 
-        conductor?.beatHit.add(beatHit);
+        conductor?.beatHit?.add(beatHit);
 
         return this.conductor = conductor;
     }
@@ -78,9 +78,9 @@ class Character extends FlxSprite
 
         switch (data.format ?? "".toLowerCase():String)
         {
-            case "sparrow": frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(data.png), true), Paths.xml(data.xml));
+            case "sparrow": frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(data.png)), Paths.xml(data.xml));
 
-            case "texturepackerxml": frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(data.png), true), Paths.xml(data.xml));
+            case "texturepackerxml": frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(data.png)), Paths.xml(data.xml));
         }
 
         antialiasing = data.antialiasing ?? true;
@@ -144,7 +144,7 @@ class Character extends FlxSprite
 
         danceStep = 0;
 
-        danceInterval = data.danceInterval ?? 1.0;
+        danceInterval = data.danceInterval ?? 2.0;
 
         singDuration = data.singDuration ?? 8.0;
 
@@ -195,7 +195,7 @@ class Character extends FlxSprite
     {
         super.destroy();
 
-        conductor?.beatHit.remove(beatHit);
+        conductor?.beatHit?.remove(beatHit);
     }
 
     override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
@@ -241,13 +241,13 @@ typedef CharacterData =
 
     var xml:String;
 
-    var ?antialiasing:Null<Bool>;
+    var ?antialiasing:Bool;
 
-    var ?scale:{?x:Null<Float>, ?y:Null<Float>};
+    var ?scale:{?x:Float, ?y:Float};
 
-    var ?flipX:Null<Bool>;
+    var ?flipX:Bool;
 
-    var ?flipY:Null<Bool>;
+    var ?flipY:Bool;
 
     var frames:Array<CharacterFramesData>;
 
@@ -255,7 +255,7 @@ typedef CharacterData =
 
     var ?danceInterval:Float;
 
-    var ?singDuration:Null<Float>;
+    var ?singDuration:Float;
 };
 
 typedef CharacterFramesData =
@@ -266,15 +266,15 @@ typedef CharacterFramesData =
     
     var indices:Array<Int>;
     
-    var ?frameRate:Null<Float>;
+    var ?frameRate:Float;
     
-    var ?looped:Null<Bool>;
+    var ?looped:Bool;
     
-    var ?flipX:Null<Bool>;
+    var ?flipX:Bool;
     
-    var ?flipY:Null<Bool>;
+    var ?flipY:Bool;
 
-    var ?offset:{?x:Null<Float>, ?y:Null<Float>};
+    var ?offset:{?x:Float, ?y:Float};
 };
 
 enum abstract CharacterRole(String) from String to String

@@ -1,0 +1,14 @@
+{
+    "format": "sparrow",
+
+    "png": "assets/images/game/notes/NoteSplash/classic",
+
+    "xml": "assets/images/game/notes/NoteSplash/classic",
+
+    "frames":
+    [
+        {"prefix": "note impact 0"},
+
+        {"prefix": "note impact 1"}
+    ]
+}

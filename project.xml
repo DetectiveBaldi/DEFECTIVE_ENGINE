@@ -28,6 +28,10 @@
 
 	<!-- _____________________________ Path Settings ____________________________ -->
 
+	<set name="BUILD_DIR" value="bin/debug" if="debug" />
+
+	<set name="BUILD_DIR" value="bin/stable" unless="debug" />
+
 	<assets path="assets" exclude="*.ogg" if="html5" />
 
 	<assets path="assets" exclude="*.mp3" unless="html5" />
@@ -53,8 +57,6 @@
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
 
 	<haxedef name="FLX_NO_HEALTH" />
-
-	<haxedef name="haxeui_dont_impose_base_class" />
 
 	<!-- _____________________________ Resources ____________________________ -->
 

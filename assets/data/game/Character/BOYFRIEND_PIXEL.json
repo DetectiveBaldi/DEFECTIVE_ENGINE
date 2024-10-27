@@ -1,0 +1,32 @@
+{
+    "name": "BOYFRIEND_PIXEL",
+
+    "format": "sparrow",
+    
+    "png": "assets/images/game/Character/BOYFRIEND_PIXEL",
+
+    "xml": "assets/images/game/Character/BOYFRIEND_PIXEL",
+
+    "antialiasing": false,
+
+    "scale": {"x": 6.0, "y": 6.0},
+
+    "flipX": true,
+
+    "frames":
+    [
+        {"name": "dance", "prefix": "BF IDLE0", "indices": []},
+
+        {"name": "SingLEFT", "prefix": "BF LEFT NOTE0", "indices": []},
+
+        {"name": "SingDOWN", "prefix": "BF DOWN NOTE0", "indices": []},
+
+        {"name": "SingUP", "prefix": "BF UP NOTE0", "indices": []},
+
+        {"name": "SingRIGHT", "prefix": "BF RIGHT NOTE0", "indices": []}
+    ],
+
+    "danceSteps": ["dance"],
+
+    "danceInterval": 2.0
+}

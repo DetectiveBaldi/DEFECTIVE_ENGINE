@@ -2,12 +2,13 @@ package core;
 
 import flixel.FlxBasic;
 
+import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal.FlxTypedSignal;
 
 import game.Chart.ParsedTimeChange;
 
 /**
- * A class which handles musical timing events throughout the game. It is the heart of `game.GameScreen`.
+ * A class which handles musical timing events throughout the game. It is the heart of `game.GameState`.
  */
 class Conductor extends FlxBasic
 {
@@ -97,13 +98,15 @@ class Conductor extends FlxBasic
 
         time = 0.0;
 
-        timeChange = {time: 0.0, tempo: tempo, step: 0.0};
+        timeChange = {time: 0.0, tempo: 150.0, step: 0.0};
 
         timeChanges = new Array<ParsedTimeChange>();
     }
 
     override function update(elapsed:Float):Void
-    {   
+    {
+        super.update(elapsed);
+        
         var lastStep:Int = step;
 
         var lastBeat:Int = beat;
@@ -151,19 +154,17 @@ class Conductor extends FlxBasic
     {
         super.destroy();
 
-        stepHit = new FlxTypedSignal<(step:Int)->Void>();
+        stepHit.destroy();
 
-        beatHit = new FlxTypedSignal<(beat:Int)->Void>();
+        stepHit = null;
 
-        sectionHit = new FlxTypedSignal<(section:Int)->Void>();
+        beatHit.destroy();
 
-        tempo = 150.0;
+        beatHit = null;
 
-        time = 0.0;
+        sectionHit.destroy();
 
-        timeChange = {time: 0.0, tempo: tempo, step: 0.0};
-
-        timeChanges = new Array<ParsedTimeChange>();
+        sectionHit = null;
     }
 
     public function findTimeChangeAt(_tempo:Float, _time:Float):ParsedTimeChange

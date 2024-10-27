@@ -15,7 +15,7 @@ class Chart
 
         var parsed:ParsedChart = Json.parse(AssetMan.text(Paths.json(path)));
 
-        output.name = parsed.name;
+        output.id = parsed.id;
 
         output.tempo = parsed.tempo;
 
@@ -30,7 +30,10 @@ class Chart
         return output;
     }
 
-    public var name:String;
+    /**
+     * A unique `String` identifier for `this` `Chart`. Used in several areas.
+     */
+    public var id:String;
 
     public var tempo:Float;
 
@@ -44,7 +47,7 @@ class Chart
 
     public function new():Void
     {
-        name = "Test";
+        id = "Test";
 
         tempo = 150.0;
 
@@ -60,7 +63,7 @@ class Chart
 
 typedef ParsedChart =
 {
-    var name:String;
+    var id:String;
 
     var tempo:Float;
 
