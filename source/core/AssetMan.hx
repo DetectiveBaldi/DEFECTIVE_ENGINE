@@ -1,10 +1,6 @@
 package core;
 
 import openfl.media.Sound;
-import openfl.media.SoundChannel;
-import openfl.media.SoundMixer;
-
-import openfl.utils.Assets;
 
 import flixel.FlxG;
 
@@ -40,7 +36,7 @@ class AssetMan
         if (graphics.exists(path))
             return graphics[path];
 
-        var graphic:FlxGraphic = FlxGraphic.fromBitmapData(#if html5 Assets.getBitmapData(path) #else openfl.display.BitmapData.fromFile(path) #end );
+        var graphic:FlxGraphic = FlxGraphic.fromBitmapData(#if html5 openfl.utils.Assets.getBitmapData(path) #else openfl.display.BitmapData.fromFile(path) #end );
 
         #if (!hl && !html5)
             if (Preferences.gpuCaching && gpuCaching)
@@ -103,7 +99,7 @@ class AssetMan
             output = Sound.fromFile(path);
         #else
             #if html5
-                output = Assets.getSound(path);
+                output = openfl.utils.Assets.getSound(path);
             #else
                 if (Preferences.soundStreaming && soundStreaming)
                     output = Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
@@ -124,6 +120,6 @@ class AssetMan
      */
     public static function text(path:String):String
     {
-        return #if html5 Assets.getText #else sys.io.File.getContent #end (path);
+        return #if html5 openfl.utils.Assets.getText #else sys.io.File.getContent #end (path);
     }
 }
