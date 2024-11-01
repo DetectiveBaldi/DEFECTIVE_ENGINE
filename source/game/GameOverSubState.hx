@@ -65,19 +65,22 @@ class GameOverSubState extends SteppingSubState
     {
         super.update(elapsed);
 
-        if ((FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE) && player.data.danceSteps.contains(player.animation.name))
+        if (player.data.danceSteps.contains(player.animation.name))
         {
-            FlxG.camera.fade(FlxColor.BLACK, conductor.crotchet * 0.001 * 7.5, false, () -> FlxG.resetState());
+            if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE)
+            {
+                FlxG.camera.fade(FlxColor.BLACK, conductor.crotchet * 0.001 * 7.5, false, () -> FlxG.resetState());
 
-            player.skipDance = true;
+                player.skipDance = true;
 
-            player.animation.play("end");
+                player.animation.play("end");
 
-            end = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/game/GameOverSubState/end"), false));
+                end = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/game/GameOverSubState/end"), false));
 
-            end.play();
+                end.play();
 
-            tune.stop();
+                tune.stop();
+            }
         }
     }
 

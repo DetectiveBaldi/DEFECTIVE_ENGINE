@@ -2,7 +2,7 @@ package util;
 
 class ArrayUtil
 {
-    public static function getFirst<T>(arr:Array<T>, func:(T)->Bool):T
+    public static function first<T>(arr:Array<T>, func:(T)->Bool):T
     {
         var output:T = null;
 
@@ -21,7 +21,7 @@ class ArrayUtil
         return output;
     }
 
-    public static function getLast<T>(arr:Array<T>, func:(T)->Bool):T
+    public static function last<T>(arr:Array<T>, func:(T)->Bool):T
     {
         var output:T = null;
 

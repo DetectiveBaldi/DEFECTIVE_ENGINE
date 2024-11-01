@@ -14,10 +14,6 @@ class Note extends FlxSprite
 {
     public static var directions:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 
-    public var parent:Note;
-
-    public var children:Array<Note>;
-
     /**
      * A structure containing texture-related information about `this` `Note`, such as .png and .xml locations.
      */
@@ -65,8 +61,6 @@ class Note extends FlxSprite
 
         active = false;
 
-        children = new Array<Note>();
-
         textureData = Json.parse(AssetMan.text(Paths.json("assets/data/game/notes/Note/classic")));
 
         time = 0.0;
@@ -78,22 +72,6 @@ class Note extends FlxSprite
         lane = 0;
 
         length = 0.0;
-    }
-
-    override function isOnScreen(?camera:FlxCamera):Bool
-    {
-        for (i in 0 ... children.length)
-        {
-            var sustain:Note = children[i];
-
-            if (sustain.exists && sustain.visible)
-            {
-                if (sustain.isOnScreen(camera))
-                    return true;
-            }
-        }
-
-        return super.isOnScreen(camera);
     }
 }
 

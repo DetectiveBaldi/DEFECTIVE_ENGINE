@@ -117,27 +117,29 @@ class Conductor extends FlxBasic
 
         var i:Int = timeChanges.length - 1;
 
-        while (i >= 0.0)
+        while (i >= 0)
         {
-            var _timeChange:ParsedTimeChange = timeChanges[i];
+            var _timeChange = timeChanges[i];
+            
+            if (time < _timeChange.time)
+            {
+                i--;
+
+                continue;
+            }
 
             if (tempo != _timeChange.tempo)
             {
-                if (time >= _timeChange.time)
-                {
-                    timeChange.step += (_timeChange.time - timeChange.time) / (crotchet * 0.25);
+                timeChange.step += (_timeChange.time - timeChange.time) / (crotchet * 0.25);
 
-                    timeChange.time = _timeChange.time;
+                timeChange.time = _timeChange.time;
 
-                    timeChange.tempo = _timeChange.tempo;
+                timeChange.tempo = _timeChange.tempo;
 
-                    tempo = timeChange.tempo;
-
-                    break;
-                }
+                tempo = timeChange.tempo;
             }
-
-            i--;
+            
+            break;
         }
 
         if (step != lastStep)

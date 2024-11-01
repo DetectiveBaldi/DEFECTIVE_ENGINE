@@ -13,6 +13,8 @@ import flixel.graphics.frames.FlxFrame;
 
 import flixel.math.FlxMath;
 
+import flixel.util.FlxStringUtil;
+
 import flixel.addons.display.FlxBackdrop;
 import flixel.addons.display.FlxGridOverlay;
 
@@ -86,7 +88,7 @@ class CharacterEditorState extends FlxState
 
         add(character);
 
-        framesIndex = character.data.frames.indexOf(character.data.frames.getFirst((frames:CharacterFramesData) -> character.animation.name == frames.name));
+        framesIndex = character.data.frames.indexOf(character.data.frames.first((frames:CharacterFramesData) -> character.animation.name == frames.name));
 
         ui = ComponentBuilder.fromFile("assets/data/editors/CharacterEditorState/ui.xml");
 
@@ -480,17 +482,9 @@ class CharacterEditorState extends FlxState
             return;
         }
 
-        var indices:Array<String> = ui.findComponent("textarea", TextArea).text.split(",");
+        var indices:Array<Int> = FlxStringUtil.toIntArray(ui.findComponent("textarea", TextArea).text) ?? new Array<Int>();
 
-        var _indices:Array<Int> = new Array<Int>();
-
-        if (ui.findComponent("textarea", TextArea).text.length > 0)
-        {
-            for (i in 0 ... indices.length)
-                _indices.push(Std.parseInt(indices[i]));
-        }
-
-        var frames:CharacterFramesData = character.data.frames.getFirst((frames:CharacterFramesData) -> ui.findComponent("_____textfield", TextField).text == frames.name);
+        var frames:CharacterFramesData = character.data.frames.first((frames:CharacterFramesData) -> ui.findComponent("_____textfield", TextField).text == frames.name);
 
         if (frames == null)
         {
@@ -500,7 +494,7 @@ class CharacterEditorState extends FlxState
 
                 prefix: ui.findComponent("______textfield", TextField).text,
 
-                indices: _indices,
+                indices: indices,
 
                 frameRate: ui.findComponent("____number-stepper", NumberStepper).value,
 
@@ -519,7 +513,7 @@ class CharacterEditorState extends FlxState
         {
             frames.prefix = ui.findComponent("______textfield", TextField).text;
 
-            frames.indices = _indices;
+            frames.indices = indices;
 
             frames.frameRate = ui.findComponent("____number-stepper", NumberStepper).value;
 
@@ -530,7 +524,7 @@ class CharacterEditorState extends FlxState
             frames.flipY = ui.findComponent("_____checkbox", CheckBox).value;
         }
         
-        if (_indices.length > 0.0)
+        if (frames.indices.length > 0.0)
             character.animation.addByIndices(frames.name, frames.prefix, frames.indices, "", frames.frameRate, frames.looped, frames.flipX, frames.flipY);
         else
             character.animation.addByPrefix(frames.name, frames.prefix, frames.frameRate, frames.looped, frames.flipX, frames.flipY);

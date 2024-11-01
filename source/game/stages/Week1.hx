@@ -22,8 +22,6 @@ class Week1 extends Stage<FlxBasic>
 
         background.antialiasing = true;
 
-        background.screenCenter();
-
         members.push(background);
 
         foreground = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/Week1/foreground")));
@@ -34,7 +32,7 @@ class Week1 extends Stage<FlxBasic>
 
         foreground.updateHitbox();
 
-        foreground.setPosition(background.getMidpoint().x - foreground.width * 0.5, ((background.height * 0.75) - foreground.height) + 175.0);
+        foreground.setPosition(background.getMidpoint().x - foreground.width * 0.5, background.height - foreground.height);
         
         members.push(foreground);
 

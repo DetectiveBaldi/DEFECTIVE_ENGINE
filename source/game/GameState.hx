@@ -43,7 +43,6 @@ import game.notes.NoteSplash;
 import game.notes.Strum;
 import game.notes.StrumLine;
 import game.stages.Stage;
-import game.stages.Week1;
 
 import ui.Countdown;
 
@@ -135,6 +134,13 @@ class GameState extends SteppingState
 
     public var debugInputs:Map<String, Input>;
 
+    public function new(stage:Stage<FlxBasic>):Void
+    {
+        super();
+
+        this.stage = stage;
+    }
+
     override function create():Void
     {
         super.create();
@@ -142,8 +148,6 @@ class GameState extends SteppingState
         gameCamera.zoom = 0.75;
 
         gameCameraTarget = new FlxObject();
-
-        gameCameraTarget.screenCenter();
 
         add(gameCameraTarget);
 
@@ -159,8 +163,6 @@ class GameState extends SteppingState
 
         hudCameraZoom = hudCamera.zoom;
 
-        stage = new Week1();
-
         for (i in 0 ... stage.members.length)
             add(stage.members[i]);
 
@@ -174,8 +176,6 @@ class GameState extends SteppingState
 
         spectator.skipSing = true;
 
-        spectator.setPosition((FlxG.width - spectator.width) * 0.5, 35.0);
-
         spectatorMap[spectator.data.name] = spectator;
 
         spectatorGroup.add(spectator);
@@ -188,8 +188,6 @@ class GameState extends SteppingState
 
         opponent = new Character(conductor, 0.0, 0.0, "assets/data/game/Character/BOYFRIEND_PIXEL", ARTIFICIAL);
 
-        opponent.setPosition(15.0, 50.0);
-
         opponentMap[opponent.data.name] = opponent;
 
         opponentGroup.add(opponent);
@@ -201,8 +199,6 @@ class GameState extends SteppingState
         add(playerGroup);
 
         player = new Character(conductor, 0.0, 0.0, "assets/data/game/Character/BOYFRIEND", PLAYABLE);
-
-        player.setPosition(FlxG.width - player.width - 15.0, 385.0);
 
         playerMap[player.data.name] = player;
 
@@ -397,7 +393,7 @@ class GameState extends SteppingState
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
 
-                    var note:Note = notes.getFirst((_note:Note) -> Math.abs(conductor.time - _note.time) <= 166.6 && strum.direction == _note.direction && strumLine.lane == _note.lane && !_note.animation.name.contains("Hold"));
+                    var note:Note = notes.getFirst((_note:Note) -> _note.exists && Math.abs(conductor.time - _note.time) <= 166.6 && strum.direction == _note.direction && strumLine.lane == _note.lane && !_note.animation.name.contains("Hold"));
 
                     if (note == null)
                         strumLine.ghostTap.dispatch(strum.direction);
@@ -409,7 +405,7 @@ class GameState extends SteppingState
                 {
                     var strum:Strum = strumLine.members[j];
 
-                    var note:Note = notes.getFirst((_note:Note) -> conductor.time >= _note.time && strum.direction == _note.direction && strumLine.lane == _note.lane && _note.animation.name.contains("Hold"));
+                    var note:Note = notes.getFirst((_note:Note) -> _note.exists && conductor.time >= _note.time && strum.direction == _note.direction && strumLine.lane == _note.lane && _note.animation.name.contains("Hold"));
 
                     if (note != null)
                         strumLine.noteHit.dispatch(note);
@@ -436,7 +432,7 @@ class GameState extends SteppingState
 
             if (strumLine.artificial)
             {
-                if (conductor.time >= note.time && strumLine.lane == note.lane)
+                if (note.exists && conductor.time >= note.time && strumLine.lane == note.lane)
                 {
                     strumLine.noteHit.dispatch(note);
 
@@ -447,7 +443,7 @@ class GameState extends SteppingState
             }
             else
             {
-                if (conductor.time > note.time + 166.6 && strumLine.lane == note.lane)
+                if (note.exists && conductor.time > note.time + 166.6 && strumLine.lane == note.lane)
                 {
                     strumLine.noteMiss.dispatch(note);
     
@@ -475,36 +471,19 @@ class GameState extends SteppingState
             if (note.time > conductor.time + hudCamera.height / hudCamera.zoom / chartSpeed / note.speed)
                 break;
 
-            var j:Int = notes.members.length - 1;
-
-            while (j >= 0.0)
+            if (notes.members.length > 0.0)
             {
-                var _note:Note = notes.members[j];
+                var _note:Note = notes.members[notes.members.length - 1];
 
                 if (note.time == _note.time && note.direction == _note.direction && note.lane == _note.lane && !_note.animation.name.contains("Hold"))
                 {
-                    notes.remove(_note, true).destroy();
-
-                    j--;
-
-                    var k:Int = _note.children.length - 1;
-
-                    while (k >= 0.0)
-                    {
-                        notes.remove(_note.children[k], true).destroy();
-
-                        k--;
-
-                        j--;
-                    }
+                    noteIndex++;
 
                     continue;
                 }
-
-                j--;
             }
 
-            var _note:Note = new Note();
+            var _note:Note = notes.recycle(Note);
 
             _note.time = note.time;
 
@@ -528,11 +507,7 @@ class GameState extends SteppingState
 
             for (k in 0 ... Math.round(note.length / (((60 / conductor.findTimeChangeAt(chart.tempo, note.time).tempo) * 1000.0) * 0.25)))
             {
-                var sustain:Note = new Note();
-
-                sustain.parent = _note;
-
-                _note.children.push(sustain);
+                var sustain:Note = notes.recycle(Note);
 
                 sustain.time = _note.time + ((((60 / conductor.findTimeChangeAt(chart.tempo, note.time).tempo) * 1000.0) * 0.25) * (k + 1));
 
@@ -576,7 +551,7 @@ class GameState extends SteppingState
                 switch (event.name:String)
                 {
                     case "Camera Follow":
-                        CameraFollowEvent.dispatch(this, event.value.x, event.value.y, event.value.duration, event.value.ease);
+                        CameraFollowEvent.dispatch(this, event.value.x, event.value.y, event.value.duration, event.value.character, event.value.ease);
 
                     case "Camera Zoom":
                         CameraZoomEvent.dispatch(this, event.value.camera, event.value.zoom, event.value.duration, event.value.ease);
@@ -769,9 +744,9 @@ class GameState extends SteppingState
 
                     noteSplash.direction = strum.direction;
 
-                    noteSplash.animation.onFinish.add((name:String) -> noteSplash.kill());
-
                     noteSplash.animation.play('${FlxG.random.getObject(noteSplash.textureData.frames).prefix} ${NoteSplash.directions[noteSplash.direction].toLowerCase()}', false, FlxG.random.bool());
+
+                    noteSplash.animation.onFinish.add((name:String) -> noteSplash.kill());
 
                     noteSplash.scale.set(0.685, 0.685);
 
@@ -787,7 +762,7 @@ class GameState extends SteppingState
         if (mainVocals != null)
             mainVocals.volume = 1.0;
 
-        notes.remove(note, true).destroy();
+        note.kill();
     }
 
     public function noteMiss(note:Note):Void
@@ -805,7 +780,7 @@ class GameState extends SteppingState
         if (mainVocals != null)
             mainVocals.volume = 0.0;
 
-        notes.remove(note, true).destroy();
+        note.kill();
     }
 
     public function opponentNoteHit(note:Note):Void
@@ -813,6 +788,9 @@ class GameState extends SteppingState
         for (i in 0 ... opponentGroup.members.length)
         {
             var character:Character = opponentGroup.members[i];
+
+            if (character.skipSing)
+                continue;
 
             character.singCount = 0.0;
 
@@ -830,6 +808,9 @@ class GameState extends SteppingState
         {
             var character:Character = opponentGroup.members[i];
 
+            if (character.skipSing)
+                continue;
+
             character.singCount = 0.0;
 
             if (character.animation.exists('Sing${Note.directions[note.direction]}MISS'))
@@ -846,6 +827,9 @@ class GameState extends SteppingState
         {
             var character:Character = playerGroup.members[i];
 
+            if (character.skipSing)
+                continue;
+
             character.singCount = 0.0;
 
             if (character.animation.exists('Sing${Note.directions[note.direction]}'))
@@ -861,6 +845,9 @@ class GameState extends SteppingState
         for (i in 0 ... playerGroup.members.length)
         {
             var character:Character = playerGroup.members[i];
+
+            if (character.skipSing)
+                continue;
 
             character.singCount = 0.0;
 
