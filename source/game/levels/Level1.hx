@@ -1,7 +1,5 @@
 package game.levels;
 
-import flixel.FlxG;
-
 import game.stages.Week1;
 
 class Level1 extends GameState
