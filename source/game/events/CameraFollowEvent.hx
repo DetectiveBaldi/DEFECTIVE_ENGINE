@@ -9,39 +9,29 @@ import game.GameState;
 
 class CameraFollowEvent
 {
-    public static function dispatch(game:GameState, x:Float, y:Float, character:String, duration:Float, ease:String):Void
+    public static function dispatch(game:GameState, x:Float, y:Float, characterMap:String, character:String, duration:Float, ease:String):Void
     {
-        x ?? 0.0;
-
-        y ?? 0.0;
-
-        character ?? "";
-
-        duration ?? game.conductor.crotchet * 0.001;
-
-        ease ?? "linear";
-
-        switch (character:String)
+        switch (characterMap:String)
         {
-            case "spectator":
+            case "spectatorMap":
             {
-                x = game.player.getMidpoint().x;
+                x = game.spectatorMap[character].getMidpoint().x;
 
-                y = game.player.getMidpoint().y;
+                y = game.spectatorMap[character].getMidpoint().y;
             }
 
-            case "opponent":
+            case "opponentMap":
             {
-                x = game.player.getMidpoint().x;
+                x = game.opponentMap[character].getMidpoint().x;
 
-                y = game.player.getMidpoint().y;
+                y = game.opponentMap[character].getMidpoint().y;
             }
 
-            case "player":
+            case "playerMap":
             {
-                x = game.player.getMidpoint().x;
+                x = game.playerMap[character].getMidpoint().x;
 
-                y = game.player.getMidpoint().y;
+                y = game.playerMap[character].getMidpoint().y;
             }
         }
 

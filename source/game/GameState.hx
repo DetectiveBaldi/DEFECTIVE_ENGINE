@@ -546,22 +546,22 @@ class GameState extends SteppingState
         {
             var event:ParsedEvent = chart.events[eventIndex];
 
-            if (conductor.time >= event.time)
+            if (conductor.time < event.time)
+                break;
+
+            switch (event.name:String)
             {
-                switch (event.name:String)
-                {
-                    case "Camera Follow":
-                        CameraFollowEvent.dispatch(this, event.value.x, event.value.y, event.value.duration, event.value.character, event.value.ease);
+                case "Camera Follow":
+                    CameraFollowEvent.dispatch(this, event.value.x ?? 0.0, event.value.y ?? 0.0, event.value.characterMap ?? "", event.value.character ?? "", event.value.duration ?? conductor.crotchet * 0.001, event.value.ease ?? "linear");
 
-                    case "Camera Zoom":
-                        CameraZoomEvent.dispatch(this, event.value.camera, event.value.zoom, event.value.duration, event.value.ease);
+                case "Camera Zoom":
+                    CameraZoomEvent.dispatch(this, event.value.camera, event.value.zoom, event.value.duration, event.value.ease);
 
-                    case "Speed Change":
-                        SpeedChangeEvent.dispatch(this, event.value.speed, event.value.duration, event.value.ease);
-                }
-
-                eventIndex++;
+                case "Speed Change":
+                    SpeedChangeEvent.dispatch(this, event.value.speed, event.value.duration, event.value.ease);
             }
+
+            eventIndex++;
         }
 
         if (songStarted)
