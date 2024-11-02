@@ -36,8 +36,19 @@ class CameraFollowEvent
         }
 
         if (duration > 0.0)
-            FlxTween.tween(game.gameCameraTarget, {x: x, y: y}, duration, {ease: Reflect.getProperty(FlxEase, ease)});
+        {
+            game.gameCamera.target = null;
+
+            game.gameCameraTarget.setPosition(x, y);
+
+            FlxTween.tween(game.gameCamera.scroll, {x: game.gameCameraTarget.x - game.gameCamera.width * 0.5, y: game.gameCameraTarget.y - game.gameCamera.height * 0.5}, duration,
+            {
+                ease: Reflect.getProperty(FlxEase, ease),
+
+                onComplete: (tween:FlxTween) -> game.gameCamera.follow(game.gameCameraTarget, LOCKON, 0.05)
+            });
+        }
         else
-            game.gameCameraTarget.setPosition(x, y,);
+            game.gameCameraTarget.setPosition(x, y);
     }
 }
