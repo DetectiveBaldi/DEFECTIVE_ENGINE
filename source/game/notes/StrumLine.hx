@@ -55,13 +55,13 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
 
         inputs =
         [
-            {name: "NOTE:LEFT", keys: [FlxKey.Z, FlxKey.A, FlxKey.LEFT]},
+            new Input("NOTE:LEFT", [FlxKey.Z, FlxKey.A, FlxKey.LEFT]),
 
-            {name: "NOTE:DOWN", keys: [FlxKey.X, FlxKey.S, FlxKey.DOWN]},
+            new Input("NOTE:DOWN", [FlxKey.X, FlxKey.S, FlxKey.DOWN]),
 
-            {name: "NOTE:UP", keys: [FlxKey.PERIOD, FlxKey.W, FlxKey.UP]},
+            new Input("NOTE:UP", [FlxKey.PERIOD, FlxKey.W, FlxKey.UP]),
 
-            {name: "NOTE:RIGHT", keys: [FlxKey.SLASH, FlxKey.D, FlxKey.RIGHT]}
+            new Input("NOTE:RIGHT", [FlxKey.SLASH, FlxKey.D, FlxKey.RIGHT])
         ];
 
         lane = -1;

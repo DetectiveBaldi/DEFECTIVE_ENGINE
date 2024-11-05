@@ -362,7 +362,7 @@ class GameState extends SteppingState
 
         debugInputs = new Map<String, Input>();
 
-        debugInputs["EDITORS:CHARACTER"] = {name: "EDITORS:CHARACTER", keys: [FlxKey.SEVEN]};
+        debugInputs["EDITORS:CHARACTER"] = new Input("EDITORS:CHARACTER", [FlxKey.SEVEN]);
     }
 
     override function update(elapsed:Float):Void

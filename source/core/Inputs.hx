@@ -64,9 +64,16 @@ class Inputs
     }
 }
 
-typedef Input =
+class Input
 {
-    var name:String;
+    public var name:String;
 
-    var keys:Array<FlxKey>;
+    public var keys:Array<FlxKey>;
+
+    public function new(name:String, keys:Array<FlxKey>):Void
+    {
+        this.name = name;
+
+        this.keys = keys;
+    }
 }
