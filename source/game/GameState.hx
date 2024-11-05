@@ -70,7 +70,7 @@ class GameState extends SteppingState
 
     public var hudCameraZoom:Float;
 
-    public var stage:Stage<FlxBasic>;
+    public var stage:Stage;
 
     public var spectatorMap:Map<String, Character>;
 
@@ -134,7 +134,7 @@ class GameState extends SteppingState
 
     public var debugInputs:Map<String, Input>;
 
-    public function new(stage:Stage<FlxBasic>):Void
+    public function new(stage:Stage):Void
     {
         super();
 
@@ -163,8 +163,7 @@ class GameState extends SteppingState
 
         hudCameraZoom = hudCamera.zoom;
 
-        for (i in 0 ... stage.members.length)
-            add(stage.members[i]);
+        add(stage);
 
         spectatorMap = new Map<String, Character>();
 

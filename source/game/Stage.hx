@@ -1,13 +1,11 @@
 package game;
 
-import flixel.FlxBasic;
+import flixel.group.FlxContainer;
 
-class Stage<T:FlxBasic>
+class Stage extends FlxContainer
 {
-    public var members:Array<T>;
-
     public function new():Void
     {
-        members = new Array<T>();
+        super();
     }
 }

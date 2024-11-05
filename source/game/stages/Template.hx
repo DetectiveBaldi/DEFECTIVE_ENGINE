@@ -1,12 +1,11 @@
 package game.stages;
 
-import flixel.FlxBasic;
 import flixel.FlxSprite;
 
 import core.AssetMan;
 import core.Paths;
 
-class Week1 extends Stage<FlxBasic>
+class Template extends Stage
 {
     public var background:FlxSprite;
 
@@ -18,13 +17,13 @@ class Week1 extends Stage<FlxBasic>
     {
         super();
 
-        background = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/Week1/background")));
+        background = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/Template/background")));
 
         background.antialiasing = true;
 
-        members.push(background);
+        add(background);
 
-        foreground = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/Week1/foreground")));
+        foreground = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/Template/foreground")));
 
         foreground.antialiasing = true;
 
@@ -34,9 +33,9 @@ class Week1 extends Stage<FlxBasic>
 
         foreground.setPosition(background.getMidpoint().x - foreground.width * 0.5, background.height - foreground.height);
         
-        members.push(foreground);
+        add(foreground);
 
-        curtains = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/Week1/curtains")));
+        curtains = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/Template/curtains")));
 
         curtains.antialiasing = true;
 
@@ -46,6 +45,6 @@ class Week1 extends Stage<FlxBasic>
 
         curtains.setPosition(background.getMidpoint().x - curtains.width * 0.5, background.getMidpoint().y - curtains.height * 0.5);
 
-        members.push(curtains);
+        add(curtains);
     }
 }
