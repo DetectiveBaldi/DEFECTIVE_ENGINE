@@ -13,70 +13,70 @@ class Chart
     {
         var output:Chart = new Chart();
 
-        var parsed:ParsedChart = Json.parse(AssetMan.text(Paths.json(path)));
+        var loaded:LoadedChart = Json.parse(AssetMan.text(Paths.json(path)));
 
-        output.id = parsed.id;
+        output.name = loaded.name;
 
-        output.tempo = parsed.tempo;
+        output.tempo = loaded.tempo;
 
-        output.speed = parsed.speed;
+        output.speed = loaded.speed;
 
-        output.notes = parsed.notes;
+        output.notes = loaded.notes;
 
-        output.events = parsed.events;
+        output.events = loaded.events;
 
-        output.timeChanges = parsed.timeChanges;
+        output.timeChanges = loaded.timeChanges;
 
         return output;
     }
 
     /**
-     * A unique `String` identifier for `this` `Chart`. Used in several areas.
+     * A unique `String` identifier for `this` `Chart`. Used in several areas of the application.
      */
-    public var id:String;
+    public var name:String;
 
     public var tempo:Float;
 
     public var speed:Float;
 
-    public var notes:Array<ParsedNote>;
+    public var notes:Array<LoadedNote>;
 
-    public var events:Array<ParsedEvent>;
+    public var events:Array<LoadedEvent>;
 
-    public var timeChanges:Array<ParsedTimeChange>;
+    public var timeChanges:Array<LoadedTimeChange>;
 
     public function new():Void
     {
-        id = "Test";
+        name = "Test";
 
         tempo = 150.0;
 
         speed = 1.6;
 
-        notes = new Array<ParsedNote>();
+        notes = new Array<LoadedNote>();
 
-        events = new Array<ParsedEvent>();
+        events = new Array<LoadedEvent>();
 
-        timeChanges = new Array<ParsedTimeChange>();
+        timeChanges = new Array<LoadedTimeChange>();
     }
 }
 
-typedef ParsedChart =
+typedef LoadedChart =
 {
-    var id:String;
+    var name:String;
 
     var tempo:Float;
 
     var speed:Float;
 
-    var notes:Array<ParsedNote>;
+    var notes:Array<LoadedNote>;
 
-    var events:Array<ParsedEvent>;
+    var events:Array<LoadedEvent>;
 
-    var timeChanges:Array<ParsedTimeChange>;
+    var timeChanges:Array<LoadedTimeChange>;
 };
 
-typedef ParsedNote = TimedObject &
+typedef LoadedNote = TimedObject &
 {
     var speed:Float;
 
@@ -87,14 +87,14 @@ typedef ParsedNote = TimedObject &
     var length:Float;
 };
 
-typedef ParsedEvent = TimedObject &
+typedef LoadedEvent = TimedObject &
 {
     var name:String;
 
     var value:Dynamic;
 };
 
-typedef ParsedTimeChange = TimedObject &
+typedef LoadedTimeChange = TimedObject &
 {
     var tempo:Float;
 

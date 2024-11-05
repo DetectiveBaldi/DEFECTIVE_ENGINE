@@ -31,8 +31,8 @@ import editors.CharacterEditorState;
 
 import extendable.SteppingState;
 
-import game.Chart.ParsedEvent;
-import game.Chart.ParsedNote;
+import game.Chart.LoadedEvent;
+import game.Chart.LoadedNote;
 import game.ChartConverters.FunkConverter;
 import game.ChartConverters.PsychConverter;
 import game.events.CameraFollowEvent;
@@ -42,13 +42,15 @@ import game.notes.Note;
 import game.notes.NoteSplash;
 import game.notes.Strum;
 import game.notes.StrumLine;
-import game.stages.Stage;
+import game.Stage;
 
 import ui.Countdown;
 
 import util.TimingUtil;
 
 using StringTools;
+
+using util.ArrayUtil;
 
 class GameState extends SteppingState
 {
@@ -95,8 +97,6 @@ class GameState extends SteppingState
     public var misses:Int;
 
     public var bonus:Float;
-
-    public var combo:Int;
 
     public var judgements:Array<Judgement>;
 
@@ -212,19 +212,17 @@ class GameState extends SteppingState
 
         bonus = 0.0;
 
-        combo = 0;
-
         judgements =
         [
-            {name: "Epic!", timing: 15.0, bonus: 1.0, health: 2.85, score: 500, hits: 0},
+            {name: "Epic!", timing: 22.5, bonus: 1.0, health: 2.85, score: 500, hits: 0},
 
             {name: "Sick!", timing: 45.0, bonus: 1.0, health: 2.5, score: 350, hits: 0},
 
-            {name: "Good", timing: 75.0, bonus: 0.65, health: 1.5, score: 250, hits: 0},
+            {name: "Good", timing: 90.0, bonus: 0.65, health: 1.5, score: 250, hits: 0},
 
-            {name: "Bad", timing: 125.0, bonus: 0.35, health: -1.5, score: 150, hits: 0},
+            {name: "Bad", timing: 135.0, bonus: 0.35, health: -1.5, score: 150, hits: 0},
 
-            {name: "Shit", timing: Math.POSITIVE_INFINITY, health: -2.5, bonus: 0.0, score: 50, hits: 0}
+            {name: "Shit", timing: 166.6, health: -2.5, bonus: 0.0, score: 50, hits: 0}
         ];
 
         healthBar = new HealthBar(conductor, 0.0, 0.0, RIGHT_TO_LEFT, 600, 25);
@@ -241,7 +239,7 @@ class GameState extends SteppingState
 
         add(healthBar);
 
-        scoreTxt = new FlxText(0.0, 0.0, FlxG.width, "Score: 0 | Misses: 0 | Accuracy: 0.0%", 24);
+        scoreTxt = new FlxText(0.0, 0.0, FlxG.width, "Score: 0 | Misses: 0 | Rating: 0.0%", 24);
 
         scoreTxt.camera = hudCamera;
 
@@ -393,7 +391,7 @@ class GameState extends SteppingState
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
 
-                    var note:Note = notes.getFirst((_note:Note) -> _note.exists && Math.abs(conductor.time - _note.time) <= 166.6 && strum.direction == _note.direction && strumLine.lane == _note.lane && !_note.animation.name.contains("Hold"));
+                    var note:Note = notes.getFirst((_note:Note) -> _note.exists && Math.abs(conductor.time - _note.time) <= judgements.last().timing && strum.direction == _note.direction && strumLine.lane == _note.lane && !_note.animation.name.contains("Hold"));
 
                     if (note == null)
                         strumLine.ghostTap.dispatch(strum.direction);
@@ -443,7 +441,7 @@ class GameState extends SteppingState
             }
             else
             {
-                if (note.exists && conductor.time > note.time + 166.6 && strumLine.lane == note.lane)
+                if (note.exists && conductor.time > note.time + judgements.last().timing && strumLine.lane == note.lane)
                 {
                     strumLine.noteMiss.dispatch(note);
     
@@ -466,14 +464,14 @@ class GameState extends SteppingState
 
         while (noteIndex < chart.notes.length)
         {
-            var note:ParsedNote = chart.notes[noteIndex];
+            var note:LoadedNote = chart.notes[noteIndex];
 
             if (note.time > conductor.time + hudCamera.height / hudCamera.zoom / chartSpeed / note.speed)
                 break;
 
             if (notes.members.length > 0.0)
             {
-                var _note:Note = notes.members[notes.members.length - 1];
+                var _note:Note = notes.members.last();
 
                 if (note.time == _note.time && note.direction == _note.direction && note.lane == _note.lane && !_note.animation.name.contains("Hold"))
                 {
@@ -496,6 +494,8 @@ class GameState extends SteppingState
             _note.length = note.length;
 
             _note.animation.play(Note.directions[_note.direction].toLowerCase());
+
+            _note.flipY = false;
 
             _note.scale.set(0.685, 0.685);
 
@@ -544,7 +544,7 @@ class GameState extends SteppingState
 
         while (eventIndex < chart.events.length)
         {
-            var event:ParsedEvent = chart.events[eventIndex];
+            var event:LoadedEvent = chart.events[eventIndex];
 
             if (conductor.time < event.time)
                 break;
@@ -633,7 +633,7 @@ class GameState extends SteppingState
 
             for (i in 0 ... chart.notes.length)
             {
-                var note:ParsedNote = chart.notes[i];
+                var note:LoadedNote = chart.notes[i];
 
                 note.direction = shuffledDirections[note.direction];
             }
@@ -648,7 +648,7 @@ class GameState extends SteppingState
 
             for (i in 0 ... chart.notes.length)
             {
-                var note:ParsedNote = chart.notes[i];
+                var note:LoadedNote = chart.notes[i];
 
                 note.direction = mirroredDirections[note.direction];
             }
@@ -731,12 +731,10 @@ class GameState extends SteppingState
                 hits++;
 
                 bonus += judgement.bonus;
-                
-                combo++;
 
                 healthBar.value = FlxMath.bound(healthBar.value + judgement.health, healthBar.bar.min, healthBar.bar.max);
 
-                scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+                scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
                 if (judgement.name == "Epic!" || judgement.name == "Sick!")
                 {
@@ -771,11 +769,9 @@ class GameState extends SteppingState
 
         misses++;
 
-        combo = 0;
-
         healthBar.value = FlxMath.bound(healthBar.value - 3.5, healthBar.bar.min, healthBar.bar.max);
 
-        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
         if (mainVocals != null)
             mainVocals.volume = 0.0;
@@ -868,11 +864,9 @@ class GameState extends SteppingState
 
         misses++;
 
-        combo = 0;
+        healthBar.value = FlxMath.bound(healthBar.value - 3.5, healthBar.bar.min, healthBar.bar.max);
 
-        healthBar.value = FlxMath.bound(healthBar.value - 4.5, healthBar.bar.min, healthBar.bar.max);
-
-        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
         if (mainVocals != null)
             mainVocals.volume = 0.0;

@@ -67,8 +67,6 @@ class OpeningState extends FlxState
 
         Preferences.init();
 
-        Preferences.load();
-
         logger = new Logger();
 
         FlxG.plugins.addPlugin(logger);

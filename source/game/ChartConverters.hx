@@ -16,23 +16,23 @@ class FunkConverter
     {
         var output:Chart = new Chart();
 
-        var parsedChart:Dynamic = Json.parse(AssetMan.text(Paths.json(chartPath)));
+        var loadedChart:Dynamic = Json.parse(AssetMan.text(Paths.json(chartPath)));
 
-        var notes:Array<FunkNote> = Reflect.field(parsedChart.notes, difficulty);
+        var notes:Array<FunkNote> = Reflect.field(loadedChart.notes, difficulty);
 
         TimingUtil.sortSimple(notes);
 
-        var parsedMeta:Dynamic = Json.parse(AssetMan.text(Paths.json(metaPath)));
+        var loadedMeta:Dynamic = Json.parse(AssetMan.text(Paths.json(metaPath)));
 
-        var timeChanges:Array<FunkTimeChange> = parsedMeta.timeChanges;
+        var timeChanges:Array<FunkTimeChange> = loadedMeta.timeChanges;
 
         TimingUtil.sortSimple(timeChanges);
 
-        output.id = parsedMeta.songName;
+        output.name = loadedMeta.songName;
 
         output.tempo = timeChanges.shift().bpm;
 
-        output.speed = Reflect.field(parsedChart.scrollSpeed, difficulty);
+        output.speed = Reflect.field(loadedChart.scrollSpeed, difficulty);
 
         for (i in 0 ... notes.length)
         {
@@ -58,17 +58,17 @@ class PsychConverter
     {
         var output:Chart = new Chart();
 
-        var parsed:Dynamic = Json.parse(AssetMan.text(Paths.json(path)));
+        var loaded:Dynamic = Json.parse(AssetMan.text(Paths.json(path)));
 
-        output.id = parsed.song;
+        output.name = loaded.song;
 
-        output.tempo = parsed.bpm;
+        output.tempo = loaded.bpm;
 
-        output.speed = parsed.speed;
+        output.speed = loaded.speed;
 
-        for (i in 0 ... parsed.notes.length)
+        for (i in 0 ... loaded.notes.length)
         {
-            var section:Dynamic = parsed.notes[i];
+            var section:Dynamic = loaded.notes[i];
 
             var _section:PsychSection =
             {
@@ -105,9 +105,9 @@ class PsychConverter
 
         var tempo:Float = output.tempo;
 
-        for (i in 0 ... parsed.notes.length)
+        for (i in 0 ... loaded.notes.length)
         {
-            var section:Dynamic = parsed.notes[i];
+            var section:Dynamic = loaded.notes[i];
 
             var _section:PsychSection =
             {

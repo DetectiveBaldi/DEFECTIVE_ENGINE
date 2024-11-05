@@ -2,38 +2,37 @@ package core;
 
 import flixel.FlxBasic;
 
-import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal.FlxTypedSignal;
 
-import game.Chart.ParsedTimeChange;
+import game.Chart.LoadedTimeChange;
 
 /**
  * A class which handles musical timing events throughout the game. It is the heart of `game.GameState`.
  */
 class Conductor extends FlxBasic
 {
-    public var decimalStep(get, never):Float;
+    public var unsafeStep(get, never):Float;
 
     @:noCompletion
-    function get_decimalStep():Float
+    function get_unsafeStep():Float
     {
         return ((time - timeChange.time) / (crotchet * 0.25)) + timeChange.step;
     }
 
-    public var decimalBeat(get, never):Float;
+    public var unsafeBeat(get, never):Float;
 
     @:noCompletion
-    function get_decimalBeat():Float
+    function get_unsafeBeat():Float
     {
-        return decimalStep * 0.25;
+        return unsafeStep * 0.25;
     }
 
-    public var decimalSection(get, never):Float;
+    public var unsafeSection(get, never):Float;
 
     @:noCompletion
-    function get_decimalSection():Float
+    function get_unsafeSection():Float
     {
-        return decimalBeat * 0.25;
+        return unsafeBeat * 0.25;
     }
     
     public var step(get, never):Int;
@@ -41,7 +40,7 @@ class Conductor extends FlxBasic
     @:noCompletion
     function get_step():Int
     {
-        return Math.floor(decimalStep);
+        return Math.floor(unsafeStep);
     }
 
     public var beat(get, never):Int;
@@ -49,7 +48,7 @@ class Conductor extends FlxBasic
     @:noCompletion
     function get_beat():Int
     {
-        return Math.floor(decimalBeat);
+        return Math.floor(unsafeBeat);
     }
 
     public var section(get, never):Int;
@@ -57,7 +56,7 @@ class Conductor extends FlxBasic
     @:noCompletion
     function get_section():Int
     {
-        return Math.floor(decimalSection);
+        return Math.floor(unsafeSection);
     }
 
     public var stepHit:FlxTypedSignal<(step:Int)->Void>;
@@ -78,9 +77,9 @@ class Conductor extends FlxBasic
 
     public var time:Float;
 
-    public var timeChange:ParsedTimeChange;
+    public var timeChange:LoadedTimeChange;
 
-    public var timeChanges:Array<ParsedTimeChange>;
+    public var timeChanges:Array<LoadedTimeChange>;
 
     public function new():Void
     {
@@ -100,7 +99,7 @@ class Conductor extends FlxBasic
 
         timeChange = {time: 0.0, tempo: 150.0, step: 0.0};
 
-        timeChanges = new Array<ParsedTimeChange>();
+        timeChanges = new Array<LoadedTimeChange>();
     }
 
     override function update(elapsed:Float):Void
@@ -169,13 +168,13 @@ class Conductor extends FlxBasic
         sectionHit = null;
     }
 
-    public function findTimeChangeAt(_tempo:Float, _time:Float):ParsedTimeChange
+    public function findTimeChangeAt(_tempo:Float, _time:Float):LoadedTimeChange
     {
-        var _timeChange:ParsedTimeChange = {tempo: _tempo, time: 0.0, step: 0.0};
+        var _timeChange:LoadedTimeChange = {tempo: _tempo, time: 0.0, step: 0.0};
 
         for (i in 0 ... timeChanges.length)
         {
-            var __timeChange:ParsedTimeChange = timeChanges[i];
+            var __timeChange:LoadedTimeChange = timeChanges[i];
 
             if (_time >= __timeChange.time)
                 _timeChange = __timeChange;

@@ -40,7 +40,7 @@ import core.Paths;
 
 import game.Character;
 
-import game.levels.Level1;
+import game.levels.Level2;
 
 using StringTools;
 
@@ -396,7 +396,7 @@ class CharacterEditorState extends FlxState
             }
 
             if (FlxG.keys.justPressed.ENTER)
-                FlxG.switchState(() -> new Level1());
+                FlxG.switchState(() -> new Level2());
         }
     }
 
