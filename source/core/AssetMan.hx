@@ -2,6 +2,8 @@ package core;
 
 import openfl.media.Sound;
 
+import openfl.utils.Assets;
+
 import flixel.FlxG;
 
 import flixel.graphics.FlxGraphic;
@@ -9,7 +11,7 @@ import flixel.graphics.FlxGraphic;
 import core.Preferences;
 
 /**
- * A class which handles the caching and storing of graphics and sounds.
+ * A class which handles the caching of graphics and sounds.
  */
 class AssetMan
 {
@@ -36,7 +38,7 @@ class AssetMan
         if (graphics.exists(path))
             return graphics[path];
 
-        var graphic:FlxGraphic = FlxGraphic.fromBitmapData(#if html5 openfl.utils.Assets.getBitmapData(path) #else openfl.display.BitmapData.fromFile(path) #end );
+        var graphic:FlxGraphic = FlxGraphic.fromBitmapData(#if html5 Assets.getBitmapData(path) #else openfl.display.BitmapData.fromFile(path) #end );
 
         #if (!hl && !html5)
             if (Preferences.gpuCaching && gpuCaching)
@@ -99,7 +101,7 @@ class AssetMan
             output = Sound.fromFile(path);
         #else
             #if html5
-                output = openfl.utils.Assets.getSound(path);
+                output = Assets.getSound(path);
             #else
                 if (Preferences.soundStreaming && soundStreaming)
                     output = Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
@@ -114,12 +116,58 @@ class AssetMan
     }
 
     /**
+     * Removes the specified sound from the cache.
+     * @param path The file path of the sound you want to remove.
+     */
+    public static function removeSound(path:String):Void
+    {
+        if (!sounds.exists(path))
+            return;
+
+        var sound:Sound = sounds[path];
+
+        for (i in 0 ... FlxG.sound.list.length)
+        {
+            @:privateAccess
+            {
+                if (FlxG.sound.list.members[i]._sound == sound)
+                    return;
+            }
+        }
+        
+        sound.close();
+
+        Assets.cache.removeSound(path);
+
+        sounds.remove(path);
+    }
+
+    /**
+     * Clears each item from the sound cache.
+     */
+    public static function clearSounds():Void
+    {
+        for (key => value in sounds)
+            removeSound(key);
+    }
+
+    /**
+     * Clears each item from the graphic and sound caches.
+     */
+    public static function clearCaches():Void
+    {
+        clearGraphics();
+
+        clearSounds();
+    }
+
+    /**
      * Gets the content of the specified text file. Then, it is returned
      * @param path The file path of the text you want to recieve content from.
      * @return `String`
      */
     public static function text(path:String):String
     {
-        return #if html5 openfl.utils.Assets.getText #else sys.io.File.getContent #end (path);
+        return #if html5 Assets.getText #else sys.io.File.getContent #end (path);
     }
 }

@@ -594,7 +594,7 @@ class GameState extends SteppingState
 
         if (Inputs.checkStatus(debugInputs["EDITORS:CHARACTER"], JUST_PRESSED))
         {
-            AssetMan.clearGraphics();
+            AssetMan.clearCaches();
             
             FlxG.switchState(() -> new CharacterEditorState());
         }

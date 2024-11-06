@@ -406,7 +406,7 @@ class CharacterEditorState extends FlxState
 
         FlxG.mouse.visible = false;
 
-        AssetMan.clearGraphics();
+        AssetMan.clearCaches();
     }
 
     public function refreshMainTab():Void
