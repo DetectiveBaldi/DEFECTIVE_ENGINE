@@ -44,7 +44,7 @@ class GameOverSubState extends SteppingSubState
 
         var _player:Character = game.player;
 
-        player = new Character(conductor, 0.0, 0.0, 'assets/data/game/Character/BOYFRIEND_DEAD', PLAYABLE);
+        player = new Character(conductor, 0.0, 0.0, 'assets/data/game/Character/BOYFRIEND_GAMEOVER', PLAYABLE);
 
         player.skipDance = true;
 

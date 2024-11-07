@@ -4,7 +4,6 @@ import haxe.Json;
 
 import haxe.ds.ArraySort;
 
-import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -789,6 +788,9 @@ class GameState extends SteppingState
 
             character.singCount = 0.0;
 
+            if (note.animation.name.contains("Hold") && character.animation.name == 'Sing${Note.directions[note.direction]}')
+                continue;
+
             if (character.animation.exists('Sing${Note.directions[note.direction]}'))
                 character.animation.play('Sing${Note.directions[note.direction]}', true);
         }
@@ -807,6 +809,9 @@ class GameState extends SteppingState
                 continue;
 
             character.singCount = 0.0;
+
+            if (note.animation.name.contains("Hold") && character.animation.name == 'Sing${Note.directions[note.direction]}MISS')
+                continue;
 
             if (character.animation.exists('Sing${Note.directions[note.direction]}MISS'))
                 character.animation.play('Sing${Note.directions[note.direction]}MISS', true);
@@ -827,6 +832,9 @@ class GameState extends SteppingState
 
             character.singCount = 0.0;
 
+            if (note.animation.name.contains("Hold") && character.animation.name == 'Sing${Note.directions[note.direction]}')
+                continue;
+            
             if (character.animation.exists('Sing${Note.directions[note.direction]}'))
                 character.animation.play('Sing${Note.directions[note.direction]}', true);
         }
@@ -845,6 +853,9 @@ class GameState extends SteppingState
                 continue;
 
             character.singCount = 0.0;
+
+            if (note.animation.name.contains("Hold") && character.animation.name == 'Sing${Note.directions[note.direction]}MISS')
+                continue;
 
             if (character.animation.exists('Sing${Note.directions[note.direction]}MISS'))
                 character.animation.play('Sing${Note.directions[note.direction]}MISS', true);

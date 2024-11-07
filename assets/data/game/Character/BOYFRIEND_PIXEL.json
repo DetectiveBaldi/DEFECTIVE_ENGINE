@@ -15,15 +15,15 @@
 
     "frames":
     [
-        {"name": "dance", "prefix": "BF IDLE0", "indices": []},
+        {"name": "dance", "prefix": "BF IDLE instance 1", "indices": []},
 
-        {"name": "SingLEFT", "prefix": "BF LEFT NOTE0", "indices": []},
+        {"name": "SingLEFT", "prefix": "BF LEFT NOTE instance 1", "indices": []},
 
-        {"name": "SingDOWN", "prefix": "BF DOWN NOTE0", "indices": []},
+        {"name": "SingDOWN", "prefix": "BF DOWN NOTE instance 1", "indices": []},
 
-        {"name": "SingUP", "prefix": "BF UP NOTE0", "indices": []},
+        {"name": "SingUP", "prefix": "BF UP NOTE instance 1", "indices": []},
 
-        {"name": "SingRIGHT", "prefix": "BF RIGHT NOTE0", "indices": []}
+        {"name": "SingRIGHT", "prefix": "BF RIGHT NOTE instance 1", "indices": []}
     ],
 
     "danceSteps": ["dance"],
