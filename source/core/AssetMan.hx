@@ -21,9 +21,9 @@ class AssetMan
 
     public static function init():Void
     {
-        graphics = new Map<String, FlxGraphic>();
+        graphics ??= new Map<String, FlxGraphic>();
 
-        sounds = new Map<String, Sound>();  
+        sounds ??= new Map<String, Sound>();  
     }
 
     /**
@@ -44,6 +44,8 @@ class AssetMan
             if (Preferences.gpuCaching && gpuCaching)
                 graphic.bitmap.disposeImage();
         #end
+
+        graphic.bitmap.getTexture(FlxG.stage.context3D);
 
         graphic.persist = true;
 
@@ -66,10 +68,8 @@ class AssetMan
         if (graphic.useCount > 0.0)
             return;
 
-        #if (!hl && !html5)
-            @:privateAccess
-                graphic.bitmap.__texture.dispose();
-        #end
+        @:privateAccess
+            graphic.bitmap.__texture.dispose();
 
         FlxG.bitmap.remove(graphic);
 
