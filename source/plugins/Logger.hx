@@ -12,11 +12,6 @@ import core.Paths;
 
 class Logger extends FlxTypedContainer<FlxText>
 {
-    public function new():Void
-    {
-        super();
-    }
-
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
