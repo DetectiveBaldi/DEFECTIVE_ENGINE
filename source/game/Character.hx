@@ -284,9 +284,9 @@ typedef CharacterFramesConfig =
 
 enum abstract CharacterRole(String) from String to String
 {
-    var ARTIFICIAL:CharacterRole = "ARTIFICIAL";
+    var ARTIFICIAL:CharacterRole;
 
-    var PLAYABLE:CharacterRole = "PLAYABLE";
+    var PLAYABLE:CharacterRole;
 
-    var OTHER:CharacterRole = "OTHER";
+    var OTHER:CharacterRole;
 }
