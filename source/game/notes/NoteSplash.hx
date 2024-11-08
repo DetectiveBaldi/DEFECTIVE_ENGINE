@@ -16,30 +16,37 @@ using StringTools;
 
 class NoteSplash extends FlxSprite
 {
+    public static var textureConfigs:Map<String, NoteSplashTextureConfig> = new Map<String, NoteSplashTextureConfig>();
+
     public static var directions:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
+
+    public static function findConfig(path:String):NoteSplashTextureConfig
+    {
+        return Json.parse(AssetMan.text(Paths.json(path)));
+    }
 
     /**
      * A structure containing texture-related information about `this` `NoteSplash`, such as .png and .xml locations, and animation declarations.
      */
-    public var textureData(default, set):NoteSplashTextureData;
+    public var textureConfig(default, set):NoteSplashTextureConfig;
 
     @:noCompletion
-    function set_textureData(textureData:NoteSplashTextureData):NoteSplashTextureData
+    function set_textureConfig(textureConfig:NoteSplashTextureConfig):NoteSplashTextureConfig
     {
-        switch (textureData.format ?? "".toLowerCase():String)
+        switch (textureConfig.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureConfig.png)), Paths.xml(textureConfig.xml));
             
             case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureConfig.png)), Paths.xml(textureConfig.xml));
         }
 
-        antialiasing = textureData.antialiasing ?? true;
+        antialiasing = textureConfig.antialiasing ?? true;
 
-        for (i in 0 ... textureData.frames.length)
+        for (i in 0 ... textureConfig.frames.length)
         {
-            var _frames:NoteSplashFramesData = textureData.frames[i];
+            var _frames:NoteSplashFramesData = textureConfig.frames[i];
 
             for (j in 0 ... NoteSplash.directions.length)
             {
@@ -60,7 +67,7 @@ class NoteSplash extends FlxSprite
             }
         }
 
-        return this.textureData = textureData;
+        return this.textureConfig = textureConfig;
     }
 
     public var direction:Int;
@@ -69,18 +76,21 @@ class NoteSplash extends FlxSprite
     {
         super(x, y);
 
-        textureData = Json.parse(AssetMan.text(Paths.json("assets/data/game/notes/NoteSplash/classic")));
+        if (!textureConfigs.exists("classic"))
+            textureConfigs.set("classic", findConfig("assets/data/game/notes/NoteSplash/classic"));
 
-        direction = -1;
+        textureConfig = textureConfigs["classic"];
+
+        direction = 0;
     }
 
     override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
     {
         var output:FlxPoint = super.getScreenPosition(result, camera);
 
-        for (i in 0 ... textureData.frames.length)
+        for (i in 0 ... textureConfig.frames.length)
         {
-            var _frames:NoteSplashFramesData = textureData.frames[i];
+            var _frames:NoteSplashFramesData = textureConfig.frames[i];
 
             if ((animation.name ?? "").startsWith(_frames.prefix))
                 output.subtract(_frames.offset?.x ?? 0.0, _frames.offset?.y ?? 0.0);
@@ -90,7 +100,7 @@ class NoteSplash extends FlxSprite
     }
 }
 
-typedef NoteSplashTextureData =
+typedef NoteSplashTextureConfig =
 {
     var format:String;
 

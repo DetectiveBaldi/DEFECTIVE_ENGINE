@@ -22,6 +22,11 @@ using StringTools;
 
 class Character extends FlxSprite
 {
+    public static function findConfig(path:String):CharacterConfig
+    {
+        return Json.parse(AssetMan.text(Paths.json(path)));
+    }
+    
     public var conductor(default, set):Conductor;
 
     @:noCompletion
@@ -39,7 +44,7 @@ class Character extends FlxSprite
     /**
      * A structure containing fundamentals about `this` `Character`, such as name, texture-related information, and more.
      */
-    public var data:CharacterData;
+    public var config:CharacterConfig;
 
     public var danceSteps:Array<String>;
 
@@ -57,7 +62,7 @@ class Character extends FlxSprite
 
     public var role:CharacterRole;
 
-    public function new(conductor:Conductor, x:Float = 0.0, y:Float = 0.0, character:String, role:CharacterRole):Void
+    public function new(conductor:Conductor, x:Float = 0.0, y:Float = 0.0, config:CharacterConfig, role:CharacterRole):Void
     {
         super(x, y);
 
@@ -74,28 +79,28 @@ class Character extends FlxSprite
             new Input("NOTE:RIGHT", [FlxKey.SLASH, FlxKey.D, FlxKey.RIGHT])
         ];
         
-        data = Json.parse(AssetMan.text(Paths.json(character)));
+        this.config = config;
 
-        switch (data.format ?? "".toLowerCase():String)
+        switch (config.format ?? "".toLowerCase():String)
         {
-            case "sparrow": frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(data.png)), Paths.xml(data.xml));
+            case "sparrow": frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(config.png)), Paths.xml(config.xml));
 
-            case "texturepackerxml": frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(data.png)), Paths.xml(data.xml));
+            case "texturepackerxml": frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(config.png)), Paths.xml(config.xml));
         }
 
-        antialiasing = data.antialiasing ?? true;
+        antialiasing = config.antialiasing ?? true;
 
-        scale.set(data.scale?.x ?? 1.0, data.scale?.y ?? 1.0);
+        scale.set(config.scale?.x ?? 1.0, config.scale?.y ?? 1.0);
 
         updateHitbox();
 
-        flipX = data.flipX ?? false;
+        flipX = config.flipX ?? false;
 
-        flipY = data.flipY ?? false;
+        flipY = config.flipY ?? false;
 
-        for (i in 0 ... data.frames.length)
+        for (i in 0 ... config.frames.length)
         {
-            var _frames:CharacterFramesData = data.frames[i];
+            var _frames:CharacterFramesConfig = config.frames[i];
 
             if (animation.exists(_frames.name))
                 throw "game.Character: Invalid animation name!";
@@ -140,13 +145,13 @@ class Character extends FlxSprite
             }
         }
 
-        danceSteps = data.danceSteps;
+        danceSteps = config.danceSteps;
 
         danceStep = 0;
 
-        danceInterval = data.danceInterval ?? 2.0;
+        danceInterval = config.danceInterval ?? 2.0;
 
-        singDuration = data.singDuration ?? 8.0;
+        singDuration = config.singDuration ?? 8.0;
 
         skipDance = false;
 
@@ -202,9 +207,9 @@ class Character extends FlxSprite
     {
         var output:FlxPoint = super.getScreenPosition(result, camera);
 
-        for (i in 0 ... data.frames.length)
+        for (i in 0 ... config.frames.length)
         {
-            var _frames:CharacterFramesData = data.frames[i];
+            var _frames:CharacterFramesConfig = config.frames[i];
             
             if (animation.name ?? "" == _frames.name)
                 output.add(_frames.offset?.x ?? 0.0, _frames.offset?.y ?? 0.0);
@@ -231,7 +236,7 @@ class Character extends FlxSprite
     }
 }
 
-typedef CharacterData =
+typedef CharacterConfig =
 {
     var name:String;
     
@@ -249,7 +254,7 @@ typedef CharacterData =
 
     var ?flipY:Bool;
 
-    var frames:Array<CharacterFramesData>;
+    var frames:Array<CharacterFramesConfig>;
 
     var danceSteps:Array<String>;
 
@@ -258,7 +263,7 @@ typedef CharacterData =
     var ?singDuration:Float;
 };
 
-typedef CharacterFramesData =
+typedef CharacterFramesConfig =
 {
     var name:String;
     

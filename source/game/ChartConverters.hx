@@ -12,7 +12,7 @@ import util.TimingUtil.TimedObject;
 
 class FunkConverter
 {
-    public static function build(chartPath:String, metaPath:String, difficulty:String):Chart
+    public static function build(chartPath:String, metadataPath:String, difficulty:String):Chart
     {
         var output:Chart = new Chart();
 
@@ -22,13 +22,13 @@ class FunkConverter
 
         TimingUtil.sortSimple(notes);
 
-        var loadedMeta:Dynamic = Json.parse(AssetMan.text(Paths.json(metaPath)));
+        var loadedMetadata:Dynamic = Json.parse(AssetMan.text(Paths.json(metadataPath)));
 
-        var timeChanges:Array<FunkTimeChange> = loadedMeta.timeChanges;
+        var timeChanges:Array<FunkTimeChange> = loadedMetadata.timeChanges;
 
         TimingUtil.sortSimple(timeChanges);
 
-        output.name = loadedMeta.songName;
+        output.name = loadedMetadata.songName;
 
         output.tempo = timeChanges.shift().bpm;
 

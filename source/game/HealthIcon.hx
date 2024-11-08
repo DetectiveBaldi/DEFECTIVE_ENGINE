@@ -9,33 +9,38 @@ import core.Paths;
 
 class HealthIcon extends FlxSprite
 {
-    public var textureData(default, set):HealthIconTextureData;
+    public static function findConfig(path:String):HealthIconTextureConfig
+    {
+        return Json.parse(AssetMan.text(Paths.json(path)));
+    }
+
+    public var textureConfig(default, set):HealthIconTextureConfig;
 
     @:noCompletion
-    function set_textureData(textureData:HealthIconTextureData):HealthIconTextureData
+    function set_textureConfig(textureConfig:HealthIconTextureConfig):HealthIconTextureConfig
     {
-        loadGraphic(AssetMan.graphic(Paths.png(textureData.png)));
+        loadGraphic(AssetMan.graphic(Paths.png(textureConfig.png)));
 
-        antialiasing = textureData.antialiasing ?? true;
+        antialiasing = textureConfig.antialiasing ?? true;
 
-        scale.set(textureData.scale?.x ?? 1.0, textureData.scale?.y ?? 1.0);
+        scale.set(textureConfig.scale?.x ?? 1.0, textureConfig.scale?.y ?? 1.0);
 
         updateHitbox();
 
-        return this.textureData = textureData;
+        return this.textureConfig = textureConfig;
     }
 
-    public function new(x:Float = 0.0, y:Float = 0.0, path:String):Void
+    public function new(x:Float = 0.0, y:Float = 0.0, textureConfig:HealthIconTextureConfig):Void
     {
         super(x, y);
 
         active = false;
 
-        textureData = Json.parse(AssetMan.text(Paths.json(path)));
+        this.textureConfig = textureConfig;
     }
 }
 
-typedef HealthIconTextureData =
+typedef HealthIconTextureConfig =
 {
     var png:String;
 

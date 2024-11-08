@@ -148,7 +148,7 @@ class HealthBar extends FlxSpriteContainer
 
         this.fillDirection = fillDirection;
 
-        opponentIcon = new HealthIcon(0.0, 0.0, "assets/data/game/HealthIcon/BOYFRIEND_PIXEL");
+        opponentIcon = new HealthIcon(0.0, 0.0, HealthIcon.findConfig("assets/data/game/HealthIcon/BOYFRIEND_PIXEL"));
 
         opponentIcon.flipX = fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM;
 
@@ -156,7 +156,7 @@ class HealthBar extends FlxSpriteContainer
 
         add(opponentIcon);
 
-        playerIcon = new HealthIcon(0.0, 0.0, "assets/data/game/HealthIcon/BOYFRIEND");
+        playerIcon = new HealthIcon(0.0, 0.0, HealthIcon.findConfig("assets/data/game/HealthIcon/BOYFRIEND"));
 
         playerIcon.flipX = !(fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM);
 
@@ -197,9 +197,9 @@ class HealthBar extends FlxSpriteContainer
 
     public dynamic function scaleIcons():Void
     {
-        opponentIcon.scale.set(FlxMath.lerp(opponentIcon.scale.x, opponentIcon.textureData.scale?.x ?? 1.0, 0.15), FlxMath.lerp(opponentIcon.scale.y, opponentIcon.textureData.scale?.y ?? 1.0, 0.15));
+        opponentIcon.scale.set(FlxMath.lerp(opponentIcon.scale.x, opponentIcon.textureConfig.scale?.x ?? 1.0, 0.15), FlxMath.lerp(opponentIcon.scale.y, opponentIcon.textureConfig.scale?.y ?? 1.0, 0.15));
 
-        playerIcon.scale.set(FlxMath.lerp(playerIcon.scale.x, playerIcon.textureData.scale?.x ?? 1.0, 0.15), FlxMath.lerp(playerIcon.scale.y, playerIcon.textureData.scale?.y ?? 1.0, 0.15));
+        playerIcon.scale.set(FlxMath.lerp(playerIcon.scale.x, playerIcon.textureConfig.scale?.x ?? 1.0, 0.15), FlxMath.lerp(playerIcon.scale.y, playerIcon.textureConfig.scale?.y ?? 1.0, 0.15));
     }
 
     public dynamic function positionIcons():Void

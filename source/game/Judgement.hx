@@ -1,6 +1,5 @@
 package game;
 
-@:structInit
 class Judgement
 {
     public var name:String;
@@ -26,5 +25,20 @@ class Judgement
         }
 
         return null;
+    }
+
+    public function new(name:String, timing:Float, bonus:Float, health:Float, score:Int, hits:Int):Void
+    {
+        this.name = name;
+
+        this.timing = timing;
+
+        this.bonus = bonus;
+
+        this.health = health;
+
+        this.score = score;
+
+        this.hits = hits;
     }
 }

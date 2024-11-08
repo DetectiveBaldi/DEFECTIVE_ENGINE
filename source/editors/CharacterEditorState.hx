@@ -82,13 +82,13 @@ class CharacterEditorState extends FlxState
 
         add(background);
 
-        character = new Character(null, 0.0, 0.0, "assets/data/game/Character/BOYFRIEND", ARTIFICIAL);
+        character = new Character(null, 0.0, 0.0, Character.findConfig("assets/data/game/Character/BOYFRIEND"), ARTIFICIAL);
 
         character.screenCenter();
 
         add(character);
 
-        framesIndex = character.data.frames.indexOf(character.data.frames.first((frames:CharacterFramesData) -> character.animation.name == frames.name));
+        framesIndex = character.config.frames.indexOf(character.config.frames.first((frames:CharacterFramesConfig) -> character.animation.name == frames.name));
 
         ui = ComponentBuilder.fromFile("assets/data/editors/CharacterEditorState/ui.xml");
 
@@ -98,16 +98,16 @@ class CharacterEditorState extends FlxState
 
         refreshMainTab();
 
-        ui.findComponent("textfield", TextField).onChange = (ev:UIEvent) -> character.data.name = ui.findComponent("textfield", TextField).text;
+        ui.findComponent("textfield", TextField).onChange = (ev:UIEvent) -> character.config.name = ui.findComponent("textfield", TextField).text;
 
         #if html5
             ui.findComponent("button", Button).disabled = true;
         #else
             ui.findComponent("button", Button).onClick = (ev:MouseEvent) ->
             {
-                var path:String = Paths.json('assets/data/game/Character/${character.data.name}');
+                var path:String = Paths.json('assets/data/game/Character/${character.config.name}');
 
-                sys.io.File.saveContent(path, Json.stringify(character.data));
+                sys.io.File.saveContent(path, Json.stringify(character.config));
 
                 OpeningState.logger.logInfo('Character saved to "${path}".');
             }
@@ -122,32 +122,32 @@ class CharacterEditorState extends FlxState
                 return;
             }
 
-            character.data = Json.parse(AssetMan.text(Paths.json('assets/data/game/Character/${ui.findComponent("textfield", TextField).text}')));
+            character.config = Character.findConfig('assets/data/game/Character/${ui.findComponent("textfield", TextField).text}');
 
-            switch (character.data.format ?? "".toLowerCase():String)
+            switch (character.config.format ?? "".toLowerCase():String)
             {
                 case "sparrow":
-                    character.frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(character.data.png)), Paths.xml(character.data.xml));
+                    character.frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(character.config.png)), Paths.xml(character.config.xml));
 
                 case "texturepackerxml":
-                    character.frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(character.data.png)), Paths.xml(character.data.xml));
+                    character.frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(character.config.png)), Paths.xml(character.config.xml));
             }
 
-            character.antialiasing = character.data.antialiasing ?? true;
+            character.antialiasing = character.config.antialiasing ?? true;
 
-            character.scale.set(character.data.scale?.x ?? 1.0, character.data.scale?.y ?? 1.0);
+            character.scale.set(character.config.scale?.x ?? 1.0, character.config.scale?.y ?? 1.0);
 
             character.updateHitbox();
 
             character.screenCenter();
 
-            character.flipX = character.data.flipX ?? false;
+            character.flipX = character.config.flipX ?? false;
 
-            character.flipY = character.data.flipY ?? false;
+            character.flipY = character.config.flipY ?? false;
 
-            for (i in 0 ... character.data.frames.length)
+            for (i in 0 ... character.config.frames.length)
             {
-                var frames:CharacterFramesData = character.data.frames[i];
+                var frames:CharacterFramesConfig = character.config.frames[i];
     
                 if (character.animation.exists(frames.name))
                     throw "game.Character: Invalid frames name!";
@@ -192,13 +192,13 @@ class CharacterEditorState extends FlxState
                 }
             }
 
-            character.danceSteps = character.data.danceSteps;
+            character.danceSteps = character.config.danceSteps;
 
             character.danceStep = 0;
 
-            character.danceInterval = character.data.danceInterval ?? 1.0;
+            character.danceInterval = character.config.danceInterval ?? 1.0;
 
-            character.singDuration = character.data.singDuration ?? 8.0;
+            character.singDuration = character.config.singDuration ?? 8.0;
 
             character.skipDance = false;
 
@@ -217,18 +217,18 @@ class CharacterEditorState extends FlxState
 
         ui.findComponent("checkbox", CheckBox).onChange = (ev:UIEvent) ->
         {
-            character.data.antialiasing = ui.findComponent("checkbox", CheckBox).value;
+            character.config.antialiasing = ui.findComponent("checkbox", CheckBox).value;
 
-            character.antialiasing = character.data.antialiasing;
+            character.antialiasing = character.config.antialiasing;
         }
 
         ui.findComponent("number-stepper", NumberStepper).onChange = (ev:UIEvent) ->
         {
-            character.data.scale ??= {x: 1.0, y: 1.0};
+            character.config.scale ??= {x: 1.0, y: 1.0};
 
-            character.data.scale.x = ui.findComponent("number-stepper", NumberStepper).value;
+            character.config.scale.x = ui.findComponent("number-stepper", NumberStepper).value;
 
-            character.scale.x = character.data.scale.x;
+            character.scale.x = character.config.scale.x;
 
             character.updateHitbox();
 
@@ -237,11 +237,11 @@ class CharacterEditorState extends FlxState
 
         ui.findComponent("_number-stepper", NumberStepper).onChange = (ev:UIEvent) ->
         {
-            character.data.scale ??= {x: 1.0, y: 1.0};
+            character.config.scale ??= {x: 1.0, y: 1.0};
 
-            character.data.scale.y = ui.findComponent("_number-stepper", NumberStepper).value;
+            character.config.scale.y = ui.findComponent("_number-stepper", NumberStepper).value;
 
-            character.scale.y = character.data.scale.y;
+            character.scale.y = character.config.scale.y;
 
             character.updateHitbox();
 
@@ -250,16 +250,16 @@ class CharacterEditorState extends FlxState
 
         ui.findComponent("_checkbox", CheckBox).onChange = (ev:UIEvent) ->
         {
-            character.data.flipX = ui.findComponent("_checkbox", CheckBox).value;
+            character.config.flipX = ui.findComponent("_checkbox", CheckBox).value;
 
-            character.flipX = character.data.flipX;
+            character.flipX = character.config.flipX;
         }
 
         ui.findComponent("__checkbox", CheckBox).onChange = (ev:UIEvent) ->
         {
-            character.data.flipY = ui.findComponent("__checkbox", CheckBox).value;
+            character.config.flipY = ui.findComponent("__checkbox", CheckBox).value;
 
-            character.flipY = character.data.flipY;
+            character.flipY = character.config.flipY;
         }
 
         ui.findComponent("_textfield", TextField).onChange = (ev:UIEvent) ->
@@ -267,7 +267,7 @@ class CharacterEditorState extends FlxState
             if (ui.findComponent("_textfield", TextField).text.length < 1)
                 return;
             
-            character.data.danceSteps = ui.findComponent("_textfield", TextField).text.split(",");
+            character.config.danceSteps = ui.findComponent("_textfield", TextField).text.split(",");
 
             character.danceSteps = ui.findComponent("_textfield", TextField).text.split(",");
 
@@ -276,23 +276,23 @@ class CharacterEditorState extends FlxState
 
         ui.findComponent("__number-stepper", NumberStepper).onChange = (ev:UIEvent) ->
         {
-            character.data.danceInterval = ui.findComponent("__number-stepper", NumberStepper).value;
+            character.config.danceInterval = ui.findComponent("__number-stepper", NumberStepper).value;
 
-            character.danceInterval = character.data.danceInterval;
+            character.danceInterval = character.config.danceInterval;
         }
 
         ui.findComponent("___number-stepper", NumberStepper).onChange = (ev:UIEvent) ->
         {
-            character.data.singDuration = ui.findComponent("___number-stepper", NumberStepper).value;
+            character.config.singDuration = ui.findComponent("___number-stepper", NumberStepper).value;
 
-            character.singDuration = character.data.singDuration;
+            character.singDuration = character.config.singDuration;
         }
 
         refreshAssetsTab();
 
         ui.findComponent("__button", Button).onClick = (ev:MouseEvent) ->
         {
-            if (character.data.format == ui.findComponent("__textfield", TextField).text && character.data.png == ui.findComponent("___textfield", TextField).text && character.data.xml == ui.findComponent("____textfield", TextField).text)
+            if (character.config.format == ui.findComponent("__textfield", TextField).text && character.config.png == ui.findComponent("___textfield", TextField).text && character.config.xml == ui.findComponent("____textfield", TextField).text)
             {
                 OpeningState.logger.logError("The requested format and file(s) are in use!");
                 
@@ -306,19 +306,19 @@ class CharacterEditorState extends FlxState
                 return;
             }
 
-            character.data.format = ui.findComponent("__textfield", TextField).text;
+            character.config.format = ui.findComponent("__textfield", TextField).text;
 
-            character.data.png = ui.findComponent("___textfield", TextField).text;
+            character.config.png = ui.findComponent("___textfield", TextField).text;
 
-            character.data.xml = ui.findComponent("____textfield", TextField).text;
+            character.config.xml = ui.findComponent("____textfield", TextField).text;
 
-            switch (character.data.format ?? "".toLowerCase():String)
+            switch (character.config.format ?? "".toLowerCase():String)
             {
                 case "sparrow":
-                    character.frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(character.data.png), true), Paths.xml(character.data.xml));
+                    character.frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(character.config.png), true), Paths.xml(character.config.xml));
 
                 case "texturepackerxml":
-                    character.frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(character.data.png), true), Paths.xml(character.data.xml));
+                    character.frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(character.config.png), true), Paths.xml(character.config.xml));
             }
 
             character.animation.destroyAnimations();
@@ -346,12 +346,12 @@ class CharacterEditorState extends FlxState
         if (FocusManager.instance.focus == null)
         {
             if (FlxG.keys.justPressed.W)
-                framesIndex = FlxMath.wrap(framesIndex - 1, 0, character.data.frames.length - 1);
+                framesIndex = FlxMath.wrap(framesIndex - 1, 0, character.config.frames.length - 1);
 
             if (FlxG.keys.justPressed.S)
-                framesIndex = FlxMath.wrap(framesIndex + 1, 0, character.data.frames.length - 1);
+                framesIndex = FlxMath.wrap(framesIndex + 1, 0, character.config.frames.length - 1);
 
-            var frames:CharacterFramesData = character.data.frames[framesIndex];
+            var frames:CharacterFramesConfig = character.config.frames[framesIndex];
 
             if (FlxG.keys.justPressed.UP)
                 addFramesOffset(frames, 0.0, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0);
@@ -378,14 +378,14 @@ class CharacterEditorState extends FlxState
                 {
                     Clipboard.generalClipboard.clear();
 
-                    Clipboard.generalClipboard.setData(TEXT_FORMAT, Json.stringify(character.data.frames[framesIndex].offset), false);
+                    Clipboard.generalClipboard.setData(TEXT_FORMAT, Json.stringify(character.config.frames[framesIndex].offset), false);
 
                     OpeningState.logger.logInfo("Current frames offset copied to clipboard.");
                 }
 
                 if (FlxG.keys.justPressed.V)
                 {
-                    var frames:CharacterFramesData = character.data.frames[framesIndex];
+                    var frames:CharacterFramesConfig = character.config.frames[framesIndex];
 
                     var offset:{?x:Float, ?y:Float} = Json.parse(Clipboard.generalClipboard.getData(TEXT_FORMAT));
 
@@ -411,41 +411,41 @@ class CharacterEditorState extends FlxState
 
     public function refreshMainTab():Void
     {
-        ui.findComponent("textfield", TextField).text = character.data.name;
+        ui.findComponent("textfield", TextField).text = character.config.name;
 
-        ui.findComponent("checkbox", CheckBox).value = character.data.antialiasing ?? true;
+        ui.findComponent("checkbox", CheckBox).value = character.config.antialiasing ?? true;
 
-        ui.findComponent("number-stepper", NumberStepper).value = character.data.scale?.x ?? 1.0;
+        ui.findComponent("number-stepper", NumberStepper).value = character.config.scale?.x ?? 1.0;
 
-        ui.findComponent("_number-stepper", NumberStepper).value = character.data.scale?.y ?? 1.0;
+        ui.findComponent("_number-stepper", NumberStepper).value = character.config.scale?.y ?? 1.0;
 
-        ui.findComponent("_checkbox", CheckBox).value = character.data.flipX ?? false;
+        ui.findComponent("_checkbox", CheckBox).value = character.config.flipX ?? false;
 
-        ui.findComponent("__checkbox", CheckBox).value = character.data.flipY ?? false;
+        ui.findComponent("__checkbox", CheckBox).value = character.config.flipY ?? false;
 
-        ui.findComponent("_textfield", TextField).text = character.data.danceSteps.toString();
+        ui.findComponent("_textfield", TextField).text = character.config.danceSteps.toString();
         
         #if !html5
            ui.findComponent("_textfield", TextField).text = ui.findComponent("_textfield", TextField).text.substring(1, ui.findComponent("_textfield", TextField).text.length - 1);
         #end
 
-        ui.findComponent("__number-stepper", NumberStepper).value = character.data.danceInterval ?? 1.0;
+        ui.findComponent("__number-stepper", NumberStepper).value = character.config.danceInterval ?? 1.0;
 
-        ui.findComponent("___number-stepper", NumberStepper).value = character.data.singDuration ?? 8.0;
+        ui.findComponent("___number-stepper", NumberStepper).value = character.config.singDuration ?? 8.0;
     }
 
     public function refreshAssetsTab():Void
     {
-        ui.findComponent("__textfield", TextField).text = character.data.format;
+        ui.findComponent("__textfield", TextField).text = character.config.format;
 
-        ui.findComponent("___textfield", TextField).text = character.data.png;
+        ui.findComponent("___textfield", TextField).text = character.config.png;
 
-        ui.findComponent("____textfield", TextField).text = character.data.xml;
+        ui.findComponent("____textfield", TextField).text = character.config.xml;
     }
 
     public function refreshFramesTab():Void
     {
-        var frames:CharacterFramesData = character.data.frames[framesIndex];
+        var frames:CharacterFramesConfig = character.config.frames[framesIndex];
 
         ui.findComponent("_____textfield", TextField).text = frames.name;
 
@@ -484,11 +484,11 @@ class CharacterEditorState extends FlxState
 
         var indices:Array<Int> = FlxStringUtil.toIntArray(ui.findComponent("textarea", TextArea).text) ?? new Array<Int>();
 
-        var frames:CharacterFramesData = character.data.frames.first((frames:CharacterFramesData) -> ui.findComponent("_____textfield", TextField).text == frames.name);
+        var frames:CharacterFramesConfig = character.config.frames.first((frames:CharacterFramesConfig) -> ui.findComponent("_____textfield", TextField).text == frames.name);
 
         if (frames == null)
         {
-            character.data.frames.push
+            character.config.frames.push
             ({
                 name: ui.findComponent("_____textfield", TextField).text,
 
@@ -505,9 +505,9 @@ class CharacterEditorState extends FlxState
                 flipY: ui.findComponent("_____checkbox", CheckBox).value
             });
 
-            framesIndex = character.data.frames.length - 1;
+            framesIndex = character.config.frames.length - 1;
 
-            frames = character.data.frames[framesIndex];
+            frames = character.config.frames[framesIndex];
         }
         else
         {
@@ -538,23 +538,23 @@ class CharacterEditorState extends FlxState
 
     public function deleteFrames():Void
     {
-        if (character.data.frames.length == 1.0)
+        if (character.config.frames.length == 1.0)
         {
             OpeningState.logger.logError("You must have at least one frames!");
 
             return;
         }
 
-        var frames:CharacterFramesData = character.data.frames[framesIndex];
+        var frames:CharacterFramesConfig = character.config.frames[framesIndex];
 
-        character.data.frames.remove(frames);
+        character.config.frames.remove(frames);
 
         if (character.animation.exists(frames.name))
             character.animation.remove(frames.name);
 
         framesIndex = 0;
 
-        frames = character.data.frames[framesIndex];
+        frames = character.config.frames[framesIndex];
 
         character.animation.play(frames.name, true);
 
@@ -563,7 +563,7 @@ class CharacterEditorState extends FlxState
         OpeningState.logger.logInfo('Deleted "${frames.name}"!');
     }
 
-    public function setFramesOffset(frames:CharacterFramesData, x:Float = 0.0, y:Float = 0.0):Void
+    public function setFramesOffset(frames:CharacterFramesConfig, x:Float = 0.0, y:Float = 0.0):Void
     {
         frames.offset ??= {x: 0.0, y: 0.0};
 
@@ -574,7 +574,7 @@ class CharacterEditorState extends FlxState
         ui.findComponent("_____________label", Label).text = 'Offset: (${frames.offset.x ?? 0.0}, ${frames.offset.y ?? 0.0})';
     }
 
-    public function addFramesOffset(frames:CharacterFramesData, x:Float = 0.0, y:Float = 0.0):Void
+    public function addFramesOffset(frames:CharacterFramesConfig, x:Float = 0.0, y:Float = 0.0):Void
     {
         frames.offset ??= {x: 0.0, y: 0.0};
 

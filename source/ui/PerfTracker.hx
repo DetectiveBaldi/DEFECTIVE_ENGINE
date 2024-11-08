@@ -12,7 +12,7 @@ import util.MathUtil;
 class PerfTracker extends TextField
 {
     @:noCompletion
-        var times:Array<Float>;
+        var timestamps:Array<Float>;
 
     public function new(x:Float = 0.0, y:Float = 0.0):Void
     {
@@ -30,7 +30,7 @@ class PerfTracker extends TextField
 
         defaultTextFormat = new TextFormat("_sans", 12, 0xFFFFFFFF, true);
 
-        times = new Array<Float>();
+        timestamps = new Array<Float>();
     }
 
     override function __enterFrame(deltaTime:Int):Void
@@ -39,11 +39,11 @@ class PerfTracker extends TextField
 
         var now:Float = Timer.stamp();
 
-        times.push(now);
+        timestamps.push(now);
 
-        while (times[0] < now - 1)
-            times.shift();
+        while (timestamps[0] < now - 1.0)
+            timestamps.shift();
 
-        text = 'FPS: ${MathUtil.minInt(FlxG.drawFramerate, times.length)}' #if !html5 + '\nRAM: ${flixel.math.FlxMath.roundDecimal(openfl.system.System.totalMemory / Math.pow(1024, 2), 2)} MB\nVRAM: ${flixel.math.FlxMath.roundDecimal(FlxG.stage.context3D.totalGPUMemory / Math.pow(1024, 2), 2)} MB' #end;
+        text = 'FPS: ${MathUtil.minInt(FlxG.drawFramerate, timestamps.length)}' #if !html5 + '\nRAM: ${flixel.math.FlxMath.roundDecimal(openfl.system.System.totalMemory / Math.pow(1024, 2), 2)} MB\nVRAM: ${flixel.math.FlxMath.roundDecimal(FlxG.stage.context3D.totalGPUMemory / Math.pow(1024, 2), 2)} MB' #end;
     }
 }

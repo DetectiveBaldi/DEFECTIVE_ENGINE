@@ -170,11 +170,11 @@ class GameState extends SteppingState
 
         add(spectatorGroup);
 
-        spectator = new Character(conductor, 0.0, 0.0, "assets/data/game/Character/GIRLFRIEND", ARTIFICIAL);
+        spectator = new Character(conductor, 0.0, 0.0, Character.findConfig("assets/data/game/Character/GIRLFRIEND"), ARTIFICIAL);
 
         spectator.skipSing = true;
 
-        spectatorMap[spectator.data.name] = spectator;
+        spectatorMap[spectator.config.name] = spectator;
 
         spectatorGroup.add(spectator);
 
@@ -184,9 +184,9 @@ class GameState extends SteppingState
 
         add(opponentGroup);
 
-        opponent = new Character(conductor, 0.0, 0.0, "assets/data/game/Character/BOYFRIEND_PIXEL", ARTIFICIAL);
+        opponent = new Character(conductor, 0.0, 0.0, Character.findConfig("assets/data/game/Character/BOYFRIEND_PIXEL"), ARTIFICIAL);
 
-        opponentMap[opponent.data.name] = opponent;
+        opponentMap[opponent.config.name] = opponent;
 
         opponentGroup.add(opponent);
 
@@ -196,9 +196,9 @@ class GameState extends SteppingState
 
         add(playerGroup);
 
-        player = new Character(conductor, 0.0, 0.0, "assets/data/game/Character/BOYFRIEND", PLAYABLE);
+        player = new Character(conductor, 0.0, 0.0, Character.findConfig("assets/data/game/Character/BOYFRIEND"), PLAYABLE);
 
-        playerMap[player.data.name] = player;
+        playerMap[player.config.name] = player;
 
         playerGroup.add(player);
 
@@ -212,15 +212,15 @@ class GameState extends SteppingState
 
         judgements =
         [
-            {name: "Epic!", timing: 22.5, bonus: 1.0, health: 2.85, score: 500, hits: 0},
+            new Judgement("Epic!", 22.5, 1.0, 2.85, 500, 0),
 
-            {name: "Sick!", timing: 45.0, bonus: 1.0, health: 2.5, score: 350, hits: 0},
+            new Judgement("Sick!", 45.0, 1.0, 2.5, 350, 0),
 
-            {name: "Good", timing: 90.0, bonus: 0.65, health: 1.5, score: 250, hits: 0},
+            new Judgement("Good", 90.0, 0.65, 1.5, 250, 0),
 
-            {name: "Bad", timing: 135.0, bonus: 0.35, health: -1.5, score: 150, hits: 0},
+            new Judgement("Bad", 135.0, 0.35, -1.5, 150, 0),
 
-            {name: "Shit", timing: 166.6, health: -2.5, bonus: 0.0, score: 50, hits: 0}
+            new Judgement("Shit", 166.6, -2.5, 0.0, 50, 0)
         ];
 
         healthBar = new HealthBar(conductor, 0.0, 0.0, RIGHT_TO_LEFT, 600, 25);
@@ -229,9 +229,9 @@ class GameState extends SteppingState
 
         healthBar.bar.emptyCallback = () -> loadDeathScene();
 
-        healthBar.opponentIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/game/HealthIcon/${opponent.data.name}')));
+        healthBar.opponentIcon.textureConfig = HealthIcon.findConfig('assets/data/game/HealthIcon/${opponent.config.name}');
 
-        healthBar.playerIcon.textureData = Json.parse(AssetMan.text(Paths.json('assets/data/game/HealthIcon/${player.data.name}')));
+        healthBar.playerIcon.textureConfig = HealthIcon.findConfig('assets/data/game/HealthIcon/${player.config.name}');
 
         healthBar.setPosition((FlxG.width - healthBar.width) * 0.5, Preferences.downscroll ? (FlxG.height - healthBar.bar.height) - 620.0 : 620.0);
 
@@ -740,7 +740,7 @@ class GameState extends SteppingState
 
                     noteSplash.direction = strum.direction;
 
-                    noteSplash.animation.play('${FlxG.random.getObject(noteSplash.textureData.frames).prefix} ${NoteSplash.directions[noteSplash.direction].toLowerCase()}', false, FlxG.random.bool());
+                    noteSplash.animation.play('${FlxG.random.getObject(noteSplash.textureConfig.frames).prefix} ${NoteSplash.directions[noteSplash.direction].toLowerCase()}', false, FlxG.random.bool());
 
                     noteSplash.animation.onFinish.add((name:String) -> noteSplash.kill());
 

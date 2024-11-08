@@ -14,7 +14,14 @@ using StringTools;
 
 class Strum extends FlxSprite
 {
+    public static var textureConfigs:Map<String, StrumTextureConfig> = new Map<String, StrumTextureConfig>();
+
     public static var directions:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
+    
+    public static function findConfig(path:String):StrumTextureConfig
+    {
+        return Json.parse(AssetMan.text(Paths.json(path)));
+    }
 
     public var conductor:Conductor;
 
@@ -23,18 +30,18 @@ class Strum extends FlxSprite
     /**
      * A structure containing texture-related information about `this` `Strum`, such as .png and .xml locations.
      */
-    public var textureData(default, set):StrumTextureData;
+    public var textureConfig(default, set):StrumTextureConfig;
 
     @:noCompletion
-    function set_textureData(textureData:StrumTextureData):StrumTextureData
+    function set_textureConfig(textureConfig:StrumTextureConfig):StrumTextureConfig
     {
-        switch (textureData.format ?? "".toLowerCase():String)
+        switch (textureConfig.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureConfig.png)), Paths.xml(textureConfig.xml));
             
             case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureConfig.png)), Paths.xml(textureConfig.xml));
         }
 
         for (i in 0 ... Strum.directions.length)
@@ -46,9 +53,9 @@ class Strum extends FlxSprite
             animation.addByPrefix(Strum.directions[i].toLowerCase() + "Confirm", Strum.directions[i].toLowerCase() + "Confirm0", 24.0, false);
         }
 
-        antialiasing = textureData.antialiasing ?? true;
+        antialiasing = textureConfig.antialiasing ?? true;
 
-        return this.textureData = textureData;
+        return this.textureConfig = textureConfig;
     }
 
     public var direction:Int;
@@ -61,9 +68,12 @@ class Strum extends FlxSprite
 
         this.conductor = conductor;
         
-        textureData = Json.parse(AssetMan.text(Paths.json("assets/data/game/notes/Strum/classic")));
+        if (!textureConfigs.exists("classic"))
+            textureConfigs.set("classic", findConfig("assets/data/game/notes/Strum/classic"));
+        
+        textureConfig = textureConfigs["classic"];
 
-        direction = -1;
+        direction = 0;
 
         confirmCount = 0.0;
     }
@@ -91,7 +101,7 @@ class Strum extends FlxSprite
     }
 }
 
-typedef StrumTextureData =
+typedef StrumTextureConfig =
 {
     var format:String;
 

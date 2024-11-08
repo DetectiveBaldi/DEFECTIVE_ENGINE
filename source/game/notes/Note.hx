@@ -12,23 +12,30 @@ import core.Paths;
 
 class Note extends FlxSprite
 {
+    public static var textureConfigs:Map<String, NoteTextureConfig> = new Map<String, NoteTextureConfig>();
+
     public static var directions:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
+
+    public static function findConfig(path:String):NoteTextureConfig
+    {
+        return Json.parse(AssetMan.text(Paths.json(path)));
+    }
 
     /**
      * A structure containing texture-related information about `this` `Note`, such as .png and .xml locations.
      */
-    public var textureData(default, set):NoteTextureData;
+    public var textureConfig(default, set):NoteTextureConfig;
     
     @:noCompletion
-    function set_textureData(textureData:NoteTextureData):NoteTextureData
+    function set_textureConfig(textureConfig:NoteTextureConfig):NoteTextureConfig
     {
-        switch (textureData.format ?? "".toLowerCase():String)
+        switch (textureConfig.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureConfig.png)), Paths.xml(textureConfig.xml));
             
             case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureData.png)), Paths.xml(textureData.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureConfig.png)), Paths.xml(textureConfig.xml));
         }
 
         for (i in 0 ... Note.directions.length)
@@ -40,9 +47,9 @@ class Note extends FlxSprite
             animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldTail", Note.directions[i].toLowerCase() + "HoldTail0", 24.0, false);
         }
 
-        antialiasing = textureData.antialiasing ?? true;
+        antialiasing = textureConfig.antialiasing ?? true;
 
-        return this.textureData = textureData;
+        return this.textureConfig = textureConfig;
     }
 
     public var time:Float;
@@ -61,13 +68,16 @@ class Note extends FlxSprite
 
         active = false;
 
-        textureData = Json.parse(AssetMan.text(Paths.json("assets/data/game/notes/Note/classic")));
+        if (!textureConfigs.exists("classic"))
+            textureConfigs.set("classic", findConfig("assets/data/game/notes/Note/classic"));
+
+        textureConfig = textureConfigs["classic"];
 
         time = 0.0;
 
         speed = 1.0;
 
-        direction = -1;
+        direction = 0;
 
         lane = 0;
 
@@ -75,7 +85,7 @@ class Note extends FlxSprite
     }
 }
 
-typedef NoteTextureData =
+typedef NoteTextureConfig =
 {
     var format:String;
 
