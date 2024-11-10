@@ -3,5 +3,7 @@
 
     "antialiasing": false,
 
-    "scale": {"x": 4.6875, "y": 4.6875}
+    "scale": {"x": 4.6875, "y": 4.6875},
+
+    "healthBarColor": {"r": 123, "g": 214, "b": 246}
 }

@@ -457,14 +457,14 @@ class GameState extends SteppingState
 
             note.alpha = strum.alpha;
 
-            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * chartSpeed * note.speed * (Options.downscroll ? -1.0 : 1.0));
+            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * chartSpeed * note.speed * 0.45 * (Options.downscroll ? -1.0 : 1.0));
         }
 
         while (noteIndex < chart.notes.length)
         {
             var note:LoadedNote = chart.notes[noteIndex];
 
-            if (note.time > conductor.time + hudCamera.height / hudCamera.zoom / chartSpeed / note.speed)
+            if (note.time > conductor.time + hudCamera.height / hudCamera.zoom / chartSpeed / note.speed / 0.45)
                 break;
 
             if (notes.members.length > 0.0)

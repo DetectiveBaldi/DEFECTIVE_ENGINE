@@ -169,16 +169,13 @@ class ProgressBar extends FlxSpriteContainer
     {
         super.destroy();
 
+        onEmpty.destroy();
+
+        onFill.destroy();
+
         emptySide.clipRect.put();
 
         fillSide.clipRect.put();
-    }
-
-    public function setColors(emptyColor:FlxColor, fillColor:FlxColor):Void
-    {
-        emptySide.color = emptyColor;
-
-        fillSide.color = fillColor;
     }
 
     public function updateClipping():Void

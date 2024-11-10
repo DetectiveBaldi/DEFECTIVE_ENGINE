@@ -49,4 +49,6 @@ typedef HealthIconConfig =
     var ?antialiasing:Bool;
 
     var ?scale:{?x:Float, ?y:Float};
+
+    var ?healthBarColor:{r:Int, g:Int, b:Int};
 };
