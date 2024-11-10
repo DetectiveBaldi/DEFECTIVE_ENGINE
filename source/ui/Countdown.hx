@@ -121,13 +121,13 @@ class Countdown extends FlxContainer
 
         add(sprite);
 
-        three = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/ui/Countdown/three"), false), 0.65);
+        three = FlxG.sound.load(AssetMan.sound(Paths.ogg("assets/sounds/ui/Countdown/three")), 0.65);
 
-        two = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/ui/Countdown/two"), false), 0.65);
+        two = FlxG.sound.load(AssetMan.sound(Paths.ogg("assets/sounds/ui/Countdown/two")), 0.65);
 
-        one = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/ui/Countdown/one"), false), 0.65);
+        one = FlxG.sound.load(AssetMan.sound(Paths.ogg("assets/sounds/ui/Countdown/one")), 0.65);
 
-        go = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/ui/Countdown/go"), false), 0.65);
+        go = FlxG.sound.load(AssetMan.sound(Paths.ogg("assets/sounds/ui/Countdown/go")), 0.65);
     }
 
     override function destroy():Void

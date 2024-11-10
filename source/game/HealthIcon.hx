@@ -4,43 +4,45 @@ import haxe.Json;
 
 import flixel.FlxSprite;
 
+import flixel.util.FlxColor;
+
 import core.AssetMan;
 import core.Paths;
 
 class HealthIcon extends FlxSprite
 {
-    public static function findConfig(path:String):HealthIconTextureConfig
+    public static function findConfig(path:String):HealthIconConfig
     {
         return Json.parse(AssetMan.text(Paths.json(path)));
     }
 
-    public var textureConfig(default, set):HealthIconTextureConfig;
+    public var config(default, set):HealthIconConfig;
 
     @:noCompletion
-    function set_textureConfig(textureConfig:HealthIconTextureConfig):HealthIconTextureConfig
+    function set_config(config:HealthIconConfig):HealthIconConfig
     {
-        loadGraphic(AssetMan.graphic(Paths.png(textureConfig.png)));
+        loadGraphic(AssetMan.graphic(Paths.png(config.png)));
 
-        antialiasing = textureConfig.antialiasing ?? true;
+        antialiasing = config.antialiasing ?? true;
 
-        scale.set(textureConfig.scale?.x ?? 1.0, textureConfig.scale?.y ?? 1.0);
+        scale.set(config.scale?.x ?? 1.0, config.scale?.y ?? 1.0);
 
         updateHitbox();
 
-        return this.textureConfig = textureConfig;
+        return this.config = config;
     }
 
-    public function new(x:Float = 0.0, y:Float = 0.0, textureConfig:HealthIconTextureConfig):Void
+    public function new(x:Float = 0.0, y:Float = 0.0, config:HealthIconConfig):Void
     {
         super(x, y);
 
         active = false;
 
-        this.textureConfig = textureConfig;
+        this.config = config;
     }
 }
 
-typedef HealthIconTextureConfig =
+typedef HealthIconConfig =
 {
     var png:String;
 

@@ -4,19 +4,12 @@ import flixel.FlxG;
 
 import flixel.input.FlxInput.FlxInputState;
 
-import flixel.input.keyboard.FlxKey;
-
 class Inputs
 {
     public static function checkStatus(input:Input, status:FlxInputState):Bool
     {
-        for (i in 0 ... input.keys.length)
-        {
-            if (FlxG.keys.checkStatus(input.keys[i], status))
-                return true;
-        }
-
-        return false;
+        @:privateAccess
+            return FlxG.keys.checkKeyArrayState(input.codes, status);
     }
 
     public static function inputsJustPressed(inputs:Array<Input>):Bool
@@ -66,14 +59,10 @@ class Inputs
 
 class Input
 {
-    public var name:String;
+    public var codes:Array<Int>;
 
-    public var keys:Array<FlxKey>;
-
-    public function new(name:String, keys:Array<FlxKey>):Void
+    public function new(codes:Array<Int>):Void
     {
-        this.name = name;
-
-        this.keys = keys;
+        this.codes = codes;
     }
 }

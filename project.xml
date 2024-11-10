@@ -20,11 +20,7 @@
 
 	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false" />
 
-	<window if="html5" resizable="true" />
-
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" />
-
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" />
 
 	<!-- _____________________________ Path Settings ____________________________ -->
 
@@ -32,9 +28,7 @@
 
 	<set name="BUILD_DIR" value="bin/stable" unless="debug" />
 
-	<assets path="assets" exclude="*.ogg" if="html5" />
-
-	<assets path="assets" exclude="*.mp3" unless="html5" />
+	<assets path="assets" />
 
 	<source path="source" />
 

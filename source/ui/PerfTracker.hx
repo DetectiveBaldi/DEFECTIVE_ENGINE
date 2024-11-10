@@ -44,6 +44,6 @@ class PerfTracker extends TextField
         while (timestamps[0] < now - 1.0)
             timestamps.shift();
 
-        text = 'FPS: ${MathUtil.minInt(FlxG.drawFramerate, timestamps.length)}' #if !html5 + '\nRAM: ${flixel.math.FlxMath.roundDecimal(openfl.system.System.totalMemory / Math.pow(1024, 2), 2)} MB\nVRAM: ${flixel.math.FlxMath.roundDecimal(FlxG.stage.context3D.totalGPUMemory / Math.pow(1024, 2), 2)} MB' #end;
+        text = 'FPS: ${MathUtil.minInt(FlxG.drawFramerate, timestamps.length)}\nRAM: ${flixel.math.FlxMath.roundDecimal(openfl.system.System.totalMemory / Math.pow(1024, 2), 2)} MB\nVRAM: ${flixel.math.FlxMath.roundDecimal(FlxG.stage.context3D.totalGPUMemory / Math.pow(1024, 2), 2)} MB';
     }
 }

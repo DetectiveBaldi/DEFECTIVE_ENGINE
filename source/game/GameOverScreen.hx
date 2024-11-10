@@ -11,7 +11,7 @@ import core.Paths;
 
 import extendable.SteppingSubState;
 
-class GameOverSubState extends SteppingSubState
+class GameOverScreen extends SteppingSubState
 {
     public var game:GameState;
 
@@ -56,7 +56,7 @@ class GameOverSubState extends SteppingSubState
 
         game.gameCameraTarget.setPosition(player.getMidpoint().x, player.getMidpoint().y);
 
-        start = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/game/GameOverSubState/start"), false));
+        start = FlxG.sound.load(AssetMan.sound(Paths.ogg("assets/sounds/game/GameOverScreen/start"), false));
 
         start.play();
     }
@@ -75,7 +75,7 @@ class GameOverSubState extends SteppingSubState
 
                 player.animation.play("end");
 
-                end = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/game/GameOverSubState/end"), false));
+                end = FlxG.sound.load(AssetMan.sound(Paths.ogg("assets/sounds/game/GameOverScreen/end"), false));
 
                 end.play();
 
@@ -92,7 +92,7 @@ class GameOverSubState extends SteppingSubState
         {
             player.skipDance = false;
 
-            tune = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/music/game/GameOverSubState/tune")), 1.0, true);
+            tune = FlxG.sound.load(AssetMan.sound(Paths.ogg("assets/music/game/GameOverScreen/tune")), 1.0, true);
 
             tune.play();
         }

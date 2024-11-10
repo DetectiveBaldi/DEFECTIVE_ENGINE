@@ -14,34 +14,36 @@ using StringTools;
 
 class Strum extends FlxSprite
 {
-    public static var textureConfigs:Map<String, StrumTextureConfig> = new Map<String, StrumTextureConfig>();
+    public static var configs:Map<String, StrumConfig> = new Map<String, StrumConfig>();
 
     public static var directions:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
     
-    public static function findConfig(path:String):StrumTextureConfig
+    public static function findConfig(path:String):StrumConfig
     {
-        return Json.parse(AssetMan.text(Paths.json(path)));
+        if (configs.exists(path))
+            return configs[path];
+
+        configs[path] = Json.parse(AssetMan.text(Paths.json(path)));
+
+        return configs[path];
     }
 
     public var conductor:Conductor;
 
     public var parent:StrumLine;
-
-    /**
-     * A structure containing texture-related information about `this` `Strum`, such as .png and .xml locations.
-     */
-    public var textureConfig(default, set):StrumTextureConfig;
+    
+    public var config(default, set):StrumConfig;
 
     @:noCompletion
-    function set_textureConfig(textureConfig:StrumTextureConfig):StrumTextureConfig
+    function set_config(config:StrumConfig):StrumConfig
     {
-        switch (textureConfig.format ?? "".toLowerCase():String)
+        switch (config.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureConfig.png)), Paths.xml(textureConfig.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(config.png)), Paths.xml(config.xml));
             
             case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureConfig.png)), Paths.xml(textureConfig.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(config.png)), Paths.xml(config.xml));
         }
 
         for (i in 0 ... Strum.directions.length)
@@ -53,9 +55,9 @@ class Strum extends FlxSprite
             animation.addByPrefix(Strum.directions[i].toLowerCase() + "Confirm", Strum.directions[i].toLowerCase() + "Confirm0", 24.0, false);
         }
 
-        antialiasing = textureConfig.antialiasing ?? true;
+        antialiasing = config.antialiasing ?? true;
 
-        return this.textureConfig = textureConfig;
+        return this.config = config;
     }
 
     public var direction:Int;
@@ -68,10 +70,7 @@ class Strum extends FlxSprite
 
         this.conductor = conductor;
         
-        if (!textureConfigs.exists("classic"))
-            textureConfigs.set("classic", findConfig("assets/data/game/notes/Strum/classic"));
-        
-        textureConfig = textureConfigs["classic"];
+        config = findConfig("assets/data/game/notes/Strum/classic");
 
         direction = 0;
 
@@ -101,7 +100,7 @@ class Strum extends FlxSprite
     }
 }
 
-typedef StrumTextureConfig =
+typedef StrumConfig =
 {
     var format:String;
 

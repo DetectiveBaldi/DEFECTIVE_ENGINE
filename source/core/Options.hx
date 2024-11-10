@@ -2,20 +2,20 @@ package core;
 
 import flixel.FlxG;
 
-class Preferences
+class Options
 {
     public static var gpuCaching(get, set):Bool;
 
     @:noCompletion
     static function get_gpuCaching():Bool
     {
-        return FlxG.save.data.preferences.gpuCaching ??= true;
+        return FlxG.save.data.options.gpuCaching ??= true;
     }
 
     @:noCompletion
     static function set_gpuCaching(_gpuCaching:Bool):Bool
     {
-        FlxG.save.data.preferences.gpuCaching = _gpuCaching;
+        FlxG.save.data.options.gpuCaching = _gpuCaching;
 
         return _gpuCaching;
     }
@@ -25,13 +25,13 @@ class Preferences
     @:noCompletion
     static function get_soundStreaming():Bool
     {
-        return FlxG.save.data.preferences.soundStreaming ??= true;
+        return FlxG.save.data.options.soundStreaming ??= true;
     }
 
     @:noCompletion
     static function set_soundStreaming(_soundStreaming:Bool):Bool
     {
-        FlxG.save.data.preferences.soundStreaming = soundStreaming;
+        FlxG.save.data.options.soundStreaming = soundStreaming;
 
         return _soundStreaming;
     }
@@ -41,13 +41,13 @@ class Preferences
     @:noCompletion
     static function get_downscroll():Bool
     {
-        return FlxG.save.data.preferences.downscroll ??= false;
+        return FlxG.save.data.options.downscroll ??= false;
     }
 
     @:noCompletion
     static function set_downscroll(_downscroll:Bool):Bool
     {
-        FlxG.save.data.preferences.downscroll = _downscroll;
+        FlxG.save.data.options.downscroll = _downscroll;
 
         return _downscroll;
     }
@@ -57,13 +57,13 @@ class Preferences
     @:noCompletion
     static function get_middlescroll():Bool
     {
-        return FlxG.save.data.preferences.middlescroll ??= false;
+        return FlxG.save.data.options.middlescroll ??= false;
     }
 
     @:noCompletion
     static function set_middlescroll(_middlescroll:Bool):Bool
     {
-        FlxG.save.data.preferences.middlescroll = _middlescroll;
+        FlxG.save.data.options.middlescroll = _middlescroll;
 
         return _middlescroll;
     }
@@ -73,13 +73,13 @@ class Preferences
     @:noCompletion
     static function get_ghostTapping():Bool
     {
-        return FlxG.save.data.preferences.ghostTapping ??= false;
+        return FlxG.save.data.options.ghostTapping ??= false;
     }
 
     @:noCompletion
     static function set_ghostTapping(_ghostTapping:Bool):Bool
     {
-        FlxG.save.data.preferences.ghostTapping = _ghostTapping;
+        FlxG.save.data.options.ghostTapping = _ghostTapping;
 
         return _ghostTapping;
     }
@@ -89,24 +89,19 @@ class Preferences
     @:noCompletion
     static function get_gameModifiers():Map<String, Any>
     {
-        return FlxG.save.data.preferences.gameModifiers ??= new Map<String, Any>();
+        return FlxG.save.data.options.gameModifiers ??= new Map<String, Any>();
     }
 
     @:noCompletion
     static function set_gameModifiers(_gameModifiers:Map<String, Any>):Map<String, Any>
     {
-        FlxG.save.data.preferences.gameModifiers = _gameModifiers;
+        FlxG.save.data.options.gameModifiers = _gameModifiers;
 
         return _gameModifiers;
     }
 
     public static function init():Void
     {
-        FlxG.save.data.preferences ??= {};
-    }
-
-    public static function save():Void
-    {
-        FlxG.save.flush();
+        FlxG.save.data.options ??= {};
     }
 }

@@ -2,8 +2,6 @@ package game.notes;
 
 import flixel.group.FlxSpriteContainer.FlxTypedSpriteContainer;
 
-import flixel.input.keyboard.FlxKey;
-
 import flixel.util.FlxSignal.FlxTypedSignal;
 
 import core.Conductor;
@@ -55,13 +53,13 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
 
         inputs =
         [
-            new Input("NOTE:LEFT", [FlxKey.Z, FlxKey.A, FlxKey.LEFT]),
+            new Input([90, 65, 37]),
 
-            new Input("NOTE:DOWN", [FlxKey.X, FlxKey.S, FlxKey.DOWN]),
+            new Input([88, 83, 40]),
 
-            new Input("NOTE:UP", [FlxKey.PERIOD, FlxKey.W, FlxKey.UP]),
+            new Input([190, 87, 38]),
 
-            new Input("NOTE:RIGHT", [FlxKey.SLASH, FlxKey.D, FlxKey.RIGHT])
+            new Input([191, 68, 39])
         ];
 
         lane = -1;

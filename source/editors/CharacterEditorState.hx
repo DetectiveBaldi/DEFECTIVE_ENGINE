@@ -2,6 +2,8 @@ package editors;
 
 import haxe.Json;
 
+import sys.FileSystem;
+
 import openfl.desktop.Clipboard;
 
 import flixel.FlxCamera;
@@ -100,22 +102,18 @@ class CharacterEditorState extends FlxState
 
         ui.findComponent("textfield", TextField).onChange = (ev:UIEvent) -> character.config.name = ui.findComponent("textfield", TextField).text;
 
-        #if html5
-            ui.findComponent("button", Button).disabled = true;
-        #else
-            ui.findComponent("button", Button).onClick = (ev:MouseEvent) ->
-            {
-                var path:String = Paths.json('assets/data/game/Character/${character.config.name}');
+        ui.findComponent("button", Button).onClick = (ev:MouseEvent) ->
+        {
+            var path:String = Paths.json('assets/data/game/Character/${character.config.name}');
 
-                sys.io.File.saveContent(path, Json.stringify(character.config));
+            sys.io.File.saveContent(path, Json.stringify(character.config));
 
-                OpeningState.logger.logInfo('Character saved to "${path}".');
-            }
-        #end
+            OpeningState.logger.logInfo('Character saved to "${path}".');
+        }
 
         ui.findComponent("_button", Button).onClick = (ev:MouseEvent) ->
         {
-            if (!Paths.exists(Paths.json('assets/data/game/Character/${ui.findComponent("textfield", TextField).text}')))
+            if (!FileSystem.exists(Paths.json('assets/data/game/Character/${ui.findComponent("textfield", TextField).text}')))
             {
                 OpeningState.logger.logError("The requested file(s) do not exist!");
 
@@ -299,7 +297,7 @@ class CharacterEditorState extends FlxState
                 return;
             }
 
-            if (!Paths.exists(Paths.png(ui.findComponent("___textfield", TextField).text)) || !Paths.exists(Paths.xml(ui.findComponent("____textfield", TextField).text)))
+            if (!FileSystem.exists(Paths.png(ui.findComponent("___textfield", TextField).text)) || !FileSystem.exists(Paths.xml(ui.findComponent("____textfield", TextField).text)))
             {
                 OpeningState.logger.logError("The requested file(s) do not exist!");
 
@@ -424,10 +422,8 @@ class CharacterEditorState extends FlxState
         ui.findComponent("__checkbox", CheckBox).value = character.config.flipY ?? false;
 
         ui.findComponent("_textfield", TextField).text = character.config.danceSteps.toString();
-        
-        #if !html5
-           ui.findComponent("_textfield", TextField).text = ui.findComponent("_textfield", TextField).text.substring(1, ui.findComponent("_textfield", TextField).text.length - 1);
-        #end
+
+        ui.findComponent("_textfield", TextField).text = ui.findComponent("_textfield", TextField).text.substring(1, ui.findComponent("_textfield", TextField).text.length - 1);
 
         ui.findComponent("__number-stepper", NumberStepper).value = character.config.danceInterval ?? 1.0;
 
@@ -453,9 +449,7 @@ class CharacterEditorState extends FlxState
 
         ui.findComponent("textarea", TextArea).text = frames.indices.toString();
 
-        #if !html5
-            ui.findComponent("textarea", TextArea).text = ui.findComponent("textarea", TextArea).text.substring(1, ui.findComponent("textarea", TextArea).text.length - 1);
-        #end
+        ui.findComponent("textarea", TextArea).text = ui.findComponent("textarea", TextArea).text.substring(1, ui.findComponent("textarea", TextArea).text.length - 1);
 
         ui.findComponent("____number-stepper", NumberStepper).value = frames.frameRate ?? 24.0;
 

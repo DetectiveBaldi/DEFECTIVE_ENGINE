@@ -8,8 +8,6 @@ import flixel.FlxSprite;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 
-import flixel.input.keyboard.FlxKey;
-
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 
@@ -41,9 +39,6 @@ class Character extends FlxSprite
 
     public var inputs:Array<Input>;
     
-    /**
-     * A structure containing fundamentals about `this` `Character`, such as name, texture-related information, and more.
-     */
     public var config:CharacterConfig;
 
     public var danceSteps:Array<String>;
@@ -70,13 +65,13 @@ class Character extends FlxSprite
 
         inputs =
         [
-            new Input("NOTE:LEFT", [FlxKey.Z, FlxKey.A, FlxKey.LEFT]),
+            new Input([90, 65, 37]),
 
-            new Input("NOTE:DOWN", [FlxKey.X, FlxKey.S, FlxKey.DOWN]),
+            new Input([88, 83, 40]),
 
-            new Input("NOTE:UP", [FlxKey.PERIOD, FlxKey.W, FlxKey.UP]),
+            new Input([190, 87, 38]),
 
-            new Input("NOTE:RIGHT", [FlxKey.SLASH, FlxKey.D, FlxKey.RIGHT])
+            new Input([191, 68, 39])
         ];
         
         this.config = config;

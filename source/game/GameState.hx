@@ -1,16 +1,14 @@
 package game;
 
-import haxe.Json;
-
 import haxe.ds.ArraySort;
+
+import sys.FileSystem;
 
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 
 import flixel.group.FlxContainer.FlxTypedContainer;
-
-import flixel.input.keyboard.FlxKey;
 
 import flixel.math.FlxMath;
 
@@ -24,7 +22,7 @@ import flixel.util.FlxStringUtil;
 import core.AssetMan;
 import core.Inputs;
 import core.Paths;
-import core.Preferences;
+import core.Options;
 
 import editors.CharacterEditorState;
 
@@ -223,17 +221,17 @@ class GameState extends SteppingState
             new Judgement("Shit", 166.6, -2.5, 0.0, 50, 0)
         ];
 
-        healthBar = new HealthBar(conductor, 0.0, 0.0, RIGHT_TO_LEFT, 600, 25);
+        healthBar = new HealthBar(0.0, 0.0, 600, 25, RIGHT_TO_LEFT, conductor);
 
         healthBar.camera = hudCamera;
 
-        healthBar.bar.emptyCallback = () -> loadDeathScene();
+        healthBar.onEmpty.add(loadGameOverScreen);
 
-        healthBar.opponentIcon.textureConfig = HealthIcon.findConfig('assets/data/game/HealthIcon/${opponent.config.name}');
+        healthBar.opponentIcon.config = HealthIcon.findConfig('assets/data/game/HealthIcon/${opponent.config.name}');
 
-        healthBar.playerIcon.textureConfig = HealthIcon.findConfig('assets/data/game/HealthIcon/${player.config.name}');
+        healthBar.playerIcon.config = HealthIcon.findConfig('assets/data/game/HealthIcon/${player.config.name}');
 
-        healthBar.setPosition((FlxG.width - healthBar.width) * 0.5, Preferences.downscroll ? (FlxG.height - healthBar.bar.height) - 620.0 : 620.0);
+        healthBar.setPosition((FlxG.width - healthBar.border.width) * 0.5, Options.downscroll ? (FlxG.height - healthBar.border.height) - 620.0 : 620.0);
 
         add(healthBar);
 
@@ -247,7 +245,7 @@ class GameState extends SteppingState
 
         scoreTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 2.2);
 
-        scoreTxt.setPosition((FlxG.width - scoreTxt.width) * 0.5, Preferences.downscroll ? 25.0 : (FlxG.height - scoreTxt.height) - 25.0);
+        scoreTxt.setPosition((FlxG.width - scoreTxt.width) * 0.5, Options.downscroll ? 25.0 : (FlxG.height - scoreTxt.height) - 25.0);
 
         add(scoreTxt);
 
@@ -275,9 +273,9 @@ class GameState extends SteppingState
 
         opponentStrums.ghostTap.add(opponentGhostTap);
 
-        opponentStrums.visible = !Preferences.middlescroll;
+        opponentStrums.visible = !Options.middlescroll;
 
-        opponentStrums.setPosition(Preferences.middlescroll ? (FlxG.width - opponentStrums.width) * 0.5 : 45.0, Preferences.downscroll ? FlxG.height - opponentStrums.height - 15.0 : 15.0);
+        opponentStrums.setPosition(Options.middlescroll ? (FlxG.width - opponentStrums.width) * 0.5 : 45.0, Options.downscroll ? FlxG.height - opponentStrums.height - 15.0 : 15.0);
 
         strumLines.add(opponentStrums);
         
@@ -297,7 +295,7 @@ class GameState extends SteppingState
 
         playerStrums.ghostTap.add(playerGhostTap);
 
-        playerStrums.setPosition(Preferences.middlescroll ? (FlxG.width - playerStrums.width) * 0.5 : FlxG.width - playerStrums.width - 45.0, Preferences.downscroll ? FlxG.height - playerStrums.height - 15.0 : 15.0);
+        playerStrums.setPosition(Options.middlescroll ? (FlxG.width - playerStrums.width) * 0.5 : FlxG.width - playerStrums.width - 45.0, Options.downscroll ? FlxG.height - playerStrums.height - 15.0 : 15.0);
 
         strumLines.add(playerStrums);
 
@@ -313,7 +311,9 @@ class GameState extends SteppingState
 
         add(noteSplashes);
 
-        fromLevel(FlxStringUtil.getClassName(this, true));
+        loadChart(FlxStringUtil.getClassName(this, true));
+
+        loadSong(FlxStringUtil.getClassName(this, true));
 
         var countdown:Countdown = new Countdown(conductor);
         
@@ -361,7 +361,7 @@ class GameState extends SteppingState
 
         debugInputs = new Map<String, Input>();
 
-        debugInputs["EDITORS:CHARACTER"] = new Input("EDITORS:CHARACTER", [FlxKey.SEVEN]);
+        debugInputs["EDITORS:CHARACTER"] = new Input([55]);
     }
 
     override function update(elapsed:Float):Void
@@ -457,7 +457,7 @@ class GameState extends SteppingState
 
             note.alpha = strum.alpha;
 
-            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * chartSpeed * note.speed * (Preferences.downscroll ? -1.0 : 1.0));
+            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * chartSpeed * note.speed * (Options.downscroll ? -1.0 : 1.0));
         }
 
         while (noteIndex < chart.notes.length)
@@ -501,8 +501,6 @@ class GameState extends SteppingState
 
             _note.setPosition((FlxG.width - _note.width) * 0.5, hudCamera.height / hudCamera.zoom);
 
-            notes.add(_note);
-
             for (k in 0 ... Math.round(note.length / (((60 / conductor.findTimeChangeAt(chart.tempo, note.time).tempo) * 1000.0) * 0.25)))
             {
                 var sustain:Note = notes.recycle(Note);
@@ -522,15 +520,13 @@ class GameState extends SteppingState
                 if (k >= Math.round(sustain.length / (((60 / conductor.findTimeChangeAt(chart.tempo, note.time).tempo) * 1000.0) * 0.25)) - 1)
                     sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
 
-                sustain.flipY = Preferences.downscroll;
+                sustain.flipY = Options.downscroll;
 
                 sustain.scale.set(0.685, 0.685);
 
                 sustain.updateHitbox();
 
                 sustain.setPosition((FlxG.width - sustain.width) * 0.5, hudCamera.height / hudCamera.zoom);
-
-                notes.add(sustain);
             }
 
             ArraySort.sort(notes.members, (__note:Note, ___note:Note) -> Std.int(__note.time - ___note.time));
@@ -592,14 +588,14 @@ class GameState extends SteppingState
         }
 
         if (Inputs.checkStatus(debugInputs["EDITORS:CHARACTER"], JUST_PRESSED))
-        {
-            AssetMan.clearCaches();
-            
+        {   
             FlxG.switchState(() -> new CharacterEditorState());
+
+            AssetMan.clearCaches();
         }
 
         if (FlxG.keys.justPressed.R)
-            loadDeathScene();
+            loadGameOverScreen();
         
         if (FlxG.keys.justPressed.ESCAPE)
             FlxG.resetState();
@@ -614,7 +610,7 @@ class GameState extends SteppingState
         hudCamera.zoom += 0.015;
     }
 
-    public function fromLevel(level:String):Void
+    public function loadChart(level:String):Void
     {
         chart = Chart.build('assets/data/game/levels/${level}/chart');
 
@@ -622,7 +618,7 @@ class GameState extends SteppingState
 
         TimingUtil.sort(chart.notes);
 
-        if (Preferences.gameModifiers["shuffle"])
+        if (Options.gameModifiers["shuffle"])
         {
             var shuffledDirections:Array<Int> = new Array<Int>();
 
@@ -637,7 +633,7 @@ class GameState extends SteppingState
             }
         }
 
-        if (Preferences.gameModifiers["mirror"])
+        if (Options.gameModifiers["mirror"])
         {
             var mirroredDirections:Array<Int> = new Array<Int>();
 
@@ -668,22 +664,25 @@ class GameState extends SteppingState
 
         noteIndex = 0;
 
-        eventIndex = 0;
+        eventIndex = 0;   
+    }
 
-        instrumental = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/game/levels/${level}/Instrumental')));
+    public function loadSong(level:String):Void
+    {
+        instrumental = FlxG.sound.load(AssetMan.sound(Paths.ogg('assets/music/game/levels/${level}/Instrumental')));
 
         instrumental.onComplete = () -> endSong();
 
-        if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/game/levels/${level}/Vocals-Main')))
-            mainVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/game/levels/${level}/Vocals-Main')));
+        if (FileSystem.exists(Paths.ogg('assets/music/game/levels/${level}/Vocals-Main')))
+            mainVocals = FlxG.sound.load(AssetMan.sound(Paths.ogg('assets/music/game/levels/${level}/Vocals-Main')));
 
         if (mainVocals == null)
         {
-            if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/game/levels/${level}/Vocals-Opponent')))
-                opponentVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/game/levels/${level}/Vocals-Opponent')));
+            if (FileSystem.exists(Paths.ogg('assets/music/game/levels/${level}/Vocals-Opponent')))
+                opponentVocals = FlxG.sound.load(AssetMan.sound(Paths.ogg('assets/music/game/levels/${level}/Vocals-Opponent')));
 
-            if (Paths.exists(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/game/levels/${level}/Vocals-Player')))
-                playerVocals = FlxG.sound.load(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ('assets/music/game/levels/${level}/Vocals-Player')));
+            if (FileSystem.exists(Paths.ogg('assets/music/game/levels/${level}/Vocals-Player')))
+                playerVocals = FlxG.sound.load(AssetMan.sound(Paths.ogg ('assets/music/game/levels/${level}/Vocals-Player')));
         }
     }
 
@@ -730,7 +729,7 @@ class GameState extends SteppingState
 
                 bonus += judgement.bonus;
 
-                healthBar.value = FlxMath.bound(healthBar.value + judgement.health, healthBar.bar.min, healthBar.bar.max);
+                healthBar.value = FlxMath.bound(healthBar.value + judgement.health, healthBar.min, healthBar.max);
 
                 scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
@@ -740,7 +739,7 @@ class GameState extends SteppingState
 
                     noteSplash.direction = strum.direction;
 
-                    noteSplash.animation.play('${FlxG.random.getObject(noteSplash.textureConfig.frames).prefix} ${NoteSplash.directions[noteSplash.direction].toLowerCase()}', false, FlxG.random.bool());
+                    noteSplash.animation.play('${FlxG.random.getObject(noteSplash.config.frames).prefix} ${NoteSplash.directions[noteSplash.direction].toLowerCase()}', false, FlxG.random.bool());
 
                     noteSplash.animation.onFinish.add((name:String) -> noteSplash.kill());
 
@@ -751,7 +750,7 @@ class GameState extends SteppingState
                     noteSplash.setPosition(strum.getMidpoint().x - noteSplash.width * 0.5, strum.getMidpoint().y - noteSplash.height * 0.5);
                 }
 
-                FlxG.sound.play(AssetMan.sound(#if html5 Paths.mp3 #else Paths.ogg #end ("assets/sounds/game/GameState/snap"), false), 0.75);
+                FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/game/GameState/snap"), false), 0.75);
             }
         }
 
@@ -767,7 +766,7 @@ class GameState extends SteppingState
 
         misses++;
 
-        healthBar.value = FlxMath.bound(healthBar.value - 3.5, healthBar.bar.min, healthBar.bar.max);
+        healthBar.value = FlxMath.bound(healthBar.value - 3.5, healthBar.min, healthBar.max);
 
         scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
@@ -867,14 +866,14 @@ class GameState extends SteppingState
 
     public function ghostTap(direction:Int):Void
     {
-        if (Preferences.ghostTapping)
+        if (Options.ghostTapping)
             return;
         
         score -= 650;
 
         misses++;
 
-        healthBar.value = FlxMath.bound(healthBar.value - 3.5, healthBar.bar.min, healthBar.bar.max);
+        healthBar.value = FlxMath.bound(healthBar.value - 3.5, healthBar.min, healthBar.max);
 
         scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
@@ -884,7 +883,7 @@ class GameState extends SteppingState
 
     public function opponentGhostTap(direction:Int):Void
     {
-        if (Preferences.ghostTapping)
+        if (Options.ghostTapping)
             return;
 
         for (i in 0 ... opponentGroup.members.length)
@@ -903,7 +902,7 @@ class GameState extends SteppingState
 
     public function playerGhostTap(direction:Int):Void
     {
-        if (Preferences.ghostTapping)
+        if (Options.ghostTapping)
             return;
 
         for (i in 0 ... playerGroup.members.length)
@@ -920,7 +919,7 @@ class GameState extends SteppingState
             playerVocals.volume = 0.0;
     }
 
-    public function loadDeathScene():Void
+    public function loadGameOverScreen():Void
     {
         persistentDraw = false;
 
@@ -932,6 +931,6 @@ class GameState extends SteppingState
 
         playerVocals?.stop();
 
-        openSubState(new GameOverSubState(this));
+        openSubState(new GameOverScreen(this));
     }
 }

@@ -129,11 +129,13 @@ class Conductor extends FlxBasic
 
             if (tempo != _timeChange.tempo)
             {
-                timeChange.step += (_timeChange.time - timeChange.time) / (crotchet * 0.25);
+                var lastTime:Float = timeChange.time;
 
                 timeChange.time = _timeChange.time;
 
                 timeChange.tempo = _timeChange.tempo;
+
+                timeChange.step += (timeChange.time - lastTime) / (crotchet * 0.25);
 
                 tempo = timeChange.tempo;
             }
@@ -168,18 +170,18 @@ class Conductor extends FlxBasic
         sectionHit = null;
     }
 
-    public function findTimeChangeAt(_tempo:Float, _time:Float):LoadedTimeChange
+    public function findTimeChangeAt(tempo:Float, time:Float):LoadedTimeChange
     {
-        var _timeChange:LoadedTimeChange = {tempo: _tempo, time: 0.0, step: 0.0};
+        var timeChange:LoadedTimeChange = {tempo: tempo, time: 0.0, step: 0.0};
 
         for (i in 0 ... timeChanges.length)
         {
-            var __timeChange:LoadedTimeChange = timeChanges[i];
+            var _timeChange:LoadedTimeChange = timeChanges[i];
 
-            if (_time >= __timeChange.time)
-                _timeChange = __timeChange;
+            if (time >= _timeChange.time)
+                timeChange = _timeChange;
         }
 
-        return _timeChange;
+        return timeChange;
     }
 }

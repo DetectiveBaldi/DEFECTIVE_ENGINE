@@ -12,7 +12,7 @@ import haxe.ui.focus.FocusManager;
 import haxe.ui.themes.Theme;
 
 import core.AssetMan;
-import core.Preferences;
+import core.Options;
 
 import plugins.Logger;
 
@@ -39,9 +39,7 @@ class OpeningState extends FlxState
     {
         super.create();
 
-        #if !html5
-            FlxG.autoPause = false;
-        #end
+        FlxG.autoPause = false;
 
         FlxG.fixedTimestep = false;
 
@@ -52,7 +50,7 @@ class OpeningState extends FlxState
         FlxG.mouse.visible = false;
 
         #if FLX_DEBUG
-            FlxG.console.registerClass(Preferences);
+            FlxG.console.registerClass(Options);
         #end
 
         FlxG.plugins.drawOnTop = true;
@@ -65,7 +63,7 @@ class OpeningState extends FlxState
 
         AssetMan.init();
 
-        Preferences.init();
+        Options.init();
 
         logger = new Logger();
 

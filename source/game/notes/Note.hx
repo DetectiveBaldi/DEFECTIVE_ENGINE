@@ -2,7 +2,6 @@ package game.notes;
 
 import haxe.Json;
 
-import flixel.FlxCamera;
 import flixel.FlxSprite;
 
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -12,30 +11,32 @@ import core.Paths;
 
 class Note extends FlxSprite
 {
-    public static var textureConfigs:Map<String, NoteTextureConfig> = new Map<String, NoteTextureConfig>();
+    public static var configs:Map<String, NoteConfig> = new Map<String, NoteConfig>();
 
     public static var directions:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 
-    public static function findConfig(path:String):NoteTextureConfig
+    public static function findConfig(path:String):NoteConfig
     {
-        return Json.parse(AssetMan.text(Paths.json(path)));
-    }
+        if (configs.exists(path))
+            return configs[path];
 
-    /**
-     * A structure containing texture-related information about `this` `Note`, such as .png and .xml locations.
-     */
-    public var textureConfig(default, set):NoteTextureConfig;
+        configs[path] = Json.parse(AssetMan.text(Paths.json(path)));
+
+        return configs[path];
+    }
+    
+    public var config(default, set):NoteConfig;
     
     @:noCompletion
-    function set_textureConfig(textureConfig:NoteTextureConfig):NoteTextureConfig
+    function set_config(config:NoteConfig):NoteConfig
     {
-        switch (textureConfig.format ?? "".toLowerCase():String)
+        switch (config.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(textureConfig.png)), Paths.xml(textureConfig.xml));
+                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(config.png)), Paths.xml(config.xml));
             
             case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(textureConfig.png)), Paths.xml(textureConfig.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(config.png)), Paths.xml(config.xml));
         }
 
         for (i in 0 ... Note.directions.length)
@@ -47,9 +48,9 @@ class Note extends FlxSprite
             animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldTail", Note.directions[i].toLowerCase() + "HoldTail0", 24.0, false);
         }
 
-        antialiasing = textureConfig.antialiasing ?? true;
+        antialiasing = config.antialiasing ?? true;
 
-        return this.textureConfig = textureConfig;
+        return this.config = config;
     }
 
     public var time:Float;
@@ -68,10 +69,10 @@ class Note extends FlxSprite
 
         active = false;
 
-        if (!textureConfigs.exists("classic"))
-            textureConfigs.set("classic", findConfig("assets/data/game/notes/Note/classic"));
+        if (!configs.exists("classic"))
+            configs.set("classic", findConfig("assets/data/game/notes/Note/classic"));
 
-        textureConfig = textureConfigs["classic"];
+        config = configs["classic"];
 
         time = 0.0;
 
@@ -85,7 +86,7 @@ class Note extends FlxSprite
     }
 }
 
-typedef NoteTextureConfig =
+typedef NoteConfig =
 {
     var format:String;
 

@@ -1,5 +1,9 @@
 package core;
 
+import sys.io.File;
+
+import openfl.display.BitmapData;
+
 import openfl.media.Sound;
 
 import openfl.utils.Assets;
@@ -8,7 +12,7 @@ import flixel.FlxG;
 
 import flixel.graphics.FlxGraphic;
 
-import core.Preferences;
+import core.Options;
 
 /**
  * A class which handles the caching of graphics and sounds.
@@ -38,14 +42,12 @@ class AssetMan
         if (graphics.exists(path))
             return graphics[path];
 
-        var graphic:FlxGraphic = FlxGraphic.fromBitmapData(#if html5 Assets.getBitmapData(path) #else openfl.display.BitmapData.fromFile(path) #end );
+        var graphic:FlxGraphic = FlxGraphic.fromBitmapData(BitmapData.fromFile(path));
 
-        #if (!hl && !html5)
-            if (Preferences.gpuCaching && gpuCaching)
+        #if !hl
+            if (Options.gpuCaching && gpuCaching)
                 graphic.bitmap.disposeImage();
         #end
-
-        graphic.bitmap.getTexture(FlxG.stage.context3D);
 
         graphic.persist = true;
 
@@ -65,13 +67,9 @@ class AssetMan
 
         var graphic:FlxGraphic = graphics[path];
 
-        if (graphic.useCount > 0.0)
-            return;
-
-        @:privateAccess
-            graphic.bitmap.__texture.dispose();
-
         FlxG.bitmap.remove(graphic);
+
+        graphic = null;
 
         graphics.remove(path);
     }
@@ -99,18 +97,10 @@ class AssetMan
 
         var output:Sound;
 
-        #if hl
+        if (Options.soundStreaming && soundStreaming)
+            output = Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
+        else
             output = Sound.fromFile(path);
-        #else
-            #if html5
-                output = Assets.getSound(path);
-            #else
-                if (Preferences.soundStreaming && soundStreaming)
-                    output = Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
-                else
-                    output = Sound.fromFile(path);
-            #end
-        #end
 
         sounds[path] = output;
 
@@ -127,19 +117,12 @@ class AssetMan
             return;
 
         var sound:Sound = sounds[path];
-
-        for (i in 0 ... FlxG.sound.list.length)
-        {
-            @:privateAccess
-            {
-                if (FlxG.sound.list.members[i]._sound == sound)
-                    return;
-            }
-        }
         
         sound.close();
 
         Assets.cache.removeSound(path);
+
+        sounds = null;
 
         sounds.remove(path);
     }
@@ -170,6 +153,6 @@ class AssetMan
      */
     public static function text(path:String):String
     {
-        return #if html5 Assets.getText #else sys.io.File.getContent #end (path);
+        return File.getContent(path);
     }
 }
