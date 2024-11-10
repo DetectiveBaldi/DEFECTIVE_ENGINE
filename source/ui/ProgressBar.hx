@@ -112,8 +112,10 @@ class ProgressBar extends FlxSpriteContainer
     {
         super();
 
-        setPosition(x, y);
+        this.x = x;
 
+        this.y = y;
+        
         @:bypassAccessor
             value = 50.0;
 
