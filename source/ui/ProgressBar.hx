@@ -4,6 +4,8 @@ import openfl.geom.Rectangle;
 
 import flixel.FlxSprite;
 
+import flixel.math.FlxMath;
+
 import flixel.group.FlxSpriteContainer;
 
 import flixel.math.FlxRect;
@@ -11,9 +13,14 @@ import flixel.math.FlxRect;
 import flixel.util.FlxColor;
 import flixel.util.FlxSignal;
 
+import flixel.ui.FlxBar;
+
+/**
+ * An alternative to `flixel.ui.FlxBar` containing fixed fill directions and a couple optimizations.
+ */
 class ProgressBar extends FlxSpriteContainer
 {
-    public var percent(get, never):Float;
+    public var percent(get, set):Float;
 
     @:noCompletion
     function get_percent():Float
@@ -21,11 +28,21 @@ class ProgressBar extends FlxSpriteContainer
         return ((value - min) / (max - min)) * 100.0;
     }
 
+    @:noCompletion
+    function set_percent(percent:Float):Float
+    {
+        value = (range / max) * percent;
+
+        return percent;
+    }
+
     public var value(default, set):Float;
 
     @:noCompletion
     function set_value(value:Float):Float
     {
+        value = FlxMath.bound(value, min, max);
+
         this.value = value;
 
         updateClipping();
@@ -42,6 +59,14 @@ class ProgressBar extends FlxSpriteContainer
     public var min:Float;
 
     public var max:Float;
+
+    public var range(get, never):Float;
+    
+    @:noCompletion
+    function get_range():Float
+    {
+        return max - min;
+    }
 
     public var onEmpty:FlxSignal;
 

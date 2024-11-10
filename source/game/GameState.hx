@@ -614,8 +614,6 @@ class GameState extends SteppingState
     {
         chart = Chart.build('assets/data/game/levels/${level}/chart');
 
-        chart.speed = FlxMath.bound(chart.speed, 0.0, 1.45);
-
         TimingUtil.sort(chart.notes);
 
         if (Options.gameModifiers["shuffle"])
@@ -729,7 +727,7 @@ class GameState extends SteppingState
 
                 bonus += judgement.bonus;
 
-                healthBar.value = FlxMath.bound(healthBar.value + judgement.health, healthBar.min, healthBar.max);
+                healthBar.value += judgement.health;
 
                 scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
@@ -766,7 +764,7 @@ class GameState extends SteppingState
 
         misses++;
 
-        healthBar.value = FlxMath.bound(healthBar.value - 3.5, healthBar.min, healthBar.max);
+        healthBar.value -= 3.5;
 
         scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
@@ -873,7 +871,7 @@ class GameState extends SteppingState
 
         misses++;
 
-        healthBar.value = FlxMath.bound(healthBar.value - 3.5, healthBar.min, healthBar.max);
+        healthBar.value -= 3.5;
 
         scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
