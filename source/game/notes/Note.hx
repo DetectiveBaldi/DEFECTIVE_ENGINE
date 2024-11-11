@@ -69,10 +69,7 @@ class Note extends FlxSprite
 
         active = false;
 
-        if (!configs.exists("classic"))
-            configs.set("classic", findConfig("assets/data/game/notes/Note/classic"));
-
-        config = configs["classic"];
+        config = findConfig("assets/data/game/notes/Note/classic");
 
         time = 0.0;
 
