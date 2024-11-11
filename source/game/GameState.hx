@@ -229,7 +229,11 @@ class GameState extends SteppingState
 
         healthBar.opponentIcon.config = HealthIcon.findConfig('assets/data/game/HealthIcon/${opponent.config.name}');
 
+        healthBar.opponentIcon = healthBar.opponentIcon;
+
         healthBar.playerIcon.config = HealthIcon.findConfig('assets/data/game/HealthIcon/${player.config.name}');
+
+        healthBar.playerIcon = healthBar.playerIcon;
 
         healthBar.setPosition((FlxG.width - healthBar.border.width) * 0.5, Options.downscroll ? (FlxG.height - healthBar.border.height) - 620.0 : 620.0);
 
