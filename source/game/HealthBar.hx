@@ -131,30 +131,30 @@ class HealthBar extends ProgressBar
         {
             case LEFT_TO_RIGHT:
             {
-                opponentIcon.x = border.x + border.width * percent * 0.01 - 16.0;
+                opponentIcon.setPosition(border.x + border.width * percent * 0.01 - 16.0, border.getMidpoint().y - opponentIcon.height * 0.5);
 
-                playerIcon.x = border.x + border.width * percent * 0.01 - playerIcon.width + 16.0;
+                playerIcon.setPosition(border.x + border.width * percent * 0.01 - playerIcon.width + 16.0, border.getMidpoint().y - playerIcon.height * 0.5);
             }
             
             case RIGHT_TO_LEFT:
             {
-                opponentIcon.x = border.x + border.width * (100.0 - percent) * 0.01 - opponentIcon.width + 16.0;
+                opponentIcon.setPosition(border.x + border.width * (100.0 - percent) * 0.01 - opponentIcon.width + 16.0, border.getMidpoint().y - opponentIcon.height * 0.5);
 
-                playerIcon.x = border.x + border.width * (100.0 - percent) * 0.01 - 16.0;
+                playerIcon.setPosition(border.x + border.width * (100.0 - percent) * 0.01 - 16.0, border.getMidpoint().y - playerIcon.height * 0.5);
             }
 
             case TOP_TO_BOTTOM:
             {
-                opponentIcon.y = border.y + border.height * percent * 0.01 - 16.0;
+                opponentIcon.setPosition(border.getMidpoint().x - opponentIcon.width * 0.5, border.y + border.height * percent * 0.01 - 16.0);
 
-                playerIcon.y = border.y + border.height * percent * 0.01 - playerIcon.height + 16.0;
+                playerIcon.setPosition(border.getMidpoint().x - playerIcon.width * 0.5, border.y + border.height * percent * 0.01 - playerIcon.height + 16.0);
             }
 
             case BOTTOM_TO_TOP:
             {
-                opponentIcon.y = border.y + border.height * (100.0 - percent) * 0.01 - opponentIcon.height + 16.0;
+                opponentIcon.setPosition(border.getMidpoint().x - opponentIcon.width * 0.5, border.y + border.height * (100.0 - percent) * 0.01 - opponentIcon.height + 16.0);
 
-                playerIcon.y = border.y + border.height * (100.0 - percent) * 0.01 - 16.0;
+                playerIcon.setPosition(border.getMidpoint().x - playerIcon.width * 0.5, border.y + border.height * (100.0 - percent) * 0.01 - 16.0);
             }
         }
     }

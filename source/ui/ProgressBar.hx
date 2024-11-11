@@ -186,6 +186,8 @@ class ProgressBar extends FlxSpriteContainer
     {
         emptySide.clipRect.set();
 
+        fillSide.clipRect.set();
+
         switch (fillDirection:ProgressBarFillDirection)
         {
             case LEFT_TO_RIGHT:
