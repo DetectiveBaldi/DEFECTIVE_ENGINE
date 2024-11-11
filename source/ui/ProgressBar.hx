@@ -13,8 +13,6 @@ import flixel.math.FlxRect;
 import flixel.util.FlxColor;
 import flixel.util.FlxSignal;
 
-import flixel.ui.FlxBar;
-
 /**
  * An alternative to `flixel.ui.FlxBar` containing fixed fill directions and a couple optimizations.
  */
@@ -173,7 +171,11 @@ class ProgressBar extends FlxSpriteContainer
 
         onEmpty.destroy();
 
+        onEmpty = null;
+
         onFill.destroy();
+
+        onFill = null;
 
         emptySide.clipRect.put();
 
@@ -182,6 +184,8 @@ class ProgressBar extends FlxSpriteContainer
 
     public function updateClipping():Void
     {
+        emptySide.clipRect.set();
+
         switch (fillDirection:ProgressBarFillDirection)
         {
             case LEFT_TO_RIGHT:
@@ -221,15 +225,57 @@ class ProgressBar extends FlxSpriteContainer
 
                 fillSide.clipRect = fillSide.clipRect;
             }
+
+            case TOP_TO_BOTTOM:
+            {
+                emptySide.clipRect.width = emptySide.width;
+
+                emptySide.clipRect.height = emptySide.height * (1.0 - percent * 0.01);
+
+                emptySide.clipRect.y = emptySide.height - emptySide.clipRect.height;
+
+                emptySide.clipRect = emptySide.clipRect;
+
+                fillSide.clipRect.height = fillSide.height * (percent * 0.01);
+
+                fillSide.clipRect.width = fillSide.width;
+
+                fillSide.clipRect.y = 0.0;
+
+                fillSide.clipRect = fillSide.clipRect;
+            }
+
+            case BOTTOM_TO_TOP:
+            {
+                emptySide.clipRect.width = emptySide.width;
+
+                emptySide.clipRect.height = emptySide.height * (1.0 - percent * 0.01);
+
+                emptySide.clipRect.y = 0.0;
+
+                emptySide.clipRect = emptySide.clipRect;
+
+                fillSide.clipRect.width = fillSide.width;
+
+                fillSide.clipRect.height = fillSide.height * (percent * 0.01);
+
+                fillSide.clipRect.y = fillSide.height - fillSide.clipRect.height;
+
+                fillSide.clipRect = fillSide.clipRect;
+            }
         }
     }
 }
 
 enum abstract ProgressBarFillDirection(String) from String to String
 {
-    var LEFT_TO_RIGHT;
+    var LEFT_TO_RIGHT:ProgressBarFillDirection;
 
-    var RIGHT_TO_LEFT;
+    var RIGHT_TO_LEFT:ProgressBarFillDirection;
+
+    var TOP_TO_BOTTOM:ProgressBarFillDirection;
+
+    var BOTTOM_TO_TOP:ProgressBarFillDirection;
 }
 
 class ProgressBarSideSprite extends FlxSprite

@@ -78,7 +78,7 @@ class HealthBar extends ProgressBar
 
         opponentIcon = new HealthIcon(0.0, 0.0, HealthIcon.findConfig("assets/data/game/HealthIcon/BOYFRIEND_PIXEL"));
 
-        opponentIcon.flipX = fillDirection == LEFT_TO_RIGHT;
+        opponentIcon.flipX = fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM;
 
         opponentIcon.setPosition(border.getMidpoint().x - opponentIcon.height * 0.5, border.getMidpoint().y - opponentIcon.height * 0.5);
 
@@ -86,7 +86,7 @@ class HealthBar extends ProgressBar
 
         playerIcon = new HealthIcon(0.0, 0.0, HealthIcon.findConfig("assets/data/game/HealthIcon/BOYFRIEND"));
 
-        playerIcon.flipX = !(fillDirection == LEFT_TO_RIGHT);
+        playerIcon.flipX = !(fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM);
 
         playerIcon.setPosition(border.getMidpoint().x - playerIcon.width * 0.5, border.getMidpoint().y - playerIcon.height * 0.5);
         
@@ -141,6 +141,20 @@ class HealthBar extends ProgressBar
                 opponentIcon.x = border.x + border.width * (100.0 - percent) * 0.01 - opponentIcon.width + 16.0;
 
                 playerIcon.x = border.x + border.width * (100.0 - percent) * 0.01 - 16.0;
+            }
+
+            case TOP_TO_BOTTOM:
+            {
+                opponentIcon.y = border.y + border.height * percent * 0.01 - 16.0;
+
+                playerIcon.y = border.y + border.height * percent * 0.01 - playerIcon.height + 16.0;
+            }
+
+            case BOTTOM_TO_TOP:
+            {
+                opponentIcon.y = border.y + border.height * (100.0 - percent) * 0.01 - opponentIcon.height + 16.0;
+
+                playerIcon.y = border.y + border.height * (100.0 - percent) * 0.01 - 16.0;
             }
         }
     }
