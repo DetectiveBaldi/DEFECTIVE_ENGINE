@@ -4,22 +4,20 @@ import haxe.Json;
 
 import flixel.FlxSprite;
 
-import flixel.util.FlxColor;
-
 import core.AssetMan;
 import core.Paths;
 
-class HealthIcon extends FlxSprite
+class HealthBarIcon extends FlxSprite
 {
-    public static function findConfig(path:String):HealthIconConfig
+    public static function findConfig(path:String):HealthBarIconConfig
     {
         return Json.parse(AssetMan.text(Paths.json(path)));
     }
 
-    public var config(default, set):HealthIconConfig;
+    public var config(default, set):HealthBarIconConfig;
 
     @:noCompletion
-    function set_config(config:HealthIconConfig):HealthIconConfig
+    function set_config(config:HealthBarIconConfig):HealthBarIconConfig
     {
         loadGraphic(AssetMan.graphic(Paths.png(config.png)));
 
@@ -32,7 +30,7 @@ class HealthIcon extends FlxSprite
         return this.config = config;
     }
 
-    public function new(x:Float = 0.0, y:Float = 0.0, config:HealthIconConfig):Void
+    public function new(x:Float = 0.0, y:Float = 0.0, config:HealthBarIconConfig):Void
     {
         super(x, y);
 
@@ -42,7 +40,7 @@ class HealthIcon extends FlxSprite
     }
 }
 
-typedef HealthIconConfig =
+typedef HealthBarIconConfig =
 {
     var png:String;
 

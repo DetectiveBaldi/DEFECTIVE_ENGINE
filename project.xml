@@ -32,6 +32,14 @@
 
 	<source path="source" />
 
+	<!-- ______________________________ Defines _____________________________ -->
+
+	<haxedef name="FLX_NO_DEBUG" unless="debug" />
+
+	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
+
+	<haxedef name="FLX_NO_HEALTH" />
+
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />
@@ -43,14 +51,6 @@
 	<haxelib name="haxeui-core" />
 
 	<haxelib name="haxeui-flixel" />
-
-	<!-- ______________________________ Defines _____________________________ -->
-
-	<haxedef name="FLX_NO_DEBUG" unless="debug" />
-
-	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
-
-	<haxedef name="FLX_NO_HEALTH" />
 
 	<!-- _____________________________ Resources ____________________________ -->
 

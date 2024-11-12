@@ -36,34 +36,34 @@ class HealthBar extends ProgressBar
         return fillDirection;
     }
 
-    public var opponentIcon(default, set):HealthIcon;
+    public var opponentIcon(default, set):HealthBarIcon;
 
     @:noCompletion
-    function set_opponentIcon(opponentIcon:HealthIcon):HealthIcon
+    function set_opponentIcon(opponentIcon:HealthBarIcon):HealthBarIcon
     {
         this.opponentIcon = opponentIcon;
 
         var opponentIconHealthBarColor:{r:Int, g:Int, b:Int} = opponentIcon.config.healthBarColor;
 
-        var emptySideColor = opponentIconHealthBarColor == null ? FlxColor.RED : FlxColor.fromRGB(opponentIconHealthBarColor.r, opponentIconHealthBarColor.g, opponentIconHealthBarColor.b);
+        var emptiedSideColor = opponentIconHealthBarColor == null ? FlxColor.RED : FlxColor.fromRGB(opponentIconHealthBarColor.r, opponentIconHealthBarColor.g, opponentIconHealthBarColor.b);
 
-        emptySide.color = emptySideColor;
+        emptiedSide.color = emptiedSideColor;
 
         return opponentIcon;
     }
 
-    public var playerIcon(default, set):HealthIcon;
+    public var playerIcon(default, set):HealthBarIcon;
 
     @:noCompletion
-    function set_playerIcon(playerIcon:HealthIcon):HealthIcon
+    function set_playerIcon(playerIcon:HealthBarIcon):HealthBarIcon
     {
         this.playerIcon = playerIcon;
 
         var playerIconHealthBarColor:{r:Int, g:Int, b:Int} = playerIcon.config.healthBarColor;
 
-        var fillSideColor = playerIconHealthBarColor == null ? FlxColor.LIME: FlxColor.fromRGB(playerIconHealthBarColor.r, playerIconHealthBarColor.g, playerIconHealthBarColor.b);
+        var filledSideColor = playerIconHealthBarColor == null ? FlxColor.LIME: FlxColor.fromRGB(playerIconHealthBarColor.r, playerIconHealthBarColor.g, playerIconHealthBarColor.b);
 
-        fillSide.color = fillSideColor;
+        filledSide.color = filledSideColor;
 
         return playerIcon;
     }
@@ -76,7 +76,7 @@ class HealthBar extends ProgressBar
 
         this.conductor = conductor;
 
-        opponentIcon = new HealthIcon(0.0, 0.0, HealthIcon.findConfig("assets/data/game/HealthIcon/BOYFRIEND_PIXEL"));
+        opponentIcon = new HealthBarIcon(0.0, 0.0, HealthBarIcon.findConfig("assets/data/game/HealthBarIcon/BOYFRIEND_PIXEL"));
 
         opponentIcon.flipX = fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM;
 
@@ -84,7 +84,7 @@ class HealthBar extends ProgressBar
 
         add(opponentIcon);
 
-        playerIcon = new HealthIcon(0.0, 0.0, HealthIcon.findConfig("assets/data/game/HealthIcon/BOYFRIEND"));
+        playerIcon = new HealthBarIcon(0.0, 0.0, HealthBarIcon.findConfig("assets/data/game/HealthBarIcon/BOYFRIEND"));
 
         playerIcon.flipX = !(fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM);
 

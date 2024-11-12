@@ -44,7 +44,7 @@ class AssetMan
 
         var graphic:FlxGraphic = FlxGraphic.fromBitmapData(BitmapData.fromFile(path));
 
-        #if !hl
+        #if (cpp && windows)
             if (Options.gpuCaching && gpuCaching)
                 graphic.bitmap.disposeImage();
         #end

@@ -46,10 +46,10 @@ class ProgressBar extends FlxSpriteContainer
         updateClipping();
 
         if (value == min)
-            onEmpty.dispatch();
+            onEmptied.dispatch();
 
         if (value == max)
-            onFill.dispatch();
+            onFilled.dispatch();
         
         return value;
     }
@@ -66,9 +66,9 @@ class ProgressBar extends FlxSpriteContainer
         return max - min;
     }
 
-    public var onEmpty:FlxSignal;
+    public var onEmptied:FlxSignal;
 
-    public var onFill:FlxSignal;
+    public var onFilled:FlxSignal;
 
     public var barWidth:Int;
 
@@ -86,9 +86,9 @@ class ProgressBar extends FlxSpriteContainer
         return fillDirection;
     }
 
-    public var emptySide:ProgressBarSideSprite;
+    public var emptiedSide:ProgressBarSideSprite;
 
-    public var fillSide:ProgressBarSideSprite;
+    public var filledSide:ProgressBarSideSprite;
 
     public var border:FlxSprite;
 
@@ -108,11 +108,7 @@ class ProgressBar extends FlxSpriteContainer
 
     public function new(x:Float = 0.0, y:Float = 0.0, barWidth:Int = 600, barHeight:Int = 25, fillDirection:ProgressBarFillDirection):Void
     {
-        super();
-
-        this.x = x;
-
-        this.y = y;
+        super(x, y);
         
         @:bypassAccessor
             value = 50.0;
@@ -121,9 +117,9 @@ class ProgressBar extends FlxSpriteContainer
 
         max = 100.0;
 
-        onEmpty = new FlxSignal();
+        onEmptied = new FlxSignal();
 
-        onFill = new FlxSignal();
+        onFilled = new FlxSignal();
 
         @:bypassAccessor
             this.barWidth = barWidth;
@@ -134,25 +130,25 @@ class ProgressBar extends FlxSpriteContainer
         @:bypassAccessor
             this.fillDirection = fillDirection;
         
-        emptySide = new ProgressBarSideSprite();
+        emptiedSide = new ProgressBarSideSprite();
 
-        emptySide.makeGraphic(barWidth, barHeight, FlxColor.WHITE);
+        emptiedSide.makeGraphic(barWidth, barHeight, FlxColor.WHITE);
 
-        emptySide.color = FlxColor.RED;
+        emptiedSide.color = FlxColor.RED;
 
-        emptySide.clipRect = FlxRect.get();
+        emptiedSide.clipRect = FlxRect.get();
 
-        add(emptySide);
+        add(emptiedSide);
 
-        fillSide = new ProgressBarSideSprite();
+        filledSide = new ProgressBarSideSprite();
 
-        fillSide.makeGraphic(barWidth, barHeight, FlxColor.WHITE);
+        filledSide.makeGraphic(barWidth, barHeight, FlxColor.WHITE);
 
-        fillSide.color = FlxColor.LIME;
+        filledSide.color = FlxColor.LIME;
 
-        fillSide.clipRect = FlxRect.get();
+        filledSide.clipRect = FlxRect.get();
 
-        add(fillSide);
+        add(filledSide);
 
         updateClipping();
 
@@ -169,101 +165,93 @@ class ProgressBar extends FlxSpriteContainer
     {
         super.destroy();
 
-        onEmpty.destroy();
+        onEmptied.destroy();
 
-        onEmpty = null;
+        onEmptied = null;
 
-        onFill.destroy();
+        onFilled.destroy();
 
-        onFill = null;
+        onFilled = null;
 
-        emptySide.clipRect.put();
+        emptiedSide.clipRect.put();
 
-        fillSide.clipRect.put();
+        filledSide.clipRect.put();
     }
 
     public function updateClipping():Void
     {
-        emptySide.clipRect.set();
+        emptiedSide.clipRect.set();
 
-        fillSide.clipRect.set();
+        filledSide.clipRect.set();
 
         switch (fillDirection:ProgressBarFillDirection)
         {
             case LEFT_TO_RIGHT:
             {
-                emptySide.clipRect.width = emptySide.width * (1.0 - percent * 0.01);
+                emptiedSide.clipRect.width = emptiedSide.width * (1.0 - percent * 0.01);
 
-                emptySide.clipRect.height = emptySide.height;
+                emptiedSide.clipRect.height = emptiedSide.height;
 
-                emptySide.clipRect.x = emptySide.width - emptySide.clipRect.width;
+                emptiedSide.clipRect.x = emptiedSide.width - emptiedSide.clipRect.width;
 
-                emptySide.clipRect = emptySide.clipRect;
+                emptiedSide.clipRect = emptiedSide.clipRect;
 
-                fillSide.clipRect.width = fillSide.width * (percent * 0.01);
+                filledSide.clipRect.width = filledSide.width * (percent * 0.01);
 
-                fillSide.clipRect.height = fillSide.height;
+                filledSide.clipRect.height = filledSide.height;
 
-                fillSide.clipRect.x = 0.0;
-
-                fillSide.clipRect = fillSide.clipRect;
+                filledSide.clipRect = filledSide.clipRect;
             }
 
             case RIGHT_TO_LEFT:
             {
-                emptySide.clipRect.width = emptySide.width * (1.0 - percent * 0.01);
+                emptiedSide.clipRect.width = emptiedSide.width * (1.0 - percent * 0.01);
 
-                emptySide.clipRect.height = emptySide.height;
+                emptiedSide.clipRect.height = emptiedSide.height;
 
-                emptySide.clipRect.x = 0.0;
+                emptiedSide.clipRect = emptiedSide.clipRect;
 
-                emptySide.clipRect = emptySide.clipRect;
+                filledSide.clipRect.width = filledSide.width * (percent * 0.01);
 
-                fillSide.clipRect.width = fillSide.width * (percent * 0.01);
+                filledSide.clipRect.height = filledSide.height;
 
-                fillSide.clipRect.height = fillSide.height;
+                filledSide.clipRect.x = filledSide.width - filledSide.clipRect.width;
 
-                fillSide.clipRect.x = fillSide.width - fillSide.clipRect.width;
-
-                fillSide.clipRect = fillSide.clipRect;
+                filledSide.clipRect = filledSide.clipRect;
             }
 
             case TOP_TO_BOTTOM:
             {
-                emptySide.clipRect.width = emptySide.width;
+                emptiedSide.clipRect.width = emptiedSide.width;
 
-                emptySide.clipRect.height = emptySide.height * (1.0 - percent * 0.01);
+                emptiedSide.clipRect.height = emptiedSide.height * (1.0 - percent * 0.01);
 
-                emptySide.clipRect.y = emptySide.height - emptySide.clipRect.height;
+                emptiedSide.clipRect.y = emptiedSide.height - emptiedSide.clipRect.height;
 
-                emptySide.clipRect = emptySide.clipRect;
+                emptiedSide.clipRect = emptiedSide.clipRect;
 
-                fillSide.clipRect.height = fillSide.height * (percent * 0.01);
+                filledSide.clipRect.height = filledSide.height * (percent * 0.01);
 
-                fillSide.clipRect.width = fillSide.width;
+                filledSide.clipRect.width = filledSide.width;
 
-                fillSide.clipRect.y = 0.0;
-
-                fillSide.clipRect = fillSide.clipRect;
+                filledSide.clipRect = filledSide.clipRect;
             }
 
             case BOTTOM_TO_TOP:
             {
-                emptySide.clipRect.width = emptySide.width;
+                emptiedSide.clipRect.width = emptiedSide.width;
 
-                emptySide.clipRect.height = emptySide.height * (1.0 - percent * 0.01);
+                emptiedSide.clipRect.height = emptiedSide.height * (1.0 - percent * 0.01);
 
-                emptySide.clipRect.y = 0.0;
+                emptiedSide.clipRect = emptiedSide.clipRect;
 
-                emptySide.clipRect = emptySide.clipRect;
+                filledSide.clipRect.width = filledSide.width;
 
-                fillSide.clipRect.width = fillSide.width;
+                filledSide.clipRect.height = filledSide.height * (percent * 0.01);
 
-                fillSide.clipRect.height = fillSide.height * (percent * 0.01);
+                filledSide.clipRect.y = filledSide.height - filledSide.clipRect.height;
 
-                fillSide.clipRect.y = fillSide.height - fillSide.clipRect.height;
-
-                fillSide.clipRect = fillSide.clipRect;
+                filledSide.clipRect = filledSide.clipRect;
             }
         }
     }

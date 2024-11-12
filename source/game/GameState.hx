@@ -127,7 +127,7 @@ class GameState extends SteppingState
 
     public var playerVocals:FlxSound;
 
-    public var songStarted:Bool;
+    public var countdown:Countdown;
 
     public var debugInputs:Map<String, Input>;
 
@@ -225,13 +225,13 @@ class GameState extends SteppingState
 
         healthBar.camera = hudCamera;
 
-        healthBar.onEmpty.add(loadGameOverScreen);
+        healthBar.onEmptied.add(loadGameOverScreen);
 
-        healthBar.opponentIcon.config = HealthIcon.findConfig('assets/data/game/HealthIcon/${opponent.config.name}');
+        healthBar.opponentIcon.config = HealthBarIcon.findConfig('assets/data/game/HealthBarIcon/${opponent.config.name}');
 
         healthBar.opponentIcon = healthBar.opponentIcon;
 
-        healthBar.playerIcon.config = HealthIcon.findConfig('assets/data/game/HealthIcon/${player.config.name}');
+        healthBar.playerIcon.config = HealthBarIcon.findConfig('assets/data/game/HealthBarIcon/${player.config.name}');
 
         healthBar.playerIcon = healthBar.playerIcon;
 
@@ -319,7 +319,7 @@ class GameState extends SteppingState
 
         loadSong(FlxStringUtil.getClassName(this, true));
 
-        var countdown:Countdown = new Countdown(conductor);
+        countdown = new Countdown(conductor);
         
         countdown.camera = hudCamera;
 
@@ -340,6 +340,8 @@ class GameState extends SteppingState
             countdown.onFinish.removeAll();
 
             countdown.onSkip.removeAll();
+
+            startSong();
         });
 
         countdown.onSkip.add(() ->
@@ -355,13 +357,13 @@ class GameState extends SteppingState
             countdown.onFinish.removeAll();
 
             countdown.onSkip.removeAll();
+
+            startSong();
         });
 
         countdown.start();
 
         add(countdown);
-
-        songStarted = false;
 
         debugInputs = new Map<String, Input>();
 
@@ -562,7 +564,7 @@ class GameState extends SteppingState
             eventIndex++;
         }
 
-        if (songStarted)
+        if (countdown.finished || countdown.skipped)
         {
             if (Math.abs(instrumental.time - conductor.time) >= 25.0)
                 instrumental.time = conductor.time;
@@ -584,11 +586,6 @@ class GameState extends SteppingState
                 if (Math.abs(playerVocals.time - instrumental.time) >= 5.0)
                     playerVocals.time = instrumental.time;
             }
-        }
-        else
-        {
-            if (conductor.time >= 0.0)
-                startSong();
         }
 
         if (Inputs.checkStatus(debugInputs["EDITORS:CHARACTER"], JUST_PRESSED))
@@ -700,8 +697,6 @@ class GameState extends SteppingState
 
         if (playerVocals != null)
             playerVocals.play();
-
-        songStarted = true;
     }
 
     public function endSong():Void
@@ -868,7 +863,7 @@ class GameState extends SteppingState
 
     public function ghostTap(direction:Int):Void
     {
-        if (Options.ghostTapping)
+        if (Options.ghostTapping || !(countdown.finished || countdown.skipped))
             return;
         
         score -= 650;
@@ -885,7 +880,7 @@ class GameState extends SteppingState
 
     public function opponentGhostTap(direction:Int):Void
     {
-        if (Options.ghostTapping)
+        if (Options.ghostTapping || !(countdown.finished || countdown.skipped))
             return;
 
         for (i in 0 ... opponentGroup.members.length)
@@ -904,7 +899,7 @@ class GameState extends SteppingState
 
     public function playerGhostTap(direction:Int):Void
     {
-        if (Options.ghostTapping)
+        if (Options.ghostTapping || !(countdown.finished || countdown.skipped))
             return;
 
         for (i in 0 ... playerGroup.members.length)
