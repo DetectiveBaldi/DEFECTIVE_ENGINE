@@ -367,7 +367,7 @@ class GameState extends SteppingState
 
         debugInputs = new Map<String, Input>();
 
-        debugInputs["EDITORS:CHARACTER"] = new Input([55]);
+        debugInputs["EDITORS:CHARACTEREDITORSTATE"] = new Input([55]);
     }
 
     override function update(elapsed:Float):Void
@@ -507,11 +507,11 @@ class GameState extends SteppingState
 
             _note.setPosition((FlxG.width - _note.width) * 0.5, hudCamera.height / hudCamera.zoom);
 
-            for (k in 0 ... Math.round(note.length / (((60 / conductor.findTimeChangeAt(chart.tempo, note.time).tempo) * 1000.0) * 0.25)))
+            for (k in 0 ... Math.round(_note.length / (((60.0 / conductor.findTimeChangeAt(chart.tempo, _note.time).tempo) * 1000.0) * 0.25)))
             {
                 var sustain:Note = notes.recycle(Note);
 
-                sustain.time = _note.time + ((((60 / conductor.findTimeChangeAt(chart.tempo, note.time).tempo) * 1000.0) * 0.25) * (k + 1));
+                sustain.time = _note.time + ((((60.0 / conductor.findTimeChangeAt(chart.tempo, _note.time).tempo) * 1000.0) * 0.25) * (k + 1.0));
 
                 sustain.speed = _note.speed;
 
@@ -519,11 +519,11 @@ class GameState extends SteppingState
                 
                 sustain.lane = _note.lane;
 
-                sustain.length = note.length;
+                sustain.length = (60.0 / conductor.findTimeChangeAt(chart.tempo, _note.time).tempo) * 1000.0;
 
                 sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
 
-                if (k >= Math.round(sustain.length / (((60 / conductor.findTimeChangeAt(chart.tempo, note.time).tempo) * 1000.0) * 0.25)) - 1)
+                if (k >= Math.round(_note.length / (((60.0 / conductor.findTimeChangeAt(chart.tempo, _note.time).tempo) * 1000.0) * 0.25)) - 1.0)
                     sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
 
                 sustain.flipY = Options.downscroll;
@@ -552,7 +552,7 @@ class GameState extends SteppingState
             switch (event.name:String)
             {
                 case "Camera Follow":
-                    CameraFollowEvent.dispatch(this, event.value.x ?? 0.0, event.value.y ?? 0.0, event.value.characterMap ?? "", event.value.character ?? "", event.value.duration ?? conductor.crotchet * 0.001, event.value.ease ?? "linear");
+                    CameraFollowEvent.dispatch(this, event.value.x ?? 0.0, event.value.y ?? 0.0, event.value.characterMap ?? "", event.value.character ?? "", event.value.duration ?? -1.0, event.value.ease ?? "linear");
 
                 case "Camera Zoom":
                     CameraZoomEvent.dispatch(this, event.value.camera, event.value.zoom, event.value.duration, event.value.ease);
@@ -588,12 +588,8 @@ class GameState extends SteppingState
             }
         }
 
-        if (Inputs.checkStatus(debugInputs["EDITORS:CHARACTER"], JUST_PRESSED))
-        {   
+        if (Inputs.checkStatus(debugInputs["EDITORS:CHARACTEREDITORSTATE"], JUST_PRESSED))
             FlxG.switchState(() -> new CharacterEditorState());
-
-            AssetMan.clearCaches();
-        }
 
         if (FlxG.keys.justPressed.R)
             loadGameOverScreen();
@@ -746,8 +742,6 @@ class GameState extends SteppingState
 
                     noteSplash.setPosition(strum.getMidpoint().x - noteSplash.width * 0.5, strum.getMidpoint().y - noteSplash.height * 0.5);
                 }
-
-                FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/game/GameState/snap"), false), 0.75);
             }
         }
 
@@ -863,7 +857,7 @@ class GameState extends SteppingState
 
     public function ghostTap(direction:Int):Void
     {
-        if (Options.ghostTapping || !(countdown.finished || countdown.skipped))
+        if (Options.ghostTapping || !countdown.finished && !countdown.skipped)
             return;
         
         score -= 650;
@@ -880,7 +874,7 @@ class GameState extends SteppingState
 
     public function opponentGhostTap(direction:Int):Void
     {
-        if (Options.ghostTapping || !(countdown.finished || countdown.skipped))
+        if (Options.ghostTapping || !countdown.finished && !countdown.skipped)
             return;
 
         for (i in 0 ... opponentGroup.members.length)
@@ -899,7 +893,7 @@ class GameState extends SteppingState
 
     public function playerGhostTap(direction:Int):Void
     {
-        if (Options.ghostTapping || !(countdown.finished || countdown.skipped))
+        if (Options.ghostTapping || !countdown.finished && !countdown.skipped)
             return;
 
         for (i in 0 ... playerGroup.members.length)

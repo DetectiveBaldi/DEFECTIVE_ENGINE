@@ -257,17 +257,6 @@ class ProgressBar extends FlxSpriteContainer
     }
 }
 
-enum abstract ProgressBarFillDirection(String) from String to String
-{
-    var LEFT_TO_RIGHT:ProgressBarFillDirection;
-
-    var RIGHT_TO_LEFT:ProgressBarFillDirection;
-
-    var TOP_TO_BOTTOM:ProgressBarFillDirection;
-
-    var BOTTOM_TO_TOP:ProgressBarFillDirection;
-}
-
 class ProgressBarSideSprite extends FlxSprite
 {
     @:noCompletion
@@ -279,4 +268,15 @@ class ProgressBarSideSprite extends FlxSprite
 
         return clipRect;
     }
+}
+
+enum abstract ProgressBarFillDirection(String) from String to String
+{
+    var LEFT_TO_RIGHT:ProgressBarFillDirection;
+
+    var RIGHT_TO_LEFT:ProgressBarFillDirection;
+
+    var TOP_TO_BOTTOM:ProgressBarFillDirection;
+
+    var BOTTOM_TO_TOP:ProgressBarFillDirection;
 }

@@ -1,15 +1,15 @@
 package;
 
-import flixel.FlxG;
-import flixel.FlxState;
-
-import flixel.util.typeLimit.NextState;
-
 import haxe.ui.Toolkit;
 
 import haxe.ui.focus.FocusManager;
 
 import haxe.ui.themes.Theme;
+
+import flixel.FlxG;
+import flixel.FlxState;
+
+import flixel.util.typeLimit.NextState;
 
 import core.AssetMan;
 import core.Options;
@@ -39,6 +39,12 @@ class OpeningState extends FlxState
     {
         super.create();
 
+        Toolkit.init();
+
+        Toolkit.theme = Theme.DARK;
+
+        FocusManager.instance.autoFocus = false;
+
         FlxG.autoPause = false;
 
         FlxG.fixedTimestep = false;
@@ -50,16 +56,12 @@ class OpeningState extends FlxState
         FlxG.mouse.visible = false;
 
         #if FLX_DEBUG
+            FlxG.console.autoPause = false;
+            
             FlxG.console.registerClass(Options);
         #end
 
         FlxG.plugins.drawOnTop = true;
-
-        Toolkit.init();
-
-        Toolkit.theme = Theme.DARK;
-
-        FocusManager.instance.autoFocus = false;
 
         AssetMan.init();
 

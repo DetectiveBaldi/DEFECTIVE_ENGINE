@@ -122,7 +122,7 @@ class AssetMan
 
         Assets.cache.removeSound(path);
 
-        sounds = null;
+        sound = null;
 
         sounds.remove(path);
     }

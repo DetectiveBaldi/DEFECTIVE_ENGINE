@@ -9,9 +9,16 @@ import core.Paths;
 
 class HealthBarIcon extends FlxSprite
 {
+    public static var configs:Map<String, HealthBarIconConfig> = new Map<String, HealthBarIconConfig>();
+
     public static function findConfig(path:String):HealthBarIconConfig
     {
-        return Json.parse(AssetMan.text(Paths.json(path)));
+        if (configs.exists(path))
+            return configs[path];
+
+        configs[path] = Json.parse(AssetMan.text(Paths.json(path)));
+
+        return configs[path];
     }
 
     public var config(default, set):HealthBarIconConfig;
