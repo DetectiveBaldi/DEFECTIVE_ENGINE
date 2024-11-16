@@ -718,8 +718,6 @@ class GameState extends SteppingState
 
                 _noteHit.onComplete = () -> _noteHit.kill();
 
-                trace(FlxG.sound.list.length);
-
                 var judgement:Judgement = Judgement.guage(judgements, Math.abs(conductor.time - note.time));
 
                 score += judgement.score;
