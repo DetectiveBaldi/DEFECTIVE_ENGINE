@@ -72,7 +72,7 @@ class Conductor extends FlxBasic
     @:noCompletion
     function get_crotchet():Float
     {
-        return (60.0 / tempo) * 1000.0;
+        return 60.0 / tempo * 1000.0;
     }
 
     public var time:Float;

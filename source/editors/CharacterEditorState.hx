@@ -108,7 +108,7 @@ class CharacterEditorState extends FlxState
 
             sys.io.File.saveContent(path, Json.stringify(character.config));
 
-            OpeningState.logger.logInfo('Character saved to "${path}".');
+            OpeningState.logger.logInfo("[INFO]", 'Character saved to "${path}".');
         }
 
         ui.findComponent("_button", Button).onClick = (ev:MouseEvent) ->
@@ -378,7 +378,7 @@ class CharacterEditorState extends FlxState
 
                     Clipboard.generalClipboard.setData(TEXT_FORMAT, Json.stringify(character.config.frames[framesIndex].offset), false);
 
-                    OpeningState.logger.logInfo("Current frames offset copied to clipboard.");
+                    OpeningState.logger.logInfo("[INFO]", "Current frames offset copied to clipboard.");
                 }
 
                 if (FlxG.keys.justPressed.V)
@@ -389,7 +389,7 @@ class CharacterEditorState extends FlxState
 
                     setFramesOffset(frames, offset?.x ?? 0.0, offset?.y ?? 0.0);
 
-                    OpeningState.logger.logInfo("Copied offset successfully applied to current frames.");
+                    OpeningState.logger.logInfo("[INFO]", "Copied offset successfully applied to current frames.");
                 }
             }
 
@@ -527,7 +527,7 @@ class CharacterEditorState extends FlxState
 
         refreshFramesTab();
 
-        OpeningState.logger.logInfo('Saved "${frames.name}"!');
+        OpeningState.logger.logInfo("[INFO]", 'Saved "${frames.name}"!');
     }
 
     public function deleteFrames():Void
@@ -554,7 +554,7 @@ class CharacterEditorState extends FlxState
 
         refreshFramesTab();
 
-        OpeningState.logger.logInfo('Deleted "${frames.name}"!');
+        OpeningState.logger.logInfo("[INFO]", 'Deleted "${frames.name}"!');
     }
 
     public function setFramesOffset(frames:CharacterFramesConfig, x:Float = 0.0, y:Float = 0.0):Void

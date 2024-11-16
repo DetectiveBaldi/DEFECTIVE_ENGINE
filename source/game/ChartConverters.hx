@@ -132,14 +132,18 @@ class PsychConverter
 
             TimingUtil.sort(_section.sectionNotes);
 
-            time += (60 / tempo * 1000.0) * (Math.round(_section.sectionBeats * 4.0) * 0.25);
+            var crotchet:Float = (60.0 / tempo * 1000.0);
 
             if (_section.changeBPM)
             {
                 tempo = _section.bpm;
 
+                crotchet = (60.0 / tempo * 1000.0);
+
                 output.timeChanges.push({time: time, tempo: tempo, step: 0.0});
             }
+
+            time += crotchet * (Math.round(_section.sectionBeats * 4.0) * 0.25);
         }
 
         return output;

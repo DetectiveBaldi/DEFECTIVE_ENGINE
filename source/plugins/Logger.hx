@@ -29,9 +29,9 @@ class Logger extends FlxTypedContainer<FlxText>
         }
     }
 
-    public function logInfo(info:String):FlxText
+    public function logInfo(prefix:String = "[INFO]", info:String):FlxText
     {
-        var output:FlxText = new FlxText(0.0, 0.0, FlxG.width, '[INFO] ${info}', 24);
+        var output:FlxText = new FlxText(0.0, 0.0, FlxG.width, '${prefix} ${info}', 24);
 
         output.moves = true;
 
@@ -52,7 +52,7 @@ class Logger extends FlxTypedContainer<FlxText>
 
     public function logWarning(warning:String):FlxText
     {
-        var output:FlxText = logInfo('[WARNING] ${warning}');
+        var output:FlxText = logInfo("[WARNING]", warning);
 
         output.color = FlxColor.YELLOW;
 
@@ -61,7 +61,7 @@ class Logger extends FlxTypedContainer<FlxText>
 
     public function logError(error:String):FlxText
     {
-        var output:FlxText = logInfo('[ERROR] ${error}');
+        var output:FlxText = logInfo("[ERROR]", error);
 
         output.color = FlxColor.RED;
 

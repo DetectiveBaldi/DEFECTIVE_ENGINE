@@ -591,7 +591,7 @@ class GameState extends SteppingState
         if (Inputs.checkStatus(debugInputs["EDITORS:CHARACTEREDITORSTATE"], JUST_PRESSED))
             FlxG.switchState(() -> new CharacterEditorState());
 
-        if (FlxG.keys.justPressed.R)
+        if (FlxG.keys.justPressed.R && countdown.tick > 0.0)
             loadGameOverScreen();
         
         if (FlxG.keys.justPressed.ESCAPE)
@@ -711,11 +711,17 @@ class GameState extends SteppingState
         strum.animation.play(Strum.directions[note.direction].toLowerCase() + "Confirm", true);
 
         if (!strumLine.artificial)
-        {
-            var judgement:Judgement = Judgement.guage(judgements, Math.abs(conductor.time - note.time));
-                
+        {       
             if (!note.animation.name.contains("Hold"))
             {
+                var _noteHit:FlxSound = FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/game/GameState/noteHit"), false));
+
+                _noteHit.onComplete = () -> _noteHit.kill();
+
+                trace(FlxG.sound.list.length);
+
+                var judgement:Judgement = Judgement.guage(judgements, Math.abs(conductor.time - note.time));
+
                 score += judgement.score;
 
                 hits++;
@@ -753,6 +759,10 @@ class GameState extends SteppingState
 
     public function noteMiss(note:Note):Void
     {
+        var _noteMiss:FlxSound = FlxG.sound.play(AssetMan.sound(Paths.ogg('assets/sounds/game/GameState/noteMiss${FlxG.random.int(0, 2)}'), false), 0.15);
+
+        _noteMiss.onComplete = () -> _noteMiss.kill();
+
         score -= 650;
 
         misses++;
@@ -857,8 +867,12 @@ class GameState extends SteppingState
 
     public function ghostTap(direction:Int):Void
     {
-        if (Options.ghostTapping || !countdown.finished && !countdown.skipped)
+        if (Options.ghostTapping || countdown.tick <= 0.0)
             return;
+
+        var _noteMiss:FlxSound = FlxG.sound.play(AssetMan.sound(Paths.ogg('assets/sounds/game/GameState/noteMiss${FlxG.random.int(0, 2)}'), false), 0.15);
+
+        _noteMiss.onComplete = () -> _noteMiss.kill();
         
         score -= 650;
 
@@ -874,7 +888,7 @@ class GameState extends SteppingState
 
     public function opponentGhostTap(direction:Int):Void
     {
-        if (Options.ghostTapping || !countdown.finished && !countdown.skipped)
+        if (Options.ghostTapping || countdown.tick <= 0.0)
             return;
 
         for (i in 0 ... opponentGroup.members.length)
@@ -893,7 +907,7 @@ class GameState extends SteppingState
 
     public function playerGhostTap(direction:Int):Void
     {
-        if (Options.ghostTapping || !countdown.finished && !countdown.skipped)
+        if (Options.ghostTapping || countdown.tick <= 0.0)
             return;
 
         for (i in 0 ... playerGroup.members.length)

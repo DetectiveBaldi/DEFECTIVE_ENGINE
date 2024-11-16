@@ -34,8 +34,6 @@
 
 	<!-- ______________________________ Defines, Haxedefs, and Libraries _____________________________ -->
 
-	<haxelib name="haxeui-core" />
-
 	<haxelib name="flixel" />
 
 	<haxedef name="FLX_NO_DEBUG" unless="debug" />
@@ -49,6 +47,8 @@
 	<haxelib name="flixel-text-input" />
 
 	<haxelib name="haxeui-flixel" />
+
+	<haxelib name="haxeui-core" />
 
 	<!-- _____________________________ Resources ____________________________ -->
 

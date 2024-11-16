@@ -55,11 +55,9 @@ class OpeningState extends FlxState
 
         FlxG.mouse.visible = false;
 
-        #if FLX_DEBUG
-            FlxG.console.autoPause = false;
-            
-            FlxG.console.registerClass(Options);
-        #end
+        FlxG.console.autoPause = false;
+        
+        FlxG.console.registerClass(Options);
 
         FlxG.plugins.drawOnTop = true;
 
