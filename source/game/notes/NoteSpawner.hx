@@ -103,7 +103,7 @@ class NoteSpawner extends FlxContainer
 
             _note.updateHitbox();
 
-            _note.setPosition((FlxG.width - _note.width) * 0.5, hudCamera.height / hudCamera.zoom);
+            _note.setPosition((FlxG.width - _note.width) * 0.5, Options.downscroll ? -_note.height : hudCamera.height / hudCamera.zoom);
 
             strumLine.onNoteSpawn.dispatch(_note);
 
@@ -132,7 +132,7 @@ class NoteSpawner extends FlxContainer
 
                 sustain.updateHitbox();
 
-                sustain.setPosition((FlxG.width - sustain.width) * 0.5, Options.downscroll ? 0.0 : hudCamera.height / hudCamera.zoom);
+                sustain.setPosition((FlxG.width - sustain.width) * 0.5, Options.downscroll ? -sustain.height : hudCamera.height / hudCamera.zoom);
             }
 
             ArraySort.sort(strumLine.notes.members, (__note:Note, ___note:Note) -> Std.int(__note.time - ___note.time));
