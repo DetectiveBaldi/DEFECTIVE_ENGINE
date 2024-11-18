@@ -53,7 +53,7 @@ class StrumLine extends FlxContainer
 
     public var onGhostTap:FlxTypedSignal<(direction:Int)->Void>;
 
-    public var artificial:Bool;
+    public var automated:Bool;
 
     public function new(game:GameState):Void
     {
@@ -107,14 +107,14 @@ class StrumLine extends FlxContainer
 
         onGhostTap = new FlxTypedSignal<(direction:Int)->Void>();
 
-        artificial = false;
+        automated = false;
     }
 
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
 
-        if (!artificial)
+        if (!automated)
         {
             for (i in 0 ... inputs.length)
             {
@@ -158,7 +158,7 @@ class StrumLine extends FlxContainer
 
             var strum:Strum = strums.members[note.direction];
 
-            if (artificial)
+            if (automated)
             {
                 if (note.exists && conductor.time >= note.time)
                 {

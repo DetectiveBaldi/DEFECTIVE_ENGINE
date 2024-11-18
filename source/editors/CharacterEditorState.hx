@@ -84,7 +84,7 @@ class CharacterEditorState extends FlxState
 
         add(background);
 
-        character = new Character(null, 0.0, 0.0, Character.findConfig("assets/data/game/Character/BOYFRIEND"), ARTIFICIAL);
+        character = new Character(null, 0.0, 0.0, Character.findConfig("assets/data/game/Character/BOYFRIEND"), OTHER);
 
         character.screenCenter();
 

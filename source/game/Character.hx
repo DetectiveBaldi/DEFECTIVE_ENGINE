@@ -175,12 +175,12 @@ class Character extends FlxSprite
         {
             singCount += elapsed;
 
-            var requiredTime:Float = singDuration * ((conductor.crotchet * 0.25) * 0.001);
+            var requiredCount:Float = singDuration * ((conductor.crotchet * 0.25) * 0.001);
 
             if ((animation.name ?? "").endsWith("MISS"))
-                requiredTime *= FlxG.random.float(1.35, 1.85);
+                requiredCount *= FlxG.random.float(1.35, 1.85);
 
-            if (singCount >= requiredTime && (role == PLAYABLE ? !Inputs.inputsPressed(inputs) : true))
+            if (singCount >= requiredCount && (role == OTHER || !Inputs.inputsPressed(inputs)))
             {
                 singCount = 0.0;
                 
@@ -279,8 +279,6 @@ typedef CharacterFramesConfig =
 
 enum abstract CharacterRole(String) from String to String
 {
-    var ARTIFICIAL:CharacterRole;
-
     var PLAYABLE:CharacterRole;
 
     var OTHER:CharacterRole;

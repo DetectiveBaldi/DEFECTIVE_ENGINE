@@ -28,10 +28,9 @@ class Countdown extends FlxContainer
     @:noCompletion
     function set_conductor(conductor:Conductor):Conductor
     {
-        if (this.conductor != null)
-            this.conductor.beatHit.remove(beatHit);
+        this.conductor?.beatHit?.remove(beatHit);
 
-        conductor.beatHit.add(beatHit);
+        conductor?.beatHit?.add(beatHit);
 
         return this.conductor = conductor;
     }

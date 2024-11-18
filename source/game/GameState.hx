@@ -167,7 +167,7 @@ class GameState extends SteppingState
 
         add(spectatorGroup);
 
-        spectator = new Character(conductor, 0.0, 0.0, Character.findConfig("assets/data/game/Character/GIRLFRIEND"), ARTIFICIAL);
+        spectator = new Character(conductor, 0.0, 0.0, Character.findConfig("assets/data/game/Character/GIRLFRIEND"), OTHER);
 
         spectator.skipSing = true;
 
@@ -181,7 +181,7 @@ class GameState extends SteppingState
 
         add(opponentGroup);
 
-        opponent = new Character(conductor, 0.0, 0.0, Character.findConfig("assets/data/game/Character/BOYFRIEND_PIXEL"), ARTIFICIAL);
+        opponent = new Character(conductor, 0.0, 0.0, Character.findConfig("assets/data/game/Character/BOYFRIEND_PIXEL"), OTHER);
 
         opponentMap[opponent.config.name] = opponent;
 
@@ -276,7 +276,7 @@ class GameState extends SteppingState
 
         opponentStrumLine.onGhostTap.add(opponentGhostTap);
 
-        opponentStrumLine.artificial = true;
+        opponentStrumLine.automated = true;
 
         opponentStrumLine.visible = !Options.middlescroll;
 
@@ -534,7 +534,7 @@ class GameState extends SteppingState
         
         strum.animation.play(Strum.directions[note.direction].toLowerCase() + "Confirm", true);
 
-        if (!strumLine.artificial)
+        if (!strumLine.automated)
         {       
             if (!note.animation.name.contains("Hold"))
             {
