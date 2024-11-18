@@ -1,55 +1,64 @@
 package game.notes;
 
+import flixel.group.FlxSpriteContainer;
 import flixel.group.FlxSpriteContainer.FlxTypedSpriteContainer;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
 
 import core.Conductor;
 import core.Inputs;
+import core.Options;
 
-class StrumLine extends FlxTypedSpriteContainer<Strum>
+import game.GameState;
+
+using StringTools;
+
+using util.ArrayUtil;
+
+class StrumLine extends FlxSpriteContainer
 {
-    public var conductor(default, set):Conductor;
+    public var game:GameState;
+
+    public var conductor(get, never):Conductor;
 
     @:noCompletion
-    function set_conductor(conductor:Conductor):Conductor
+    function get_conductor():Conductor
     {
-        for (i in 0 ... members.length)
-            members[i].conductor = conductor;
-        
-        return this.conductor = conductor;
+        return game.conductor;
     }
 
     public var inputs:Array<Input>;
 
-    public var lane:Int;
+    public var strums:FlxTypedSpriteContainer<Strum>;
 
     public var spacing(default, set):Float;
 
     @:noCompletion
     function set_spacing(spacing:Float):Float
-    {
-        for (i in 0 ... members.length)
-            members[i].x = x + spacing * i;
+    {   
+        for (i in 0 ... strums.members.length)
+            strums.members[i].x = x + spacing * i;
 
         return this.spacing = spacing;
     }
 
+    public var notes:FlxTypedSpriteContainer<Note>;
+
+    public var onNoteSpawn:FlxTypedSignal<(note:Note)->Void>;
+
+    public var onNoteHit:FlxTypedSignal<(note:Note)->Void>;
+
+    public var onNoteMiss:FlxTypedSignal<(note:Note)->Void>;
+
+    public var onGhostTap:FlxTypedSignal<(direction:Int)->Void>;
+
     public var artificial:Bool;
 
-    public var noteSpawn:FlxTypedSignal<(note:Note)->Void>;
-
-    public var noteHit:FlxTypedSignal<(note:Note)->Void>;
-
-    public var noteMiss:FlxTypedSignal<(note:Note)->Void>;
-
-    public var ghostTap:FlxTypedSignal<(direction:Int)->Void>;
-
-    public function new(conductor:Conductor):Void
+    public function new(game:GameState):Void
     {
         super();
 
-        this.conductor = conductor;
+        this.game = game;
 
         inputs =
         [
@@ -62,19 +71,9 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
             new Input([191, 68, 39])
         ];
 
-        lane = -1;
+        strums = new FlxTypedSpriteContainer<Strum>();
 
-        spacing = 116.0;
-
-        artificial = false;
-
-        noteSpawn = new FlxTypedSignal<(note:Note)->Void>();
-
-        noteHit = new FlxTypedSignal<(note:Note)->Void>();
-
-        noteMiss = new FlxTypedSignal<(note:Note)->Void>();
-
-        ghostTap = new FlxTypedSignal<(direction:Int)->Void>();
+        add(strums);
 
         for (i in 0 ... 4)
         {
@@ -89,10 +88,107 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
             strum.scale.set(0.685, 0.685);
 
             strum.updateHitbox();
-
-            strum.x = x + spacing * i;
             
-            add(strum);
+            strums.add(strum);
+        }
+
+        spacing = 116.0;
+
+        notes = new FlxTypedSpriteContainer<Note>();
+
+        add(notes);
+
+        onNoteSpawn = new FlxTypedSignal<(note:Note)->Void>();
+
+        onNoteHit = new FlxTypedSignal<(note:Note)->Void>();
+
+        onNoteMiss = new FlxTypedSignal<(note:Note)->Void>();
+
+        onGhostTap = new FlxTypedSignal<(direction:Int)->Void>();
+
+        artificial = false;
+    }
+
+    override function update(elapsed:Float):Void
+    {
+        super.update(elapsed);
+
+        if (!artificial)
+        {
+            for (i in 0 ... inputs.length)
+            {
+                var input:Input = inputs[i];
+
+                if (Inputs.checkStatus(input, JUST_PRESSED))
+                {
+                    var strum:Strum = strums.members[i];
+
+                    strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
+
+                    var note:Note = notes.group.getFirst((_note:Note) -> _note.exists && Math.abs(conductor.time - _note.time) <= game.judgements.last().timing && strum.direction == _note.direction && !_note.animation.name.contains("Hold"));
+
+                    note == null ? onGhostTap.dispatch(strum.direction) : onNoteHit.dispatch(note);
+                }
+
+                if (Inputs.checkStatus(input, PRESSED))
+                {
+                    var strum:Strum = strums.members[i];
+
+                    var note:Note = notes.group.getFirst((_note:Note) -> _note.exists && conductor.time >= _note.time && strum.direction == _note.direction && _note.animation.name.contains("Hold"));
+
+                    if (note != null)
+                        onNoteHit.dispatch(note);
+                }
+
+                if (Inputs.checkStatus(input, JUST_RELEASED))
+                {
+                    var strum:Strum = strums.members[i];
+
+                    strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Static");
+                }
+            }
+        }
+
+        var i:Int = notes.members.length - 1;
+
+        while (i >= 0.0)
+        {
+            var note:Note = notes.members[i];
+
+            var strum:Strum = strums.members[note.direction];
+
+            if (artificial)
+            {
+                if (note.exists && conductor.time >= note.time)
+                {
+                    onNoteHit.dispatch(note);
+
+                    i--;
+
+                    continue;
+                }
+            }
+            else
+            {
+                if (note.exists && conductor.time > note.time + game.judgements.last().timing)
+                {
+                    onNoteMiss.dispatch(note);
+    
+                    i--;
+    
+                    continue;
+                }
+            }
+
+            i--;
+
+            note.visible = strum.visible;
+
+            note.angle = strum.angle;
+
+            note.alpha = strum.alpha;
+
+            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * game.chartSpeed * note.speed * 0.45 * (Options.downscroll ? -1.0 : 1.0));
         }
     }
 
@@ -100,12 +196,12 @@ class StrumLine extends FlxTypedSpriteContainer<Strum>
     {
         super.destroy();
 
-        noteHit.destroy();
+        onNoteHit.destroy();
 
-        noteMiss.destroy();
+        onNoteMiss.destroy();
 
-        noteSpawn.destroy();
+        onNoteSpawn.destroy();
 
-        ghostTap.destroy();
+        onGhostTap.destroy();
     }
 }

@@ -8,6 +8,7 @@ import flixel.group.FlxContainer;
 import flixel.sound.FlxSound;
 
 import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.tweens.FlxTween.FlxTweenManager;
 
 import flixel.util.FlxSignal;
@@ -161,11 +162,7 @@ class Countdown extends FlxContainer
 
         skipped = false;
 
-        @:privateAccess
-        {
-            for (i in 0 ... tweens._tweens.length)
-                tweens._tweens[i].cancel();
-        }
+        tweens.forEach((tween:FlxTween) -> tween.cancel());
 
         sprite.alpha = 0.0;
 
@@ -227,11 +224,7 @@ class Countdown extends FlxContainer
         if (!started || paused || finished || skipped)
             return;
 
-        @:privateAccess
-        {
-            for (i in 0 ... tweens._tweens.length)
-                tweens._tweens[i].cancel();
-        }
+        tweens.forEach((tween:FlxTween) -> tween.cancel());
 
         sprite.alpha = 0.0;
 
@@ -289,11 +282,7 @@ class Countdown extends FlxContainer
 
         if (tick > 0.0)
         {
-            @:privateAccess
-            {
-                for (i in 0 ... tweens._tweens.length)
-                    tweens._tweens[i].cancel();
-            }
+            tweens.forEach((tween:FlxTween) -> tween.cancel());
             
             sprite.alpha = 1.0;
             

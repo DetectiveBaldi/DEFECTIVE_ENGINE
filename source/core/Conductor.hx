@@ -170,7 +170,7 @@ class Conductor extends FlxBasic
         sectionHit = null;
     }
 
-    public function findTimeChangeAt(tempo:Float, time:Float):LoadedTimeChange
+    public function getTimeChange(tempo:Float, time:Float):LoadedTimeChange
     {
         var timeChange:LoadedTimeChange = {tempo: tempo, time: 0.0, step: 0.0};
 

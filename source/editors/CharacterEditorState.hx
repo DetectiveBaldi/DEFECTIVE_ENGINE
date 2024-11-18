@@ -108,14 +108,14 @@ class CharacterEditorState extends FlxState
 
             sys.io.File.saveContent(path, Json.stringify(character.config));
 
-            OpeningState.logger.logInfo("[INFO]", 'Character saved to "${path}".');
+            InitState.logger.logInfo("[INFO]", 'Character saved to "${path}".');
         }
 
         ui.findComponent("_button", Button).onClick = (ev:MouseEvent) ->
         {
             if (!FileSystem.exists(Paths.json('assets/data/game/Character/${ui.findComponent("textfield", TextField).text}')))
             {
-                OpeningState.logger.logError("The requested file(s) do not exist!");
+                InitState.logger.logError("The requested file(s) do not exist!");
 
                 return;
             }
@@ -292,14 +292,14 @@ class CharacterEditorState extends FlxState
         {
             if (character.config.format == ui.findComponent("__textfield", TextField).text && character.config.png == ui.findComponent("___textfield", TextField).text && character.config.xml == ui.findComponent("____textfield", TextField).text)
             {
-                OpeningState.logger.logError("The requested format and file(s) are in use!");
+                InitState.logger.logError("The requested format and file(s) are in use!");
                 
                 return;
             }
 
             if (!FileSystem.exists(Paths.png(ui.findComponent("___textfield", TextField).text)) || !FileSystem.exists(Paths.xml(ui.findComponent("____textfield", TextField).text)))
             {
-                OpeningState.logger.logError("The requested file(s) do not exist!");
+                InitState.logger.logError("The requested file(s) do not exist!");
 
                 return;
             }
@@ -327,7 +327,7 @@ class CharacterEditorState extends FlxState
 
             ui.findComponent("tabview", TabView).selectedPage = ui.findComponent("__box", Box);
 
-            OpeningState.logger.logWarning("Some frames might be invalidated! Take a look!");
+            InitState.logger.logWarning("Some frames might be invalidated! Take a look!");
         }
 
         refreshFramesTab();
@@ -378,7 +378,7 @@ class CharacterEditorState extends FlxState
 
                     Clipboard.generalClipboard.setData(TEXT_FORMAT, Json.stringify(character.config.frames[framesIndex].offset), false);
 
-                    OpeningState.logger.logInfo("[INFO]", "Current frames offset copied to clipboard.");
+                    InitState.logger.logInfo("[INFO]", "Current frames offset copied to clipboard.");
                 }
 
                 if (FlxG.keys.justPressed.V)
@@ -389,7 +389,7 @@ class CharacterEditorState extends FlxState
 
                     setFramesOffset(frames, offset?.x ?? 0.0, offset?.y ?? 0.0);
 
-                    OpeningState.logger.logInfo("[INFO]", "Copied offset successfully applied to current frames.");
+                    InitState.logger.logInfo("[INFO]", "Copied offset successfully applied to current frames.");
                 }
             }
 
@@ -471,7 +471,7 @@ class CharacterEditorState extends FlxState
         
         if (frames.length <= 0.0)
         {
-            OpeningState.logger.logError("Invalid frames detected!");
+            InitState.logger.logError("Invalid frames detected!");
 
             return;
         }
@@ -527,14 +527,14 @@ class CharacterEditorState extends FlxState
 
         refreshFramesTab();
 
-        OpeningState.logger.logInfo("[INFO]", 'Saved "${frames.name}"!');
+        InitState.logger.logInfo("[INFO]", 'Saved "${frames.name}"!');
     }
 
     public function deleteFrames():Void
     {
         if (character.config.frames.length == 1.0)
         {
-            OpeningState.logger.logError("You must have at least one frames!");
+            InitState.logger.logError("You must have at least one frames!");
 
             return;
         }
@@ -554,7 +554,7 @@ class CharacterEditorState extends FlxState
 
         refreshFramesTab();
 
-        OpeningState.logger.logInfo("[INFO]", 'Deleted "${frames.name}"!');
+        InitState.logger.logInfo("[INFO]", 'Deleted "${frames.name}"!');
     }
 
     public function setFramesOffset(frames:CharacterFramesConfig, x:Float = 0.0, y:Float = 0.0):Void

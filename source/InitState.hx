@@ -20,7 +20,7 @@ import ui.PerfTracker;
 
 import util.MathUtil;
 
-class OpeningState extends FlxState
+class InitState extends FlxState
 {
     public var nextState:NextState;
 
@@ -65,13 +65,9 @@ class OpeningState extends FlxState
 
         Options.init();
 
-        logger = new Logger();
-
-        FlxG.plugins.addPlugin(logger);
-
-        perfTracker = new PerfTracker(10.0, 5.0);
+        FlxG.plugins.addPlugin(logger = new Logger());
         
-        FlxG.game.addChild(perfTracker);
+        FlxG.game.addChild(perfTracker = new PerfTracker(10.0, 5.0));
 
         FlxG.switchState(nextState);
     }
