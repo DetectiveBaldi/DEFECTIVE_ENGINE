@@ -6,7 +6,6 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 
 import flixel.group.FlxContainer;
-import flixel.group.FlxContainer.FlxTypedContainer;
 
 import core.Conductor;
 import core.Options;

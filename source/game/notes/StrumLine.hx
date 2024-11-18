@@ -1,6 +1,7 @@
 package game.notes;
 
-import flixel.group.FlxSpriteContainer;
+import flixel.group.FlxContainer;
+import flixel.group.FlxContainer.FlxTypedContainer;
 import flixel.group.FlxSpriteContainer.FlxTypedSpriteContainer;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
@@ -15,7 +16,7 @@ using StringTools;
 
 using util.ArrayUtil;
 
-class StrumLine extends FlxSpriteContainer
+class StrumLine extends FlxContainer
 {
     public var game:GameState;
 
@@ -37,12 +38,12 @@ class StrumLine extends FlxSpriteContainer
     function set_spacing(spacing:Float):Float
     {   
         for (i in 0 ... strums.members.length)
-            strums.members[i].x = x + spacing * i;
+            strums.members[i].x = strums.x + spacing * i;
 
         return this.spacing = spacing;
     }
 
-    public var notes:FlxTypedSpriteContainer<Note>;
+    public var notes:FlxTypedContainer<Note>;
 
     public var onNoteSpawn:FlxTypedSignal<(note:Note)->Void>;
 
@@ -94,7 +95,7 @@ class StrumLine extends FlxSpriteContainer
 
         spacing = 116.0;
 
-        notes = new FlxTypedSpriteContainer<Note>();
+        notes = new FlxTypedContainer<Note>();
 
         add(notes);
 
@@ -125,7 +126,7 @@ class StrumLine extends FlxSpriteContainer
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
 
-                    var note:Note = notes.group.getFirst((_note:Note) -> _note.exists && Math.abs(conductor.time - _note.time) <= game.judgements.last().timing && strum.direction == _note.direction && !_note.animation.name.contains("Hold"));
+                    var note:Note = notes.getFirst((_note:Note) -> _note.exists && Math.abs(conductor.time - _note.time) <= game.judgements.last().timing && strum.direction == _note.direction && !_note.animation.name.contains("Hold"));
 
                     note == null ? onGhostTap.dispatch(strum.direction) : onNoteHit.dispatch(note);
                 }
@@ -134,7 +135,7 @@ class StrumLine extends FlxSpriteContainer
                 {
                     var strum:Strum = strums.members[i];
 
-                    var note:Note = notes.group.getFirst((_note:Note) -> _note.exists && conductor.time >= _note.time && strum.direction == _note.direction && _note.animation.name.contains("Hold"));
+                    var note:Note = notes.getFirst((_note:Note) -> _note.exists && conductor.time >= _note.time && strum.direction == _note.direction && _note.animation.name.contains("Hold"));
 
                     if (note != null)
                         onNoteHit.dispatch(note);
@@ -181,12 +182,6 @@ class StrumLine extends FlxSpriteContainer
             }
 
             i--;
-
-            note.visible = strum.visible;
-
-            note.angle = strum.angle;
-
-            note.alpha = strum.alpha;
 
             note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * game.chartSpeed * note.speed * 0.45 * (Options.downscroll ? -1.0 : 1.0));
         }

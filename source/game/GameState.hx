@@ -118,9 +118,9 @@ class GameState extends SteppingState
 
     public var strumLines:FlxTypedContainer<StrumLine>;
 
-    public var opponentStrums:StrumLine;
+    public var opponentStrumLine:StrumLine;
 
-    public var playerStrums:StrumLine;
+    public var playerStrumLine:StrumLine;
 
     public var noteSpawner:NoteSpawner;
 
@@ -262,45 +262,45 @@ class GameState extends SteppingState
 
         add(strumLines);
         
-        opponentStrums = new StrumLine(this);
+        opponentStrumLine = new StrumLine(this);
 
-        opponentStrums.onNoteHit.add(noteHit);
+        opponentStrumLine.onNoteHit.add(noteHit);
 
-        opponentStrums.onNoteHit.add(opponentNoteHit);
+        opponentStrumLine.onNoteHit.add(opponentNoteHit);
 
-        opponentStrums.onNoteMiss.add(noteMiss);
+        opponentStrumLine.onNoteMiss.add(noteMiss);
 
-        opponentStrums.onNoteMiss.add(opponentNoteMiss);
+        opponentStrumLine.onNoteMiss.add(opponentNoteMiss);
 
-        opponentStrums.onGhostTap.add(ghostTap);
+        opponentStrumLine.onGhostTap.add(ghostTap);
 
-        opponentStrums.onGhostTap.add(opponentGhostTap);
+        opponentStrumLine.onGhostTap.add(opponentGhostTap);
 
-        opponentStrums.artificial = true;
+        opponentStrumLine.artificial = true;
 
-        opponentStrums.visible = !Options.middlescroll;
+        opponentStrumLine.visible = !Options.middlescroll;
 
-        opponentStrums.strums.setPosition(Options.middlescroll ? (FlxG.width - opponentStrums.width) * 0.5 : 45.0, Options.downscroll ? FlxG.height - opponentStrums.height - 15.0 : 15.0);
+        opponentStrumLine.strums.setPosition(Options.middlescroll ? (FlxG.width - opponentStrumLine.strums.width) * 0.5 : 45.0, Options.downscroll ? FlxG.height - opponentStrumLine.strums.height - 15.0 : 15.0);
 
-        strumLines.add(opponentStrums);
+        strumLines.add(opponentStrumLine);
         
-        playerStrums = new StrumLine(this);
+        playerStrumLine = new StrumLine(this);
 
-        playerStrums.onNoteHit.add(noteHit);
+        playerStrumLine.onNoteHit.add(noteHit);
         
-        playerStrums.onNoteHit.add(playerNoteHit);
+        playerStrumLine.onNoteHit.add(playerNoteHit);
 
-        playerStrums.onNoteMiss.add(noteMiss);
+        playerStrumLine.onNoteMiss.add(noteMiss);
 
-        playerStrums.onNoteMiss.add(playerNoteMiss);
+        playerStrumLine.onNoteMiss.add(playerNoteMiss);
 
-        playerStrums.onGhostTap.add(ghostTap);
+        playerStrumLine.onGhostTap.add(ghostTap);
 
-        playerStrums.onGhostTap.add(playerGhostTap);
+        playerStrumLine.onGhostTap.add(playerGhostTap);
 
-        playerStrums.strums.setPosition(Options.middlescroll ? (FlxG.width - playerStrums.width) * 0.5 : FlxG.width - playerStrums.width - 45.0, Options.downscroll ? FlxG.height - playerStrums.height - 15.0 : 15.0);
+        playerStrumLine.strums.setPosition(Options.middlescroll ? (FlxG.width - playerStrumLine.strums.width) * 0.5 : FlxG.width - playerStrumLine.strums.width - 45.0, Options.downscroll ? FlxG.height - playerStrumLine.strums.height - 15.0 : 15.0);
 
-        strumLines.add(playerStrums);
+        strumLines.add(playerStrumLine);
 
         noteSpawner = new NoteSpawner(this);
 
