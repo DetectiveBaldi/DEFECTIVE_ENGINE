@@ -10,7 +10,7 @@ class Judgement
 
     public var health:Float;
 
-    public var score:Int;
+    public var points:Int;
 
     public var hits:Int;
 
@@ -27,7 +27,7 @@ class Judgement
         return null;
     }
 
-    public function new(name:String, timing:Float, bonus:Float, health:Float, score:Int, hits:Int):Void
+    public function new(name:String, timing:Float, bonus:Float, health:Float, points:Int, hits:Int):Void
     {
         this.name = name;
 
@@ -37,7 +37,7 @@ class Judgement
 
         this.health = health;
 
-        this.score = score;
+        this.points = points;
 
         this.hits = hits;
     }

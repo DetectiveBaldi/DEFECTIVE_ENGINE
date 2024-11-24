@@ -86,7 +86,7 @@ class GameState extends SteppingState
 
     public var player:Character;
 
-    public var score:Int;
+    public var points:Int;
 
     public var hits:Int;
 
@@ -197,7 +197,7 @@ class GameState extends SteppingState
 
         playerGroup.add(player);
 
-        score = 0;
+        points = 0;
 
         hits = 0;
 
@@ -236,7 +236,7 @@ class GameState extends SteppingState
 
         add(healthBar);
 
-        scoreTxt = new FlxText(0.0, 0.0, FlxG.width, "Score: 0 | Misses: 0 | Rating: 0.0%", 24);
+        scoreTxt = new FlxText(0.0, 0.0, FlxG.width, "Points: 0 | Misses: 0 | Rating: 0.0%", 24);
 
         scoreTxt.camera = hudCamera;
 
@@ -542,7 +542,7 @@ class GameState extends SteppingState
 
                 var judgement:Judgement = Judgement.guage(judgements, Math.abs(conductor.time - note.time));
 
-                score += judgement.score;
+                points += judgement.points;
 
                 hits++;
 
@@ -550,7 +550,7 @@ class GameState extends SteppingState
 
                 healthBar.value += judgement.health;
 
-                scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+                scoreTxt.text = 'Points: ${points} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
                 if (judgement.name == "Epic!" || judgement.name == "Sick!")
                 {
@@ -581,13 +581,13 @@ class GameState extends SteppingState
 
         _noteMiss.onComplete = _noteMiss.kill;
 
-        score -= 650;
+        points -= 650;
 
         misses++;
 
         healthBar.value -= 3.5;
 
-        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+        scoreTxt.text = 'Points: ${points} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
         if (mainVocals != null)
             mainVocals.volume = 0.0;
@@ -690,13 +690,13 @@ class GameState extends SteppingState
 
         _noteMiss.onComplete = _noteMiss.kill;
         
-        score -= 650;
+        points -= 650;
 
         misses++;
 
         healthBar.value -= 3.5;
 
-        scoreTxt.text = 'Score: ${score} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+        scoreTxt.text = 'Points: ${points} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
 
         if (mainVocals != null)
             mainVocals.volume = 0.0;
