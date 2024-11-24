@@ -1,8 +1,8 @@
 package game.notes;
 
-import flixel.group.FlxContainer;
+import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.group.FlxSpriteContainer.FlxTypedSpriteContainer;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
 
@@ -16,7 +16,7 @@ using StringTools;
 
 using util.ArrayUtil;
 
-class StrumLine extends FlxContainer
+class StrumLine extends FlxGroup
 {
     public var game:GameState;
 
@@ -30,7 +30,7 @@ class StrumLine extends FlxContainer
 
     public var inputs:Array<Input>;
 
-    public var strums:FlxTypedSpriteContainer<Strum>;
+    public var strums:FlxTypedSpriteGroup<Strum>;
 
     public var spacing(default, set):Float;
 
@@ -72,7 +72,7 @@ class StrumLine extends FlxContainer
             new Input([191, 68, 39])
         ];
 
-        strums = new FlxTypedSpriteContainer<Strum>();
+        strums = new FlxTypedSpriteGroup<Strum>();
 
         add(strums);
 

@@ -6,7 +6,7 @@ import flixel.FlxSprite;
 
 import flixel.math.FlxMath;
 
-import flixel.group.FlxSpriteContainer;
+import flixel.group.FlxSpriteGroup;
 
 import flixel.math.FlxRect;
 
@@ -16,7 +16,7 @@ import flixel.util.FlxSignal;
 /**
  * An alternative to `flixel.ui.FlxBar` containing fixed fill directions and a couple optimizations.
  */
-class ProgressBar extends FlxSpriteContainer
+class ProgressBar extends FlxSpriteGroup
 {
     public var percent(get, set):Float;
 

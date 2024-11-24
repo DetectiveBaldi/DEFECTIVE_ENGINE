@@ -85,7 +85,7 @@ class NoteSpawner extends FlxBasic
                 }
             }
 
-            var _note:Note = notes.recycle(Note, constructNote);
+            var _note:Note = notes.recycle(Note, () -> new Note());
 
             _note.time = note.time;
 
@@ -115,7 +115,7 @@ class NoteSpawner extends FlxBasic
 
             for (k in 0 ... Math.round(_note.length / (((60.0 / conductor.getTimeChange(chart.tempo, _note.time).tempo) * 1000.0) * 0.25)))
             {
-                var sustain:Note = notes.recycle(Note, constructNote);
+                var sustain:Note = notes.recycle(Note, () -> new Note());
 
                 sustain.time = _note.time + ((((60.0 / conductor.getTimeChange(chart.tempo, _note.time).tempo) * 1000.0) * 0.25) * (k + 1.0));
 
@@ -149,10 +149,5 @@ class NoteSpawner extends FlxBasic
 
             noteIndex++;
         }
-    }
-
-    public static function constructNote():Note
-    {
-        return new Note();
     }
 }

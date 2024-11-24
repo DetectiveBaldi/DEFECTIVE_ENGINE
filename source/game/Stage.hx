@@ -1,8 +1,8 @@
 package game;
 
-import flixel.group.FlxContainer;
+import flixel.group.FlxGroup;
 
-class Stage extends FlxContainer
+class Stage extends FlxGroup
 {
     
 }

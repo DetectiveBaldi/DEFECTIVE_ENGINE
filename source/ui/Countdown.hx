@@ -3,7 +3,7 @@ package ui;
 import flixel.FlxG;
 import flixel.FlxSprite;
 
-import flixel.group.FlxContainer;
+import flixel.group.FlxGroup;
 
 import flixel.sound.FlxSound;
 
@@ -19,9 +19,9 @@ import core.Conductor;
 import core.Paths;
 
 /**
- * A `flixel.group.FlxContainer` representing the countdown you see in `game.GameState`.
+ * A `flixel.group.FlxGroup` representing the countdown you see in `game.GameState`.
  */
-class Countdown extends FlxContainer
+class Countdown extends FlxGroup
 {
     public var conductor(default, set):Conductor;
 

@@ -2,7 +2,7 @@ package plugins;
 
 import flixel.FlxG;
 
-import flixel.group.FlxContainer.FlxTypedContainer;
+import flixel.group.FlxGroup.FlxTypedGroup;
 
 import flixel.text.FlxText;
 
@@ -10,7 +10,7 @@ import flixel.util.FlxColor;
 
 import core.Paths;
 
-class Logger extends FlxTypedContainer<FlxText>
+class Logger extends FlxTypedGroup<FlxText>
 {
     override function update(elapsed:Float):Void
     {

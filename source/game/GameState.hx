@@ -1,14 +1,12 @@
 package game;
 
-import haxe.ds.ArraySort;
-
 import sys.FileSystem;
 
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 
-import flixel.group.FlxContainer.FlxTypedContainer;
+import flixel.group.FlxGroup.FlxTypedGroup;
 
 import flixel.math.FlxMath;
 
@@ -72,19 +70,19 @@ class GameState extends SteppingState
 
     public var spectatorMap:Map<String, Character>;
 
-    public var spectatorGroup:FlxTypedContainer<Character>;
+    public var spectatorGroup:FlxTypedGroup<Character>;
 
     public var spectator:Character;
 
     public var opponentMap:Map<String, Character>;
 
-    public var opponentGroup:FlxTypedContainer<Character>;
+    public var opponentGroup:FlxTypedGroup<Character>;
 
     public var opponent:Character;
 
     public var playerMap:Map<String, Character>;
 
-    public var playerGroup:FlxTypedContainer<Character>;
+    public var playerGroup:FlxTypedGroup<Character>;
 
     public var player:Character;
 
@@ -116,7 +114,7 @@ class GameState extends SteppingState
 
     public var playerVocals:FlxSound;
 
-    public var strumLines:FlxTypedContainer<StrumLine>;
+    public var strumLines:FlxTypedGroup<StrumLine>;
 
     public var opponentStrumLine:StrumLine;
 
@@ -124,7 +122,7 @@ class GameState extends SteppingState
 
     public var noteSpawner:NoteSpawner;
 
-    public var noteSplashes:FlxTypedContainer<NoteSplash>;
+    public var noteSplashes:FlxTypedGroup<NoteSplash>;
 
     public var countdown:Countdown;
 
@@ -163,7 +161,7 @@ class GameState extends SteppingState
 
         spectatorMap = new Map<String, Character>();
 
-        spectatorGroup = new FlxTypedContainer<Character>();
+        spectatorGroup = new FlxTypedGroup<Character>();
 
         add(spectatorGroup);
 
@@ -177,7 +175,7 @@ class GameState extends SteppingState
 
         opponentMap = new Map<String, Character>();
 
-        opponentGroup = new FlxTypedContainer<Character>();
+        opponentGroup = new FlxTypedGroup<Character>();
 
         add(opponentGroup);
 
@@ -189,7 +187,7 @@ class GameState extends SteppingState
 
         playerMap = new Map<String, Character>();
 
-        playerGroup = new FlxTypedContainer<Character>();
+        playerGroup = new FlxTypedGroup<Character>();
 
         add(playerGroup);
 
@@ -256,7 +254,7 @@ class GameState extends SteppingState
 
         loadSong(FlxStringUtil.getClassName(this, true));
 
-        strumLines = new FlxTypedContainer<StrumLine>();
+        strumLines = new FlxTypedGroup<StrumLine>();
 
         strumLines.camera = hudCamera;
 
@@ -306,7 +304,7 @@ class GameState extends SteppingState
 
         add(noteSpawner);
 
-        noteSplashes = new FlxTypedContainer<NoteSplash>();
+        noteSplashes = new FlxTypedGroup<NoteSplash>();
 
         noteSplashes.camera = hudCamera;
 
