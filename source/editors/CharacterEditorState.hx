@@ -146,48 +146,22 @@ class CharacterEditorState extends FlxState
             for (i in 0 ... character.config.frames.length)
             {
                 var frames:CharacterFramesConfig = character.config.frames[i];
+
+                frames.frameRate ??= 24.0;
+
+                frames.looped ??= false;
+
+                frames.flipX ??= false;
+
+                frames.flipY ??= false;
     
                 if (character.animation.exists(frames.name))
-                    throw "game.Character: Invalid frames name!";
+                    throw "editors.CharacterEditorState: Invalid frames name!";
     
                 if (frames.indices.length > 0)
-                {
-                    character.animation.addByIndices
-                    (
-                        frames.name,
-    
-                        frames.prefix,
-    
-                        frames.indices,
-    
-                        "",
-    
-                        frames.frameRate ?? 24.0,
-    
-                        frames.looped ?? false,
-    
-                        frames.flipX ?? false,
-    
-                        frames.flipY ?? false
-                    );
-                }
+                    character.animation.addByIndices(frames.name, frames.prefix, frames.indices, "", frames.frameRate, frames.looped, frames.flipX, frames.flipY);
                 else
-                {
-                    character.animation.addByPrefix
-                    (
-                        frames.name,
-    
-                        frames.prefix,
-    
-                        frames.frameRate ?? 24.0,
-    
-                        frames.looped ?? false,
-    
-                        frames.flipX ?? false,
-    
-                        frames.flipY ?? false
-                    );
-                }
+                    character.animation.addByPrefix(frames.name, frames.prefix, frames.frameRate, frames.looped, frames.flipX, frames.flipY);
             }
 
             character.danceSteps = character.config.danceSteps;

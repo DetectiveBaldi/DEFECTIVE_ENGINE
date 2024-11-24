@@ -97,47 +97,21 @@ class Character extends FlxSprite
         {
             var _frames:CharacterFramesConfig = config.frames[i];
 
+            _frames.frameRate ??= 24.0;
+
+            _frames.looped ??= false;
+
+            _frames.flipX ??= false;
+
+            _frames.flipY ??= false;
+
             if (animation.exists(_frames.name))
-                throw "game.Character: Invalid animation name!";
+                throw "game.Character: Invalid frames name!";
 
             if (_frames.indices.length > 0)
-            {
-                animation.addByIndices
-                (
-                    _frames.name,
-
-                    _frames.prefix,
-
-                    _frames.indices,
-
-                    "",
-
-                    _frames.frameRate ?? 24.0,
-
-                    _frames.looped ?? false,
-
-                    _frames.flipX ?? false,
-
-                    _frames.flipY ?? false
-                );
-            }
+                animation.addByIndices(_frames.name, _frames.prefix, _frames.indices, "", _frames.frameRate, _frames.looped, _frames.flipX, _frames.flipY);
             else
-            {
-                animation.addByPrefix
-                (
-                    _frames.name,
-
-                    _frames.prefix,
-
-                    _frames.frameRate ?? 24.0,
-
-                    _frames.looped ?? false,
-
-                    _frames.flipX ?? false,
-
-                    _frames.flipY ?? false
-                );
-            }
+                animation.addByPrefix(_frames.name, _frames.prefix, _frames.frameRate, _frames.looped, _frames.flipX, _frames.flipY);
         }
 
         danceSteps = config.danceSteps;
