@@ -101,7 +101,7 @@ class NoteSpawner extends FlxBasic
 
             _note.flipY = false;
 
-            _note.scale.set(0.685, 0.685);
+            _note.scale.set(0.7, 0.7);
 
             _note.updateHitbox();
 
@@ -134,7 +134,7 @@ class NoteSpawner extends FlxBasic
 
                 sustain.flipY = Options.downscroll;
 
-                sustain.scale.set(0.685, 0.685);
+                sustain.scale.set(0.7, 0.7);
 
                 sustain.updateHitbox();
 

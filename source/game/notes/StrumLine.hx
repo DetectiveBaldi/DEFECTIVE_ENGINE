@@ -86,7 +86,7 @@ class StrumLine extends FlxGroup
 
             strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Static");
 
-            strum.scale.set(0.685, 0.685);
+            strum.scale.set(0.7, 0.7);
 
             strum.updateHitbox();
             

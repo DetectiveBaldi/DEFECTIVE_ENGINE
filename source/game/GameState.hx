@@ -562,7 +562,7 @@ class GameState extends SteppingState
 
                     noteSplash.animation.onFinish.add((name:String) -> noteSplash.kill());
 
-                    noteSplash.scale.set(0.685, 0.685);
+                    noteSplash.scale.set(0.7, 0.7);
 
                     noteSplash.updateHitbox();
 
