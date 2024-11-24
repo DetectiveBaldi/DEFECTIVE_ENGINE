@@ -575,8 +575,6 @@ class GameState extends SteppingState
 
         if (mainVocals != null)
             mainVocals.volume = 1.0;
-
-        note.kill();
     }
 
     public function noteMiss(note:Note):Void
@@ -595,8 +593,6 @@ class GameState extends SteppingState
 
         if (mainVocals != null)
             mainVocals.volume = 0.0;
-
-        note.kill();
     }
 
     public function opponentNoteHit(note:Note):Void

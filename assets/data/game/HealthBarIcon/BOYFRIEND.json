@@ -1,5 +1,5 @@
 {
     "png": "assets/images/game/HealthBarIcon/BOYFRIEND",
 
-    "healthBarColor": {"r": 49, "g": 176, "b": 209}
+    "healthBarColor": "0x31B0D1"
 }

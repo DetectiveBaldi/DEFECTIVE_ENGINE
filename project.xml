@@ -22,16 +22,6 @@
 
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" />
 
-	<!-- _____________________________ Path Settings ____________________________ -->
-
-	<set name="BUILD_DIR" value="bin/debug" if="debug" />
-
-	<set name="BUILD_DIR" value="bin/stable" unless="debug" />
-
-	<assets path="assets" />
-
-	<source path="source" />
-
 	<!-- ______________________________ Defines, Haxedefs, and Libraries _____________________________ -->
 
 	<haxelib name="flixel" />
@@ -49,6 +39,24 @@
 	<haxelib name="haxeui-flixel" />
 
 	<haxelib name="haxeui-core" />
+
+	<!-- _____________________________ Path Settings ____________________________ -->
+
+	<set name="BUILD_DIR" value="bin/debug" if="debug" />
+
+	<set name="BUILD_DIR" value="bin/stable" unless="debug" />
+
+	<assets path="assets/data" />
+
+	<assets path="assets/fonts" />
+
+	<assets path="assets/images" />
+
+	<assets path="assets/music" />
+
+	<assets path="assets/sounds" />
+
+	<source path="source" />
 
 	<!-- _____________________________ Resources ____________________________ -->
 

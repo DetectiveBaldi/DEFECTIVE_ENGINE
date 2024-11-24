@@ -2,10 +2,11 @@ package game.notes;
 
 import haxe.ds.ArraySort;
 
+import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
 
-import flixel.group.FlxContainer;
+import flixel.group.FlxGroup.FlxTypedGroup;
 
 import core.Conductor;
 import core.Options;
@@ -18,7 +19,7 @@ using StringTools;
 
 using util.ArrayUtil;
 
-class NoteSpawner extends FlxContainer
+class NoteSpawner extends FlxBasic
 {
     public var game:GameState;
 
@@ -46,6 +47,8 @@ class NoteSpawner extends FlxContainer
         return game.chart;
     }
 
+    public var notes:FlxTypedGroup<Note>;
+
     public var noteIndex:Int;
 
     public function new(game:GameState):Void
@@ -53,6 +56,8 @@ class NoteSpawner extends FlxContainer
         super();
 
         this.game = game;
+
+        notes = new FlxTypedGroup<Note>();
 
         noteIndex = 0;
     }
@@ -68,13 +73,11 @@ class NoteSpawner extends FlxContainer
             if (note.time > conductor.time + hudCamera.height / hudCamera.zoom / game.chartSpeed / note.speed / 0.45)
                 break;
 
-            var strumLine:StrumLine = game.strumLines.members[note.lane];
-
-            if (strumLine.notes.members.length > 0.0)
+            if (notes.members.length > 0.0)
             {
-                var _note:Note = strumLine.notes.members.last();
+                var _note:Note = notes.members.last();
 
-                if (note.time == _note.time && note.direction == _note.direction && !_note.animation.name.contains("Hold"))
+                if (note.time == _note.time && note.direction == _note.direction && note.lane == _note.lane && !_note.animation.name.contains("Hold"))
                 {
                     noteIndex++;
 
@@ -82,7 +85,7 @@ class NoteSpawner extends FlxContainer
                 }
             }
 
-            var _note:Note = strumLine.notes.recycle(Note, constructNote);
+            var _note:Note = notes.recycle(Note, constructNote);
 
             _note.time = note.time;
 
@@ -104,11 +107,15 @@ class NoteSpawner extends FlxContainer
 
             _note.setPosition((FlxG.width - _note.width) * 0.5, Options.downscroll ? -_note.height : hudCamera.height / hudCamera.zoom);
 
+            var strumLine:StrumLine = game.strumLines.members[note.lane];
+
+            strumLine.notes.add(_note);
+
             strumLine.onNoteSpawn.dispatch(_note);
 
             for (k in 0 ... Math.round(_note.length / (((60.0 / conductor.getTimeChange(chart.tempo, _note.time).tempo) * 1000.0) * 0.25)))
             {
-                var sustain:Note = strumLine.notes.recycle(Note, constructNote);
+                var sustain:Note = notes.recycle(Note, constructNote);
 
                 sustain.time = _note.time + ((((60.0 / conductor.getTimeChange(chart.tempo, _note.time).tempo) * 1000.0) * 0.25) * (k + 1.0));
 
@@ -132,7 +139,11 @@ class NoteSpawner extends FlxContainer
                 sustain.updateHitbox();
 
                 sustain.setPosition((FlxG.width - sustain.width) * 0.5, Options.downscroll ? -sustain.height : hudCamera.height / hudCamera.zoom);
+
+                strumLine.notes.add(sustain);
             }
+
+            ArraySort.sort(notes.members, (__note:Note, ___note:Note) -> Std.int(__note.time - ___note.time));
 
             ArraySort.sort(strumLine.notes.members, (__note:Note, ___note:Note) -> Std.int(__note.time - ___note.time));
 

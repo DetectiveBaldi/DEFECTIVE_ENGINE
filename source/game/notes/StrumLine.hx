@@ -1,7 +1,7 @@
 package game.notes;
 
 import flixel.group.FlxContainer;
-import flixel.group.FlxContainer.FlxTypedContainer;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteContainer.FlxTypedSpriteContainer;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
@@ -43,7 +43,7 @@ class StrumLine extends FlxContainer
         return this.spacing = spacing;
     }
 
-    public var notes:FlxTypedContainer<Note>;
+    public var notes:FlxTypedGroup<Note>;
 
     public var onNoteSpawn:FlxTypedSignal<(note:Note)->Void>;
 
@@ -95,7 +95,7 @@ class StrumLine extends FlxContainer
 
         spacing = 116.0;
 
-        notes = new FlxTypedContainer<Note>();
+        notes = new FlxTypedGroup<Note>();
 
         add(notes);
 
@@ -103,7 +103,21 @@ class StrumLine extends FlxContainer
 
         onNoteHit = new FlxTypedSignal<(note:Note)->Void>();
 
+        onNoteHit.add((note:Note) ->
+        {
+            notes.remove(note, true);
+
+            note.kill();
+        });
+
         onNoteMiss = new FlxTypedSignal<(note:Note)->Void>();
+
+        onNoteMiss.add((note:Note) ->
+        {
+            notes.remove(note, true);
+
+            note.kill();
+        });
 
         onGhostTap = new FlxTypedSignal<(direction:Int)->Void>();
 

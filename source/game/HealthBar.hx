@@ -28,10 +28,10 @@ class HealthBar extends ProgressBar
         super.set_fillDirection(fillDirection);
 
         if (opponentIcon != null)
-            opponentIcon.flipX = fillDirection == LEFT_TO_RIGHT;
+            opponentIcon.flipX = fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM;
 
         if (playerIcon != null)
-            playerIcon.flipX = !(fillDirection == LEFT_TO_RIGHT);
+            playerIcon.flipX = !(fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM);
 
         return fillDirection;
     }
@@ -43,9 +43,9 @@ class HealthBar extends ProgressBar
     {
         this.opponentIcon = opponentIcon;
 
-        var opponentIconHealthBarColor:{r:Int, g:Int, b:Int} = opponentIcon.config.healthBarColor;
+        var opponentIconHealthBarColor:String = opponentIcon.config.healthBarColor;
 
-        var emptiedSideColor = opponentIconHealthBarColor == null ? FlxColor.RED : FlxColor.fromRGB(opponentIconHealthBarColor.r, opponentIconHealthBarColor.g, opponentIconHealthBarColor.b);
+        var emptiedSideColor = opponentIconHealthBarColor == null ? FlxColor.RED : FlxColor.fromString(opponentIconHealthBarColor);
 
         emptiedSide.color = emptiedSideColor;
 
@@ -59,9 +59,9 @@ class HealthBar extends ProgressBar
     {
         this.playerIcon = playerIcon;
 
-        var playerIconHealthBarColor:{r:Int, g:Int, b:Int} = playerIcon.config.healthBarColor;
+        var playerIconHealthBarColor:String = playerIcon.config.healthBarColor;
 
-        var filledSideColor = playerIconHealthBarColor == null ? FlxColor.LIME: FlxColor.fromRGB(playerIconHealthBarColor.r, playerIconHealthBarColor.g, playerIconHealthBarColor.b);
+        var filledSideColor = playerIconHealthBarColor == null ? FlxColor.LIME : FlxColor.fromString(playerIconHealthBarColor);
 
         filledSide.color = filledSideColor;
 
