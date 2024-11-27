@@ -86,7 +86,7 @@ class GameState extends SteppingState
 
     public var player:Character;
 
-    public var points:Float;
+    public var points:Int;
 
     public var hits:Int;
 
@@ -197,7 +197,7 @@ class GameState extends SteppingState
 
         playerGroup.add(player);
 
-        points = 0.0;
+        points = 0;
 
         hits = 0;
 
@@ -236,7 +236,7 @@ class GameState extends SteppingState
 
         add(healthBar);
 
-        scoreTxt = new FlxText(0.0, 0.0, FlxG.width, "Points: 0.0 | Misses: 0 | Rating: 0.0%", 24);
+        scoreTxt = new FlxText(0.0, 0.0, FlxG.width, "Points: 0 | Misses: 0 | Rating: 0.0%", 24);
 
         scoreTxt.camera = hudCamera;
 
@@ -542,7 +542,7 @@ class GameState extends SteppingState
 
                 var judgement:Judgement = Judgement.guage(judgements, Math.abs(conductor.time - note.time));
 
-                points += 500.0 - Math.abs(conductor.time - note.time);
+                points += 500 - Math.floor(Math.abs(conductor.time - note.time));
 
                 hits++;
 
@@ -581,7 +581,7 @@ class GameState extends SteppingState
 
         _noteMiss.onComplete = _noteMiss.kill;
 
-        points -= 650.0;
+        points -= 650;
 
         misses++;
 
@@ -690,7 +690,7 @@ class GameState extends SteppingState
 
         _noteMiss.onComplete = _noteMiss.kill;
         
-        points -= 650.0;
+        points -= 650;
 
         misses++;
 
