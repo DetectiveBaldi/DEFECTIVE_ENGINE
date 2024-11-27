@@ -42,6 +42,7 @@ import game.Stage;
 
 import ui.Countdown;
 
+import util.StringUtil;
 import util.TimingUtil;
 
 using StringTools;
@@ -550,7 +551,7 @@ class GameState extends SteppingState
 
                 healthBar.value += judgement.health;
 
-                scoreTxt.text = 'Points: ${points} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+                scoreTxt.text = 'Points: ${points} | Misses: ${misses} | Rating: ${StringUtil.appendDecimal(FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2))}%';
 
                 if (judgement.name == "Epic!" || judgement.name == "Sick!")
                 {
@@ -587,7 +588,7 @@ class GameState extends SteppingState
 
         healthBar.value -= 3.5;
 
-        scoreTxt.text = 'Points: ${points} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+        scoreTxt.text = 'Points: ${points} | Misses: ${misses} | Rating: ${StringUtil.appendDecimal(FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2))}%';
 
         if (mainVocals != null)
             mainVocals.volume = 0.0;
@@ -696,7 +697,7 @@ class GameState extends SteppingState
 
         healthBar.value -= 3.5;
 
-        scoreTxt.text = 'Points: ${points} | Misses: ${misses} | Rating: ${FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2)}%';
+        scoreTxt.text = 'Points: ${points} | Misses: ${misses} | Rating: ${StringUtil.appendDecimal(FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2))}%';
 
         if (mainVocals != null)
             mainVocals.volume = 0.0;
