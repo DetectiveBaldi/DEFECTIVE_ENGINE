@@ -45,7 +45,7 @@ class HealthBar extends ProgressBar
 
         var opponentIconHealthBarColor:String = opponentIcon.config.healthBarColor;
 
-        var emptiedSideColor = opponentIconHealthBarColor == null ? FlxColor.RED : FlxColor.fromString(opponentIconHealthBarColor);
+        var emptiedSideColor:FlxColor = opponentIconHealthBarColor == null ? FlxColor.RED : FlxColor.fromString(opponentIconHealthBarColor);
 
         emptiedSide.color = emptiedSideColor;
 
@@ -61,7 +61,7 @@ class HealthBar extends ProgressBar
 
         var playerIconHealthBarColor:String = playerIcon.config.healthBarColor;
 
-        var filledSideColor = playerIconHealthBarColor == null ? FlxColor.LIME : FlxColor.fromString(playerIconHealthBarColor);
+        var filledSideColor:FlxColor = playerIconHealthBarColor == null ? FlxColor.LIME : FlxColor.fromString(playerIconHealthBarColor);
 
         filledSide.color = filledSideColor;
 

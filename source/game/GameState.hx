@@ -1,5 +1,6 @@
 package game;
 
+import core.Conductor;
 import sys.FileSystem;
 
 import flixel.FlxCamera;
@@ -86,7 +87,7 @@ class GameState extends SteppingState
 
     public var player:Character;
 
-    public var points:Int;
+    public var points:Float;
 
     public var hits:Int;
 
@@ -197,7 +198,7 @@ class GameState extends SteppingState
 
         playerGroup.add(player);
 
-        points = 0;
+        points = 0.0;
 
         hits = 0;
 
@@ -207,15 +208,15 @@ class GameState extends SteppingState
 
         judgements =
         [
-            new Judgement("Epic!", 22.5, 1.0, 2.85, 500, 0),
+            new Judgement("Epic!", 22.5, 1.0, 2.85, 0),
 
-            new Judgement("Sick!", 45.0, 1.0, 2.5, 350, 0),
+            new Judgement("Sick!", 45.0, 1.0, 2.5, 0),
 
-            new Judgement("Good", 90.0, 0.65, 1.5, 250, 0),
+            new Judgement("Good", 90.0, 0.65, 1.5, 0),
 
-            new Judgement("Bad", 135.0, 0.35, -1.5, 150, 0),
+            new Judgement("Bad", 135.0, 0.35, -1.5, 0),
 
-            new Judgement("Shit", 166.6, -2.5, 0.0, 50, 0)
+            new Judgement("Shit", 166.6, -2.5, 0.0, 0)
         ];
 
         healthBar = new HealthBar(0.0, 0.0, 600, 25, RIGHT_TO_LEFT, conductor);
@@ -236,7 +237,7 @@ class GameState extends SteppingState
 
         add(healthBar);
 
-        scoreTxt = new FlxText(0.0, 0.0, FlxG.width, "Points: 0 | Misses: 0 | Rating: 0.0%", 24);
+        scoreTxt = new FlxText(0.0, 0.0, FlxG.width, "Points: 0.0 | Misses: 0 | Rating: 0.0%", 24);
 
         scoreTxt.camera = hudCamera;
 
@@ -542,7 +543,7 @@ class GameState extends SteppingState
 
                 var judgement:Judgement = Judgement.guage(judgements, Math.abs(conductor.time - note.time));
 
-                points += judgement.points;
+                points += 500.0 - Math.abs(conductor.time - note.time);
 
                 hits++;
 
@@ -581,7 +582,7 @@ class GameState extends SteppingState
 
         _noteMiss.onComplete = _noteMiss.kill;
 
-        points -= 650;
+        points -= 650.0;
 
         misses++;
 
@@ -690,7 +691,7 @@ class GameState extends SteppingState
 
         _noteMiss.onComplete = _noteMiss.kill;
         
-        points -= 650;
+        points -= 650.0;
 
         misses++;
 

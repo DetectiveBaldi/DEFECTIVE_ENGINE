@@ -10,8 +10,6 @@ class Judgement
 
     public var health:Float;
 
-    public var points:Int;
-
     public var hits:Int;
 
     public static function guage(judgements:Array<Judgement>, timing:Float):Judgement
@@ -27,7 +25,7 @@ class Judgement
         return null;
     }
 
-    public function new(name:String, timing:Float, bonus:Float, health:Float, points:Int, hits:Int):Void
+    public function new(name:String, timing:Float, bonus:Float, health:Float, hits:Int):Void
     {
         this.name = name;
 
@@ -36,8 +34,6 @@ class Judgement
         this.bonus = bonus;
 
         this.health = health;
-
-        this.points = points;
 
         this.hits = hits;
     }
