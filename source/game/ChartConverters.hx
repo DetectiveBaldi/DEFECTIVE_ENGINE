@@ -2,6 +2,10 @@ package game;
 
 import haxe.Json;
 
+import sys.FileSystem;
+
+import sys.io.File;
+
 import core.AssetMan;
 import core.Paths;
 
@@ -47,6 +51,14 @@ class FunkConverter
 
             output.timeChanges.push({time: timeChange.t, tempo: timeChange.bpm, step: 0.0});
         }
+
+        if (!FileSystem.exists("assets/data/game/ChartConverter/"))
+            FileSystem.createDirectory("assets/data/game/ChartConverter/");
+
+        if (!FileSystem.exists('assets/data/game/ChartConverter/${output.name}'))
+            FileSystem.createDirectory('assets/data/game/ChartConverter/${output.name}');
+
+        File.saveContent('assets/data/game/ChartConverter/${output.name}', Json.stringify({name: output.name, tempo: output.tempo, speed: output.speed, notes: output.notes, events: output.events, timeChanges: output.timeChanges}, "\t"));
 
         return output;
     }
@@ -145,6 +157,14 @@ class PsychConverter
 
             time += crotchet * (Math.round(_section.sectionBeats * 4.0) * 0.25);
         }
+
+        if (!FileSystem.exists("assets/data/game/ChartConverter/"))
+            FileSystem.createDirectory("assets/data/game/ChartConverter/");
+
+        if (!FileSystem.exists('assets/data/game/ChartConverter/${output.name}'))
+            FileSystem.createDirectory('assets/data/game/ChartConverter/${output.name}');
+
+        File.saveContent('assets/data/game/ChartConverter/${output.name}/chart.json', Json.stringify({name: output.name, tempo: output.tempo, speed: output.speed, notes: output.notes, events: output.events, timeChanges: output.timeChanges}, "\t"));
 
         return output;
     }

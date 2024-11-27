@@ -49,6 +49,8 @@ class NoteSpawner extends FlxBasic
 
     public var notes:FlxTypedGroup<Note>;
 
+    public var noteHashes:Array<String>;
+
     public var noteIndex:Int;
 
     public function new(game:GameState):Void
@@ -58,6 +60,8 @@ class NoteSpawner extends FlxBasic
         this.game = game;
 
         notes = new FlxTypedGroup<Note>();
+
+        noteHashes = new Array<String>();
 
         noteIndex = 0;
     }
@@ -73,17 +77,16 @@ class NoteSpawner extends FlxBasic
             if (note.time > conductor.time + hudCamera.height / hudCamera.zoom / game.chartSpeed / note.speed / 0.45)
                 break;
 
-            if (notes.members.length > 0.0)
+            var hash:String = '${note.time}${note.direction}${note.lane}';
+
+            if (noteHashes.contains(hash))
             {
-                var _note:Note = notes.members.last();
+                noteIndex++;
 
-                if (note.time == _note.time && note.direction == _note.direction && note.lane == _note.lane && !_note.animation.name.contains("Hold"))
-                {
-                    noteIndex++;
-
-                    continue;
-                }
+                continue;
             }
+
+            noteHashes.push(hash);
 
             var _note:Note = notes.recycle(Note, () -> new Note());
 
@@ -113,11 +116,13 @@ class NoteSpawner extends FlxBasic
 
             strumLine.onNoteSpawn.dispatch(_note);
 
-            for (k in 0 ... Math.round(_note.length / (((60.0 / conductor.getTimeChange(chart.tempo, _note.time).tempo) * 1000.0) * 0.25)))
+            var crotchet:Float = (60.0 / conductor.getTimeChange(chart.tempo, _note.time).tempo) * 1000.0;
+
+            for (k in 0 ... Math.round(_note.length / (crotchet * 0.25)))
             {
                 var sustain:Note = notes.recycle(Note, () -> new Note());
 
-                sustain.time = _note.time + ((((60.0 / conductor.getTimeChange(chart.tempo, _note.time).tempo) * 1000.0) * 0.25) * (k + 1.0));
+                sustain.time = _note.time + (crotchet * 0.25 * (k + 1.0));
 
                 sustain.speed = _note.speed;
 
@@ -125,11 +130,11 @@ class NoteSpawner extends FlxBasic
                 
                 sustain.lane = _note.lane;
 
-                sustain.length = (60.0 / conductor.getTimeChange(chart.tempo, _note.time).tempo) * 1000.0;
+                sustain.length = crotchet;
 
                 sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
 
-                if (k >= Math.round(_note.length / (((60.0 / conductor.getTimeChange(chart.tempo, _note.time).tempo) * 1000.0) * 0.25)) - 1.0)
+                if (k >= Math.round(_note.length / (crotchet * 0.25)) - 1.0)
                     sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
 
                 sustain.flipY = Options.downscroll;
@@ -142,7 +147,7 @@ class NoteSpawner extends FlxBasic
 
                 strumLine.notes.add(sustain);
             }
-
+            
             ArraySort.sort(notes.members, (__note:Note, ___note:Note) -> Std.int(__note.time - ___note.time));
 
             ArraySort.sort(strumLine.notes.members, (__note:Note, ___note:Note) -> Std.int(__note.time - ___note.time));
