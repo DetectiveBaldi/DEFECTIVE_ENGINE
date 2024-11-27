@@ -365,9 +365,9 @@ class GameState extends SteppingState
     {
         super.update(elapsed);
 
-        gameCamera.zoom = FlxMath.lerp(gameCamera.zoom, gameCameraZoom, 0.15);
+        gameCamera.zoom = gameCameraZoom + (gameCamera.zoom - gameCameraZoom) * Math.exp(-15.0 * elapsed);
 
-        hudCamera.zoom = FlxMath.lerp(hudCamera.zoom, hudCameraZoom, 0.15);
+        hudCamera.zoom = hudCameraZoom + (hudCamera.zoom - hudCameraZoom) * Math.exp(-15.0 * elapsed);
 
         while (eventIndex < chart.events.length)
         {

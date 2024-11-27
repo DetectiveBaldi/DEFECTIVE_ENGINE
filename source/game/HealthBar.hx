@@ -98,7 +98,7 @@ class HealthBar extends ProgressBar
         super.update(elapsed);
 
         if (scaleIcons != null)
-            scaleIcons();
+            scaleIcons(elapsed);
 
         if (positionIcons != null)
             positionIcons();
@@ -113,16 +113,16 @@ class HealthBar extends ProgressBar
 
     public function beatHit(beat:Int):Void
     {
-        opponentIcon.scale *= FlxMath.lerp(1.35, 1.05, value / max);
+        opponentIcon.scale *= 1.35 + (1.05 - 1.35) * (value / max);
 
-        playerIcon.scale *= FlxMath.lerp(1.05, 1.35, value / max);
+        playerIcon.scale *= 1.05 + (1.35 - 1.05) * (value / max);
     }
 
-    public dynamic function scaleIcons():Void
+    public dynamic function scaleIcons(elapsed:Float):Void
     {
-        opponentIcon.scale.set(FlxMath.lerp(opponentIcon.scale.x, opponentIcon.config.scale?.x ?? 1.0, 0.15), FlxMath.lerp(opponentIcon.scale.y, opponentIcon.config.scale?.y ?? 1.0, 0.15));
+        opponentIcon.scale.set((opponentIcon.config.scale?.x ?? 1.0) + (opponentIcon.scale.x - (opponentIcon.config.scale?.x ?? 1.0)) * Math.exp(-15.0 * elapsed), (opponentIcon.config.scale?.y ?? 1.0) + (opponentIcon.scale.y - (opponentIcon.config.scale?.y ?? 1.0)) * Math.exp(-15.0 * elapsed));
 
-        playerIcon.scale.set(FlxMath.lerp(playerIcon.scale.x, playerIcon.config.scale?.x ?? 1.0, 0.15), FlxMath.lerp(playerIcon.scale.y, playerIcon.config.scale?.y ?? 1.0, 0.15));
+        playerIcon.scale.set((playerIcon.config.scale?.x ?? 1.0) + (playerIcon.scale.x - (playerIcon.config.scale?.x ?? 1.0)) * Math.exp(-15.0 * elapsed), (playerIcon.config.scale?.y ?? 1.0) + (playerIcon.scale.y - (playerIcon.config.scale?.y ?? 1.0)) * Math.exp(-15.0 * elapsed));
     }
 
     public dynamic function positionIcons():Void
