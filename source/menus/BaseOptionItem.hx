@@ -72,8 +72,6 @@ class BaseOptionItem<T> extends FlxSpriteGroup
 
         background.antialiasing = true;
 
-        background.color = background.color.getDarkened(0.25);
-
         background.frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png("assets/images/menus/BaseOptionItem/background")), Paths.xml("assets/images/menus/BaseOptionItem/background"));
 
         background.animation.addByPrefix("background", "background", 12.0);

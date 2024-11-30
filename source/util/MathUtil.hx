@@ -63,9 +63,4 @@ class MathUtil
 
         return output;
     }
-
-    public static function boundInt(int:Int, min:Null<Float> = null, max:Null<Float> = null):Int
-    {
-        return Std.int(FlxMath.bound(int, min, max));
-    }
 }

@@ -8,6 +8,8 @@ import flixel.graphics.frames.FlxAtlasFrames;
 
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
+import flixel.math.FlxMath;
+
 import flixel.sound.FlxSound;
 
 import flixel.text.FlxText;
@@ -22,8 +24,6 @@ import core.AssetMan;
 import core.Paths;
 
 import game.levels.Level1;
-
-import util.MathUtil;
 
 class OptionsMenu extends FlxState
 {
@@ -182,8 +182,6 @@ class OptionsMenu extends FlxState
 
         descriptor.antialiasing = true;
 
-        descriptor.color = descriptor.color.getDarkened(0.25);
-
         descriptor.frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png("assets/images/menus/OptionsMenu/descriptor")), Paths.xml("assets/images/menus/OptionsMenu/descriptor"));
 
         descriptor.animation.addByPrefix("descriptor", "descriptor", 12.0);
@@ -204,9 +202,9 @@ class OptionsMenu extends FlxState
 
         descText.font = Paths.ttf("assets/fonts/Ubuntu Regular");
 
-        descText.alignment = LEFT;
+        descText.alignment = CENTER;
 
-        descText.setPosition(descriptor.x + 300.0, descriptor.getMidpoint().y - descText.height * 0.5 - 35.0);
+        descText.setPosition(descriptor.getMidpoint().x - descText.width * 0.5, descriptor.getMidpoint().y - descText.height * 0.5 - 25.0);
 
         add(descText);
 
@@ -221,28 +219,19 @@ class OptionsMenu extends FlxState
     {
         super.update(elapsed);
 
-        if (FlxG.keys.justPressed.DOWN)
+        if (FlxG.keys.justPressed.DOWN || FlxG.mouse.wheel == -1.0)
         {
-            var _option:Int = option;
+            FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
 
-            option = MathUtil.boundInt(option + 1, 0, options.members.length - 1);
-
-            if (_option != options.members.length - 1.0)
-                FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+            option = FlxMath.wrap(option + 1, 0, options.members.length - 1);
         }
 
-        if (FlxG.keys.justPressed.UP)
+        if (FlxG.keys.justPressed.UP || FlxG.mouse.wheel == 1.0)
         {
-            var _option:Int = option;
+            FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
 
-            option = MathUtil.boundInt(option - 1, 0, options.members.length - 1);
-
-            if (_option != 0)
-                FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+            option = FlxMath.wrap(option - 1, 0, options.members.length - 1);
         }
-
-        if (FlxG.mouse.wheel != 0.0)
-            option = MathUtil.boundInt(option - FlxG.mouse.wheel, 0, options.members.length - 1);
 
         if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.UP || FlxG.mouse.wheel != 0.0)
             descText.text = options.members[option].description;
