@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="descriptor.png" width="2575" height="250">
+	<SubTexture name="descriptor0000" x="5" y="5" width="1280" height="240" frameX="-0" frameY="-0" frameWidth="1280" frameHeight="240"/>
+	<SubTexture name="descriptor0002" x="1290" y="5" width="1280" height="240" frameX="-0" frameY="-0" frameWidth="1280" frameHeight="240"/>
+</TextureAtlas>

@@ -31,7 +31,7 @@ class Options
     @:noCompletion
     static function set_soundStreaming(_soundStreaming:Bool):Bool
     {
-        FlxG.save.data.options.soundStreaming = soundStreaming;
+        FlxG.save.data.options.soundStreaming = _soundStreaming;
 
         return _soundStreaming;
     }
@@ -84,16 +84,16 @@ class Options
         return _ghostTapping;
     }
 
-    public static var gameModifiers(get, set):Map<String, Any>;
+    public static var gameModifiers(get, set):Map<String, Dynamic>;
 
     @:noCompletion
-    static function get_gameModifiers():Map<String, Any>
+    static function get_gameModifiers():Map<String, Dynamic>
     {
-        return FlxG.save.data.options.gameModifiers ??= new Map<String, Any>();
+        return FlxG.save.data.options.gameModifiers ??= new Map<String, Dynamic>();
     }
 
     @:noCompletion
-    static function set_gameModifiers(_gameModifiers:Map<String, Any>):Map<String, Any>
+    static function set_gameModifiers(_gameModifiers:Map<String, Dynamic>):Map<String, Dynamic>
     {
         FlxG.save.data.options.gameModifiers = _gameModifiers;
 

@@ -40,6 +40,8 @@ import game.notes.Strum;
 import game.notes.StrumLine;
 import game.Stage;
 
+import menus.OptionsMenu;
+
 import ui.Countdown;
 
 import util.StringUtil;
@@ -360,6 +362,8 @@ class GameState extends SteppingState
         debugInputs = new Map<String, Input>();
 
         debugInputs["EDITORS:CHARACTEREDITORSTATE"] = new Input([55]);
+
+        debugInputs["MENUS:OPTIONSMENU"] = new Input([56]);
     }
 
     override function update(elapsed:Float):Void
@@ -418,6 +422,9 @@ class GameState extends SteppingState
 
         if (Inputs.checkStatus(debugInputs["EDITORS:CHARACTEREDITORSTATE"], JUST_PRESSED))
             FlxG.switchState(() -> new CharacterEditorState());
+
+        if (Inputs.checkStatus(debugInputs["MENUS:OPTIONSMENU"], JUST_PRESSED))
+            FlxG.switchState(() -> new OptionsMenu());
 
         if (FlxG.keys.justPressed.R && countdown.tick > 0.0)
             loadGameOverScreen();
