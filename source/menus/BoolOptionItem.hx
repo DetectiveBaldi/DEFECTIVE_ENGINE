@@ -6,8 +6,6 @@ import flixel.FlxSprite;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 
-import flixel.util.FlxColor;
-
 import core.Paths;
 import core.AssetMan;
 
@@ -24,8 +22,10 @@ class BoolOptionItem extends BaseOptionItem<Bool>
         enabled = true;
 
         checkbox = new FlxSprite();
-        
+
         checkbox.antialiasing = true;
+
+        checkbox.color = checkbox.color.getDarkened(0.25);
 
         checkbox.frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png("assets/images/menus/BoolOptionItem/checkbox")), Paths.xml("assets/images/menus/BoolOptionItem/checkbox"));
 

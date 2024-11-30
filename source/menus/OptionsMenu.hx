@@ -28,7 +28,9 @@ import util.MathUtil;
 
 class OptionsMenu extends FlxState
 {
-    public var background:FlxBackdrop;
+    public var background:FlxSprite;
+
+    public var backdrop:FlxBackdrop;
 
     public var gradient:FlxSprite;
 
@@ -77,17 +79,31 @@ class OptionsMenu extends FlxState
 
         FlxG.mouse.visible = true;
 
-        background = new FlxBackdrop(AssetMan.graphic(Paths.png("assets/images/menus/OptionsMenu/background")));
+        background = new FlxSprite(0.0, 0.0, AssetMan.graphic(Paths.png("assets/images/menus/OptionsMenu/background")));
 
         background.antialiasing = true;
 
-        background.velocity.set(25.0, 25.0);
+        background.color = background.color.getDarkened(0.25);
 
         add(background);
+
+        backdrop = new FlxBackdrop(AssetMan.graphic(Paths.png("assets/images/menus/OptionsMenu/backdrop")));
+
+        backdrop.antialiasing = true;
+
+        backdrop.alpha = 0.35;
+
+        backdrop.color = backdrop.color.getDarkened(0.25);
+
+        backdrop.velocity.set(15.0, 15.0);
+
+        add(backdrop);
 
         gradient = new FlxSprite(AssetMan.graphic(Paths.png("assets/images/menus/OptionsMenu/gradient")));
 
         gradient.antialiasing = true;
+
+        gradient.color = gradient.color.getDarkened(0.25);
 
         add(gradient);
 
@@ -105,7 +121,7 @@ class OptionsMenu extends FlxState
 
         cornerCutout.updateHitbox();
 
-        cornerCutout.setPosition(-75.0, -25.0);
+        cornerCutout.setPosition(-125.0, -65.0);
 
         add(cornerCutout);
 
@@ -113,11 +129,11 @@ class OptionsMenu extends FlxState
 
         gear.antialiasing = true;
 
-        gear.setPosition(-5.0, -25.0);
+        gear.setPosition(-gear.width * 0.45, -gear.height * 0.45);
 
         add(gear);
 
-        FlxTween.angle(gear, 0.0, 360.0, 3.0, {type: LOOPING});
+        FlxTween.angle(gear, 0.0, 360.0, 5.0, {type: LOOPING});
 
         options = new FlxTypedSpriteGroup<BaseOptionItem<Dynamic>>();
 
@@ -159,6 +175,8 @@ class OptionsMenu extends FlxState
 
         descriptor.antialiasing = true;
 
+        descriptor.color = descriptor.color.getDarkened(0.25);
+
         descriptor.frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png("assets/images/menus/OptionsMenu/descriptor")), Paths.xml("assets/images/menus/OptionsMenu/descriptor"));
 
         descriptor.animation.addByPrefix("descriptor", "descriptor", 12.0);
@@ -177,7 +195,7 @@ class OptionsMenu extends FlxState
 
         descText.color = FlxColor.BLACK;
 
-        descText.font = Paths.ttf("assets/fonts/Comic Sans MS");
+        descText.font = Paths.ttf("assets/fonts/Ubuntu Regular");
 
         descText.alignment = LEFT;
 
@@ -204,6 +222,8 @@ class OptionsMenu extends FlxState
 
             if (_option != options.members.length - 1.0)
             {
+                FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+
                 var targetY:Float = 0.0;
 
                 for (i in 0 ... option)
@@ -211,7 +231,7 @@ class OptionsMenu extends FlxState
 
                 FlxTween.cancelTweensOf(options, ["y"]);
 
-                FlxTween.tween(options, {y: targetY}, 0.75, {ease: FlxEase.smoothStepOut});
+                FlxTween.tween(options, {y: targetY}, 0.35, {ease: FlxEase.smoothStepOut});
             }
         }
 
@@ -223,6 +243,8 @@ class OptionsMenu extends FlxState
 
             if (_option != 0)
             {
+                FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+
                 var targetY:Float = 0.0;
 
                 for (i in 0 ... option)
@@ -230,7 +252,7 @@ class OptionsMenu extends FlxState
 
                 FlxTween.cancelTweensOf(options, ["y"]);
 
-                FlxTween.tween(options, {y: targetY}, 0.75, {ease: FlxEase.smoothStepIn});
+                FlxTween.tween(options, {y: targetY}, 0.35, {ease: FlxEase.smoothStepIn});
             }
         }
 

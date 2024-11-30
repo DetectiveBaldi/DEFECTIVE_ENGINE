@@ -72,6 +72,8 @@ class BaseOptionItem<T> extends FlxSpriteGroup
 
         background.antialiasing = true;
 
+        background.color = background.color.getDarkened(0.25);
+
         background.frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png("assets/images/menus/BaseOptionItem/background")), Paths.xml("assets/images/menus/BaseOptionItem/background"));
 
         background.animation.addByPrefix("background", "background", 12.0);
@@ -86,7 +88,7 @@ class BaseOptionItem<T> extends FlxSpriteGroup
 
         nameText.color = FlxColor.BLACK;
 
-        nameText.font = Paths.ttf("assets/fonts/Comic Sans MS");
+        nameText.font = Paths.ttf("assets/fonts/Ubuntu Regular");
 
         nameText.alignment = LEFT;
 
