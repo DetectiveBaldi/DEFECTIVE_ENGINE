@@ -138,35 +138,43 @@ class OptionsMenu extends FlxState
 
         add(options);
 
-        var bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "GPU Caching", "If checked, bitmap pixel data is disposed from RAM\nwhere applicable (may require restarting the application).", "gpuCaching");
+        var bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Auto Pause", "If checked, the game will freeze when window focus is lost.", "autoPause");
+
+        bool.onUpdate.add((value:Bool) -> FlxG.autoPause = value);
 
         bool.setPosition(FlxG.width - bool.width + 100.0, 50.0);
 
         options.add(bool);
 
-        var _bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Sound Streaming", "If checked, audio is loaded progressively\nwhere applicable (may require restarting the application).", "soundStreaming");
+        var _bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "GPU Caching", "If checked, bitmap pixel data is disposed from RAM\nwhere applicable (may require restarting the application).", "gpuCaching");
 
         _bool.setPosition(FlxG.width - _bool.width + 100.0, bool.y + bool.height);
 
         options.add(_bool);
 
-        var __bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Downscroll", "If checked, flips the strum lines' vertical position.", "downscroll");
+        var __bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Sound Streaming", "If checked, audio is loaded progressively\nwhere applicable (may require restarting the application).", "soundStreaming");
 
         __bool.setPosition(FlxG.width - __bool.width + 100.0, _bool.y + _bool.height);
 
         options.add(__bool);
 
-        var ___bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Middlescroll", "If checked, centers the playable strum line and\nhides the opponent's.", "middlescroll");
+        var ___bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Downscroll", "If checked, flips the strum lines' vertical position.", "downscroll");
 
         ___bool.setPosition(FlxG.width - ___bool.width + 100.0, __bool.y + __bool.height);
 
         options.add(___bool);
 
-        var ____bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Ghost Tapping", "If unchecked, pressing an input with no notes\non screen will cause damage.", "ghostTapping");
+        var ____bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Middlescroll", "If checked, centers the playable strum line and\nhides the opponent's.", "middlescroll");
 
         ____bool.setPosition(FlxG.width - ____bool.width + 100.0, ___bool.y + ___bool.height);
 
         options.add(____bool);
+
+        var _____bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Ghost Tapping", "If unchecked, pressing an input with no notes\non screen will cause damage.", "ghostTapping");
+
+        _____bool.setPosition(FlxG.width - _____bool.width + 100.0, ____bool.y + ____bool.height);
+
+        options.add(_____bool);
 
         option = 0;
 
@@ -198,7 +206,7 @@ class OptionsMenu extends FlxState
 
         descText.alignment = LEFT;
 
-        descText.setPosition(descriptor.x + 300.0, descriptor.getMidpoint().y - descText.height * 0.5 - 15.0);
+        descText.setPosition(descriptor.x + 300.0, descriptor.getMidpoint().y - descText.height * 0.5 - 35.0);
 
         add(descText);
 
@@ -233,7 +241,10 @@ class OptionsMenu extends FlxState
                 FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
         }
 
-        if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.UP)
+        if (FlxG.mouse.wheel != 0.0)
+            option = MathUtil.boundInt(option - FlxG.mouse.wheel, 0, options.members.length - 1);
+
+        if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.UP || FlxG.mouse.wheel != 0.0)
             descText.text = options.members[option].description;
 
         if (FlxG.keys.justPressed.ESCAPE)

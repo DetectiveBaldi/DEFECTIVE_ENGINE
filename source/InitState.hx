@@ -45,8 +45,6 @@ class InitState extends FlxState
 
         FocusManager.instance.autoFocus = false;
 
-        FlxG.autoPause = false;
-
         FlxG.fixedTimestep = false;
 
         FlxG.updateFramerate = MathUtil.maxInt(FlxG.stage.window.displayMode.refreshRate, 144);
@@ -54,8 +52,6 @@ class InitState extends FlxState
         FlxG.drawFramerate = MathUtil.maxInt(FlxG.stage.window.displayMode.refreshRate, 144);
 
         FlxG.mouse.visible = false;
-
-        FlxG.console.autoPause = false;
         
         FlxG.console.registerClass(Options);
 
@@ -64,6 +60,10 @@ class InitState extends FlxState
         AssetMan.init();
 
         Options.init();
+
+        FlxG.autoPause = Options.autoPause;
+
+        FlxG.console.autoPause = Options.autoPause;
 
         FlxG.plugins.addPlugin(logger = new Logger());
         

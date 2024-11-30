@@ -4,6 +4,22 @@ import flixel.FlxG;
 
 class Options
 {
+    public static var autoPause(get, set):Bool;
+
+    @:noCompletion
+    static function get_autoPause():Bool
+    {
+        return FlxG.save.data.options.autoPause ??= false;
+    }
+
+    @:noCompletion
+    static function set_autoPause(_autoPause:Bool):Bool
+    {
+        FlxG.save.data.options.autoPause = _autoPause;
+
+        return _autoPause;
+    }
+
     public static var gpuCaching(get, set):Bool;
 
     @:noCompletion
