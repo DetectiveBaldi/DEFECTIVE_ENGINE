@@ -12,7 +12,6 @@ import flixel.sound.FlxSound;
 
 import flixel.text.FlxText;
 
-import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 
 import flixel.util.FlxColor;
@@ -221,18 +220,7 @@ class OptionsMenu extends FlxState
             option = MathUtil.boundInt(option + 1, 0, options.members.length - 1);
 
             if (_option != options.members.length - 1.0)
-            {
                 FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
-
-                var targetY:Float = 0.0;
-
-                for (i in 0 ... option)
-                    targetY -= options.members[i].height;
-
-                FlxTween.cancelTweensOf(options, ["y"]);
-
-                FlxTween.tween(options, {y: targetY}, 0.35, {ease: FlxEase.smoothStepOut});
-            }
         }
 
         if (FlxG.keys.justPressed.UP)
@@ -242,18 +230,7 @@ class OptionsMenu extends FlxState
             option = MathUtil.boundInt(option - 1, 0, options.members.length - 1);
 
             if (_option != 0)
-            {
                 FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
-
-                var targetY:Float = 0.0;
-
-                for (i in 0 ... option)
-                    targetY -= options.members[i].height;
-
-                FlxTween.cancelTweensOf(options, ["y"]);
-
-                FlxTween.tween(options, {y: targetY}, 0.35, {ease: FlxEase.smoothStepIn});
-            }
         }
 
         if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.UP)
@@ -261,5 +238,12 @@ class OptionsMenu extends FlxState
 
         if (FlxG.keys.justPressed.ESCAPE)
             FlxG.switchState(() -> new Level1());
+
+        var targetY:Float = 0.0;
+
+        for (i in 0 ... option)
+            targetY -= (i < options.members.length - 3.0 ? options.members[i].height : 0.0);
+
+        options.y = targetY + (options.y - targetY) * Math.exp(-15.0 * elapsed);
     }
 }
