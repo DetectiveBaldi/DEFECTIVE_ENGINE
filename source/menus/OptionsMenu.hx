@@ -54,6 +54,9 @@ class OptionsMenu extends FlxState
 
             if (Std.isOfType(_option, BoolOptionItem))
                 cast (_option, BoolOptionItem).enabled = false;
+
+            if (Std.isOfType(_option, KeybindOptionItem))
+                cast (_option, KeybindOptionItem).enabled = false;
         }
 
         var _option:BaseOptionItem<Dynamic> = options.members[option];
@@ -62,6 +65,9 @@ class OptionsMenu extends FlxState
 
         if (Std.isOfType(_option, BoolOptionItem))
             cast (_option, BoolOptionItem).enabled = true;
+
+        if (Std.isOfType(_option, KeybindOptionItem))
+            cast (_option, KeybindOptionItem).enabled = true;
 
         return option;
     }
@@ -158,9 +164,33 @@ class OptionsMenu extends FlxState
 
         options.add(__bool);
 
+        var keybind:KeybindOptionItem = new KeybindOptionItem(0.0, 0.0, "Left Note", "Keybindings for the first note in the strum line.", "NOTE:LEFT");
+
+        keybind.setPosition(FlxG.width - keybind.width + 150.0, __bool.y + __bool.height);
+
+        options.add(keybind);
+
+        var _keybind:KeybindOptionItem = new KeybindOptionItem(0.0, 0.0, "Down Note", "Keybindings for the second note in the strum line.", "NOTE:DOWN");
+
+        _keybind.setPosition(FlxG.width - _keybind.width + 150.0, keybind.y + keybind.height);
+
+        options.add(_keybind);
+
+        var __keybind:KeybindOptionItem = new KeybindOptionItem(0.0, 0.0, "Up Note", "Keybindings for the third note in the strum line.", "NOTE:UP");
+
+        __keybind.setPosition(FlxG.width - __keybind.width + 150.0, _keybind.y + _keybind.height);
+
+        options.add(__keybind);
+
+        var ___keybind:KeybindOptionItem = new KeybindOptionItem(0.0, 0.0, "Right Note", "Keybindings for the fourth note in the strum line.", "NOTE:RIGHT");
+
+        ___keybind.setPosition(FlxG.width - ___keybind.width + 150.0, __keybind.y + __keybind.height);
+
+        options.add(___keybind);
+
         var ___bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Downscroll", "If checked, flips the strum lines' vertical position.", "downscroll");
 
-        ___bool.setPosition(FlxG.width - ___bool.width + 100.0, __bool.y + __bool.height);
+        ___bool.setPosition(FlxG.width - ___bool.width + 100.0, ___keybind.y + ___keybind.height);
 
         options.add(___bool);
 
@@ -219,21 +249,21 @@ class OptionsMenu extends FlxState
     {
         super.update(elapsed);
 
-        if (FlxG.keys.justPressed.DOWN || FlxG.mouse.wheel == -1.0)
+        if (FlxG.keys.justPressed.DOWN)
         {
             FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
 
             option = FlxMath.wrap(option + 1, 0, options.members.length - 1);
         }
 
-        if (FlxG.keys.justPressed.UP || FlxG.mouse.wheel == 1.0)
+        if (FlxG.keys.justPressed.UP)
         {
             FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
 
             option = FlxMath.wrap(option - 1, 0, options.members.length - 1);
         }
 
-        if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.UP || FlxG.mouse.wheel != 0.0)
+        if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.UP)
             descText.text = options.members[option].description;
 
         if (FlxG.keys.justPressed.ESCAPE)

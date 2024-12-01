@@ -2,6 +2,8 @@ package core;
 
 import flixel.FlxG;
 
+import flixel.input.keyboard.FlxKey;
+
 class Options
 {
     public static var autoPause(get, set):Bool;
@@ -51,6 +53,24 @@ class Options
 
         return soundStreaming;
     }
+
+    public static var keybinds(get, set):Map<String, Array<Int>>;
+
+    @:noCompletion
+    static function get_keybinds():Map<String, Array<Int>>
+    {
+        return FlxG.save.data.options.keybinds ??= ["NOTE:LEFT" => [65, 37], "NOTE:DOWN" => [83, 40], "NOTE:UP" => [87, 38], "NOTE:RIGHT" => [68, 39]];
+    }
+
+    @:noCompletion
+    static function set_keybinds(_keybinds:Map<String, Array<Int>>):Map<String, Array<Int>>
+    {
+        FlxG.save.data.options.keybinds = _keybinds;
+
+        return keybinds;
+    }
+
+    @:noCompletion
 
     public static var downscroll(get, set):Bool;
 

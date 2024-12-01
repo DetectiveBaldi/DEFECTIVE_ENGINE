@@ -46,6 +46,8 @@ class BaseOptionItem<T> extends FlxSpriteGroup
     {
         Reflect.setProperty(Options, option, _value);
 
+        onUpdate.dispatch(_value);
+
         return value;
     }
 
@@ -93,14 +95,5 @@ class BaseOptionItem<T> extends FlxSpriteGroup
         nameText.setPosition(background.x + 48.0, background.getMidpoint().y - nameText.height * 0.5);
 
         add(nameText);
-    }
-
-    public function set(value:T):T
-    {
-        this.value = value;
-
-        onUpdate.dispatch(value);
-
-        return value;
     }
 }

@@ -101,7 +101,7 @@ class GameState extends SteppingState
 
     public var healthBar:HealthBar;
 
-    public var scoreTxt:FlxText;
+    public var scoreText:FlxText;
 
     public var chart:Chart;
 
@@ -239,19 +239,19 @@ class GameState extends SteppingState
 
         add(healthBar);
 
-        scoreTxt = new FlxText(0.0, 0.0, FlxG.width, "Points: 0 | Misses: 0 | Rating: 0.0%", 24);
+        scoreText = new FlxText(0.0, 0.0, FlxG.width, "Points: 0 | Misses: 0 | Rating: 0.0%", 24);
 
-        scoreTxt.camera = hudCamera;
+        scoreText.camera = hudCamera;
 
-        scoreTxt.font = Paths.ttf("assets/fonts/VCR OSD Mono");
+        scoreText.font = Paths.ttf("assets/fonts/VCR OSD Mono");
 
-        scoreTxt.alignment = CENTER;
+        scoreText.alignment = CENTER;
 
-        scoreTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 2.2);
+        scoreText.setBorderStyle(OUTLINE, FlxColor.BLACK, 2.2);
 
-        scoreTxt.setPosition((FlxG.width - scoreTxt.width) * 0.5, Options.downscroll ? 25.0 : (FlxG.height - scoreTxt.height) - 25.0);
+        scoreText.setPosition((FlxG.width - scoreText.width) * 0.5, Options.downscroll ? 25.0 : (FlxG.height - scoreText.height) - 25.0);
 
-        add(scoreTxt);
+        add(scoreText);
 
         loadChart(FlxStringUtil.getClassName(this, true));
 
@@ -558,7 +558,7 @@ class GameState extends SteppingState
 
                 healthBar.value += judgement.health;
 
-                scoreTxt.text = 'Points: ${points} | Misses: ${misses} | Rating: ${StringUtil.appendDecimal(FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2))}%';
+                scoreText.text = 'Points: ${points} | Misses: ${misses} | Rating: ${StringUtil.appendDecimal(FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2))}%';
 
                 if (judgement.name == "Epic!" || judgement.name == "Sick!")
                 {
@@ -595,7 +595,7 @@ class GameState extends SteppingState
 
         healthBar.value -= 3.5;
 
-        scoreTxt.text = 'Points: ${points} | Misses: ${misses} | Rating: ${StringUtil.appendDecimal(FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2))}%';
+        scoreText.text = 'Points: ${points} | Misses: ${misses} | Rating: ${StringUtil.appendDecimal(FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2))}%';
 
         if (mainVocals != null)
             mainVocals.volume = 0.0;
@@ -704,7 +704,7 @@ class GameState extends SteppingState
 
         healthBar.value -= 3.5;
 
-        scoreTxt.text = 'Points: ${points} | Misses: ${misses} | Rating: ${StringUtil.appendDecimal(FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2))}%';
+        scoreText.text = 'Points: ${points} | Misses: ${misses} | Rating: ${StringUtil.appendDecimal(FlxMath.roundDecimal((bonus / (hits + misses)) * 100, 2))}%';
 
         if (mainVocals != null)
             mainVocals.volume = 0.0;

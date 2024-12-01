@@ -43,15 +43,10 @@ class BoolOptionItem extends BaseOptionItem<Bool>
         super.update(elapsed);
         
         if ((FlxG.keys.justPressed.ENTER || FlxG.mouse.justPressed) && enabled)
-            set(!value);
-    }
+        {
+            value = !value;
 
-    override function set(value:Bool):Bool
-    {
-        super.set(value);
-
-        checkbox.animation.play(value ? "check" : "uncheck");
-
-        return value;
+            checkbox.animation.play(value ? "check" : "uncheck");
+        }
     }
 }

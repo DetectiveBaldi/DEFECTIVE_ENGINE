@@ -14,6 +14,7 @@ import flixel.math.FlxPoint;
 import core.AssetMan;
 import core.Conductor;
 import core.Inputs;
+import core.Options;
 import core.Paths;
 
 using StringTools;
@@ -69,13 +70,13 @@ class Character extends FlxSprite
 
         inputs =
         [
-            new Input([90, 65, 37]),
+            new Input(Options.keybinds["NOTE:LEFT"]),
 
-            new Input([88, 83, 40]),
+            new Input(Options.keybinds["NOTE:DOWN"]),
 
-            new Input([190, 87, 38]),
+            new Input(Options.keybinds["NOTE:UP"]),
 
-            new Input([191, 68, 39])
+            new Input(Options.keybinds["NOTE:RIGHT"])
         ];
         
         this.config = config;
