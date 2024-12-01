@@ -146,7 +146,12 @@ class OptionsMenu extends FlxState
 
         var bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Auto Pause", "If checked, the game will freeze when window focus is lost.", "autoPause");
 
-        bool.onUpdate.add((value:Bool) -> FlxG.autoPause = value);
+        bool.onUpdate.add((value:Bool) -> 
+        {
+            FlxG.autoPause = value;
+
+            FlxG.console.autoPause = value;
+        });
 
         bool.setPosition(FlxG.width - bool.width + 100.0, 50.0);
 
