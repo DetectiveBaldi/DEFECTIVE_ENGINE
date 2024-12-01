@@ -35,8 +35,10 @@ class Strum extends FlxSprite
     public var config(default, set):StrumConfig;
 
     @:noCompletion
-    function set_config(config:StrumConfig):StrumConfig
+    function set_config(_config:StrumConfig):StrumConfig
     {
+        config = _config;
+
         switch (config.format ?? "".toLowerCase():String)
         {
             case "sparrow":
@@ -57,7 +59,7 @@ class Strum extends FlxSprite
 
         antialiasing = config.antialiasing ?? true;
 
-        return this.config = config;
+        return config;
     }
 
     public var direction:Int;

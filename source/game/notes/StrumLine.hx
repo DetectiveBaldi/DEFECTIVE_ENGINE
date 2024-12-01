@@ -35,12 +35,14 @@ class StrumLine extends FlxGroup
     public var spacing(default, set):Float;
 
     @:noCompletion
-    function set_spacing(spacing:Float):Float
+    function set_spacing(_spacing:Float):Float
     {   
+        spacing = _spacing;
+
         for (i in 0 ... strums.members.length)
             strums.members[i].x = strums.x + spacing * i;
 
-        return this.spacing = spacing;
+        return spacing;
     }
 
     public var notes:FlxTypedGroup<Note>;

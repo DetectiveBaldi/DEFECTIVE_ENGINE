@@ -42,9 +42,9 @@ class OptionsMenu extends FlxState
     public var option(default, set):Int;
 
     @:noCompletion
-    function set_option(option:Int):Int
+    function set_option(_option:Int):Int
     {
-        this.option = option;
+        option = _option;
 
         for (i in 0 ... options.members.length)
         {

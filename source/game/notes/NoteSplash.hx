@@ -33,8 +33,10 @@ class NoteSplash extends FlxSprite
     public var config(default, set):NoteSplashConfig;
 
     @:noCompletion
-    function set_config(config:NoteSplashConfig):NoteSplashConfig
+    function set_config(_config:NoteSplashConfig):NoteSplashConfig
     {
+        config = _config;
+
         switch (config.format ?? "".toLowerCase():String)
         {
             case "sparrow":
@@ -69,7 +71,7 @@ class NoteSplash extends FlxSprite
             }
         }
 
-        return this.config = config;
+        return config;
     }
 
     public var direction:Int;

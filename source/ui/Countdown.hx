@@ -26,13 +26,17 @@ class Countdown extends FlxGroup
     public var conductor(default, set):Conductor;
 
     @:noCompletion
-    function set_conductor(conductor:Conductor):Conductor
+    function set_conductor(_conductor:Conductor):Conductor
     {
-        this.conductor?.beatHit?.remove(beatHit);
+        var __conductor:Conductor = conductor;
+
+        conductor = _conductor;
 
         conductor?.beatHit?.add(beatHit);
 
-        return this.conductor = conductor;
+        __conductor?.beatHit?.remove(beatHit);
+
+        return conductor;
     }
 
     public var started:Bool;

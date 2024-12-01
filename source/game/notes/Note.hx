@@ -28,8 +28,10 @@ class Note extends FlxSprite
     public var config(default, set):NoteConfig;
     
     @:noCompletion
-    function set_config(config:NoteConfig):NoteConfig
+    function set_config(_config:NoteConfig):NoteConfig
     {
+        config = _config;
+
         switch (config.format ?? "".toLowerCase():String)
         {
             case "sparrow":
@@ -48,9 +50,9 @@ class Note extends FlxSprite
             animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldTail", Note.directions[i].toLowerCase() + "HoldTail0", 24.0, false);
         }
 
-        antialiasing = config.antialiasing ?? true;
+        antialiasing = _config.antialiasing ?? true;
 
-        return this.config = config;
+        return config;
     }
 
     public var time:Float;

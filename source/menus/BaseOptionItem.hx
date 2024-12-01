@@ -20,9 +20,9 @@ class BaseOptionItem<T> extends FlxSpriteGroup
     public var name(default, set):String;
 
     @:noCompletion
-    function set_name(name:String):String
+    function set_name(_name:String):String
     {
-        this.name = name;
+        name = _name;
 
         nameText.text = name;
 
@@ -42,9 +42,9 @@ class BaseOptionItem<T> extends FlxSpriteGroup
     }
 
     @:noCompletion
-    function set_value(value:T):T
+    function set_value(_value:T):T
     {
-        Reflect.setProperty(Options, option, value);
+        Reflect.setProperty(Options, option, _value);
 
         return value;
     }

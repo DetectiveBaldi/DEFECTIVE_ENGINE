@@ -17,7 +17,7 @@ class Options
     {
         FlxG.save.data.options.autoPause = _autoPause;
 
-        return _autoPause;
+        return autoPause;
     }
 
     public static var gpuCaching(get, set):Bool;
@@ -33,7 +33,7 @@ class Options
     {
         FlxG.save.data.options.gpuCaching = _gpuCaching;
 
-        return _gpuCaching;
+        return gpuCaching;
     }
 
     public static var soundStreaming(get, set):Bool;
@@ -49,7 +49,7 @@ class Options
     {
         FlxG.save.data.options.soundStreaming = _soundStreaming;
 
-        return _soundStreaming;
+        return soundStreaming;
     }
 
     public static var downscroll(get, set):Bool;
@@ -65,7 +65,7 @@ class Options
     {
         FlxG.save.data.options.downscroll = _downscroll;
 
-        return _downscroll;
+        return downscroll;
     }
 
     public static var middlescroll(get, set):Bool;
@@ -81,7 +81,7 @@ class Options
     {
         FlxG.save.data.options.middlescroll = _middlescroll;
 
-        return _middlescroll;
+        return middlescroll;
     }
 
     public static var ghostTapping(get, set):Bool;
@@ -97,7 +97,7 @@ class Options
     {
         FlxG.save.data.options.ghostTapping = _ghostTapping;
 
-        return _ghostTapping;
+        return ghostTapping;
     }
 
     public static var gameModifiers(get, set):Map<String, Dynamic>;
@@ -113,7 +113,7 @@ class Options
     {
         FlxG.save.data.options.gameModifiers = _gameModifiers;
 
-        return _gameModifiers;
+        return gameModifiers;
     }
 
     public static function init():Void

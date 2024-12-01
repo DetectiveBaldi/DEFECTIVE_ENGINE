@@ -27,9 +27,9 @@ class ProgressBar extends FlxSpriteGroup
     }
 
     @:noCompletion
-    function set_percent(percent:Float):Float
+    function set_percent(_percent:Float):Float
     {
-        value = (range / max) * percent;
+        value = (range / max) * _percent;
 
         return percent;
     }
@@ -37,11 +37,9 @@ class ProgressBar extends FlxSpriteGroup
     public var value(default, set):Float;
 
     @:noCompletion
-    function set_value(value:Float):Float
+    function set_value(_value:Float):Float
     {
-        value = FlxMath.bound(value, min, max);
-
-        this.value = value;
+        value = FlxMath.bound(_value, min, max);
 
         updateClipping();
 
@@ -77,9 +75,9 @@ class ProgressBar extends FlxSpriteGroup
     public var fillDirection(default, set):ProgressBarFillDirection;
 
     @:noCompletion
-    function set_fillDirection(fillDirection:ProgressBarFillDirection):ProgressBarFillDirection
+    function set_fillDirection(_fillDirection:ProgressBarFillDirection):ProgressBarFillDirection
     {
-        this.fillDirection = fillDirection;
+        fillDirection = _fillDirection;
 
         updateClipping();
 
@@ -95,9 +93,9 @@ class ProgressBar extends FlxSpriteGroup
     public var borderSize(default, set):Int;
 
     @:noCompletion
-    function set_borderSize(borderSize:Int):Int
+    function set_borderSize(_borderSize:Int):Int
     {
-        this.borderSize = borderSize;
+        borderSize = _borderSize;
 
         border.graphic.bitmap.fillRect(new Rectangle(0.0, 0.0, barWidth, barHeight), FlxColor.BLACK);
 
@@ -260,9 +258,9 @@ class ProgressBar extends FlxSpriteGroup
 class ProgressBarSideSprite extends FlxSprite
 {
     @:noCompletion
-    override function set_clipRect(clipRect:FlxRect):FlxRect
+    override function set_clipRect(_clipRect:FlxRect):FlxRect
     {
-        this.clipRect = clipRect;
+        clipRect = _clipRect;
 
 		frame = frames?.frames[animation.frameIndex];
 

@@ -13,19 +13,23 @@ class HealthBar extends ProgressBar
     public var conductor(default, set):Conductor;
 
     @:noCompletion
-    function set_conductor(conductor:Conductor):Conductor
+    function set_conductor(_conductor:Conductor):Conductor
     {
-        this.conductor?.beatHit?.remove(beatHit);
+        var __conductor:Conductor = conductor;
+
+        conductor = _conductor;
 
         conductor?.beatHit?.add(beatHit);
 
-        return this.conductor = conductor;
+        __conductor?.beatHit?.remove(beatHit);
+
+        return conductor;
     }
 
     @:noCompletion
-    override function set_fillDirection(fillDirection:ProgressBarFillDirection):ProgressBarFillDirection
+    override function set_fillDirection(_fillDirection:ProgressBarFillDirection):ProgressBarFillDirection
     {
-        super.set_fillDirection(fillDirection);
+        super.set_fillDirection(_fillDirection);
 
         if (opponentIcon != null)
             opponentIcon.flipX = fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM;
@@ -39,9 +43,9 @@ class HealthBar extends ProgressBar
     public var opponentIcon(default, set):HealthBarIcon;
 
     @:noCompletion
-    function set_opponentIcon(opponentIcon:HealthBarIcon):HealthBarIcon
+    function set_opponentIcon(_opponentIcon:HealthBarIcon):HealthBarIcon
     {
-        this.opponentIcon = opponentIcon;
+        opponentIcon = _opponentIcon;
 
         var opponentIconHealthBarColor:String = opponentIcon.config.healthBarColor;
 
@@ -55,9 +59,9 @@ class HealthBar extends ProgressBar
     public var playerIcon(default, set):HealthBarIcon;
 
     @:noCompletion
-    function set_playerIcon(playerIcon:HealthBarIcon):HealthBarIcon
+    function set_playerIcon(_playerIcon:HealthBarIcon):HealthBarIcon
     {
-        this.playerIcon = playerIcon;
+        playerIcon = _playerIcon;
 
         var playerIconHealthBarColor:String = playerIcon.config.healthBarColor;
 
