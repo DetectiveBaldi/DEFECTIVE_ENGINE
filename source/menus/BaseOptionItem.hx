@@ -9,13 +9,11 @@ import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 
 import flixel.util.FlxColor;
-import flixel.util.FlxSignal.FlxTypedSignal;
 
 import core.AssetMan;
-import core.Options;
 import core.Paths;
 
-class BaseOptionItem<T> extends FlxSpriteGroup
+class BaseOptionItem extends FlxSpriteGroup
 {
     public var name(default, set):String;
 
@@ -31,33 +29,11 @@ class BaseOptionItem<T> extends FlxSpriteGroup
 
     public var description:String;
 
-    public var option:String;
-
-    public var value(get, set):T;
-
-    @:noCompletion
-    function get_value():T
-    {
-        return Reflect.getProperty(Options, option);
-    }
-
-    @:noCompletion
-    function set_value(_value:T):T
-    {
-        Reflect.setProperty(Options, option, _value);
-
-        onUpdate.dispatch(_value);
-
-        return value;
-    }
-
-    public var onUpdate:FlxTypedSignal<(value:T)->Void>;
-
     public var background:FlxSprite;
 
     public var nameText:FlxText;
 
-    public function new(x:Float = 0.0, y:Float = 0.0, name:String, description:String, option:String):Void
+    public function new(x:Float = 0.0, y:Float = 0.0, name:String, description:String):Void
     {
         super(x, y);
 
@@ -65,10 +41,6 @@ class BaseOptionItem<T> extends FlxSpriteGroup
             this.name = name;
 
         this.description = description;
-
-        this.option = option;
-
-        onUpdate = new FlxTypedSignal<(value:T)->Void>();
 
         background = new FlxSprite();
 
@@ -90,9 +62,9 @@ class BaseOptionItem<T> extends FlxSpriteGroup
 
         nameText.font = Paths.ttf("assets/fonts/Ubuntu Regular");
 
-        nameText.alignment = LEFT;
+        nameText.alignment = CENTER;
 
-        nameText.setPosition(background.x + 48.0, background.getMidpoint().y - nameText.height * 0.5);
+        nameText.setPosition(background.getMidpoint().x - nameText.width * 0.5, background.getMidpoint().y - nameText.height * 0.5);
 
         add(nameText);
     }

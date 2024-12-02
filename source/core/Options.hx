@@ -2,8 +2,6 @@ package core;
 
 import flixel.FlxG;
 
-import flixel.input.keyboard.FlxKey;
-
 class Options
 {
     public static var autoPause(get, set):Bool;
@@ -69,8 +67,6 @@ class Options
 
         return keybinds;
     }
-
-    @:noCompletion
 
     public static var downscroll(get, set):Bool;
 

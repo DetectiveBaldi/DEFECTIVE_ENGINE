@@ -1,7 +1,5 @@
 package menus;
 
-import openfl.events.KeyboardEvent;
-
 import flixel.FlxG;
 import flixel.FlxSprite;
 
@@ -16,7 +14,7 @@ import core.Paths;
 
 using util.ArrayUtil;
 
-class KeybindOptionItem extends BaseOptionItem<Array<Int>>
+class KeybindOptionItem extends ConfigurableOptionItem<Array<Int>>
 {
     override function get_value():Array<Int>
     {
@@ -44,7 +42,7 @@ class KeybindOptionItem extends BaseOptionItem<Array<Int>>
 
         nameText.size = 36;
 
-        nameText.setPosition(background.x + 48.0, background.getMidpoint().y - nameText.height * 0.5);
+        nameText.setPosition(background.getMidpoint().x - nameText.width * 0.5, background.getMidpoint().y - nameText.height * 0.5);
 
         enabled = true;
 
@@ -90,13 +88,10 @@ class KeybindOptionItem extends BaseOptionItem<Array<Int>>
                 if (FlxG.keys.justPressed.RIGHT)
                     bindIndex = FlxMath.wrap(bindIndex + 1, 0, 1);
 
-                if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.UP)
-                    bindIndex = 0;
-
                 if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT)
                     FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
 
-                if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.UP)
+                if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT)
                 {
                     nameText.text = switch (bindIndex:Int)
                     {
@@ -153,12 +148,6 @@ class KeybindOptionItem extends BaseOptionItem<Array<Int>>
     override function destroy():Void
     {
         super.destroy();
-
-        @:privateAccess
-            FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, _keyboard.onKeyDown);
-
-        @:privateAccess
-            FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, _keyboard.onKeyUp);
 
         FlxG.inputs.remove(_keyboard);
 

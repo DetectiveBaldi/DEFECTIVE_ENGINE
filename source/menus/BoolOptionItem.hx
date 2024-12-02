@@ -9,7 +9,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import core.Paths;
 import core.AssetMan;
 
-class BoolOptionItem extends BaseOptionItem<Bool>
+class BoolOptionItem extends ConfigurableOptionItem<Bool>
 {
     public var enabled:Bool;
 
