@@ -9,7 +9,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import core.Paths;
 import core.AssetMan;
 
-class BoolOptionItem extends ConfigurableOptionItem<Bool>
+class BoolOptionItem extends VariableOptionItem<Bool>
 {
     public var enabled:Bool;
 
@@ -35,7 +35,7 @@ class BoolOptionItem extends ConfigurableOptionItem<Bool>
 
         checkbox.setPosition(-125.0, background.height - checkbox.height - 10.0);
 
-        insert(0, checkbox);
+        add(checkbox);
     }
 
     override function update(elapsed:Float):Void

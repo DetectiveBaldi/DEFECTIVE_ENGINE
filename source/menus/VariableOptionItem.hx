@@ -4,7 +4,7 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 
 import core.Options;
 
-class ConfigurableOptionItem<T> extends BaseOptionItem
+class VariableOptionItem<T> extends BaseOptionItem
 {
     public var option:String;
 

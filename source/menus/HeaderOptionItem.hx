@@ -2,6 +2,8 @@ package menus;
 
 import flixel.FlxSprite;
 
+import flixel.tweens.FlxTween;
+
 import core.AssetMan;
 import core.Paths;
 
@@ -22,5 +24,14 @@ class HeaderOptionItem extends BaseOptionItem
         gear.setPosition(-165.0, background.getMidpoint().y - gear.height * 0.5);
 
         add(gear);
+
+        FlxTween.angle(gear, 0.0, -360.0, 10.0, {type: LOOPING});
+    }
+
+    override function destroy():Void
+    {
+        super.destroy();
+
+        FlxTween.cancelTweensOf(gear);
     }
 }

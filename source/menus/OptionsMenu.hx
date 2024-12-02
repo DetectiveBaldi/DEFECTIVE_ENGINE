@@ -144,7 +144,7 @@ class OptionsMenu extends FlxState
 
         add(gear);
 
-        FlxTween.angle(gear, 0.0, 360.0, 5.0, {type: LOOPING});
+        FlxTween.angle(gear, 0.0, 360.0, 10.0, {type: LOOPING});
 
         options = new FlxTypedSpriteGroup<BaseOptionItem>();
 

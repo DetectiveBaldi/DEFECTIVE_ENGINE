@@ -14,7 +14,7 @@ import core.Paths;
 
 using util.ArrayUtil;
 
-class KeybindOptionItem extends ConfigurableOptionItem<Array<Int>>
+class KeybindOptionItem extends VariableOptionItem<Array<Int>>
 {
     override function get_value():Array<Int>
     {
@@ -66,14 +66,12 @@ class KeybindOptionItem extends ConfigurableOptionItem<Array<Int>>
 
         FlxG.inputs.addInput(_keyboard);
 
-        nameText.text = switch (bindIndex:Int)
-        {
-            case 1:
-                '${name}: ${FlxKey.toStringMap[value[0]]} (${FlxKey.toStringMap[value[1]]})';
+        bindIndex = 0;
 
-            default:
-                '${name}: (${FlxKey.toStringMap[value[0]]}) ${FlxKey.toStringMap[value[1]]}';
-        }
+        nameText.text = if (bindIndex == 0)
+            '${name}: (${FlxKey.toStringMap[value[0]]}) ${FlxKey.toStringMap[value[1]]}';
+        else
+            '${name}: ${FlxKey.toStringMap[value[0]]} (${FlxKey.toStringMap[value[1]]})';
     }
 
     override function update(elapsed:Float):Void
@@ -91,18 +89,13 @@ class KeybindOptionItem extends ConfigurableOptionItem<Array<Int>>
                     bindIndex = FlxMath.wrap(bindIndex + 1, 0, 1);
 
                 if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT)
+                {
                     FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
 
-                if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT)
-                {
-                    nameText.text = switch (bindIndex:Int)
-                    {
-                        case 1:
-                            '${name}: ${FlxKey.toStringMap[value[0]]} (${FlxKey.toStringMap[value[1]]})';
-
-                        default:
-                            '${name}: (${FlxKey.toStringMap[value[0]]}) ${FlxKey.toStringMap[value[1]]}';
-                    }
+                    nameText.text = if (bindIndex == 0)
+                        '${name}: (${FlxKey.toStringMap[value[0]]}) ${FlxKey.toStringMap[value[1]]}';
+                    else
+                        '${name}: ${FlxKey.toStringMap[value[0]]} (${FlxKey.toStringMap[value[1]]})';
                 }
 
                 if (FlxG.keys.justPressed.ENTER)
@@ -118,9 +111,7 @@ class KeybindOptionItem extends ConfigurableOptionItem<Array<Int>>
             }
             else
             {
-                var firstJustPressed:Int = _keyboard.firstJustPressed();
-
-                if (firstJustPressed != -1)
+                if (_keyboard.justPressed.ANY)
                 {
                     FlxG.keys.enabled = true;
 
@@ -128,18 +119,14 @@ class KeybindOptionItem extends ConfigurableOptionItem<Array<Int>>
 
                     FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
 
-                    value[bindIndex] = firstJustPressed;
+                    value[bindIndex] = _keyboard.firstJustPressed();
 
                     value = value;
 
-                    nameText.text = switch (bindIndex:Int)
-                    {
-                        case 1:
-                            '${name}: ${FlxKey.toStringMap[value[0]]} (${FlxKey.toStringMap[value[1]]})';
-
-                        default:
-                            '${name}: (${FlxKey.toStringMap[value[0]]}) ${FlxKey.toStringMap[value[1]]}';
-                    }
+                    nameText.text = if (bindIndex == 0)
+                        '${name}: (${FlxKey.toStringMap[value[0]]}) ${FlxKey.toStringMap[value[1]]}';
+                    else
+                        '${name}: ${FlxKey.toStringMap[value[0]]} (${FlxKey.toStringMap[value[1]]})';
 
                     _keyboard.enabled = false;
                 }
