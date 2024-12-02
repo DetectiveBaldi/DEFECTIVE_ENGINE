@@ -150,7 +150,7 @@ class OptionsMenu extends FlxState
 
         add(options);
 
-        var header:BaseOptionItem = new HeaderOptionItem(0.0, 0.0, "Window Settings", "");
+        var header:HeaderOptionItem = new HeaderOptionItem(0.0, 0.0, "Window", "");
 
         header.setPosition(FlxG.width - header.width + 165.0, 50.0);
 
@@ -169,13 +169,9 @@ class OptionsMenu extends FlxState
 
         options.add(bool);
 
-        var _header:BaseOptionItem = new HeaderOptionItem(0.0, 0.0, "Asset Management Settings", "");
+        var _header:HeaderOptionItem = new HeaderOptionItem(0.0, 0.0, "Asset Management", "");
 
-        _header.nameText.size = 36;
-
-        _header.setPosition(FlxG.width - header.width + 165.0, bool.y + bool.height);
-
-        _header.nameText.setPosition(_header.background.getMidpoint().x - _header.nameText.width * 0.5, _header.background.getMidpoint().y - _header.nameText.height * 0.5);
+        _header.setPosition(FlxG.width - _header.width + 165.0, bool.y + bool.height);
 
         options.add(_header);
 
@@ -191,7 +187,7 @@ class OptionsMenu extends FlxState
 
         options.add(__bool);
 
-        var __header:BaseOptionItem = new HeaderOptionItem(0.0, 0.0, "Keybind Settings", "");
+        var __header:HeaderOptionItem = new HeaderOptionItem(0.0, 0.0, "Keybinds", "");
 
         __header.setPosition(FlxG.width - __header.width + 165.0, __bool.y + __bool.height);
 
@@ -221,7 +217,7 @@ class OptionsMenu extends FlxState
 
         options.add(___keybind);
 
-        var ___header:BaseOptionItem = new HeaderOptionItem(0.0, 0.0, "Gameplay Settings", "");
+        var ___header:HeaderOptionItem = new HeaderOptionItem(0.0, 0.0, "Gameplay", "");
 
         ___header.setPosition(FlxG.width - ___header.width + 165.0, ___keybind.y + ___keybind.height);
 
