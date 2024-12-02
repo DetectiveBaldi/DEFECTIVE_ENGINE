@@ -19,6 +19,8 @@ class HeaderOptionItem extends BaseOptionItem
 
         gear = new FlxSprite(AssetMan.graphic(Paths.png("assets/images/menus/HeaderOptionItem/gear")));
 
+        gear.active = false;
+
         gear.antialiasing = true;
 
         gear.setPosition(-165.0, background.getMidpoint().y - gear.height * 0.5);

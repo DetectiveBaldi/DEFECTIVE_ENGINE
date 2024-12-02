@@ -48,6 +48,8 @@ class KeybindOptionItem extends ConfigurableOptionItem<Array<Int>>
 
         keyboard = new FlxSprite(0.0, 0.0, AssetMan.graphic(Paths.png("assets/images/menus/KeybindOptionItem/keyboard")));
 
+        keyboard.active = false;
+
         keyboard.antialiasing = true;
 
         keyboard.setGraphicSize(192.0, 192.0);

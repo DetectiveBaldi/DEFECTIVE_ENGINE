@@ -86,6 +86,8 @@ class OptionsMenu extends FlxState
 
         background = new FlxSprite(0.0, 0.0, AssetMan.graphic(Paths.png("assets/images/menus/OptionsMenu/background")));
 
+        background.active = false;
+
         background.antialiasing = true;
 
         background.color = background.color.getDarkened(0.25);
@@ -105,6 +107,8 @@ class OptionsMenu extends FlxState
         add(backdrop);
 
         gradient = new FlxSprite(AssetMan.graphic(Paths.png("assets/images/menus/OptionsMenu/gradient")));
+
+        gradient.active = false;
 
         gradient.antialiasing = true;
 
@@ -131,6 +135,8 @@ class OptionsMenu extends FlxState
         add(cornerCutout);
 
         gear = new FlxSprite(AssetMan.graphic(Paths.png("assets/images/menus/OptionsMenu/gear")));
+
+        gear.active = false;
 
         gear.antialiasing = true;
 
