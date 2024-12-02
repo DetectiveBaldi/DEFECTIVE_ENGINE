@@ -19,7 +19,7 @@ class BoolOptionItem extends ConfigurableOptionItem<Bool>
     {
         super(x, y, name, description, option);
 
-        enabled = true;
+        enabled = false;
 
         checkbox = new FlxSprite();
 

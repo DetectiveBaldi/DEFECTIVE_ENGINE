@@ -44,7 +44,7 @@ class KeybindOptionItem extends ConfigurableOptionItem<Array<Int>>
 
         nameText.setPosition(background.getMidpoint().x - nameText.width * 0.5, background.getMidpoint().y - nameText.height * 0.5);
 
-        enabled = true;
+        enabled = false;
 
         keyboard = new FlxSprite(0.0, 0.0, AssetMan.graphic(Paths.png("assets/images/menus/KeybindOptionItem/keyboard")));
 
