@@ -9,7 +9,6 @@ import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 
 import core.Conductor;
-import core.Options;
 
 import game.Chart;
 import game.Chart.LoadedNote;
@@ -88,6 +87,8 @@ class NoteSpawner extends FlxBasic
 
             noteHashes.push(hash);
 
+            var strumLine:StrumLine = game.strumLines.members[note.lane];
+
             var _note:Note = notes.recycle(Note, () -> new Note());
 
             _note.time = note.time;
@@ -108,9 +109,7 @@ class NoteSpawner extends FlxBasic
 
             _note.updateHitbox();
 
-            _note.setPosition((FlxG.width - _note.width) * 0.5, Options.downscroll ? -_note.height : hudCamera.height / hudCamera.zoom);
-
-            var strumLine:StrumLine = game.strumLines.members[note.lane];
+            _note.setPosition((FlxG.width - _note.width) * 0.5, strumLine.downscroll ? -_note.height : hudCamera.height / hudCamera.zoom);
 
             strumLine.notes.add(_note);
 
@@ -137,13 +136,13 @@ class NoteSpawner extends FlxBasic
                 if (k >= Math.round(_note.length / (crotchet * 0.25)) - 1.0)
                     sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
 
-                sustain.flipY = Options.downscroll;
+                sustain.flipY = strumLine.downscroll;
 
                 sustain.scale.set(0.7, 0.7);
 
                 sustain.updateHitbox();
 
-                sustain.setPosition((FlxG.width - sustain.width) * 0.5, Options.downscroll ? -sustain.height : hudCamera.height / hudCamera.zoom);
+                sustain.setPosition((FlxG.width - sustain.width) * 0.5, strumLine.downscroll ? -sustain.height : hudCamera.height / hudCamera.zoom);
 
                 strumLine.notes.add(sustain);
             }

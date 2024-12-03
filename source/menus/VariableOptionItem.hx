@@ -36,4 +36,11 @@ class VariableOptionItem<T> extends BaseOptionItem
 
         onUpdate = new FlxTypedSignal<(value:T)->Void>();
     }
+
+    override function destroy():Void
+    {
+        super.destroy();
+
+        onUpdate.destroy();
+    }
 }

@@ -55,6 +55,8 @@ class StrumLine extends FlxGroup
 
     public var onGhostTap:FlxTypedSignal<(direction:Int)->Void>;
 
+    public var downscroll:Bool;
+
     public var automated:Bool;
 
     public function new(game:GameState):Void
@@ -122,6 +124,8 @@ class StrumLine extends FlxGroup
         });
 
         onGhostTap = new FlxTypedSignal<(direction:Int)->Void>();
+
+        downscroll = Options.downscroll;
 
         automated = false;
     }
@@ -199,7 +203,7 @@ class StrumLine extends FlxGroup
 
             i--;
 
-            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * game.chartSpeed * note.speed * 0.45 * (Options.downscroll ? -1.0 : 1.0));
+            note.setPosition(strum.getMidpoint().x - note.width * 0.5, strum.y - (conductor.time - note.time) * game.chartSpeed * note.speed * 0.45 * (downscroll ? -1.0 : 1.0));
         }
     }
 
