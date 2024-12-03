@@ -7,8 +7,9 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 
 import core.AssetMan;
-import core.Conductor;
 import core.Paths;
+
+import music.Conductor;
 
 using StringTools;
 

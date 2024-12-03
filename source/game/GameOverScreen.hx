@@ -9,9 +9,9 @@ import flixel.util.FlxColor;
 import core.AssetMan;
 import core.Paths;
 
-import extendable.SteppingSubState;
+import music.MusicSubState;
 
-class GameOverScreen extends SteppingSubState
+class GameOverScreen extends MusicSubState
 {
     public var game:GameState;
 

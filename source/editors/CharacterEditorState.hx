@@ -90,7 +90,7 @@ class CharacterEditorState extends FlxState
 
         add(character);
 
-        framesIndex = character.config.frames.indexOf(character.config.frames.first((frames:CharacterFramesConfig) -> character.animation.name == frames.name));
+        framesIndex = character.config.frames.indexOf(character.config.frames.newest((frames:CharacterFramesConfig) -> character.animation.name == frames.name));
 
         ui = ComponentBuilder.fromFile("assets/data/editors/CharacterEditorState/ui.xml");
 
@@ -452,7 +452,7 @@ class CharacterEditorState extends FlxState
 
         var indices:Array<Int> = FlxStringUtil.toIntArray(ui.findComponent("textarea", TextArea).text) ?? new Array<Int>();
 
-        var frames:CharacterFramesConfig = character.config.frames.first((frames:CharacterFramesConfig) -> ui.findComponent("_____textfield", TextField).text == frames.name);
+        var frames:CharacterFramesConfig = character.config.frames.newest((frames:CharacterFramesConfig) -> ui.findComponent("_____textfield", TextField).text == frames.name);
 
         if (frames == null)
         {

@@ -12,10 +12,11 @@ import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 
 import core.AssetMan;
-import core.Conductor;
 import core.Inputs;
 import core.Options;
 import core.Paths;
+
+import music.Conductor;
 
 using StringTools;
 
@@ -35,9 +36,9 @@ class Character extends FlxSprite
 
         conductor = _conductor;
 
-        conductor?.beatHit?.add(beatHit);
+        conductor?.onBeatHit?.add(beatHit);
 
-        __conductor?.beatHit?.remove(beatHit);
+        __conductor?.onBeatHit?.remove(beatHit);
 
         return conductor;
     }
@@ -174,7 +175,7 @@ class Character extends FlxSprite
     {
         super.destroy();
 
-        conductor?.beatHit?.remove(beatHit);
+        conductor?.onBeatHit?.remove(beatHit);
     }
 
     override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint

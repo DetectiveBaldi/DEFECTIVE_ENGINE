@@ -1,13 +1,11 @@
-package extendable;
+package music;
 
 import flixel.FlxState;
-
-import core.Conductor;
 
 /**
  * An extended `flixel.FlxState` designed to support musical timing events.
  */
-class SteppingState extends FlxState
+class MusicState extends FlxState
 {
     public var conductor:Conductor;
 
@@ -17,11 +15,11 @@ class SteppingState extends FlxState
 
         conductor = new Conductor();
 
-        conductor.stepHit.add(stepHit);
+        conductor.onStepHit.add(stepHit);
 
-        conductor.beatHit.add(beatHit);
+        conductor.onBeatHit.add(beatHit);
         
-        conductor.sectionHit.add(sectionHit);
+        conductor.onMeasureHit.add(measureHit);
 
         add(conductor);
     }
@@ -36,7 +34,7 @@ class SteppingState extends FlxState
 
     }
 
-    public function sectionHit(section:Int):Void
+    public function measureHit(measure:Int):Void
     {
 
     }

@@ -4,7 +4,7 @@ import flixel.math.FlxMath;
 
 import flixel.util.FlxColor;
 
-import core.Conductor;
+import music.Conductor;
 
 import ui.ProgressBar;
 
@@ -19,9 +19,9 @@ class HealthBar extends ProgressBar
 
         conductor = _conductor;
 
-        conductor?.beatHit?.add(beatHit);
+        conductor?.onBeatHit?.add(beatHit);
 
-        __conductor?.beatHit?.remove(beatHit);
+        __conductor?.onBeatHit?.remove(beatHit);
 
         return conductor;
     }
@@ -112,7 +112,7 @@ class HealthBar extends ProgressBar
     {
         super.destroy();
 
-        conductor?.beatHit?.remove(beatHit);
+        conductor?.onBeatHit?.remove(beatHit);
     }
 
     public function beatHit(beat:Int):Void

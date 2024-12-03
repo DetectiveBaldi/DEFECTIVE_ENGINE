@@ -64,6 +64,8 @@ class InitState extends FlxState
         FlxG.autoPause = Options.autoPause;
 
         FlxG.console.autoPause = Options.autoPause;
+        
+        FlxG.fullscreen = Options.fullscreen;
 
         FlxG.plugins.addPlugin(logger = new Logger());
         

@@ -1,4 +1,4 @@
-package core;
+package music;
 
 import flixel.FlxBasic;
 
@@ -11,36 +11,12 @@ import game.Chart.LoadedTimeChange;
  */
 class Conductor extends FlxBasic
 {
-    public var unsafeStep(get, never):Float;
-
-    @:noCompletion
-    function get_unsafeStep():Float
-    {
-        return ((time - timeChange.time) / (crotchet * 0.25)) + timeChange.step;
-    }
-
-    public var unsafeBeat(get, never):Float;
-
-    @:noCompletion
-    function get_unsafeBeat():Float
-    {
-        return unsafeStep * 0.25;
-    }
-
-    public var unsafeSection(get, never):Float;
-
-    @:noCompletion
-    function get_unsafeSection():Float
-    {
-        return unsafeBeat * 0.25;
-    }
-    
     public var step(get, never):Int;
 
     @:noCompletion
     function get_step():Int
     {
-        return Math.floor(unsafeStep);
+        return Math.floor(((time - timeChange.time) / (crotchet * 0.25)) + timeChange.step);
     }
 
     public var beat(get, never):Int;
@@ -48,22 +24,22 @@ class Conductor extends FlxBasic
     @:noCompletion
     function get_beat():Int
     {
-        return Math.floor(unsafeBeat);
+        return Math.floor(step * 0.25);
     }
 
-    public var section(get, never):Int;
+    public var measure(get, never):Int;
 
     @:noCompletion
-    function get_section():Int
+    function get_measure():Int
     {
-        return Math.floor(unsafeSection);
+        return Math.floor(beat * 0.25);
     }
 
-    public var stepHit:FlxTypedSignal<(step:Int)->Void>;
+    public var onStepHit:FlxTypedSignal<(step:Int)->Void>;
 
-    public var beatHit:FlxTypedSignal<(beat:Int)->Void>;
+    public var onBeatHit:FlxTypedSignal<(beat:Int)->Void>;
 
-    public var sectionHit:FlxTypedSignal<(section:Int)->Void>;
+    public var onMeasureHit:FlxTypedSignal<(measure:Int)->Void>;
 
     public var tempo:Float;
 
@@ -87,11 +63,11 @@ class Conductor extends FlxBasic
 
         visible = false;
 
-        stepHit = new FlxTypedSignal<(step:Int)->Void>();
+        onStepHit = new FlxTypedSignal<(step:Int)->Void>();
 
-        beatHit = new FlxTypedSignal<(beat:Int)->Void>();
+        onBeatHit = new FlxTypedSignal<(beat:Int)->Void>();
 
-        sectionHit = new FlxTypedSignal<(section:Int)->Void>();
+        onMeasureHit = new FlxTypedSignal<(measure:Int)->Void>();
 
         tempo = 150.0;
 
@@ -106,11 +82,11 @@ class Conductor extends FlxBasic
     {
         super.update(elapsed);
         
-        var lastStep:Int = step;
+        var oldStep:Int = step;
 
-        var lastBeat:Int = beat;
+        var oldBeat:Int = beat;
 
-        var lastSection:Int = section;
+        var oldMeasure:Int = measure;
 
         time += elapsed * 1000.0;
 
@@ -129,13 +105,13 @@ class Conductor extends FlxBasic
 
             if (tempo != _timeChange.tempo)
             {
-                var lastTime:Float = timeChange.time;
+                var oldTime:Float = timeChange.time;
 
                 timeChange.time = _timeChange.time;
 
                 timeChange.tempo = _timeChange.tempo;
 
-                timeChange.step += (timeChange.time - lastTime) / (crotchet * 0.25);
+                timeChange.step += (timeChange.time - oldTime) / (crotchet * 0.25);
 
                 tempo = timeChange.tempo;
             }
@@ -143,31 +119,31 @@ class Conductor extends FlxBasic
             break;
         }
 
-        if (step != lastStep)
-            stepHit.dispatch(step);
+        if (step != oldStep)
+            onStepHit.dispatch(step);
 
-        if (beat != lastBeat)
-            beatHit.dispatch(beat);
+        if (beat != oldBeat)
+            onBeatHit.dispatch(beat);
 
-        if (section != lastSection)
-            sectionHit.dispatch(section);
+        if (measure != oldMeasure)
+            onMeasureHit.dispatch(measure);
     }
 
     override function destroy():Void
     {
         super.destroy();
 
-        stepHit.destroy();
+        onStepHit.destroy();
 
-        stepHit = null;
+        onStepHit = null;
 
-        beatHit.destroy();
+        onBeatHit.destroy();
 
-        beatHit = null;
+        onBeatHit = null;
 
-        sectionHit.destroy();
+        onMeasureHit.destroy();
 
-        sectionHit = null;
+        onMeasureHit = null;
     }
 
     public function getTimeChange(tempo:Float, time:Float):LoadedTimeChange

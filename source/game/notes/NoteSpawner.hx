@@ -8,11 +8,11 @@ import flixel.FlxG;
 
 import flixel.group.FlxGroup.FlxTypedGroup;
 
-import core.Conductor;
-
 import game.Chart;
 import game.Chart.LoadedNote;
 import game.GameState;
+
+import music.Conductor;
 
 using StringTools;
 

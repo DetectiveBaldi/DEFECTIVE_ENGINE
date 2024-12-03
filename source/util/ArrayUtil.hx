@@ -2,31 +2,7 @@ package util;
 
 class ArrayUtil
 {
-    public static function first<T>(arr:Array<T>, ?func:(T)->Bool):T
-    {
-        var output:T = null;
-
-        if (func == null)
-            output = arr[0];
-        else
-        {
-            for (i in 0 ... arr.length)
-            {
-                var t:T = arr[i];
-
-                if (func(t))
-                {
-                    output = t;
-
-                    break;
-                }
-            }
-        }
-
-        return output;
-    }
-
-    public static function last<T>(arr:Array<T>, ?func:(T)->Bool):T
+    public static function oldest<T>(arr:Array<T>, ?func:(T)->Bool):T
     {
         var output:T = null;
 
@@ -48,6 +24,30 @@ class ArrayUtil
                 }
 
                 i--;
+            }
+        }
+
+        return output;
+    }
+
+    public static function newest<T>(arr:Array<T>, ?func:(T)->Bool):T
+    {
+        var output:T = null;
+
+        if (func == null)
+            output = arr[0];
+        else
+        {
+            for (i in 0 ... arr.length)
+            {
+                var t:T = arr[i];
+
+                if (func(t))
+                {
+                    output = t;
+
+                    break;
+                }
             }
         }
 

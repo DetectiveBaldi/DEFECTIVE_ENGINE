@@ -20,6 +20,22 @@ class Options
         return autoPause;
     }
 
+    public static var fullscreen(get, set):Bool;
+
+    @:noCompletion
+    static function get_fullscreen():Bool
+    {
+        return FlxG.save.data.options.fullscreen ??= false;
+    }
+
+    @:noCompletion
+    static function set_fullscreen(_fullscreen:Bool):Bool
+    {
+        FlxG.save.data.options.fullscreen = _fullscreen;
+
+        return fullscreen;
+    }
+
     public static var gpuCaching(get, set):Bool;
 
     @:noCompletion

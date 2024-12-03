@@ -24,8 +24,6 @@ import core.Options;
 
 import editors.CharacterEditorState;
 
-import extendable.SteppingState;
-
 import game.Chart.LoadedEvent;
 import game.Chart.LoadedNote;
 import game.ChartConverters.FunkConverter;
@@ -42,6 +40,8 @@ import game.Stage;
 
 import menus.OptionsMenu;
 
+import music.MusicSubState;
+
 import ui.Countdown;
 
 import util.StringUtil;
@@ -51,7 +51,7 @@ using StringTools;
 
 using util.ArrayUtil;
 
-class GameState extends SteppingState
+class GameState extends MusicSubState
 {
     public var gameCamera(get, never):FlxCamera;
     
@@ -433,9 +433,9 @@ class GameState extends SteppingState
             FlxG.resetState();
     }
 
-    override function sectionHit(section:Int):Void
+    override function measureHit(measure:Int):Void
     {
-        super.sectionHit(section);
+        super.measureHit(measure);
 
         gameCamera.zoom += 0.035;
 

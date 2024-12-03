@@ -6,11 +6,12 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
 
-import core.Conductor;
 import core.Inputs;
 import core.Options;
 
 import game.GameState;
+
+import music.Conductor;
 
 using StringTools;
 
@@ -146,7 +147,7 @@ class StrumLine extends FlxGroup
 
                     strum.animation.play(Strum.directions[strum.direction].toLowerCase() + "Press");
 
-                    var note:Note = notes.getFirst((_note:Note) -> _note.exists && Math.abs(conductor.time - _note.time) <= game.judgements.last().timing && strum.direction == _note.direction && !_note.animation.name.contains("Hold"));
+                    var note:Note = notes.getFirst((_note:Note) -> _note.exists && Math.abs(conductor.time - _note.time) <= game.judgements.oldest().timing && strum.direction == _note.direction && !_note.animation.name.contains("Hold"));
 
                     note == null ? onGhostTap.dispatch(strum.direction) : onNoteHit.dispatch(note);
                 }
@@ -191,7 +192,7 @@ class StrumLine extends FlxGroup
             }
             else
             {
-                if (note.exists && conductor.time > note.time + game.judgements.last().timing)
+                if (note.exists && conductor.time > note.time + game.judgements.oldest().timing)
                 {
                     onNoteMiss.dispatch(note);
     

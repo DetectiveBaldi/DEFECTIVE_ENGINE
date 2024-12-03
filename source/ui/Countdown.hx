@@ -15,8 +15,9 @@ import flixel.util.FlxSignal;
 import flixel.util.FlxSignal.FlxTypedSignal;
 
 import core.AssetMan;
-import core.Conductor;
 import core.Paths;
+
+import music.Conductor;
 
 /**
  * A `flixel.group.FlxGroup` representing the countdown you see in `game.GameState`.
@@ -32,9 +33,9 @@ class Countdown extends FlxGroup
 
         conductor = _conductor;
 
-        conductor?.beatHit?.add(beatHit);
+        conductor?.onBeatHit?.add(beatHit);
 
-        __conductor?.beatHit?.remove(beatHit);
+        __conductor?.onBeatHit?.remove(beatHit);
 
         return conductor;
     }

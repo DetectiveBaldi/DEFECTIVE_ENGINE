@@ -169,27 +169,35 @@ class OptionsMenu extends FlxState
 
         options.add(bool);
 
-        var _header:HeaderOptionItem = new HeaderOptionItem(0.0, 0.0, "Asset Management", "");
+        var _bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Fullscreen", "Determines whether fullscreen is enabled on this window.", "fullscreen");
 
-        _header.setPosition(FlxG.width - _header.width + 165.0, bool.y + bool.height);
+        _bool.onUpdate.add((value:Bool) -> FlxG.fullscreen = value);
 
-        options.add(_header);
-
-        var _bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "GPU Caching", "If checked, bitmap pixel data is disposed from RAM\nwhere applicable (may require restarting the application).", "gpuCaching");
-
-        _bool.setPosition(FlxG.width - _bool.width + 50.0, _header.y + _header.height);
+        _bool.setPosition(FlxG.width - _bool.width + 50.0, bool.y + bool.height);
 
         options.add(_bool);
 
-        var __bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Sound Streaming", "If checked, audio is loaded progressively\nwhere applicable (may require restarting the application).", "soundStreaming");
+        var _header:HeaderOptionItem = new HeaderOptionItem(0.0, 0.0, "Asset Management", "");
 
-        __bool.setPosition(FlxG.width - __bool.width + 50.0, _bool.y + _bool.height);
+        _header.setPosition(FlxG.width - _header.width + 165.0, _bool.y + _bool.height);
+
+        options.add(_header);
+
+        var __bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "GPU Caching", "If checked, bitmap pixel data is disposed from RAM\nwhere applicable (may require restarting the application).", "gpuCaching");
+
+        __bool.setPosition(FlxG.width - __bool.width + 50.0, _header.y + _header.height);
 
         options.add(__bool);
 
+        var ___bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Sound Streaming", "If checked, audio is loaded progressively\nwhere applicable (may require restarting the application).", "soundStreaming");
+
+        ___bool.setPosition(FlxG.width - ___bool.width + 50.0, __bool.y + __bool.height);
+
+        options.add(___bool);
+
         var __header:HeaderOptionItem = new HeaderOptionItem(0.0, 0.0, "Keybinds", "");
 
-        __header.setPosition(FlxG.width - __header.width + 165.0, __bool.y + __bool.height);
+        __header.setPosition(FlxG.width - __header.width + 165.0, ___bool.y + ___bool.height);
 
         options.add(__header);
 
@@ -223,23 +231,23 @@ class OptionsMenu extends FlxState
 
         options.add(___header);
 
-        var ___bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Downscroll", "If checked, flips the strum lines' vertical position.", "downscroll");
+        var ____bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Downscroll", "If checked, flips the strum lines' vertical position.", "downscroll");
 
-        ___bool.setPosition(FlxG.width - ___bool.width + 50.0, ___header.y + ___header.height);
-
-        options.add(___bool);
-
-        var ____bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Middlescroll", "If checked, centers the playable strum line and\nhides the opponent's.", "middlescroll");
-
-        ____bool.setPosition(FlxG.width - ____bool.width + 50.0, ___bool.y + ___bool.height);
+        ____bool.setPosition(FlxG.width - ____bool.width + 50.0, ___header.y + ___header.height);
 
         options.add(____bool);
 
-        var _____bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Ghost Tapping", "If unchecked, pressing an input with no notes\non screen will cause damage.", "ghostTapping");
+        var _____bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Middlescroll", "If checked, centers the playable strum line and\nhides the opponent's.", "middlescroll");
 
         _____bool.setPosition(FlxG.width - _____bool.width + 50.0, ____bool.y + ____bool.height);
 
         options.add(_____bool);
+
+        var ______bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Ghost Tapping", "If unchecked, pressing an input with no notes\non screen will cause damage.", "ghostTapping");
+
+        ______bool.setPosition(FlxG.width - ______bool.width + 50.0, _____bool.y + _____bool.height);
+
+        options.add(______bool);
 
         option = 0;
 
