@@ -8,7 +8,7 @@ import game.GameState;
 
 class SpeedChangeEvent
 {
-    public static function dispatch(game:GameState, speed:Float, duration:Float, ease:String):Void
+    public static function spawn(game:GameState, speed:Float, duration:Float, ease:String):Void
     {
         if (duration > 0.0)
             FlxTween.tween(game, {chartSpeed: game.chart.speed * speed}, duration, {ease: Reflect.getProperty(FlxEase, ease)});

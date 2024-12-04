@@ -13,14 +13,16 @@ class Level1 extends GameState
     {
         super.create();
 
-        gameCameraTarget.setPosition(cast (stage, Template).background.getMidpoint().x - gameCameraTarget.width * 0.5, cast (stage, Template).background.getMidpoint().y - gameCameraTarget.height * 0.5 - 150.0);
+        var _stage:Template = cast (stage, Template);
+
+        gameCameraTarget.setPosition(_stage.background.getMidpoint().x - gameCameraTarget.width * 0.5, _stage.background.getMidpoint().y - gameCameraTarget.height * 0.5 - 150.0);
 
         gameCamera.snapToTarget();
 
-        spectator.setPosition(cast (stage, Template).background.getMidpoint().x - spectator.width * 0.5, cast (stage, Template).background.getMidpoint().y - spectator.height * 0.75);
+        spectator.setPosition(_stage.background.getMidpoint().x - spectator.width * 0.5, _stage.background.getMidpoint().y - spectator.height * 0.75);
 
-        opponent.setPosition(cast (stage, Template).background.x + 550.0, cast (stage, Template).background.getMidpoint().y - opponent.height);
+        opponent.setPosition(_stage.background.x + 550.0, _stage.background.getMidpoint().y - opponent.height);
 
-        player.setPosition(cast (stage, Template).background.x + cast (stage, Template).background.width - player.width - 550.0, cast (stage, Template).background.getMidpoint().y - player.height * 0.35);
+        player.setPosition(_stage.background.x + _stage.background.width - player.width - 550.0, _stage.background.getMidpoint().y - player.height * 0.35);
     }
 }

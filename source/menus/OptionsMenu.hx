@@ -197,6 +197,8 @@ class OptionsMenu extends FlxState
 
         var ____bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Persistent Cache", "If unchecked, the graphic and sound caches will be\ninvalidated on state switch.", "persistentCache");
 
+        ____bool.onUpdate.add((value:Bool) -> Assets.persistentCache = value);
+
         ____bool.setPosition(FlxG.width - ____bool.width + 50.0, ___bool.y + ___bool.height);
 
         options.add(____bool);

@@ -19,11 +19,15 @@ class Template extends Stage
 
         background = new FlxSprite(0, 0, Assets.graphic(Paths.png("assets/images/game/stages/Template/background")));
 
+        background.active = false;
+
         background.antialiasing = true;
 
         add(background);
 
         foreground = new FlxSprite(0, 0, Assets.graphic(Paths.png("assets/images/game/stages/Template/foreground")));
+
+        foreground.active = false;
 
         foreground.antialiasing = true;
 
@@ -36,6 +40,8 @@ class Template extends Stage
         add(foreground);
 
         curtains = new FlxSprite(0, 0, Assets.graphic(Paths.png("assets/images/game/stages/Template/curtains")));
+
+        curtains.active = false;
 
         curtains.antialiasing = true;
 

@@ -18,21 +18,25 @@ import core.Options;
 
 class Assets
 {
+    public static var persistentCache:Bool;
+
     public static var graphics:Map<String, FlxGraphic>;
 
     public static var sounds:Map<String, Sound>;
 
     public static function init():Void
     {
+        persistentCache = Options.persistentCache;
+        
         FlxG.signals.preStateSwitch.add(() -> 
         {
-            if (!Options.persistentCache)
+            if (!persistentCache)
                 clearCaches();
         });
 
-        graphics ??= new Map<String, FlxGraphic>();
+        graphics = new Map<String, FlxGraphic>();
 
-        sounds ??= new Map<String, Sound>();
+        sounds = new Map<String, Sound>();
     }
 
     /**

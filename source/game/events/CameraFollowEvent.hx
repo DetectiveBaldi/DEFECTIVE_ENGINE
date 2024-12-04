@@ -9,7 +9,7 @@ import game.GameState;
 
 class CameraFollowEvent
 {
-    public static function dispatch(game:GameState, x:Float, y:Float, characterMap:String, character:String, duration:Float, ease:String):Void
+    public static function spawn(game:GameState, x:Float, y:Float, characterMap:String, character:String, duration:Float, ease:String):Void
     {
         switch (characterMap:String)
         {

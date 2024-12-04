@@ -9,7 +9,7 @@ import game.GameState;
 
 class CameraZoomEvent
 {
-    public static function dispatch(game:GameState, camera:String, zoom:Float, duration:Float, ease:String):Void
+    public static function spawn(game:GameState, camera:String, zoom:Float, duration:Float, ease:String):Void
     {
         var _camera:FlxCamera = Reflect.getProperty(game, camera);
 

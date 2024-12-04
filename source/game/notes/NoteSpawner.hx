@@ -56,6 +56,8 @@ class NoteSpawner extends FlxBasic
     {
         super();
 
+        visible = false;
+
         this.game = game;
 
         notes = new FlxTypedGroup<Note>();

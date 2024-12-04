@@ -24,13 +24,10 @@ import core.Options;
 
 import editors.CharacterEditorState;
 
-import game.Chart.LoadedEvent;
 import game.Chart.LoadedNote;
 import game.ChartConverters.FunkConverter;
 import game.ChartConverters.PsychConverter;
-import game.events.CameraFollowEvent;
-import game.events.CameraZoomEvent;
-import game.events.SpeedChangeEvent;
+import game.events.EventSpawner;
 import game.notes.Note;
 import game.notes.NoteSpawner;
 import game.notes.NoteSplash;
@@ -122,6 +119,8 @@ class GameState extends MusicSubState
     public var opponentStrumLine:StrumLine;
 
     public var playerStrumLine:StrumLine;
+
+    public var eventSpawner:EventSpawner;
 
     public var noteSpawner:NoteSpawner;
 
@@ -303,6 +302,10 @@ class GameState extends MusicSubState
 
         strumLines.add(playerStrumLine);
 
+        eventSpawner = new EventSpawner(this);
+
+        add(eventSpawner);
+
         noteSpawner = new NoteSpawner(this);
 
         add(noteSpawner);
@@ -373,28 +376,6 @@ class GameState extends MusicSubState
         gameCamera.zoom = gameCameraZoom + (gameCamera.zoom - gameCameraZoom) * Math.exp(-15.0 * elapsed);
 
         hudCamera.zoom = hudCameraZoom + (hudCamera.zoom - hudCameraZoom) * Math.exp(-15.0 * elapsed);
-
-        while (eventIndex < chart.events.length)
-        {
-            var event:LoadedEvent = chart.events[eventIndex];
-
-            if (conductor.time < event.time)
-                break;
-
-            switch (event.name:String)
-            {
-                case "Camera Follow":
-                    CameraFollowEvent.dispatch(this, event.value.x ?? 0.0, event.value.y ?? 0.0, event.value.characterMap ?? "", event.value.character ?? "", event.value.duration ?? -1.0, event.value.ease ?? "linear");
-
-                case "Camera Zoom":
-                    CameraZoomEvent.dispatch(this, event.value.camera, event.value.zoom, event.value.duration, event.value.ease);
-
-                case "Speed Change":
-                    SpeedChangeEvent.dispatch(this, event.value.speed, event.value.duration, event.value.ease);
-            }
-
-            eventIndex++;
-        }
 
         if (countdown.finished || countdown.skipped)
         {
@@ -550,7 +531,7 @@ class GameState extends MusicSubState
 
                 var judgement:Judgement = Judgement.guage(judgements, Math.abs(conductor.time - note.time));
 
-                points += 500 - Math.floor(Math.abs(conductor.time - note.time));
+                points += 500 - Math.ceil(Math.abs(conductor.time - note.time));
 
                 hits++;
 
