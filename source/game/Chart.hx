@@ -2,7 +2,7 @@ package game;
 
 import haxe.Json;
 
-import core.AssetMan;
+import core.Assets;
 import core.Paths;
 
 import util.TimingUtil.TimedObject;
@@ -13,7 +13,7 @@ class Chart
     {
         var output:Chart = new Chart();
 
-        var loaded:LoadedChart = Json.parse(AssetMan.text(Paths.json(path)));
+        var loaded:LoadedChart = Json.parse(Assets.text(Paths.json(path)));
 
         output.name = loaded.name;
 

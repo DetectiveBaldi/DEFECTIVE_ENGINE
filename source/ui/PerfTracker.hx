@@ -33,17 +33,18 @@ class PerfTracker extends TextField
         timestamps = new Array<Float>();
     }
 
-    override function __enterFrame(deltaTime:Int):Void
-    {
-        super.__enterFrame(deltaTime);
+    @:noCompletion
+        override function __enterFrame(deltaTime:Int):Void
+        {
+            super.__enterFrame(deltaTime);
 
-        var now:Float = Timer.stamp();
+            var now:Float = Timer.stamp();
 
-        timestamps.push(now);
+            timestamps.push(now);
 
-        while (timestamps[0] < now - 1.0)
-            timestamps.shift();
+            while (timestamps[0] < now - 1.0)
+                timestamps.shift();
 
-        text = 'FPS: ${MathUtil.minInt(FlxG.drawFramerate, timestamps.length)}\nRAM: ${flixel.math.FlxMath.roundDecimal(openfl.system.System.totalMemoryNumber / Math.pow(1024, 2), 2)} MB\nVRAM: ${flixel.math.FlxMath.roundDecimal(FlxG.stage.context3D.totalGPUMemory / Math.pow(1024, 2), 2)} MB';
-    }
+            text = 'FPS: ${MathUtil.minInt(FlxG.drawFramerate, timestamps.length)}\nRAM: ${flixel.math.FlxMath.roundDecimal(openfl.system.System.totalMemoryNumber / Math.pow(1024, 2), 2)} MB\nVRAM: ${flixel.math.FlxMath.roundDecimal(FlxG.stage.context3D.totalGPUMemory / Math.pow(1024, 2), 2)} MB';
+        }
 }

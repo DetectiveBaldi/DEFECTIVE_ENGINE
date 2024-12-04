@@ -20,7 +20,7 @@ import flixel.util.FlxColor;
 
 import flixel.addons.display.FlxBackdrop;
 
-import core.AssetMan;
+import core.Assets;
 import core.Paths;
 
 import game.levels.Level1;
@@ -42,35 +42,35 @@ class OptionsMenu extends FlxState
     public var option(default, set):Int;
 
     @:noCompletion
-    function set_option(_option:Int):Int
-    {
-        option = _option;
-
-        for (i in 0 ... options.members.length)
+        function set_option(_option:Int):Int
         {
-            var _option:BaseOptionItem = options.members[i];
+            option = _option;
 
-            _option.alpha = 0.5;
+            for (i in 0 ... options.members.length)
+            {
+                var _option:BaseOptionItem = options.members[i];
+
+                _option.alpha = 0.5;
+
+                if (Std.isOfType(_option, BoolOptionItem))
+                    cast (_option, BoolOptionItem).enabled = false;
+
+                if (Std.isOfType(_option, KeybindOptionItem))
+                    cast (_option, KeybindOptionItem).enabled = false;
+            }
+
+            var _option:BaseOptionItem = options.members[option];
+
+            _option.alpha = 1.0;
 
             if (Std.isOfType(_option, BoolOptionItem))
-                cast (_option, BoolOptionItem).enabled = false;
+                cast (_option, BoolOptionItem).enabled = true;
 
             if (Std.isOfType(_option, KeybindOptionItem))
-                cast (_option, KeybindOptionItem).enabled = false;
+                cast (_option, KeybindOptionItem).enabled = true;
+
+            return option;
         }
-
-        var _option:BaseOptionItem = options.members[option];
-
-        _option.alpha = 1.0;
-
-        if (Std.isOfType(_option, BoolOptionItem))
-            cast (_option, BoolOptionItem).enabled = true;
-
-        if (Std.isOfType(_option, KeybindOptionItem))
-            cast (_option, KeybindOptionItem).enabled = true;
-
-        return option;
-    }
 
     public var descriptor:FlxSprite;
 
@@ -84,7 +84,7 @@ class OptionsMenu extends FlxState
 
         FlxG.mouse.visible = true;
 
-        background = new FlxSprite(0.0, 0.0, AssetMan.graphic(Paths.png("assets/images/menus/OptionsMenu/background")));
+        background = new FlxSprite(0.0, 0.0, Assets.graphic(Paths.png("assets/images/menus/OptionsMenu/background")));
 
         background.active = false;
 
@@ -94,7 +94,7 @@ class OptionsMenu extends FlxState
 
         add(background);
 
-        backdrop = new FlxBackdrop(AssetMan.graphic(Paths.png("assets/images/menus/OptionsMenu/backdrop")));
+        backdrop = new FlxBackdrop(Assets.graphic(Paths.png("assets/images/menus/OptionsMenu/backdrop")));
 
         backdrop.antialiasing = true;
 
@@ -106,7 +106,7 @@ class OptionsMenu extends FlxState
 
         add(backdrop);
 
-        gradient = new FlxSprite(AssetMan.graphic(Paths.png("assets/images/menus/OptionsMenu/gradient")));
+        gradient = new FlxSprite(Assets.graphic(Paths.png("assets/images/menus/OptionsMenu/gradient")));
 
         gradient.active = false;
 
@@ -120,7 +120,7 @@ class OptionsMenu extends FlxState
 
         cornerCutout.antialiasing = true;
 
-        cornerCutout.frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png("assets/images/menus/OptionsMenu/cornerCutout")), Paths.xml("assets/images/menus/OptionsMenu/cornerCutout"));
+        cornerCutout.frames = FlxAtlasFrames.fromSparrow(Assets.graphic(Paths.png("assets/images/menus/OptionsMenu/cornerCutout")), Paths.xml("assets/images/menus/OptionsMenu/cornerCutout"));
 
         cornerCutout.animation.addByPrefix("cornerCutout", "cornerCutout", 12.0);
 
@@ -134,7 +134,7 @@ class OptionsMenu extends FlxState
 
         add(cornerCutout);
 
-        gear = new FlxSprite(AssetMan.graphic(Paths.png("assets/images/menus/OptionsMenu/gear")));
+        gear = new FlxSprite(Assets.graphic(Paths.png("assets/images/menus/OptionsMenu/gear")));
 
         gear.active = false;
 
@@ -195,9 +195,15 @@ class OptionsMenu extends FlxState
 
         options.add(___bool);
 
+        var ____bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Persistent Cache", "If unchecked, the graphic and sound caches will be\ninvalidated on state switch.", "persistentCache");
+
+        ____bool.setPosition(FlxG.width - ____bool.width + 50.0, ___bool.y + ___bool.height);
+
+        options.add(____bool);
+
         var __header:HeaderOptionItem = new HeaderOptionItem(0.0, 0.0, "Keybinds", "");
 
-        __header.setPosition(FlxG.width - __header.width + 165.0, ___bool.y + ___bool.height);
+        __header.setPosition(FlxG.width - __header.width + 165.0, ____bool.y + ____bool.height);
 
         options.add(__header);
 
@@ -231,23 +237,23 @@ class OptionsMenu extends FlxState
 
         options.add(___header);
 
-        var ____bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Downscroll", "If checked, flips the strum lines' vertical position.", "downscroll");
+        var _____bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Downscroll", "If checked, flips the strum lines' vertical position.", "downscroll");
 
-        ____bool.setPosition(FlxG.width - ____bool.width + 50.0, ___header.y + ___header.height);
-
-        options.add(____bool);
-
-        var _____bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Middlescroll", "If checked, centers the playable strum line and\nhides the opponent's.", "middlescroll");
-
-        _____bool.setPosition(FlxG.width - _____bool.width + 50.0, ____bool.y + ____bool.height);
+        _____bool.setPosition(FlxG.width - _____bool.width + 50.0, ___header.y + ___header.height);
 
         options.add(_____bool);
 
-        var ______bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Ghost Tapping", "If unchecked, pressing an input with no notes\non screen will cause damage.", "ghostTapping");
+        var ______bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Middlescroll", "If checked, centers the playable strum line and\nhides the opponent's.", "middlescroll");
 
         ______bool.setPosition(FlxG.width - ______bool.width + 50.0, _____bool.y + _____bool.height);
 
         options.add(______bool);
+
+        var _______bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Ghost Tapping", "If unchecked, pressing an input with no notes\non screen will cause damage.", "ghostTapping");
+
+        _______bool.setPosition(FlxG.width - _______bool.width + 50.0, ______bool.y + ______bool.height);
+
+        options.add(_______bool);
 
         option = 0;
 
@@ -257,7 +263,7 @@ class OptionsMenu extends FlxState
 
         descriptor.color = descriptor.color.getDarkened(0.15);
 
-        descriptor.frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png("assets/images/menus/OptionsMenu/descriptor")), Paths.xml("assets/images/menus/OptionsMenu/descriptor"));
+        descriptor.frames = FlxAtlasFrames.fromSparrow(Assets.graphic(Paths.png("assets/images/menus/OptionsMenu/descriptor")), Paths.xml("assets/images/menus/OptionsMenu/descriptor"));
 
         descriptor.animation.addByPrefix("descriptor", "descriptor", 12.0);
 
@@ -283,7 +289,7 @@ class OptionsMenu extends FlxState
 
         add(descText);
 
-        tune = FlxG.sound.load(AssetMan.sound(Paths.ogg("assets/music/menus/OptionsMenu/tune")), 0.0, true);
+        tune = FlxG.sound.load(Assets.sound(Paths.ogg("assets/music/menus/OptionsMenu/tune")), 0.0, true);
 
         tune.fadeIn(1.0, 0.0, 1.0);
 
@@ -296,19 +302,93 @@ class OptionsMenu extends FlxState
 
         if (FlxG.keys.justPressed.DOWN)
         {
-            FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
-
             option = FlxMath.wrap(option + 1, 0, options.members.length - 1);
+
+            var scroll:FlxSound = FlxG.sound.play(Assets.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+
+            scroll.onComplete = scroll.kill;
         }
 
         if (FlxG.keys.justPressed.UP)
         {
-            FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
-
             option = FlxMath.wrap(option - 1, 0, options.members.length - 1);
+
+            var scroll:FlxSound = FlxG.sound.play(Assets.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+
+            scroll.onComplete = scroll.kill;
         }
 
-        if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.UP)
+        if (FlxG.keys.justPressed.PAGEDOWN)
+        {
+            var _option:BaseOptionItem = options.group.getFirst((__option:BaseOptionItem) -> Std.isOfType(__option, HeaderOptionItem) && options.members.indexOf(__option) > option);
+
+            if (_option != null)
+            {
+                option = options.members.indexOf(_option);
+
+                var scroll:FlxSound = FlxG.sound.play(Assets.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+
+                scroll.onComplete = scroll.kill;
+            }
+        }
+
+        if (FlxG.keys.justPressed.PAGEUP)
+        {
+            var _option:BaseOptionItem = options.group.getLast((__option:BaseOptionItem) -> Std.isOfType(__option, HeaderOptionItem) && options.members.indexOf(__option) < option);
+
+            if (_option != null)
+            {
+                option = options.members.indexOf(_option);
+
+                var scroll:FlxSound = FlxG.sound.play(Assets.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+
+                scroll.onComplete = scroll.kill;
+            }
+        }
+
+        if (FlxG.keys.justPressed.END)
+        {
+            if (option != options.members.length - 1.0)
+            {
+                option = options.members.length - 1;
+
+                var scroll:FlxSound = FlxG.sound.play(Assets.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+
+                scroll.onComplete = scroll.kill;
+            }
+        }
+
+        if (FlxG.keys.justPressed.HOME)
+        {
+            if (option != 0.0)
+            {
+                option = 0;
+
+                var scroll:FlxSound = FlxG.sound.play(Assets.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+
+                scroll.onComplete = scroll.kill;
+            }
+        }
+
+        if (FlxG.mouse.wheel == -1.0)
+        {
+            option = FlxMath.wrap(option + 1, 0, options.members.length - 1);
+
+            var scroll:FlxSound = FlxG.sound.play(Assets.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+
+            scroll.onComplete = scroll.kill;
+        }
+
+        if (FlxG.mouse.wheel == 1.0)
+        {
+            option = FlxMath.wrap(option - 1, 0, options.members.length - 1);
+
+            var scroll:FlxSound = FlxG.sound.play(Assets.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+
+            scroll.onComplete = scroll.kill;
+        }
+
+        if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.UP || FlxG.keys.justPressed.PAGEDOWN || FlxG.keys.justPressed.PAGEUP || FlxG.keys.justPressed.END || FlxG.keys.justPressed.HOME || FlxG.mouse.wheel != 0.0)
             descText.text = options.members[option].description;
 
         if (FlxG.keys.justPressed.ESCAPE)
@@ -317,7 +397,7 @@ class OptionsMenu extends FlxState
         var targetY:Float = 0.0;
 
         for (i in 0 ... option)
-            targetY -= (i < options.members.length - 3.0 ? options.members[i].height : 0.0);
+            targetY -= (i < options.members.length - 2.0 ? options.members[i].height : 0.0);
 
         options.y = targetY + (options.y - targetY) * Math.exp(-15.0 * elapsed);
     }

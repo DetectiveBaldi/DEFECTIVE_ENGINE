@@ -11,7 +11,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 
-import core.AssetMan;
+import core.Assets;
 import core.Inputs;
 import core.Options;
 import core.Paths;
@@ -24,24 +24,24 @@ class Character extends FlxSprite
 {
     public static function findConfig(path:String):CharacterConfig
     {
-        return Json.parse(AssetMan.text(Paths.json(path)));
+        return Json.parse(Assets.text(Paths.json(path)));
     }
     
     public var conductor(default, set):Conductor;
 
     @:noCompletion
-    function set_conductor(_conductor:Conductor):Conductor
-    {
-        var __conductor:Conductor = conductor;
+        function set_conductor(_conductor:Conductor):Conductor
+        {
+            var __conductor:Conductor = conductor;
 
-        conductor = _conductor;
+            conductor = _conductor;
 
-        conductor?.onBeatHit?.add(beatHit);
+            conductor?.onBeatHit?.add(beatHit);
 
-        __conductor?.onBeatHit?.remove(beatHit);
+            __conductor?.onBeatHit?.remove(beatHit);
 
-        return conductor;
-    }
+            return conductor;
+        }
 
     public var inputs:Array<Input>;
     
@@ -84,9 +84,9 @@ class Character extends FlxSprite
 
         switch (config.format ?? "".toLowerCase():String)
         {
-            case "sparrow": frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(config.png)), Paths.xml(config.xml));
+            case "sparrow": frames = FlxAtlasFrames.fromSparrow(Assets.graphic(Paths.png(config.png)), Paths.xml(config.xml));
 
-            case "texturepackerxml": frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(config.png)), Paths.xml(config.xml));
+            case "texturepackerxml": frames = FlxAtlasFrames.fromTexturePackerXml(Assets.graphic(Paths.png(config.png)), Paths.xml(config.xml));
         }
 
         antialiasing = config.antialiasing ?? true;

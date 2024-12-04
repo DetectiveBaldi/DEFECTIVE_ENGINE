@@ -21,36 +21,36 @@ class ProgressBar extends FlxSpriteGroup
     public var percent(get, set):Float;
 
     @:noCompletion
-    function get_percent():Float
-    {
-        return ((value - min) / (max - min)) * 100.0;
-    }
+        function get_percent():Float
+        {
+            return ((value - min) / (max - min)) * 100.0;
+        }
 
     @:noCompletion
-    function set_percent(_percent:Float):Float
-    {
-        value = (range / max) * _percent;
+        function set_percent(_percent:Float):Float
+        {
+            value = (range / max) * _percent;
 
-        return percent;
-    }
+            return percent;
+        }
 
     public var value(default, set):Float;
 
     @:noCompletion
-    function set_value(_value:Float):Float
-    {
-        value = FlxMath.bound(_value, min, max);
+        function set_value(_value:Float):Float
+        {
+            value = FlxMath.bound(_value, min, max);
 
-        updateClipping();
+            updateClipping();
 
-        if (value == min)
-            onEmptied.dispatch();
+            if (value == min)
+                onEmptied.dispatch();
 
-        if (value == max)
-            onFilled.dispatch();
-        
-        return value;
-    }
+            if (value == max)
+                onFilled.dispatch();
+            
+            return value;
+        }
 
     public var min:Float;
 
@@ -59,10 +59,10 @@ class ProgressBar extends FlxSpriteGroup
     public var range(get, never):Float;
     
     @:noCompletion
-    function get_range():Float
-    {
-        return max - min;
-    }
+        function get_range():Float
+        {
+            return max - min;
+        }
 
     public var onEmptied:FlxSignal;
 
@@ -75,14 +75,14 @@ class ProgressBar extends FlxSpriteGroup
     public var fillDirection(default, set):ProgressBarFillDirection;
 
     @:noCompletion
-    function set_fillDirection(_fillDirection:ProgressBarFillDirection):ProgressBarFillDirection
-    {
-        fillDirection = _fillDirection;
+        function set_fillDirection(_fillDirection:ProgressBarFillDirection):ProgressBarFillDirection
+        {
+            fillDirection = _fillDirection;
 
-        updateClipping();
+            updateClipping();
 
-        return fillDirection;
-    }
+            return fillDirection;
+        }
 
     public var emptiedSide:ProgressBarSideSprite;
 
@@ -93,16 +93,16 @@ class ProgressBar extends FlxSpriteGroup
     public var borderSize(default, set):Int;
 
     @:noCompletion
-    function set_borderSize(_borderSize:Int):Int
-    {
-        borderSize = _borderSize;
+        function set_borderSize(_borderSize:Int):Int
+        {
+            borderSize = _borderSize;
 
-        border.graphic.bitmap.fillRect(new Rectangle(0.0, 0.0, barWidth, barHeight), FlxColor.BLACK);
+            border.graphic.bitmap.fillRect(new Rectangle(0.0, 0.0, barWidth, barHeight), FlxColor.BLACK);
 
-        border.graphic.bitmap.fillRect(new Rectangle(borderSize, borderSize, barWidth - borderSize * 2.0, barHeight - borderSize * 2.0), FlxColor.TRANSPARENT);
+            border.graphic.bitmap.fillRect(new Rectangle(borderSize, borderSize, barWidth - borderSize * 2.0, barHeight - borderSize * 2.0), FlxColor.TRANSPARENT);
 
-        return borderSize;
-    }
+            return borderSize;
+        }
 
     public function new(x:Float = 0.0, y:Float = 0.0, barWidth:Int = 600, barHeight:Int = 25, fillDirection:ProgressBarFillDirection):Void
     {
@@ -119,11 +119,9 @@ class ProgressBar extends FlxSpriteGroup
 
         onFilled = new FlxSignal();
 
-        @:bypassAccessor
-            this.barWidth = barWidth;
+        this.barWidth = barWidth;
 
-        @:bypassAccessor
-            this.barHeight = barHeight;
+        this.barHeight = barHeight;
 
         @:bypassAccessor
             this.fillDirection = fillDirection;
@@ -258,14 +256,14 @@ class ProgressBar extends FlxSpriteGroup
 class ProgressBarSideSprite extends FlxSprite
 {
     @:noCompletion
-    override function set_clipRect(_clipRect:FlxRect):FlxRect
-    {
-        clipRect = _clipRect;
+        override function set_clipRect(_clipRect:FlxRect):FlxRect
+        {
+            clipRect = _clipRect;
 
-		frame = frames?.frames[animation.frameIndex];
+            frame = frames?.frames[animation.frameIndex];
 
-        return clipRect;
-    }
+            return clipRect;
+        }
 }
 
 enum abstract ProgressBarFillDirection(String) from String to String

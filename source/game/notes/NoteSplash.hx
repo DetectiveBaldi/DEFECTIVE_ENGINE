@@ -9,7 +9,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 
 import flixel.math.FlxPoint;
 
-import core.AssetMan;
+import core.Assets;
 import core.Paths;
 
 using StringTools;
@@ -25,7 +25,7 @@ class NoteSplash extends FlxSprite
         if (configs.exists(path))
             return configs[path];
 
-        configs[path] = Json.parse(AssetMan.text(Paths.json(path)));
+        configs[path] = Json.parse(Assets.text(Paths.json(path)));
 
         return configs[path];
     }
@@ -33,46 +33,46 @@ class NoteSplash extends FlxSprite
     public var config(default, set):NoteSplashConfig;
 
     @:noCompletion
-    function set_config(_config:NoteSplashConfig):NoteSplashConfig
-    {
-        config = _config;
-
-        switch (config.format ?? "".toLowerCase():String)
+        function set_config(_config:NoteSplashConfig):NoteSplashConfig
         {
-            case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(config.png)), Paths.xml(config.xml));
-            
-            case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(config.png)), Paths.xml(config.xml));
-        }
+            config = _config;
 
-        antialiasing = config.antialiasing ?? true;
-
-        for (i in 0 ... config.frames.length)
-        {
-            var _frames:NoteSplashFramesData = config.frames[i];
-
-            for (j in 0 ... NoteSplash.directions.length)
+            switch (config.format ?? "".toLowerCase():String)
             {
-                animation.addByPrefix
-                (
-                    '${_frames.prefix} ${NoteSplash.directions[j].toLowerCase()}',
-                    
-                    '${_frames.prefix} ${NoteSplash.directions[j].toLowerCase()}',
-                    
-                    _frames.frameRate ?? 24.0,
-
-                    _frames.looped ?? false,
-
-                    _frames.flipX ?? false,
-
-                    _frames.flipY ?? false
-                );   
+                case "sparrow":
+                    frames = FlxAtlasFrames.fromSparrow(Assets.graphic(Paths.png(config.png)), Paths.xml(config.xml));
+                
+                case "texturepackerxml":
+                    frames = FlxAtlasFrames.fromTexturePackerXml(Assets.graphic(Paths.png(config.png)), Paths.xml(config.xml));
             }
-        }
 
-        return config;
-    }
+            antialiasing = config.antialiasing ?? true;
+
+            for (i in 0 ... config.frames.length)
+            {
+                var _frames:NoteSplashFramesData = config.frames[i];
+
+                for (j in 0 ... NoteSplash.directions.length)
+                {
+                    animation.addByPrefix
+                    (
+                        '${_frames.prefix} ${NoteSplash.directions[j].toLowerCase()}',
+                        
+                        '${_frames.prefix} ${NoteSplash.directions[j].toLowerCase()}',
+                        
+                        _frames.frameRate ?? 24.0,
+
+                        _frames.looped ?? false,
+
+                        _frames.flipX ?? false,
+
+                        _frames.flipY ?? false
+                    );   
+                }
+            }
+
+            return config;
+        }
 
     public var direction:Int;
 

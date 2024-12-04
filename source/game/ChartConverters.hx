@@ -6,7 +6,7 @@ import sys.FileSystem;
 
 import sys.io.File;
 
-import core.AssetMan;
+import core.Assets;
 import core.Paths;
 
 import util.TimingUtil;
@@ -20,13 +20,13 @@ class FunkConverter
     {
         var output:Chart = new Chart();
 
-        var loadedChart:Dynamic = Json.parse(AssetMan.text(Paths.json(chartPath)));
+        var loadedChart:Dynamic = Json.parse(Assets.text(Paths.json(chartPath)));
 
         var notes:Array<FunkNote> = Reflect.field(loadedChart.notes, difficulty);
 
         TimingUtil.sortSimple(notes);
 
-        var loadedMetadata:Dynamic = Json.parse(AssetMan.text(Paths.json(metadataPath)));
+        var loadedMetadata:Dynamic = Json.parse(Assets.text(Paths.json(metadataPath)));
 
         var timeChanges:Array<FunkTimeChange> = loadedMetadata.timeChanges;
 
@@ -70,7 +70,7 @@ class PsychConverter
     {
         var output:Chart = new Chart();
 
-        var loaded:Dynamic = Json.parse(AssetMan.text(Paths.json(path)));
+        var loaded:Dynamic = Json.parse(Assets.text(Paths.json(path)));
 
         output.name = loaded.song;
 

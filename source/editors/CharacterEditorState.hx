@@ -37,7 +37,7 @@ import haxe.ui.events.UIEvent;
 
 import haxe.ui.focus.FocusManager;
 
-import core.AssetMan;
+import core.Assets;
 import core.Paths;
 
 import game.Character;
@@ -53,10 +53,10 @@ class CharacterEditorState extends FlxState
     public var gameCamera(get, never):FlxCamera;
     
     @:noCompletion
-    function get_gameCamera():FlxCamera
-    {
-        return FlxG.camera;
-    }
+        function get_gameCamera():FlxCamera
+        {
+            return FlxG.camera;
+        }
 
     public var hudCamera:FlxCamera;
 
@@ -125,10 +125,10 @@ class CharacterEditorState extends FlxState
             switch (character.config.format ?? "".toLowerCase():String)
             {
                 case "sparrow":
-                    character.frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(character.config.png)), Paths.xml(character.config.xml));
+                    character.frames = FlxAtlasFrames.fromSparrow(Assets.graphic(Paths.png(character.config.png)), Paths.xml(character.config.xml));
 
                 case "texturepackerxml":
-                    character.frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(character.config.png)), Paths.xml(character.config.xml));
+                    character.frames = FlxAtlasFrames.fromTexturePackerXml(Assets.graphic(Paths.png(character.config.png)), Paths.xml(character.config.xml));
             }
 
             character.antialiasing = character.config.antialiasing ?? true;
@@ -287,10 +287,10 @@ class CharacterEditorState extends FlxState
             switch (character.config.format ?? "".toLowerCase():String)
             {
                 case "sparrow":
-                    character.frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(character.config.png), true), Paths.xml(character.config.xml));
+                    character.frames = FlxAtlasFrames.fromSparrow(Assets.graphic(Paths.png(character.config.png), true), Paths.xml(character.config.xml));
 
                 case "texturepackerxml":
-                    character.frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(character.config.png), true), Paths.xml(character.config.xml));
+                    character.frames = FlxAtlasFrames.fromTexturePackerXml(Assets.graphic(Paths.png(character.config.png), true), Paths.xml(character.config.xml));
             }
 
             character.animation.destroyAnimations();
@@ -378,7 +378,7 @@ class CharacterEditorState extends FlxState
 
         FlxG.mouse.visible = false;
 
-        AssetMan.clearCaches();
+        Assets.clearCaches();
     }
 
     public function refreshMainTab():Void

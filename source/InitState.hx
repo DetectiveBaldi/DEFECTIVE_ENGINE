@@ -11,7 +11,7 @@ import flixel.FlxState;
 
 import flixel.util.typeLimit.NextState;
 
-import core.AssetMan;
+import core.Assets;
 import core.Options;
 
 import plugins.Logger;
@@ -57,8 +57,6 @@ class InitState extends FlxState
 
         FlxG.plugins.drawOnTop = true;
 
-        AssetMan.init();
-
         Options.init();
 
         FlxG.autoPause = Options.autoPause;
@@ -66,6 +64,8 @@ class InitState extends FlxState
         FlxG.console.autoPause = Options.autoPause;
         
         FlxG.fullscreen = Options.fullscreen;
+
+        Assets.init();
 
         FlxG.plugins.addPlugin(logger = new Logger());
         

@@ -2,11 +2,13 @@ package core;
 
 import sys.io.File;
 
+import lime.media.AudioBuffer;
+
+import lime.media.vorbis.VorbisFile;
+
 import openfl.display.BitmapData;
 
 import openfl.media.Sound;
-
-import openfl.utils.Assets;
 
 import flixel.FlxG;
 
@@ -14,10 +16,7 @@ import flixel.graphics.FlxGraphic;
 
 import core.Options;
 
-/**
- * A class which handles the caching of graphics and sounds.
- */
-class AssetMan
+class Assets
 {
     public static var graphics:Map<String, FlxGraphic>;
 
@@ -25,9 +24,15 @@ class AssetMan
 
     public static function init():Void
     {
+        FlxG.signals.preStateSwitch.add(() -> 
+        {
+            if (!Options.persistentCache)
+                clearCaches();
+        });
+
         graphics ??= new Map<String, FlxGraphic>();
 
-        sounds ??= new Map<String, Sound>();  
+        sounds ??= new Map<String, Sound>();
     }
 
     /**
@@ -98,7 +103,7 @@ class AssetMan
         var output:Sound;
 
         if (Options.soundStreaming && soundStreaming)
-            output = Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(lime.media.vorbis.VorbisFile.fromFile(path)));
+            output = Sound.fromAudioBuffer(AudioBuffer.fromVorbisFile(VorbisFile.fromFile(path)));
         else
             output = Sound.fromFile(path);
 
@@ -120,7 +125,7 @@ class AssetMan
         
         sound.close();
 
-        Assets.cache.removeSound(path);
+        openfl.utils.Assets.cache.removeSound(path);
 
         sound = null;
 

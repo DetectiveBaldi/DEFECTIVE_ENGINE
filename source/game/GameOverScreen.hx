@@ -6,7 +6,7 @@ import flixel.sound.FlxSound;
 
 import flixel.util.FlxColor;
 
-import core.AssetMan;
+import core.Assets;
 import core.Paths;
 
 import music.MusicSubState;
@@ -56,7 +56,7 @@ class GameOverScreen extends MusicSubState
 
         game.gameCameraTarget.setPosition(player.getMidpoint().x, player.getMidpoint().y);
 
-        start = FlxG.sound.load(AssetMan.sound(Paths.ogg("assets/sounds/game/GameOverScreen/start"), false));
+        start = FlxG.sound.load(Assets.sound(Paths.ogg("assets/sounds/game/GameOverScreen/start"), false));
 
         start.play();
     }
@@ -75,7 +75,7 @@ class GameOverScreen extends MusicSubState
 
                 player.animation.play("end");
 
-                end = FlxG.sound.load(AssetMan.sound(Paths.ogg("assets/sounds/game/GameOverScreen/end"), false));
+                end = FlxG.sound.load(Assets.sound(Paths.ogg("assets/sounds/game/GameOverScreen/end"), false));
 
                 end.play();
 
@@ -92,7 +92,7 @@ class GameOverScreen extends MusicSubState
         {
             player.skipDance = false;
 
-            tune = FlxG.sound.load(AssetMan.sound(Paths.ogg("assets/music/game/GameOverScreen/tune")), 1.0, true);
+            tune = FlxG.sound.load(Assets.sound(Paths.ogg("assets/music/game/GameOverScreen/tune")), 1.0, true);
 
             tune.play();
         }

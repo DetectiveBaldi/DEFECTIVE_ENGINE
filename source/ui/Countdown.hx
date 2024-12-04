@@ -14,7 +14,7 @@ import flixel.tweens.FlxTween.FlxTweenManager;
 import flixel.util.FlxSignal;
 import flixel.util.FlxSignal.FlxTypedSignal;
 
-import core.AssetMan;
+import core.Assets;
 import core.Paths;
 
 import music.Conductor;
@@ -27,18 +27,18 @@ class Countdown extends FlxGroup
     public var conductor(default, set):Conductor;
 
     @:noCompletion
-    function set_conductor(_conductor:Conductor):Conductor
-    {
-        var __conductor:Conductor = conductor;
+        function set_conductor(_conductor:Conductor):Conductor
+        {
+            var __conductor:Conductor = conductor;
 
-        conductor = _conductor;
+            conductor = _conductor;
 
-        conductor?.onBeatHit?.add(beatHit);
+            conductor?.onBeatHit?.add(beatHit);
 
-        __conductor?.onBeatHit?.remove(beatHit);
+            __conductor?.onBeatHit?.remove(beatHit);
 
-        return conductor;
-    }
+            return conductor;
+        }
 
     public var started:Bool;
 
@@ -106,7 +106,7 @@ class Countdown extends FlxGroup
 
         add(tweens);
 
-        sprite = new FlxSprite().loadGraphic(AssetMan.graphic(Paths.png("assets/images/ui/Countdown/countdown")), true, 1000, 500);
+        sprite = new FlxSprite().loadGraphic(Assets.graphic(Paths.png("assets/images/ui/Countdown/countdown")), true, 1000, 500);
 
         sprite.antialiasing = true;
 
@@ -126,13 +126,13 @@ class Countdown extends FlxGroup
 
         add(sprite);
 
-        three = FlxG.sound.load(AssetMan.sound(Paths.ogg("assets/sounds/ui/Countdown/three")), 0.65);
+        three = FlxG.sound.load(Assets.sound(Paths.ogg("assets/sounds/ui/Countdown/three")), 0.65);
 
-        two = FlxG.sound.load(AssetMan.sound(Paths.ogg("assets/sounds/ui/Countdown/two")), 0.65);
+        two = FlxG.sound.load(Assets.sound(Paths.ogg("assets/sounds/ui/Countdown/two")), 0.65);
 
-        one = FlxG.sound.load(AssetMan.sound(Paths.ogg("assets/sounds/ui/Countdown/one")), 0.65);
+        one = FlxG.sound.load(Assets.sound(Paths.ogg("assets/sounds/ui/Countdown/one")), 0.65);
 
-        go = FlxG.sound.load(AssetMan.sound(Paths.ogg("assets/sounds/ui/Countdown/go")), 0.65);
+        go = FlxG.sound.load(Assets.sound(Paths.ogg("assets/sounds/ui/Countdown/go")), 0.65);
     }
 
     override function destroy():Void

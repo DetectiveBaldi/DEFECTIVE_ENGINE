@@ -2,7 +2,7 @@ package util;
 
 class ArrayUtil
 {
-    public static function oldest<T>(arr:Array<T>, ?func:(T)->Bool):T
+    public static function oldest<T>(arr:Array<T>, func:(T)->Bool = null):T
     {
         var output:T = null;
 
@@ -30,7 +30,7 @@ class ArrayUtil
         return output;
     }
 
-    public static function newest<T>(arr:Array<T>, ?func:(T)->Bool):T
+    public static function newest<T>(arr:Array<T>, func:(T)->Bool = null):T
     {
         var output:T = null;
 

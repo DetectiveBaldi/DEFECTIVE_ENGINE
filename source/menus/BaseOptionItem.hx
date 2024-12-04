@@ -10,7 +10,7 @@ import flixel.text.FlxText;
 
 import flixel.util.FlxColor;
 
-import core.AssetMan;
+import core.Assets;
 import core.Paths;
 
 class BaseOptionItem extends FlxSpriteGroup
@@ -18,14 +18,14 @@ class BaseOptionItem extends FlxSpriteGroup
     public var name(default, set):String;
 
     @:noCompletion
-    function set_name(_name:String):String
-    {
-        name = _name;
+        function set_name(_name:String):String
+        {
+            name = _name;
 
-        nameText.text = name;
+            nameText.text = name;
 
-        return name;
-    }
+            return name;
+        }
 
     public var description:String;
 
@@ -46,7 +46,7 @@ class BaseOptionItem extends FlxSpriteGroup
 
         background.antialiasing = true;
 
-        background.frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png("assets/images/menus/BaseOptionItem/background")), Paths.xml("assets/images/menus/BaseOptionItem/background"));
+        background.frames = FlxAtlasFrames.fromSparrow(Assets.graphic(Paths.png("assets/images/menus/BaseOptionItem/background")), Paths.xml("assets/images/menus/BaseOptionItem/background"));
 
         background.animation.addByPrefix("background", "background", 12.0);
 

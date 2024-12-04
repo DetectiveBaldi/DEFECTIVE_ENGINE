@@ -6,7 +6,7 @@ import flixel.FlxSprite;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 
-import core.AssetMan;
+import core.Assets;
 import core.Paths;
 
 class Note extends FlxSprite
@@ -20,7 +20,7 @@ class Note extends FlxSprite
         if (configs.exists(path))
             return configs[path];
 
-        configs[path] = Json.parse(AssetMan.text(Paths.json(path)));
+        configs[path] = Json.parse(Assets.text(Paths.json(path)));
 
         return configs[path];
     }
@@ -28,32 +28,32 @@ class Note extends FlxSprite
     public var config(default, set):NoteConfig;
     
     @:noCompletion
-    function set_config(_config:NoteConfig):NoteConfig
-    {
-        config = _config;
-
-        switch (config.format ?? "".toLowerCase():String)
+        function set_config(_config:NoteConfig):NoteConfig
         {
-            case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(AssetMan.graphic(Paths.png(config.png)), Paths.xml(config.xml));
-            
-            case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(AssetMan.graphic(Paths.png(config.png)), Paths.xml(config.xml));
+            config = _config;
+
+            switch (config.format ?? "".toLowerCase():String)
+            {
+                case "sparrow":
+                    frames = FlxAtlasFrames.fromSparrow(Assets.graphic(Paths.png(config.png)), Paths.xml(config.xml));
+                
+                case "texturepackerxml":
+                    frames = FlxAtlasFrames.fromTexturePackerXml(Assets.graphic(Paths.png(config.png)), Paths.xml(config.xml));
+            }
+
+            for (i in 0 ... Note.directions.length)
+            {
+                animation.addByPrefix(Note.directions[i].toLowerCase(), Note.directions[i].toLowerCase() + "0", 24.0, false);
+
+                animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldPiece", Note.directions[i].toLowerCase() + "HoldPiece0", 24.0, false);
+                
+                animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldTail", Note.directions[i].toLowerCase() + "HoldTail0", 24.0, false);
+            }
+
+            antialiasing = _config.antialiasing ?? true;
+
+            return config;
         }
-
-        for (i in 0 ... Note.directions.length)
-        {
-            animation.addByPrefix(Note.directions[i].toLowerCase(), Note.directions[i].toLowerCase() + "0", 24.0, false);
-
-            animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldPiece", Note.directions[i].toLowerCase() + "HoldPiece0", 24.0, false);
-            
-            animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldTail", Note.directions[i].toLowerCase() + "HoldTail0", 24.0, false);
-        }
-
-        antialiasing = _config.antialiasing ?? true;
-
-        return config;
-    }
 
     public var time:Float;
 

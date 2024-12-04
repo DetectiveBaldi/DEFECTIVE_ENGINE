@@ -11,20 +11,20 @@ class VariableOptionItem<T> extends BaseOptionItem
     public var value(get, set):T;
 
     @:noCompletion
-    function get_value():T
-    {
-        return Reflect.getProperty(Options, option);
-    }
+        function get_value():T
+        {
+            return Reflect.getProperty(Options, option);
+        }
 
     @:noCompletion
-    function set_value(_value:T):T
-    {
-        Reflect.setProperty(Options, option, _value);
+        function set_value(_value:T):T
+        {
+            Reflect.setProperty(Options, option, _value);
 
-        onUpdate.dispatch(_value);
+            onUpdate.dispatch(_value);
 
-        return value;
-    }
+            return value;
+        }
 
     public var onUpdate:FlxTypedSignal<(value:T)->Void>;
 

@@ -8,7 +8,9 @@ import flixel.input.keyboard.FlxKeyboard;
 
 import flixel.math.FlxMath;
 
-import core.AssetMan;
+import flixel.sound.FlxSound;
+
+import core.Assets;
 import core.Options;
 import core.Paths;
 
@@ -46,7 +48,7 @@ class KeybindOptionItem extends VariableOptionItem<Array<Int>>
 
         enabled = false;
 
-        keyboard = new FlxSprite(0.0, 0.0, AssetMan.graphic(Paths.png("assets/images/menus/KeybindOptionItem/keyboard")));
+        keyboard = new FlxSprite(0.0, 0.0, Assets.graphic(Paths.png("assets/images/menus/KeybindOptionItem/keyboard")));
 
         keyboard.active = false;
 
@@ -68,10 +70,7 @@ class KeybindOptionItem extends VariableOptionItem<Array<Int>>
 
         bindIndex = 0;
 
-        nameText.text = if (bindIndex == 0)
-            '${name}: (${FlxKey.toStringMap[value[0]]}) ${FlxKey.toStringMap[value[1]]}';
-        else
-            '${name}: ${FlxKey.toStringMap[value[0]]} (${FlxKey.toStringMap[value[1]]})';
+        nameText.text = bindIndex == 0 ? '${name}: (${FlxKey.toStringMap[value[0]]}) ${FlxKey.toStringMap[value[1]]}' : '${name}: ${FlxKey.toStringMap[value[0]]} (${FlxKey.toStringMap[value[1]]})';
     }
 
     override function update(elapsed:Float):Void
@@ -90,16 +89,17 @@ class KeybindOptionItem extends VariableOptionItem<Array<Int>>
 
                 if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT)
                 {
-                    FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+                    nameText.text = bindIndex == 0 ? '${name}: (${FlxKey.toStringMap[value[0]]}) ${FlxKey.toStringMap[value[1]]}' : '${name}: ${FlxKey.toStringMap[value[0]]} (${FlxKey.toStringMap[value[1]]})';
 
-                    nameText.text = if (bindIndex == 0)
-                        '${name}: (${FlxKey.toStringMap[value[0]]}) ${FlxKey.toStringMap[value[1]]}';
-                    else
-                        '${name}: ${FlxKey.toStringMap[value[0]]} (${FlxKey.toStringMap[value[1]]})';
+                    var scroll:FlxSound = FlxG.sound.play(Assets.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+
+                    scroll.onComplete = scroll.kill;
                 }
 
                 if (FlxG.keys.justPressed.ENTER)
                 {
+                    FlxG.mouse.enabled = false;
+
                     FlxG.keys.enabled = false;
 
                     nameText.text = "...";
@@ -111,24 +111,27 @@ class KeybindOptionItem extends VariableOptionItem<Array<Int>>
             }
             else
             {
-                if (_keyboard.justPressed.ANY)
+                var firstJustPressed:Int = _keyboard.firstJustPressed();
+
+                if (firstJustPressed != -1.0)
                 {
+                    FlxG.mouse.enabled = true;
+
                     FlxG.keys.enabled = true;
 
                     FlxG.keys.reset();
 
-                    FlxG.sound.play(AssetMan.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
-
-                    value[bindIndex] = _keyboard.firstJustPressed();
+                    value[bindIndex] = firstJustPressed;
 
                     value = value;
 
-                    nameText.text = if (bindIndex == 0)
-                        '${name}: (${FlxKey.toStringMap[value[0]]}) ${FlxKey.toStringMap[value[1]]}';
-                    else
-                        '${name}: ${FlxKey.toStringMap[value[0]]} (${FlxKey.toStringMap[value[1]]})';
+                    nameText.text = bindIndex == 0 ? '${name}: (${FlxKey.toStringMap[value[0]]}) ${FlxKey.toStringMap[value[1]]}' : '${name}: ${FlxKey.toStringMap[value[0]]} (${FlxKey.toStringMap[value[1]]})';
 
                     _keyboard.enabled = false;
+
+                    var scroll:FlxSound = FlxG.sound.play(Assets.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+
+                    scroll.onComplete = scroll.kill;
                 }
             }
         }
@@ -138,7 +141,15 @@ class KeybindOptionItem extends VariableOptionItem<Array<Int>>
     {
         super.destroy();
 
+        FlxG.mouse.enabled = true;
+
+        FlxG.keys.enabled = true;
+
+        FlxG.keys.reset();
+
         FlxG.inputs.remove(_keyboard);
+
+        _keyboard.enabled = false;
 
         _keyboard.destroy();
     }

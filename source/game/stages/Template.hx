@@ -2,7 +2,7 @@ package game.stages;
 
 import flixel.FlxSprite;
 
-import core.AssetMan;
+import core.Assets;
 import core.Paths;
 
 class Template extends Stage
@@ -17,13 +17,13 @@ class Template extends Stage
     {
         super();
 
-        background = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/Template/background")));
+        background = new FlxSprite(0, 0, Assets.graphic(Paths.png("assets/images/game/stages/Template/background")));
 
         background.antialiasing = true;
 
         add(background);
 
-        foreground = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/Template/foreground")));
+        foreground = new FlxSprite(0, 0, Assets.graphic(Paths.png("assets/images/game/stages/Template/foreground")));
 
         foreground.antialiasing = true;
 
@@ -35,7 +35,7 @@ class Template extends Stage
         
         add(foreground);
 
-        curtains = new FlxSprite(0, 0, AssetMan.graphic(Paths.png("assets/images/game/stages/Template/curtains")));
+        curtains = new FlxSprite(0, 0, Assets.graphic(Paths.png("assets/images/game/stages/Template/curtains")));
 
         curtains.antialiasing = true;
 

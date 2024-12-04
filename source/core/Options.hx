@@ -7,146 +7,162 @@ class Options
     public static var autoPause(get, set):Bool;
 
     @:noCompletion
-    static function get_autoPause():Bool
-    {
-        return FlxG.save.data.options.autoPause ??= false;
-    }
+        static function get_autoPause():Bool
+        {
+            return FlxG.save.data.options.autoPause ??= false;
+        }
 
     @:noCompletion
-    static function set_autoPause(_autoPause:Bool):Bool
-    {
-        FlxG.save.data.options.autoPause = _autoPause;
+        static function set_autoPause(_autoPause:Bool):Bool
+        {
+            FlxG.save.data.options.autoPause = _autoPause;
 
-        return autoPause;
-    }
+            return autoPause;
+        }
 
     public static var fullscreen(get, set):Bool;
 
     @:noCompletion
-    static function get_fullscreen():Bool
-    {
-        return FlxG.save.data.options.fullscreen ??= false;
-    }
+        static function get_fullscreen():Bool
+        {
+            return FlxG.save.data.options.fullscreen ??= false;
+        }
 
     @:noCompletion
     static function set_fullscreen(_fullscreen:Bool):Bool
-    {
-        FlxG.save.data.options.fullscreen = _fullscreen;
+        {
+            FlxG.save.data.options.fullscreen = _fullscreen;
 
-        return fullscreen;
-    }
+            return fullscreen;
+        }
 
     public static var gpuCaching(get, set):Bool;
 
     @:noCompletion
-    static function get_gpuCaching():Bool
-    {
-        return FlxG.save.data.options.gpuCaching ??= true;
-    }
+        static function get_gpuCaching():Bool
+        {
+            return FlxG.save.data.options.gpuCaching ??= true;
+        }
 
     @:noCompletion
-    static function set_gpuCaching(_gpuCaching:Bool):Bool
-    {
-        FlxG.save.data.options.gpuCaching = _gpuCaching;
+        static function set_gpuCaching(_gpuCaching:Bool):Bool
+        {
+            FlxG.save.data.options.gpuCaching = _gpuCaching;
 
-        return gpuCaching;
-    }
+            return gpuCaching;
+        }
 
     public static var soundStreaming(get, set):Bool;
 
     @:noCompletion
-    static function get_soundStreaming():Bool
-    {
-        return FlxG.save.data.options.soundStreaming ??= true;
-    }
+        static function get_soundStreaming():Bool
+        {
+            return FlxG.save.data.options.soundStreaming ??= true;
+        }
 
     @:noCompletion
-    static function set_soundStreaming(_soundStreaming:Bool):Bool
-    {
-        FlxG.save.data.options.soundStreaming = _soundStreaming;
+        static function set_soundStreaming(_soundStreaming:Bool):Bool
+        {
+            FlxG.save.data.options.soundStreaming = _soundStreaming;
 
-        return soundStreaming;
-    }
+            return soundStreaming;
+        }
+    
+    public static var persistentCache(get, set):Bool;
+
+    @:noCompletion
+        static function get_persistentCache():Bool
+        {
+            return FlxG.save.data.options.persistentCache ??= true;
+        }
+    
+    @:noCompletion
+        static function set_persistentCache(_persistentCache:Bool):Bool
+        {
+            FlxG.save.data.options.persistentCache = _persistentCache;
+
+            return _persistentCache;
+        }
 
     public static var keybinds(get, set):Map<String, Array<Int>>;
 
     @:noCompletion
-    static function get_keybinds():Map<String, Array<Int>>
-    {
-        return FlxG.save.data.options.keybinds ??= ["NOTE:LEFT" => [65, 37], "NOTE:DOWN" => [83, 40], "NOTE:UP" => [87, 38], "NOTE:RIGHT" => [68, 39]];
-    }
+        static function get_keybinds():Map<String, Array<Int>>
+        {
+            return FlxG.save.data.options.keybinds ??= ["NOTE:LEFT" => [65, 37], "NOTE:DOWN" => [83, 40], "NOTE:UP" => [87, 38], "NOTE:RIGHT" => [68, 39]];
+        }
 
     @:noCompletion
-    static function set_keybinds(_keybinds:Map<String, Array<Int>>):Map<String, Array<Int>>
-    {
-        FlxG.save.data.options.keybinds = _keybinds;
+        static function set_keybinds(_keybinds:Map<String, Array<Int>>):Map<String, Array<Int>>
+        {
+            FlxG.save.data.options.keybinds = _keybinds;
 
-        return keybinds;
-    }
+            return keybinds;
+        }
 
     public static var downscroll(get, set):Bool;
 
     @:noCompletion
-    static function get_downscroll():Bool
-    {
-        return FlxG.save.data.options.downscroll ??= false;
-    }
+        static function get_downscroll():Bool
+        {
+            return FlxG.save.data.options.downscroll ??= false;
+        }
 
     @:noCompletion
-    static function set_downscroll(_downscroll:Bool):Bool
-    {
-        FlxG.save.data.options.downscroll = _downscroll;
+        static function set_downscroll(_downscroll:Bool):Bool
+        {
+            FlxG.save.data.options.downscroll = _downscroll;
 
-        return downscroll;
-    }
+            return downscroll;
+        }
 
     public static var middlescroll(get, set):Bool;
 
     @:noCompletion
-    static function get_middlescroll():Bool
-    {
-        return FlxG.save.data.options.middlescroll ??= false;
-    }
+        static function get_middlescroll():Bool
+        {
+            return FlxG.save.data.options.middlescroll ??= false;
+        }
 
     @:noCompletion
-    static function set_middlescroll(_middlescroll:Bool):Bool
-    {
-        FlxG.save.data.options.middlescroll = _middlescroll;
+        static function set_middlescroll(_middlescroll:Bool):Bool
+        {
+            FlxG.save.data.options.middlescroll = _middlescroll;
 
-        return middlescroll;
-    }
+            return middlescroll;
+        }
 
     public static var ghostTapping(get, set):Bool;
 
     @:noCompletion
-    static function get_ghostTapping():Bool
-    {
-        return FlxG.save.data.options.ghostTapping ??= false;
-    }
+        static function get_ghostTapping():Bool
+        {
+            return FlxG.save.data.options.ghostTapping ??= false;
+        }
 
     @:noCompletion
-    static function set_ghostTapping(_ghostTapping:Bool):Bool
-    {
-        FlxG.save.data.options.ghostTapping = _ghostTapping;
+        static function set_ghostTapping(_ghostTapping:Bool):Bool
+        {
+            FlxG.save.data.options.ghostTapping = _ghostTapping;
 
-        return ghostTapping;
-    }
+            return ghostTapping;
+        }
 
     public static var gameModifiers(get, set):Map<String, Dynamic>;
 
     @:noCompletion
-    static function get_gameModifiers():Map<String, Dynamic>
-    {
-        return FlxG.save.data.options.gameModifiers ??= new Map<String, Dynamic>();
-    }
+        static function get_gameModifiers():Map<String, Dynamic>
+        {
+            return FlxG.save.data.options.gameModifiers ??= new Map<String, Dynamic>();
+        }
 
     @:noCompletion
-    static function set_gameModifiers(_gameModifiers:Map<String, Dynamic>):Map<String, Dynamic>
-    {
-        FlxG.save.data.options.gameModifiers = _gameModifiers;
+        static function set_gameModifiers(_gameModifiers:Map<String, Dynamic>):Map<String, Dynamic>
+        {
+            FlxG.save.data.options.gameModifiers = _gameModifiers;
 
-        return gameModifiers;
-    }
+            return gameModifiers;
+        }
 
     public static function init():Void
     {

@@ -8,8 +8,13 @@ class Inputs
 {
     public static function checkStatus(input:Input, status:FlxInputState):Bool
     {
-        @:privateAccess
-            return FlxG.keys.checkKeyArrayState(input.codes, status);
+        for (i in 0 ... input.codes.length)
+        {
+            if (FlxG.keys.checkStatus(input.codes[i], status))
+                return true;
+        }
+
+        return false;
     }
 
     public static function inputsJustPressed(inputs:Array<Input>):Bool
