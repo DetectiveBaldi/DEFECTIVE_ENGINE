@@ -125,10 +125,10 @@ class CharacterEditorState extends FlxState
             switch (character.config.format ?? "".toLowerCase():String)
             {
                 case "sparrow":
-                    character.frames = FlxAtlasFrames.fromSparrow(Assets.graphic(Paths.png(character.config.png)), Paths.xml(character.config.xml));
+                    character.frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png(character.config.png)), Paths.xml(character.config.xml));
 
                 case "texturepackerxml":
-                    character.frames = FlxAtlasFrames.fromTexturePackerXml(Assets.graphic(Paths.png(character.config.png)), Paths.xml(character.config.xml));
+                    character.frames = FlxAtlasFrames.fromTexturePackerXml(Assets.getGraphic(Paths.png(character.config.png)), Paths.xml(character.config.xml));
             }
 
             character.antialiasing = character.config.antialiasing ?? true;
@@ -287,10 +287,10 @@ class CharacterEditorState extends FlxState
             switch (character.config.format ?? "".toLowerCase():String)
             {
                 case "sparrow":
-                    character.frames = FlxAtlasFrames.fromSparrow(Assets.graphic(Paths.png(character.config.png), true), Paths.xml(character.config.xml));
+                    character.frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png(character.config.png), true), Paths.xml(character.config.xml));
 
                 case "texturepackerxml":
-                    character.frames = FlxAtlasFrames.fromTexturePackerXml(Assets.graphic(Paths.png(character.config.png), true), Paths.xml(character.config.xml));
+                    character.frames = FlxAtlasFrames.fromTexturePackerXml(Assets.getGraphic(Paths.png(character.config.png), true), Paths.xml(character.config.xml));
             }
 
             character.animation.destroyAnimations();

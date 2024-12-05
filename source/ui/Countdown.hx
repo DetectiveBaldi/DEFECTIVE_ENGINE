@@ -106,7 +106,7 @@ class Countdown extends FlxGroup
 
         add(tweens);
 
-        sprite = new FlxSprite().loadGraphic(Assets.graphic(Paths.png("assets/images/ui/Countdown/countdown")), true, 1000, 500);
+        sprite = new FlxSprite().loadGraphic(Assets.getGraphic(Paths.png("assets/images/ui/Countdown/countdown")), true, 1000, 500);
 
         sprite.antialiasing = true;
 
@@ -126,13 +126,13 @@ class Countdown extends FlxGroup
 
         add(sprite);
 
-        three = FlxG.sound.load(Assets.sound(Paths.ogg("assets/sounds/ui/Countdown/three")), 0.65);
+        three = FlxG.sound.load(Assets.getSound(Paths.ogg("assets/sounds/ui/Countdown/three")), 0.65);
 
-        two = FlxG.sound.load(Assets.sound(Paths.ogg("assets/sounds/ui/Countdown/two")), 0.65);
+        two = FlxG.sound.load(Assets.getSound(Paths.ogg("assets/sounds/ui/Countdown/two")), 0.65);
 
-        one = FlxG.sound.load(Assets.sound(Paths.ogg("assets/sounds/ui/Countdown/one")), 0.65);
+        one = FlxG.sound.load(Assets.getSound(Paths.ogg("assets/sounds/ui/Countdown/one")), 0.65);
 
-        go = FlxG.sound.load(Assets.sound(Paths.ogg("assets/sounds/ui/Countdown/go")), 0.65);
+        go = FlxG.sound.load(Assets.getSound(Paths.ogg("assets/sounds/ui/Countdown/go")), 0.65);
     }
 
     override function destroy():Void

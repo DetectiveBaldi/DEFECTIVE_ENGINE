@@ -5,7 +5,7 @@ import flixel.FlxSprite;
 import core.Assets;
 import core.Paths;
 
-class Template extends Stage
+class Week1 extends Stage
 {
     public var background:FlxSprite;
 
@@ -17,7 +17,7 @@ class Template extends Stage
     {
         super();
 
-        background = new FlxSprite(0, 0, Assets.graphic(Paths.png("assets/images/game/stages/Template/background")));
+        background = new FlxSprite(0, 0, Assets.getGraphic(Paths.png("assets/images/game/stages/Week1/background")));
 
         background.active = false;
 
@@ -25,7 +25,7 @@ class Template extends Stage
 
         add(background);
 
-        foreground = new FlxSprite(0, 0, Assets.graphic(Paths.png("assets/images/game/stages/Template/foreground")));
+        foreground = new FlxSprite(0, 0, Assets.getGraphic(Paths.png("assets/images/game/stages/Week1/foreground")));
 
         foreground.active = false;
 
@@ -39,7 +39,7 @@ class Template extends Stage
         
         add(foreground);
 
-        curtains = new FlxSprite(0, 0, Assets.graphic(Paths.png("assets/images/game/stages/Template/curtains")));
+        curtains = new FlxSprite(0, 0, Assets.getGraphic(Paths.png("assets/images/game/stages/Week1/curtains")));
 
         curtains.active = false;
 

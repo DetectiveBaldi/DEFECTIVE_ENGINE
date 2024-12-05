@@ -1,19 +1,19 @@
 package game.levels;
 
-import game.stages.Template;
+import game.stages.Week1;
 
 class Level1 extends GameState
 {
     public function new():Void
     {
-        super(new Template());
+        super(new Week1());
     }
 
     override function create():Void
     {
         super.create();
 
-        var _stage:Template = cast (stage, Template);
+        var _stage:Week1 = cast (stage, Week1);
 
         gameCameraTarget.setPosition(_stage.background.getMidpoint().x - gameCameraTarget.width * 0.5, _stage.background.getMidpoint().y - gameCameraTarget.height * 0.5 - 150.0);
 

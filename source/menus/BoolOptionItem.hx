@@ -25,7 +25,7 @@ class BoolOptionItem extends VariableOptionItem<Bool>
 
         checkbox.antialiasing = true;
 
-        checkbox.frames = FlxAtlasFrames.fromSparrow(Assets.graphic(Paths.png("assets/images/menus/BoolOptionItem/checkbox")), Paths.xml("assets/images/menus/BoolOptionItem/checkbox"));
+        checkbox.frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png("assets/images/menus/BoolOptionItem/checkbox")), Paths.xml("assets/images/menus/BoolOptionItem/checkbox"));
 
         checkbox.animation.addByIndices("check", "checkbox", [0, 1, 2, 3, 4, 5, 6], "", 24.0, false);
 

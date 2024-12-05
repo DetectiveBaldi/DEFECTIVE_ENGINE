@@ -478,20 +478,20 @@ class GameState extends MusicSubState
 
     public function loadSong(level:String):Void
     {
-        instrumental = FlxG.sound.load(Assets.sound(Paths.ogg('assets/music/game/levels/${level}/Instrumental')));
+        instrumental = FlxG.sound.load(Assets.getSound(Paths.ogg('assets/music/game/levels/${level}/Instrumental')));
 
         instrumental.onComplete = endSong;
 
         if (FileSystem.exists(Paths.ogg('assets/music/game/levels/${level}/Vocals-Main')))
-            mainVocals = FlxG.sound.load(Assets.sound(Paths.ogg('assets/music/game/levels/${level}/Vocals-Main')));
+            mainVocals = FlxG.sound.load(Assets.getSound(Paths.ogg('assets/music/game/levels/${level}/Vocals-Main')));
 
         if (mainVocals == null)
         {
             if (FileSystem.exists(Paths.ogg('assets/music/game/levels/${level}/Vocals-Opponent')))
-                opponentVocals = FlxG.sound.load(Assets.sound(Paths.ogg('assets/music/game/levels/${level}/Vocals-Opponent')));
+                opponentVocals = FlxG.sound.load(Assets.getSound(Paths.ogg('assets/music/game/levels/${level}/Vocals-Opponent')));
 
             if (FileSystem.exists(Paths.ogg('assets/music/game/levels/${level}/Vocals-Player')))
-                playerVocals = FlxG.sound.load(Assets.sound(Paths.ogg ('assets/music/game/levels/${level}/Vocals-Player')));
+                playerVocals = FlxG.sound.load(Assets.getSound(Paths.ogg ('assets/music/game/levels/${level}/Vocals-Player')));
         }
     }
 
@@ -525,7 +525,7 @@ class GameState extends MusicSubState
         {       
             if (!note.animation.name.contains("Hold"))
             {
-                var _noteHit:FlxSound = FlxG.sound.play(Assets.sound(Paths.ogg("assets/sounds/game/GameState/noteHit"), false));
+                var _noteHit:FlxSound = FlxG.sound.play(Assets.getSound(Paths.ogg("assets/sounds/game/GameState/noteHit"), false));
 
                 _noteHit.onComplete = _noteHit.kill;
 
@@ -566,7 +566,7 @@ class GameState extends MusicSubState
 
     public function noteMiss(note:Note):Void
     {
-        var _noteMiss:FlxSound = FlxG.sound.play(Assets.sound(Paths.ogg('assets/sounds/game/GameState/noteMiss${FlxG.random.int(0, 2)}'), false), 0.15);
+        var _noteMiss:FlxSound = FlxG.sound.play(Assets.getSound(Paths.ogg('assets/sounds/game/GameState/noteMiss${FlxG.random.int(0, 2)}'), false), 0.15);
 
         _noteMiss.onComplete = _noteMiss.kill;
 
@@ -675,7 +675,7 @@ class GameState extends MusicSubState
         if (Options.ghostTapping || countdown.tick <= 0.0)
             return;
 
-        var _noteMiss:FlxSound = FlxG.sound.play(Assets.sound(Paths.ogg('assets/sounds/game/GameState/noteMiss${FlxG.random.int(0, 2)}'), false), 0.15);
+        var _noteMiss:FlxSound = FlxG.sound.play(Assets.getSound(Paths.ogg('assets/sounds/game/GameState/noteMiss${FlxG.random.int(0, 2)}'), false), 0.15);
 
         _noteMiss.onComplete = _noteMiss.kill;
         

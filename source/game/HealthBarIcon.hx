@@ -28,7 +28,7 @@ class HealthBarIcon extends FlxSprite
         {
             config = _config;
 
-            loadGraphic(Assets.graphic(Paths.png(config.png)));
+            loadGraphic(Assets.getGraphic(Paths.png(config.png)));
 
             antialiasing = config.antialiasing ?? true;
 

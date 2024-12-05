@@ -48,7 +48,7 @@ class KeybindOptionItem extends VariableOptionItem<Array<Int>>
 
         enabled = false;
 
-        keyboard = new FlxSprite(0.0, 0.0, Assets.graphic(Paths.png("assets/images/menus/KeybindOptionItem/keyboard")));
+        keyboard = new FlxSprite(0.0, 0.0, Assets.getGraphic(Paths.png("assets/images/menus/KeybindOptionItem/keyboard")));
 
         keyboard.active = false;
 
@@ -91,7 +91,7 @@ class KeybindOptionItem extends VariableOptionItem<Array<Int>>
                 {
                     nameText.text = bindIndex == 0 ? '${name}: (${FlxKey.toStringMap[value[0]]}) ${FlxKey.toStringMap[value[1]]}' : '${name}: ${FlxKey.toStringMap[value[0]]} (${FlxKey.toStringMap[value[1]]})';
 
-                    var scroll:FlxSound = FlxG.sound.play(Assets.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+                    var scroll:FlxSound = FlxG.sound.play(Assets.getSound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
 
                     scroll.onComplete = scroll.kill;
                 }
@@ -129,7 +129,7 @@ class KeybindOptionItem extends VariableOptionItem<Array<Int>>
 
                     _keyboard.enabled = false;
 
-                    var scroll:FlxSound = FlxG.sound.play(Assets.sound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
+                    var scroll:FlxSound = FlxG.sound.play(Assets.getSound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
 
                     scroll.onComplete = scroll.kill;
                 }

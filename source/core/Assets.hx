@@ -1,5 +1,7 @@
 package core;
 
+import haxe.io.Bytes;
+
 import sys.io.File;
 
 import lime.media.AudioBuffer;
@@ -24,6 +26,8 @@ class Assets
 
     public static var sounds:Map<String, Sound>;
 
+    public static var bytes:Map<String, Bytes>;
+
     public static function init():Void
     {
         persistentCache = Options.persistentCache;
@@ -37,6 +41,8 @@ class Assets
         graphics = new Map<String, FlxGraphic>();
 
         sounds = new Map<String, Sound>();
+
+        bytes = new Map<String, Bytes>();
     }
 
     /**
@@ -46,12 +52,12 @@ class Assets
      * @param gpuCaching Specifies whether this graphic should be uploaded to the GPU to reduce RAM usage.
      * @return `flixel.graphics.FlxGraphic`
      */
-    public static function graphic(path:String, ?gpuCaching:Bool = true):FlxGraphic
+    public static function getGraphic(path:String, gpuCaching:Bool = true):FlxGraphic
     {
         if (graphics.exists(path))
             return graphics[path];
 
-        var graphic:FlxGraphic = FlxGraphic.fromBitmapData(BitmapData.fromFile(path));
+        var graphic:FlxGraphic = FlxGraphic.fromBitmapData(BitmapData.fromBytes(getBytes(path)));
 
         #if (cpp && windows)
             if (Options.gpuCaching && gpuCaching)
@@ -99,7 +105,7 @@ class Assets
      * @param soundStreaming Specifies whether this sound should be streamed to reduce RAM usage.
      * @return `openfl.media.Sound`
      */
-    public static function sound(path:String, ?soundStreaming:Bool = true):Sound
+    public static function getSound(path:String, soundStreaming:Bool = true):Sound
     {
         if (sounds.exists(path))
             return sounds[path];
@@ -107,9 +113,9 @@ class Assets
         var output:Sound;
 
         if (Options.soundStreaming && soundStreaming)
-            output = Sound.fromAudioBuffer(AudioBuffer.fromVorbisFile(VorbisFile.fromFile(path)));
+            output = Sound.fromAudioBuffer(AudioBuffer.fromVorbisFile(VorbisFile.fromBytes(getBytes(path))));
         else
-            output = Sound.fromFile(path);
+            output = Sound.fromAudioBuffer(AudioBuffer.fromBytes(getBytes(path)));
 
         sounds[path] = output;
 
@@ -145,6 +151,34 @@ class Assets
             removeSound(key);
     }
 
+    public static function getBytes(path:String):Bytes
+    {
+        if (bytes.exists(path))
+            return bytes[path];
+
+        bytes[path] = File.getBytes(path);
+
+        return bytes[path];
+    }
+
+    public static function removeBytes(path:String):Void
+    {
+        if (!bytes.exists(path))
+            return;
+
+        var _bytes:Bytes = bytes[path];
+
+        _bytes = null;
+
+        bytes.remove(path);
+    }
+
+    public static function clearBytes():Void
+    {
+        for (key => value in bytes)
+            removeBytes(key);
+    }
+
     /**
      * Clears each item from the graphic and sound caches.
      */
@@ -162,6 +196,6 @@ class Assets
      */
     public static function text(path:String):String
     {
-        return File.getContent(path);
+        return getBytes(path).toString();
     }
 }
