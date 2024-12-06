@@ -26,7 +26,7 @@ class Assets
 
     public static var sounds:Map<String, Sound>;
 
-    public static var bytes:Map<String, Bytes>;
+    public static var byteSets:Map<String, Bytes>;
 
     public static function init():Void
     {
@@ -42,7 +42,7 @@ class Assets
 
         sounds = new Map<String, Sound>();
 
-        bytes = new Map<String, Bytes>();
+        byteSets = new Map<String, Bytes>();
     }
 
     /**
@@ -57,7 +57,7 @@ class Assets
         if (graphics.exists(path))
             return graphics[path];
 
-        var graphic:FlxGraphic = FlxGraphic.fromBitmapData(BitmapData.fromBytes(getBytes(path)));
+        var graphic:FlxGraphic = FlxGraphic.fromBitmapData(BitmapData.fromBytes(getByteSet(path)));
 
         #if (cpp && windows)
             if (Options.gpuCaching && gpuCaching)
@@ -87,6 +87,8 @@ class Assets
         graphic = null;
 
         graphics.remove(path);
+
+        removeByteSet(path);
     }
 
     /**
@@ -113,9 +115,9 @@ class Assets
         var output:Sound;
 
         if (Options.soundStreaming && soundStreaming)
-            output = Sound.fromAudioBuffer(AudioBuffer.fromVorbisFile(VorbisFile.fromBytes(getBytes(path))));
+            output = Sound.fromAudioBuffer(AudioBuffer.fromVorbisFile(VorbisFile.fromBytes(getByteSet(path))));
         else
-            output = Sound.fromAudioBuffer(AudioBuffer.fromBytes(getBytes(path)));
+            output = Sound.fromAudioBuffer(AudioBuffer.fromBytes(getByteSet(path)));
 
         sounds[path] = output;
 
@@ -140,6 +142,8 @@ class Assets
         sound = null;
 
         sounds.remove(path);
+
+        removeByteSet(path);
     }
 
     /**
@@ -151,42 +155,41 @@ class Assets
             removeSound(key);
     }
 
-    public static function getBytes(path:String):Bytes
+    public static function getByteSet(path:String):Bytes
     {
-        if (bytes.exists(path))
-            return bytes[path];
+        if (byteSets.exists(path))
+            return byteSets[path];
 
-        bytes[path] = File.getBytes(path);
+        byteSets[path] = File.getBytes(path);
 
-        return bytes[path];
+        return byteSets[path];
     }
 
-    public static function removeBytes(path:String):Void
+    public static function removeByteSet(path:String):Void
     {
-        if (!bytes.exists(path))
+        if (!byteSets.exists(path))
             return;
 
-        var _bytes:Bytes = bytes[path];
+        var byteSet:Bytes = byteSets[path];
 
-        _bytes = null;
+        byteSet = null;
 
-        bytes.remove(path);
+        byteSets.remove(path);
     }
 
-    public static function clearBytes():Void
+    public static function clearByteSets():Void
     {
-        for (key => value in bytes)
-            removeBytes(key);
+        for (key => value in byteSets)
+            removeByteSet(key);
     }
-
-    /**
-     * Clears each item from the graphic and sound caches.
-     */
+    
     public static function clearCaches():Void
     {
         clearGraphics();
 
         clearSounds();
+
+        clearByteSets();
     }
 
     /**
@@ -194,8 +197,8 @@ class Assets
      * @param path The file path of the text you want to recieve content from.
      * @return `String`
      */
-    public static function text(path:String):String
+    public static function getText(path:String):String
     {
-        return getBytes(path).toString();
+        return getByteSet(path).toString();
     }
 }

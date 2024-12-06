@@ -24,7 +24,7 @@ class Character extends FlxSprite
 {
     public static function findConfig(path:String):CharacterConfig
     {
-        return Json.parse(Assets.text(Paths.json(path)));
+        return Json.parse(Assets.getText(Paths.json(path)));
     }
     
     public var conductor(default, set):Conductor;

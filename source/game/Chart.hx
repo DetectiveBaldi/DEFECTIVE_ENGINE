@@ -13,7 +13,7 @@ class Chart
     {
         var output:Chart = new Chart();
 
-        var loaded:LoadedChart = Json.parse(Assets.text(Paths.json(path)));
+        var loaded:LoadedChart = Json.parse(Assets.getText(Paths.json(path)));
 
         output.name = loaded.name;
 

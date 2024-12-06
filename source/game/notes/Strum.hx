@@ -24,7 +24,7 @@ class Strum extends FlxSprite
         if (configs.exists(path))
             return configs[path];
 
-        configs[path] = Json.parse(Assets.text(Paths.json(path)));
+        configs[path] = Json.parse(Assets.getText(Paths.json(path)));
 
         return configs[path];
     }
