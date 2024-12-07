@@ -104,8 +104,6 @@ class GameState extends MusicSubState
 
     public var chartSpeed:Float;
 
-    public var eventIndex:Int;
-
     public var instrumental:FlxSound;
 
     public var mainVocals:FlxSound;
@@ -330,14 +328,6 @@ class GameState extends MusicSubState
 
             countdown.kill();
 
-            countdown.onPause.removeAll();
-
-            countdown.onResume.removeAll();
-
-            countdown.onFinish.removeAll();
-
-            countdown.onSkip.removeAll();
-
             startSong();
         });
 
@@ -346,14 +336,6 @@ class GameState extends MusicSubState
             conductor.time = 0.0;
 
             countdown.kill();
-
-            countdown.onPause.removeAll();
-
-            countdown.onResume.removeAll();
-
-            countdown.onFinish.removeAll();
-
-            countdown.onSkip.removeAll();
 
             startSong();
         });
@@ -381,6 +363,9 @@ class GameState extends MusicSubState
         {
             if (Math.abs(instrumental.time - conductor.time) >= 25.0)
                 instrumental.time = conductor.time;
+
+            if (instrumental.length < conductor.time)
+                endSong();
 
             if (mainVocals != null)
             {
@@ -472,15 +457,11 @@ class GameState extends MusicSubState
         conductor.time = -conductor.crotchet * 5.0;
 
         chartSpeed = chart.speed;
-
-        eventIndex = 0;
     }
 
     public function loadSong(level:String):Void
     {
         instrumental = FlxG.sound.load(Assets.getSound(Paths.ogg('assets/music/game/levels/${level}/Instrumental')));
-
-        instrumental.onComplete = endSong;
 
         if (FileSystem.exists(Paths.ogg('assets/music/game/levels/${level}/Vocals-Main')))
             mainVocals = FlxG.sound.load(Assets.getSound(Paths.ogg('assets/music/game/levels/${level}/Vocals-Main')));

@@ -199,6 +199,10 @@ class Assets
      */
     public static function getText(path:String):String
     {
-        return getByteSet(path).toString();
+        var output:String = getByteSet(path).toString();
+
+        removeByteSet(path);
+
+        return output;
     }
 }
