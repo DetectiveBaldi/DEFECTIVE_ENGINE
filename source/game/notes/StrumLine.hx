@@ -24,10 +24,10 @@ class StrumLine extends FlxGroup
     public var conductor(get, never):Conductor;
 
     @:noCompletion
-        function get_conductor():Conductor
-        {
-            return game.conductor;
-        }
+    function get_conductor():Conductor
+    {
+        return game.conductor;
+    }
 
     public var inputs:Array<Input>;
 
@@ -36,15 +36,15 @@ class StrumLine extends FlxGroup
     public var spacing(default, set):Float;
 
     @:noCompletion
-        function set_spacing(_spacing:Float):Float
-        {   
-            spacing = _spacing;
+    function set_spacing(_spacing:Float):Float
+    {   
+        spacing = _spacing;
 
-            for (i in 0 ... strums.members.length)
-                strums.members[i].x = strums.x + spacing * i;
+        for (i in 0 ... strums.members.length)
+            strums.members[i].x = strums.x + spacing * i;
 
-            return spacing;
-        }
+        return spacing;
+    }
 
     public var notes:FlxTypedGroup<Note>;
 

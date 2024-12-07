@@ -53,10 +53,10 @@ class CharacterEditorState extends FlxState
     public var gameCamera(get, never):FlxCamera;
     
     @:noCompletion
-        function get_gameCamera():FlxCamera
-        {
-            return FlxG.camera;
-        }
+    function get_gameCamera():FlxCamera
+    {
+        return FlxG.camera;
+    }
 
     public var hudCamera:FlxCamera;
 
@@ -441,7 +441,7 @@ class CharacterEditorState extends FlxState
         var frames:Array<FlxFrame> = new Array<FlxFrame>();
 
         @:privateAccess
-            character.animation.findByPrefix(frames, ui.findComponent("______textfield", TextField).text);
+        character.animation.findByPrefix(frames, ui.findComponent("______textfield", TextField).text);
         
         if (frames.length <= 0.0)
         {

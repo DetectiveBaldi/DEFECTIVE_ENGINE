@@ -33,46 +33,46 @@ class NoteSplash extends FlxSprite
     public var config(default, set):NoteSplashConfig;
 
     @:noCompletion
-        function set_config(_config:NoteSplashConfig):NoteSplashConfig
+    function set_config(_config:NoteSplashConfig):NoteSplashConfig
+    {
+        config = _config;
+
+        switch (config.format ?? "".toLowerCase():String)
         {
-            config = _config;
-
-            switch (config.format ?? "".toLowerCase():String)
-            {
-                case "sparrow":
-                    frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
-                
-                case "texturepackerxml":
-                    frames = FlxAtlasFrames.fromTexturePackerXml(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
-            }
-
-            antialiasing = config.antialiasing ?? true;
-
-            for (i in 0 ... config.frames.length)
-            {
-                var _frames:NoteSplashFramesData = config.frames[i];
-
-                for (j in 0 ... NoteSplash.directions.length)
-                {
-                    animation.addByPrefix
-                    (
-                        '${_frames.prefix} ${NoteSplash.directions[j].toLowerCase()}',
-                        
-                        '${_frames.prefix} ${NoteSplash.directions[j].toLowerCase()}',
-                        
-                        _frames.frameRate ?? 24.0,
-
-                        _frames.looped ?? false,
-
-                        _frames.flipX ?? false,
-
-                        _frames.flipY ?? false
-                    );   
-                }
-            }
-
-            return config;
+            case "sparrow":
+                frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
+            
+            case "texturepackerxml":
+                frames = FlxAtlasFrames.fromTexturePackerXml(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
         }
+
+        antialiasing = config.antialiasing ?? true;
+
+        for (i in 0 ... config.frames.length)
+        {
+            var _frames:NoteSplashFramesData = config.frames[i];
+
+            for (j in 0 ... NoteSplash.directions.length)
+            {
+                animation.addByPrefix
+                (
+                    '${_frames.prefix} ${NoteSplash.directions[j].toLowerCase()}',
+                    
+                    '${_frames.prefix} ${NoteSplash.directions[j].toLowerCase()}',
+                    
+                    _frames.frameRate ?? 24.0,
+
+                    _frames.looped ?? false,
+
+                    _frames.flipX ?? false,
+
+                    _frames.flipY ?? false
+                );   
+            }
+        }
+
+        return config;
+    }
 
     public var direction:Int;
 

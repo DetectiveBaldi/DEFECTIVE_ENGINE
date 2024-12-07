@@ -53,10 +53,10 @@ class GameState extends MusicSubState
     public var gameCamera(get, never):FlxCamera;
     
     @:noCompletion
-        function get_gameCamera():FlxCamera
-        {
-            return FlxG.camera;
-        }
+    function get_gameCamera():FlxCamera
+    {
+        return FlxG.camera;
+    }
 
     public var gameCameraTarget:FlxObject;
 

@@ -25,26 +25,26 @@ class NoteSpawner extends FlxBasic
     public var conductor(get, never):Conductor;
 
     @:noCompletion
-        function get_conductor():Conductor
-        {
-            return game.conductor;
-        }
+    function get_conductor():Conductor
+    {
+        return game.conductor;
+    }
 
     public var hudCamera(get, never):FlxCamera;
 
     @:noCompletion
-        function get_hudCamera():FlxCamera
-        {
-            return game.hudCamera;
-        }
+    function get_hudCamera():FlxCamera
+    {
+        return game.hudCamera;
+    }
 
     public var chart(get, never):Chart;
 
     @:noCompletion
-        function get_chart():Chart
-        {
-            return game.chart;
-        }
+    function get_chart():Chart
+    {
+        return game.chart;
+    }
 
     public var notes:FlxTypedGroup<Note>;
 

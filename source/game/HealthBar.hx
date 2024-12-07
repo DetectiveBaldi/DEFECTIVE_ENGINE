@@ -13,64 +13,64 @@ class HealthBar extends ProgressBar
     public var conductor(default, set):Conductor;
 
     @:noCompletion
-        function set_conductor(_conductor:Conductor):Conductor
-        {
-            var __conductor:Conductor = conductor;
+    function set_conductor(_conductor:Conductor):Conductor
+    {
+        var __conductor:Conductor = conductor;
 
-            conductor = _conductor;
+        conductor = _conductor;
 
-            conductor?.onBeatHit?.add(beatHit);
+        conductor?.onBeatHit?.add(beatHit);
 
-            __conductor?.onBeatHit?.remove(beatHit);
+        __conductor?.onBeatHit?.remove(beatHit);
 
-            return conductor;
-        }
+        return conductor;
+    }
 
     @:noCompletion
-        override function set_fillDirection(_fillDirection:ProgressBarFillDirection):ProgressBarFillDirection
-        {
-            super.set_fillDirection(_fillDirection);
+    override function set_fillDirection(_fillDirection:ProgressBarFillDirection):ProgressBarFillDirection
+    {
+        super.set_fillDirection(_fillDirection);
 
-            if (opponentIcon != null)
-                opponentIcon.flipX = fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM;
+        if (opponentIcon != null)
+            opponentIcon.flipX = fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM;
 
-            if (playerIcon != null)
-                playerIcon.flipX = !(fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM);
+        if (playerIcon != null)
+            playerIcon.flipX = !(fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM);
 
-            return fillDirection;
-        }
+        return fillDirection;
+    }
 
     public var opponentIcon(default, set):HealthBarIcon;
 
     @:noCompletion
-        function set_opponentIcon(_opponentIcon:HealthBarIcon):HealthBarIcon
-        {
-            opponentIcon = _opponentIcon;
+    function set_opponentIcon(_opponentIcon:HealthBarIcon):HealthBarIcon
+    {
+        opponentIcon = _opponentIcon;
 
-            var opponentIconHealthBarColor:String = opponentIcon.config.healthBarColor;
+        var opponentIconHealthBarColor:String = opponentIcon.config.healthBarColor;
 
-            var emptiedSideColor:FlxColor = opponentIconHealthBarColor == null ? FlxColor.RED : FlxColor.fromString(opponentIconHealthBarColor);
+        var emptiedSideColor:FlxColor = opponentIconHealthBarColor == null ? FlxColor.RED : FlxColor.fromString(opponentIconHealthBarColor);
 
-            emptiedSide.color = emptiedSideColor;
+        emptiedSide.color = emptiedSideColor;
 
-            return opponentIcon;
-        }
+        return opponentIcon;
+    }
 
     public var playerIcon(default, set):HealthBarIcon;
 
     @:noCompletion
-        function set_playerIcon(_playerIcon:HealthBarIcon):HealthBarIcon
-        {
-            playerIcon = _playerIcon;
+    function set_playerIcon(_playerIcon:HealthBarIcon):HealthBarIcon
+    {
+        playerIcon = _playerIcon;
 
-            var playerIconHealthBarColor:String = playerIcon.config.healthBarColor;
+        var playerIconHealthBarColor:String = playerIcon.config.healthBarColor;
 
-            var filledSideColor:FlxColor = playerIconHealthBarColor == null ? FlxColor.LIME : FlxColor.fromString(playerIconHealthBarColor);
+        var filledSideColor:FlxColor = playerIconHealthBarColor == null ? FlxColor.LIME : FlxColor.fromString(playerIconHealthBarColor);
 
-            filledSide.color = filledSideColor;
+        filledSide.color = filledSideColor;
 
-            return playerIcon;
-        }
+        return playerIcon;
+    }
 
     public function new(x:Float = 0.0, y:Float = 0.0, barWidth:Int = 600, barHeight:Int = 25, fillDirection:ProgressBarFillDirection, conductor:Conductor):Void
     {

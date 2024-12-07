@@ -28,32 +28,32 @@ class Note extends FlxSprite
     public var config(default, set):NoteConfig;
     
     @:noCompletion
-        function set_config(_config:NoteConfig):NoteConfig
+    function set_config(_config:NoteConfig):NoteConfig
+    {
+        config = _config;
+
+        switch (config.format ?? "".toLowerCase():String)
         {
-            config = _config;
-
-            switch (config.format ?? "".toLowerCase():String)
-            {
-                case "sparrow":
-                    frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
-                
-                case "texturepackerxml":
-                    frames = FlxAtlasFrames.fromTexturePackerXml(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
-            }
-
-            for (i in 0 ... Note.directions.length)
-            {
-                animation.addByPrefix(Note.directions[i].toLowerCase(), Note.directions[i].toLowerCase() + "0", 24.0, false);
-
-                animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldPiece", Note.directions[i].toLowerCase() + "HoldPiece0", 24.0, false);
-                
-                animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldTail", Note.directions[i].toLowerCase() + "HoldTail0", 24.0, false);
-            }
-
-            antialiasing = _config.antialiasing ?? true;
-
-            return config;
+            case "sparrow":
+                frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
+            
+            case "texturepackerxml":
+                frames = FlxAtlasFrames.fromTexturePackerXml(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
         }
+
+        for (i in 0 ... Note.directions.length)
+        {
+            animation.addByPrefix(Note.directions[i].toLowerCase(), Note.directions[i].toLowerCase() + "0", 24.0, false);
+
+            animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldPiece", Note.directions[i].toLowerCase() + "HoldPiece0", 24.0, false);
+            
+            animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldTail", Note.directions[i].toLowerCase() + "HoldTail0", 24.0, false);
+        }
+
+        antialiasing = _config.antialiasing ?? true;
+
+        return config;
+    }
 
     public var time:Float;
 

@@ -42,35 +42,35 @@ class OptionsMenu extends FlxState
     public var option(default, set):Int;
 
     @:noCompletion
-        function set_option(_option:Int):Int
+    function set_option(_option:Int):Int
+    {
+        option = _option;
+
+        for (i in 0 ... options.members.length)
         {
-            option = _option;
+            var _option:BaseOptionItem = options.members[i];
 
-            for (i in 0 ... options.members.length)
-            {
-                var _option:BaseOptionItem = options.members[i];
-
-                _option.alpha = 0.5;
-
-                if (Std.isOfType(_option, BoolOptionItem))
-                    cast (_option, BoolOptionItem).enabled = false;
-
-                if (Std.isOfType(_option, KeybindOptionItem))
-                    cast (_option, KeybindOptionItem).enabled = false;
-            }
-
-            var _option:BaseOptionItem = options.members[option];
-
-            _option.alpha = 1.0;
+            _option.alpha = 0.5;
 
             if (Std.isOfType(_option, BoolOptionItem))
-                cast (_option, BoolOptionItem).enabled = true;
+                cast (_option, BoolOptionItem).enabled = false;
 
             if (Std.isOfType(_option, KeybindOptionItem))
-                cast (_option, KeybindOptionItem).enabled = true;
-
-            return option;
+                cast (_option, KeybindOptionItem).enabled = false;
         }
+
+        var _option:BaseOptionItem = options.members[option];
+
+        _option.alpha = 1.0;
+
+        if (Std.isOfType(_option, BoolOptionItem))
+            cast (_option, BoolOptionItem).enabled = true;
+
+        if (Std.isOfType(_option, KeybindOptionItem))
+            cast (_option, KeybindOptionItem).enabled = true;
+
+        return option;
+    }
 
     public var descriptor:FlxSprite;
 

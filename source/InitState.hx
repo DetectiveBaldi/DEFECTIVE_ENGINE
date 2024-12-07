@@ -52,6 +52,8 @@ class InitState extends FlxState
         FlxG.drawFramerate = MathUtil.maxInt(FlxG.stage.window.displayMode.refreshRate, 144);
 
         FlxG.mouse.visible = false;
+
+        FlxG.console.registerClass(InitState);
         
         FlxG.console.registerClass(Options);
 

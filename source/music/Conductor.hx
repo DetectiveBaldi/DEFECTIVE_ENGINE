@@ -14,26 +14,26 @@ class Conductor extends FlxBasic
     public var step(get, never):Int;
 
     @:noCompletion
-        function get_step():Int
-        {
-            return Math.floor(((time - timeChange.time) / (crotchet * 0.25)) + timeChange.step);
-        }
+    function get_step():Int
+    {
+        return Math.floor(((time - timeChange.time) / (crotchet * 0.25)) + timeChange.step);
+    }
 
     public var beat(get, never):Int;
 
     @:noCompletion
-        function get_beat():Int
-        {
-            return Math.floor(step * 0.25);
-        }
+    function get_beat():Int
+    {
+        return Math.floor(step * 0.25);
+    }
 
     public var measure(get, never):Int;
 
     @:noCompletion
-        function get_measure():Int
-        {
-            return Math.floor(beat * 0.25);
-        }
+    function get_measure():Int
+    {
+        return Math.floor(beat * 0.25);
+    }
 
     public var onStepHit:FlxTypedSignal<(step:Int)->Void>;
 
@@ -46,10 +46,10 @@ class Conductor extends FlxBasic
     public var crotchet(get, never):Float;
 
     @:noCompletion
-        function get_crotchet():Float
-        {
-            return 60.0 / tempo * 1000.0;
-        }
+    function get_crotchet():Float
+    {
+        return 60.0 / tempo * 1000.0;
+    }
 
     public var time:Float;
 

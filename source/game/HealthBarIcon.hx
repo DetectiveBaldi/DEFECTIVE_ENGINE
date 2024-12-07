@@ -24,20 +24,20 @@ class HealthBarIcon extends FlxSprite
     public var config(default, set):HealthBarIconConfig;
 
     @:noCompletion
-        function set_config(_config:HealthBarIconConfig):HealthBarIconConfig
-        {
-            config = _config;
+    function set_config(_config:HealthBarIconConfig):HealthBarIconConfig
+    {
+        config = _config;
 
-            loadGraphic(Assets.getGraphic(Paths.png(config.png)));
+        loadGraphic(Assets.getGraphic(Paths.png(config.png)));
 
-            antialiasing = config.antialiasing ?? true;
+        antialiasing = config.antialiasing ?? true;
 
-            scale.set(config.scale?.x ?? 1.0, config.scale?.y ?? 1.0);
+        scale.set(config.scale?.x ?? 1.0, config.scale?.y ?? 1.0);
 
-            updateHitbox();
+        updateHitbox();
 
-            return config;
-        }
+        return config;
+    }
 
     public function new(x:Float = 0.0, y:Float = 0.0, config:HealthBarIconConfig):Void
     {

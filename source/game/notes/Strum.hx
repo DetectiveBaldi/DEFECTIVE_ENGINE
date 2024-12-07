@@ -36,32 +36,32 @@ class Strum extends FlxSprite
     public var config(default, set):StrumConfig;
 
     @:noCompletion
-        function set_config(_config:StrumConfig):StrumConfig
+    function set_config(_config:StrumConfig):StrumConfig
+    {
+        config = _config;
+
+        switch (config.format ?? "".toLowerCase():String)
         {
-            config = _config;
-
-            switch (config.format ?? "".toLowerCase():String)
-            {
-                case "sparrow":
-                    frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
-                
-                case "texturepackerxml":
-                    frames = FlxAtlasFrames.fromTexturePackerXml(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
-            }
-
-            for (i in 0 ... Strum.directions.length)
-            {
-                animation.addByPrefix(Strum.directions[i].toLowerCase() + "Static", Strum.directions[i].toLowerCase() + "Static0", 24.0, false);
-
-                animation.addByPrefix(Strum.directions[i].toLowerCase() + "Press", Strum.directions[i].toLowerCase() + "Press0", 24.0, false);
-                
-                animation.addByPrefix(Strum.directions[i].toLowerCase() + "Confirm", Strum.directions[i].toLowerCase() + "Confirm0", 24.0, false);
-            }
-
-            antialiasing = config.antialiasing ?? true;
-
-            return config;
+            case "sparrow":
+                frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
+            
+            case "texturepackerxml":
+                frames = FlxAtlasFrames.fromTexturePackerXml(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
         }
+
+        for (i in 0 ... Strum.directions.length)
+        {
+            animation.addByPrefix(Strum.directions[i].toLowerCase() + "Static", Strum.directions[i].toLowerCase() + "Static0", 24.0, false);
+
+            animation.addByPrefix(Strum.directions[i].toLowerCase() + "Press", Strum.directions[i].toLowerCase() + "Press0", 24.0, false);
+            
+            animation.addByPrefix(Strum.directions[i].toLowerCase() + "Confirm", Strum.directions[i].toLowerCase() + "Confirm0", 24.0, false);
+        }
+
+        antialiasing = config.antialiasing ?? true;
+
+        return config;
+    }
 
     public var direction:Int;
 

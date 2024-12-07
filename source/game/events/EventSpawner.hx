@@ -11,10 +11,10 @@ class EventSpawner extends FlxBasic
     public var chart(get, never):Chart;
 
     @:noCompletion
-        function get_chart():Chart
-        {
-            return game.chart;
-        }
+    function get_chart():Chart
+    {
+        return game.chart;
+    }
 
     public var eventIndex:Int;
 

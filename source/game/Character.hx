@@ -30,18 +30,18 @@ class Character extends FlxSprite
     public var conductor(default, set):Conductor;
 
     @:noCompletion
-        function set_conductor(_conductor:Conductor):Conductor
-        {
-            var __conductor:Conductor = conductor;
+    function set_conductor(_conductor:Conductor):Conductor
+    {
+        var __conductor:Conductor = conductor;
 
-            conductor = _conductor;
+        conductor = _conductor;
 
-            conductor?.onBeatHit?.add(beatHit);
+        conductor?.onBeatHit?.add(beatHit);
 
-            __conductor?.onBeatHit?.remove(beatHit);
+        __conductor?.onBeatHit?.remove(beatHit);
 
-            return conductor;
-        }
+        return conductor;
+    }
 
     public var inputs:Array<Input>;
     

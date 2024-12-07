@@ -18,14 +18,14 @@ class BaseOptionItem extends FlxSpriteGroup
     public var name(default, set):String;
 
     @:noCompletion
-        function set_name(_name:String):String
-        {
-            name = _name;
+    function set_name(_name:String):String
+    {
+        name = _name;
 
-            nameText.text = name;
+        nameText.text = name;
 
-            return name;
-        }
+        return name;
+    }
 
     public var description:String;
 
@@ -38,7 +38,7 @@ class BaseOptionItem extends FlxSpriteGroup
         super(x, y);
 
         @:bypassAccessor
-            this.name = name;
+        this.name = name;
 
         this.description = description;
 
