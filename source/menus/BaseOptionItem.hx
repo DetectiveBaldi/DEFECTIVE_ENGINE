@@ -33,14 +33,14 @@ class BaseOptionItem extends FlxSpriteGroup
 
     public var nameText:FlxText;
 
-    public function new(x:Float = 0.0, y:Float = 0.0, name:String, description:String):Void
+    public function new(x:Float = 0.0, y:Float = 0.0, _name:String, _description:String):Void
     {
         super(x, y);
 
         @:bypassAccessor
-        this.name = name;
+        name = _name;
 
-        this.description = description;
+        description = _description;
 
         background = new FlxSprite();
 

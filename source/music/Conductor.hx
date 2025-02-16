@@ -4,10 +4,10 @@ import flixel.FlxBasic;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
 
-import game.Chart.LoadedTimeChange;
+import data.Chart.RawTimeChange;
 
 /**
- * A class which handles musical timing events throughout the game. It is the heart of `game.GameState`.
+ * A class which handles musical timing events throughout the game. It is the heart of `game.PlayState`.
  */
 class Conductor extends FlxBasic
 {
@@ -16,7 +16,7 @@ class Conductor extends FlxBasic
     @:noCompletion
     function get_step():Int
     {
-        return Math.floor(((time - timeChange.time) / (crotchet * 0.25)) + timeChange.step);
+        return Math.floor(((time - timeChange.time) / stepLength) + timeChange.step);
     }
 
     public var beat(get, never):Int;
@@ -43,19 +43,27 @@ class Conductor extends FlxBasic
 
     public var tempo:Float;
 
-    public var crotchet(get, never):Float;
+    public var stepLength(get, never):Float;
 
     @:noCompletion
-    function get_crotchet():Float
+    function get_stepLength():Float
     {
-        return 60.0 / tempo * 1000.0;
+        return 60.0 / tempo * 0.25 * 1000.0;
+    }
+
+    public var beatLength(get, never):Float;
+
+    @:noCompletion
+    function get_beatLength():Float
+    {
+        return stepLength * 4.0;
     }
 
     public var time:Float;
 
-    public var timeChange:LoadedTimeChange;
+    public var timeChange:RawTimeChange;
 
-    public var timeChanges:Array<LoadedTimeChange>;
+    public var timeChanges:Array<RawTimeChange>;
 
     public function new():Void
     {
@@ -75,18 +83,18 @@ class Conductor extends FlxBasic
 
         timeChange = {time: 0.0, tempo: 150.0, step: 0.0};
 
-        timeChanges = new Array<LoadedTimeChange>();
+        timeChanges = new Array<RawTimeChange>();
     }
 
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
         
-        var oldStep:Int = step;
+        var _step:Int = step;
 
-        var oldBeat:Int = beat;
+        var _beat:Int = beat;
 
-        var oldMeasure:Int = measure;
+        var _measure:Int = measure;
 
         time += elapsed * 1000.0;
 
@@ -105,13 +113,13 @@ class Conductor extends FlxBasic
 
             if (tempo != _timeChange.tempo)
             {
-                var oldTime:Float = timeChange.time;
+                var _time:Float = timeChange.time;
 
                 timeChange.time = _timeChange.time;
 
                 timeChange.tempo = _timeChange.tempo;
 
-                timeChange.step += (timeChange.time - oldTime) / (crotchet * 0.25);
+                timeChange.step += (timeChange.time - _time) / stepLength;
 
                 tempo = timeChange.tempo;
             }
@@ -119,13 +127,13 @@ class Conductor extends FlxBasic
             break;
         }
 
-        if (step != oldStep)
+        if (step != _step)
             onStepHit.dispatch(step);
 
-        if (beat != oldBeat)
+        if (beat != _beat)
             onBeatHit.dispatch(beat);
 
-        if (measure != oldMeasure)
+        if (measure != _measure)
             onMeasureHit.dispatch(measure);
     }
 
@@ -146,15 +154,15 @@ class Conductor extends FlxBasic
         onMeasureHit = null;
     }
 
-    public function getTimeChange(tempo:Float, time:Float):LoadedTimeChange
+    public function getTimeChange(_tempo:Float, _time:Float):RawTimeChange
     {
-        var timeChange:LoadedTimeChange = {tempo: tempo, time: 0.0, step: 0.0};
+        var timeChange:RawTimeChange = {tempo: _tempo, time: 0.0, step: 0.0};
 
         for (i in 0 ... timeChanges.length)
         {
-            var _timeChange:LoadedTimeChange = timeChanges[i];
+            var _timeChange:RawTimeChange = timeChanges[i];
 
-            if (time >= _timeChange.time)
+            if (_time >= _timeChange.time)
                 timeChange = _timeChange;
         }
 

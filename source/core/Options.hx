@@ -84,20 +84,20 @@ class Options
         return _persistentCache;
     }
 
-    public static var keybinds(get, set):Map<String, Array<Int>>;
+    public static var controls(get, set):Map<String, Int>;
 
     @:noCompletion
-    static function get_keybinds():Map<String, Array<Int>>
+    static function get_controls():Map<String, Int>
     {
-        return FlxG.save.data.options.keybinds ??= ["NOTE:LEFT" => [65, 37], "NOTE:DOWN" => [83, 40], "NOTE:UP" => [87, 38], "NOTE:RIGHT" => [68, 39]];
+        return FlxG.save.data.options.controls ??= ["NOTE:LEFT" => 65, "NOTE:DOWN" => 83, "NOTE:UP" => 87, "NOTE:RIGHT" => 68];
     }
 
     @:noCompletion
-    static function set_keybinds(_keybinds:Map<String, Array<Int>>):Map<String, Array<Int>>
+    static function set_controls(_controls:Map<String, Int>):Map<String, Int>
     {
-        FlxG.save.data.options.keybinds = _keybinds;
+        FlxG.save.data.options.controls = _controls;
 
-        return keybinds;
+        return controls;
     }
 
     public static var downscroll(get, set):Bool;

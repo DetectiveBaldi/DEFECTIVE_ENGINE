@@ -1,7 +1,5 @@
 package game.notes;
 
-import haxe.Json;
-
 import flixel.FlxSprite;
 
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -9,89 +7,113 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import core.Assets;
 import core.Paths;
 
+import data.NoteSkin;
+import data.NoteSkin.RawNoteSkin;
+
 class Note extends FlxSprite
 {
-    public static var configs:Map<String, NoteConfig> = new Map<String, NoteConfig>();
+    public static final DIRECTIONS:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 
-    public static var directions:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
+    public var skin(default, set):RawNoteSkin;
 
-    public static function findConfig(path:String):NoteConfig
-    {
-        if (configs.exists(path))
-            return configs[path];
-
-        configs[path] = Json.parse(Assets.getText(Paths.json(path)));
-
-        return configs[path];
-    }
-    
-    public var config(default, set):NoteConfig;
-    
     @:noCompletion
-    function set_config(_config:NoteConfig):NoteConfig
+    function set_skin(_skin:RawNoteSkin):RawNoteSkin
     {
-        config = _config;
+        skin = _skin;
 
-        switch (config.format ?? "".toLowerCase():String)
+        switch (skin.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
+                frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png(skin.png)), Paths.xml(skin.xml));
             
             case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(Assets.getGraphic(Paths.png(skin.png)), Paths.xml(skin.xml));
         }
 
-        for (i in 0 ... Note.directions.length)
+        for (i in 0 ... DIRECTIONS.length)
         {
-            animation.addByPrefix(Note.directions[i].toLowerCase(), Note.directions[i].toLowerCase() + "0", 24.0, false);
+            animation.addByPrefix(DIRECTIONS[i].toLowerCase(), DIRECTIONS[i].toLowerCase() + "0", 24.0, false);
 
-            animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldPiece", Note.directions[i].toLowerCase() + "HoldPiece0", 24.0, false);
+            animation.addByPrefix(DIRECTIONS[i].toLowerCase() + "HoldPiece", DIRECTIONS[i].toLowerCase() + "HoldPiece0", 24.0, false);
             
-            animation.addByPrefix(Note.directions[i].toLowerCase() + "HoldTail", Note.directions[i].toLowerCase() + "HoldTail0", 24.0, false);
+            animation.addByPrefix(DIRECTIONS[i].toLowerCase() + "HoldTail", DIRECTIONS[i].toLowerCase() + "HoldTail0", 24.0, false);
         }
 
-        antialiasing = _config.antialiasing ?? true;
+        antialiasing = _skin.antialiasing ?? true;
 
-        return config;
+        return skin;
     }
 
     public var time:Float;
 
-    public var speed:Float;
-
     public var direction:Int;
+
+    public var length:Float;
 
     public var lane:Int;
 
-    public var length:Float;
+    public var status:NoteStatus;
+
+    public var showPop:Bool;
+
+    public var finishedHold:Bool;
+
+    public var unholdTime:Float;
+
+    public var sustain:Sustain;
+
+    public var strumline:Strumline;
+
+    public var strum:Strum;
 
     public function new(x:Float = 0.0, y:Float = 0.0):Void
     {
         super(x, y);
 
-        active = false;
+        skin = NoteSkin.get("assets/data/game/notes/Note/default");
 
-        config = findConfig("assets/data/game/notes/Note/classic");
+        antialiasing = true;
 
         time = 0.0;
 
-        speed = 1.0;
-
         direction = 0;
+
+        length = 0.0;
 
         lane = 0;
 
-        length = 0.0;
+        status = IDLING;
+
+        showPop = false;
+
+        finishedHold = false;
+
+        unholdTime = 0.0;
+    }
+
+    override function update(elapsed:Float):Void
+    {
+        super.update(elapsed);
+
+        y = strum.y;
+
+        x = strum.getMidpoint().x - width * 0.5;
+
+        if (status != HIT || length <= 0.0)
+            y += (time - strumline.conductor.time) * (strumline.downscroll ? -1 : 1) * strumline.scrollSpeed * 0.45;
+    }
+
+    public function isHittable():Bool
+    {
+        return status == IDLING && ((strumline.automated && time <= strumline.conductor.time) || (!strumline.automated && Math.abs(time - strumline.conductor.time) <= 166.6));
     }
 }
 
-typedef NoteConfig =
+enum NoteStatus
 {
-    var format:String;
+    IDLING;
 
-    var png:String;
+    HIT;
 
-    var xml:String;
-
-    var ?antialiasing:Bool;
-};
+    MISSED;
+}

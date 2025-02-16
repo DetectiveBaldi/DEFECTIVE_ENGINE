@@ -2,10 +2,12 @@ package game.stages;
 
 import flixel.FlxSprite;
 
+import flixel.group.FlxGroup;
+
 import core.Assets;
 import core.Paths;
 
-class Week1 extends Stage
+class Week1 extends FlxGroup
 {
     public var background:FlxSprite;
 

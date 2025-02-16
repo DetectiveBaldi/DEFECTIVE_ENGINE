@@ -20,7 +20,7 @@ import core.Paths;
 import music.Conductor;
 
 /**
- * A `flixel.group.FlxGroup` representing the countdown you see in `game.GameState`.
+ * A `flixel.group.FlxGroup` representing the countdown you see in `game.PlayState`.
  */
 class Countdown extends FlxGroup
 {
@@ -74,11 +74,11 @@ class Countdown extends FlxGroup
 
     public var go:FlxSound;
 
-    public function new(conductor:Conductor):Void
+    public function new(_conductor:Conductor):Void
     {
         super();
 
-        this.conductor = conductor;
+        conductor = _conductor;
 
         started = false;
 
@@ -290,7 +290,7 @@ class Countdown extends FlxGroup
             
             sprite.alpha = 1.0;
             
-            tweens.tween(sprite, {alpha: 0.0}, conductor.crotchet * 0.001, {ease: FlxEase.circInOut});
+            tweens.tween(sprite, {alpha: 0.0}, conductor.beatLength * 0.001, {ease: FlxEase.circInOut});
         }
 
         tick++;

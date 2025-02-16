@@ -4,18 +4,19 @@ import flixel.FlxCamera;
 
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.tweens.misc.NumTween;
 
-import game.GameState;
+import game.PlayState;
 
 class CameraZoomEvent
 {
-    public static function spawn(game:GameState, camera:String, zoom:Float, duration:Float, ease:String):Void
+    public static function dispatch(game:PlayState, camera:String, zoom:Float, duration:Float, ease:String):Void
     {
-        var _camera:FlxCamera = Reflect.getProperty(game, camera);
+        var _zoom:Float = Reflect.getProperty(game, camera + "TargetZoom");
 
         if (duration > 0.0)
-            FlxTween.tween(camera, {zoom: zoom}, duration, {ease: Reflect.getProperty(FlxEase, ease)});
+            FlxTween.num(_zoom, zoom, duration, {ease: Reflect.getProperty(FlxEase, ease)}, (value:Float) -> Reflect.setProperty(game, camera + "TargetZoom", value));
         else
-            _camera.zoom = zoom;
+            Reflect.setProperty(game, camera + "TargetZoom", zoom);
     }
 }

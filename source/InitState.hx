@@ -14,7 +14,7 @@ import flixel.util.typeLimit.NextState;
 import core.Assets;
 import core.Options;
 
-import plugins.Logger;
+import plugins.Log;
 
 import ui.PerfTracker;
 
@@ -24,15 +24,15 @@ class InitState extends FlxState
 {
     public var nextState:NextState;
 
-    public static var logger:Logger;
+    public static var log:Log;
 
     public static var perfTracker:PerfTracker;
 
-    public function new(nextState:NextState):Void
+    public function new(_nextState:NextState):Void
     {
         super();
 
-        this.nextState = nextState;
+        nextState = _nextState;
     }
 
     override function create():Void
@@ -41,7 +41,7 @@ class InitState extends FlxState
 
         Toolkit.init();
 
-        Toolkit.theme = Theme.DARK;
+        Toolkit.theme = "dark";
 
         FocusManager.instance.autoFocus = false;
 
@@ -69,9 +69,13 @@ class InitState extends FlxState
 
         Assets.init();
 
-        FlxG.plugins.addPlugin(logger = new Logger());
+        log = new Log();
+
+        FlxG.plugins.addPlugin(log);
+
+        perfTracker = new PerfTracker(10.0, 5.0);
         
-        FlxG.game.addChild(perfTracker = new PerfTracker(10.0, 5.0));
+        FlxG.game.addChildAt(perfTracker, FlxG.game.getChildIndex(FlxG.game.debugger));
 
         FlxG.switchState(nextState);
     }

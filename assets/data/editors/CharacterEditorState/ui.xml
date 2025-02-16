@@ -72,7 +72,7 @@
                 </vbox>
             </box>
 
-            <box id="__box" text="Frames">
+            <box id="__box" text="Animations">
                 <vbox id="___vbox" style="padding:10px; spacing:10px">
                     <hbox id="_______hbox">
                         <label id="_________label" text="Name" verticalAlign="center" />

@@ -3,6 +3,7 @@ package editors;
 import haxe.Json;
 
 import sys.FileSystem;
+import sys.io.File;
 
 import openfl.desktop.Clipboard;
 
@@ -40,6 +41,9 @@ import haxe.ui.focus.FocusManager;
 import core.Assets;
 import core.Paths;
 
+import data.AnimData;
+import data.CharacterData;
+
 import game.Character;
 
 import game.levels.Level1;
@@ -62,7 +66,7 @@ class CharacterEditorState extends FlxState
 
     public var character:Character;
 
-    public var framesIndex:Int;
+    public var animationIndex:Int;
 
     public var ui:Box;
 
@@ -84,13 +88,13 @@ class CharacterEditorState extends FlxState
 
         add(background);
 
-        character = new Character(null, 0.0, 0.0, Character.findConfig("assets/data/game/Character/BOYFRIEND"), OTHER);
+        character = new Character(null, 0.0, 0.0, CharacterData.get("assets/data/game/Character/BOYFRIEND"));
 
         character.screenCenter();
 
         add(character);
 
-        framesIndex = character.config.frames.indexOf(character.config.frames.newest((frames:CharacterFramesConfig) -> character.animation.name == frames.name));
+        animationIndex = character.config.animations.indexOf(character.config.animations.oldest((animation:AnimData) -> character.animation.name == animation.name));
 
         ui = ComponentBuilder.fromFile("assets/data/editors/CharacterEditorState/ui.xml");
 
@@ -106,77 +110,23 @@ class CharacterEditorState extends FlxState
         {
             var path:String = Paths.json('assets/data/game/Character/${character.config.name}');
 
-            sys.io.File.saveContent(path, Json.stringify(character.config));
+            File.saveContent(path, Json.stringify(character.config));
 
-            InitState.logger.logInfo("[INFO]", 'Character saved to "${path}".');
+            InitState.log.info("[INFO]", 'Character saved to "${path}".');
         }
 
         ui.findComponent("_button", Button).onClick = (ev:MouseEvent) ->
         {
             if (!FileSystem.exists(Paths.json('assets/data/game/Character/${ui.findComponent("textfield", TextField).text}')))
             {
-                InitState.logger.logError("The requested file(s) do not exist!");
+                InitState.log.error("The requested file(s) do not exist!");
 
                 return;
             }
 
-            character.config = Character.findConfig('assets/data/game/Character/${ui.findComponent("textfield", TextField).text}');
-
-            switch (character.config.format ?? "".toLowerCase():String)
-            {
-                case "sparrow":
-                    character.frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png(character.config.png)), Paths.xml(character.config.xml));
-
-                case "texturepackerxml":
-                    character.frames = FlxAtlasFrames.fromTexturePackerXml(Assets.getGraphic(Paths.png(character.config.png)), Paths.xml(character.config.xml));
-            }
-
-            character.antialiasing = character.config.antialiasing ?? true;
-
-            character.scale.set(character.config.scale?.x ?? 1.0, character.config.scale?.y ?? 1.0);
-
-            character.updateHitbox();
+            character.config = CharacterData.get('assets/data/game/Character/${ui.findComponent("textfield", TextField).text}');
 
             character.screenCenter();
-
-            character.flipX = character.config.flipX ?? false;
-
-            character.flipY = character.config.flipY ?? false;
-
-            for (i in 0 ... character.config.frames.length)
-            {
-                var frames:CharacterFramesConfig = character.config.frames[i];
-
-                frames.frameRate ??= 24.0;
-
-                frames.looped ??= false;
-
-                frames.flipX ??= false;
-
-                frames.flipY ??= false;
-    
-                if (character.animation.exists(frames.name))
-                    throw "editors.CharacterEditorState: Invalid frames name!";
-    
-                if (frames.indices.length > 0)
-                    character.animation.addByIndices(frames.name, frames.prefix, frames.indices, "", frames.frameRate, frames.looped, frames.flipX, frames.flipY);
-                else
-                    character.animation.addByPrefix(frames.name, frames.prefix, frames.frameRate, frames.looped, frames.flipX, frames.flipY);
-            }
-
-            character.danceSteps = character.config.danceSteps;
-
-            character.danceStep = 0;
-
-            character.danceInterval = character.config.danceInterval ?? 1.0;
-
-            character.singDuration = character.config.singDuration ?? 8.0;
-
-            character.skipDance = false;
-
-            character.skipSing = false;
-
-            character.singCount = 0.0;
 
             character.dance();
 
@@ -184,7 +134,7 @@ class CharacterEditorState extends FlxState
 
             refreshAssetsTab();
 
-            refreshFramesTab();
+            refreshAnimationsTab();
         }
 
         ui.findComponent("checkbox", CheckBox).onChange = (ev:UIEvent) ->
@@ -266,14 +216,14 @@ class CharacterEditorState extends FlxState
         {
             if (character.config.format == ui.findComponent("__textfield", TextField).text && character.config.png == ui.findComponent("___textfield", TextField).text && character.config.xml == ui.findComponent("____textfield", TextField).text)
             {
-                InitState.logger.logError("The requested format and file(s) are in use!");
+                InitState.log.error("The requested format and file(s) are in use!");
                 
                 return;
             }
 
             if (!FileSystem.exists(Paths.png(ui.findComponent("___textfield", TextField).text)) || !FileSystem.exists(Paths.xml(ui.findComponent("____textfield", TextField).text)))
             {
-                InitState.logger.logError("The requested file(s) do not exist!");
+                InitState.log.error("The requested file(s) do not exist!");
 
                 return;
             }
@@ -293,22 +243,20 @@ class CharacterEditorState extends FlxState
                     character.frames = FlxAtlasFrames.fromTexturePackerXml(Assets.getGraphic(Paths.png(character.config.png), true), Paths.xml(character.config.xml));
             }
 
-            character.animation.destroyAnimations();
-
             character.updateHitbox();
 
             character.screenCenter();
 
             ui.findComponent("tabview", TabView).selectedPage = ui.findComponent("__box", Box);
 
-            InitState.logger.logWarning("Some frames might be invalidated! Take a look!");
+            InitState.log.warning("Some animations might be invalidated! Take a look!");
         }
 
-        refreshFramesTab();
+        refreshAnimationsTab();
 
-        ui.findComponent("___button", Button).onClick = (ev:MouseEvent) -> saveFrames();
+        ui.findComponent("___button", Button).onClick = (ev:MouseEvent) -> saveAnimation();
 
-        ui.findComponent("____button", Button).onClick = (ev:MouseEvent) -> deleteFrames();
+        ui.findComponent("____button", Button).onClick = (ev:MouseEvent) -> deleteAnimation();
     }
 
     override function update(elapsed:Float):Void
@@ -318,30 +266,30 @@ class CharacterEditorState extends FlxState
         if (FocusManager.instance.focus == null)
         {
             if (FlxG.keys.justPressed.W)
-                framesIndex = FlxMath.wrap(framesIndex - 1, 0, character.config.frames.length - 1);
+                animationIndex = FlxMath.wrap(animationIndex - 1, 0, character.config.animations.length - 1);
 
             if (FlxG.keys.justPressed.S)
-                framesIndex = FlxMath.wrap(framesIndex + 1, 0, character.config.frames.length - 1);
+                animationIndex = FlxMath.wrap(animationIndex + 1, 0, character.config.animations.length - 1);
 
-            var frames:CharacterFramesConfig = character.config.frames[framesIndex];
+            var animation:AnimData = character.config.animations[animationIndex];
 
             if (FlxG.keys.justPressed.UP)
-                addFramesOffset(frames, 0.0, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0);
+                addAnimationOffset(animation, 0.0, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0);
 
             if (FlxG.keys.justPressed.LEFT)
-                addFramesOffset(frames, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0, 0.0);
+                addAnimationOffset(animation, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0, 0.0);
 
             if (FlxG.keys.justPressed.DOWN)
-                addFramesOffset(frames, 0.0, FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
+                addAnimationOffset(animation, 0.0, FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
 
             if (FlxG.keys.justPressed.RIGHT)
-                addFramesOffset(frames, FlxG.keys.pressed.SHIFT ? 10.0 : 1.0, 0.0);
+                addAnimationOffset(animation, FlxG.keys.pressed.SHIFT ? 10.0 : 1.0, 0.0);
 
             if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S || FlxG.keys.justPressed.SPACE)
             {
-                character.animation.play(frames.name, true);
+                character.animation.play(animation.name, true);
 
-                refreshFramesTab();
+                refreshAnimationsTab();
             }
 
             if (FlxG.keys.pressed.CONTROL)
@@ -350,24 +298,24 @@ class CharacterEditorState extends FlxState
                 {
                     Clipboard.generalClipboard.clear();
 
-                    Clipboard.generalClipboard.setData(TEXT_FORMAT, Json.stringify(character.config.frames[framesIndex].offset), false);
+                    Clipboard.generalClipboard.setData(TEXT_FORMAT, Json.stringify(character.config.animations[animationIndex].offset), false);
 
-                    InitState.logger.logInfo("[INFO]", "Current frames offset copied to clipboard.");
+                    InitState.log.info("[INFO]", "Current animation offset copied to clipboard.");
                 }
 
                 if (FlxG.keys.justPressed.V)
                 {
-                    var frames:CharacterFramesConfig = character.config.frames[framesIndex];
+                    var animation:AnimData = character.config.animations[animationIndex];
 
                     var offset:{?x:Float, ?y:Float} = Json.parse(Clipboard.generalClipboard.getData(TEXT_FORMAT));
 
-                    setFramesOffset(frames, offset?.x ?? 0.0, offset?.y ?? 0.0);
+                    setAnimationOffset(animation, offset?.x ?? 0.0, offset?.y ?? 0.0);
 
-                    InitState.logger.logInfo("[INFO]", "Copied offset successfully applied to current frames.");
+                    InitState.log.info("[INFO]", "Copied offset successfully applied to current animation.");
                 }
             }
 
-            if (FlxG.keys.justPressed.ENTER)
+            if (FlxG.keys.justPressed.ESCAPE)
                 FlxG.switchState(() -> new Level1());
         }
     }
@@ -377,8 +325,6 @@ class CharacterEditorState extends FlxState
         super.destroy();
 
         FlxG.mouse.visible = false;
-
-        Assets.clearCaches();
     }
 
     public function refreshMainTab():Void
@@ -413,30 +359,30 @@ class CharacterEditorState extends FlxState
         ui.findComponent("____textfield", TextField).text = character.config.xml;
     }
 
-    public function refreshFramesTab():Void
+    public function refreshAnimationsTab():Void
     {
-        var frames:CharacterFramesConfig = character.config.frames[framesIndex];
+        var animation:AnimData = character.config.animations[animationIndex];
 
-        ui.findComponent("_____textfield", TextField).text = frames.name;
+        ui.findComponent("_____textfield", TextField).text = animation.name;
 
-        ui.findComponent("______textfield", TextField).text = frames.prefix;
+        ui.findComponent("______textfield", TextField).text = animation.prefix;
 
-        ui.findComponent("textarea", TextArea).text = frames.indices.toString();
+        ui.findComponent("textarea", TextArea).text = animation.indices.toString();
 
         ui.findComponent("textarea", TextArea).text = ui.findComponent("textarea", TextArea).text.substring(1, ui.findComponent("textarea", TextArea).text.length - 1);
 
-        ui.findComponent("____number-stepper", NumberStepper).value = frames.frameRate ?? 24.0;
+        ui.findComponent("____number-stepper", NumberStepper).value = animation.frameRate ?? 24.0;
 
-        ui.findComponent("___checkbox", CheckBox).value = frames.looped ?? false;
+        ui.findComponent("___checkbox", CheckBox).value = animation.looped ?? false;
 
-        ui.findComponent("____checkbox", CheckBox).value = frames.flipX ?? false;
+        ui.findComponent("____checkbox", CheckBox).value = animation.flipX ?? false;
 
-        ui.findComponent("_____checkbox", CheckBox).value = frames.flipY ?? false;
+        ui.findComponent("_____checkbox", CheckBox).value = animation.flipY ?? false;
 
-        ui.findComponent("_____________label", Label).text = 'Offset: (${frames.offset?.x ?? 0.0}, ${frames.offset?.y ?? 0.0})';
+        ui.findComponent("_____________label", Label).text = 'Offset: (${animation.offset?.x ?? 0.0}, ${animation.offset?.y ?? 0.0})';
     }
 
-    public function saveFrames():Void
+    public function saveAnimation():Void
     {
         var frames:Array<FlxFrame> = new Array<FlxFrame>();
 
@@ -445,18 +391,18 @@ class CharacterEditorState extends FlxState
         
         if (frames.length <= 0.0)
         {
-            InitState.logger.logError("Invalid frames detected!");
+            InitState.log.error("Invalid frames detected!");
 
             return;
         }
 
         var indices:Array<Int> = FlxStringUtil.toIntArray(ui.findComponent("textarea", TextArea).text) ?? new Array<Int>();
 
-        var frames:CharacterFramesConfig = character.config.frames.newest((frames:CharacterFramesConfig) -> ui.findComponent("_____textfield", TextField).text == frames.name);
+        var animation:AnimData = character.config.animations.oldest((animation:AnimData) -> ui.findComponent("_____textfield", TextField).text == animation.name);
 
-        if (frames == null)
+        if (animation == null)
         {
-            character.config.frames.push
+            character.config.animations.push
             ({
                 name: ui.findComponent("_____textfield", TextField).text,
 
@@ -473,79 +419,79 @@ class CharacterEditorState extends FlxState
                 flipY: ui.findComponent("_____checkbox", CheckBox).value
             });
 
-            framesIndex = character.config.frames.length - 1;
+            animationIndex = character.config.animations.length - 1;
 
-            frames = character.config.frames[framesIndex];
+            animation = character.config.animations[animationIndex];
         }
         else
         {
-            frames.prefix = ui.findComponent("______textfield", TextField).text;
+            animation.prefix = ui.findComponent("______textfield", TextField).text;
 
-            frames.indices = indices;
+            animation.indices = indices;
 
-            frames.frameRate = ui.findComponent("____number-stepper", NumberStepper).value;
+            animation.frameRate = ui.findComponent("____number-stepper", NumberStepper).value;
 
-            frames.looped = ui.findComponent("___checkbox", CheckBox).value;
+            animation.looped = ui.findComponent("___checkbox", CheckBox).value;
 
-            frames.flipX = ui.findComponent("____checkbox", CheckBox).value;
+            animation.flipX = ui.findComponent("____checkbox", CheckBox).value;
 
-            frames.flipY = ui.findComponent("_____checkbox", CheckBox).value;
+            animation.flipY = ui.findComponent("_____checkbox", CheckBox).value;
         }
         
-        if (frames.indices.length > 0.0)
-            character.animation.addByIndices(frames.name, frames.prefix, frames.indices, "", frames.frameRate, frames.looped, frames.flipX, frames.flipY);
+        if (animation.indices.length > 0.0)
+            character.animation.addByIndices(animation.name, animation.prefix, animation.indices, "", animation.frameRate, animation.looped, animation.flipX, animation.flipY);
         else
-            character.animation.addByPrefix(frames.name, frames.prefix, frames.frameRate, frames.looped, frames.flipX, frames.flipY);
+            character.animation.addByPrefix(animation.name, animation.prefix, animation.frameRate, animation.looped, animation.flipX, animation.flipY);
 
-        character.animation.play(frames.name, true);
+        character.animation.play(animation.name, true);
 
-        refreshFramesTab();
+        refreshAnimationsTab();
 
-        InitState.logger.logInfo("[INFO]", 'Saved "${frames.name}"!');
+        InitState.log.info("[INFO]", 'Saved "${animation.name}"!');
     }
 
-    public function deleteFrames():Void
+    public function deleteAnimation():Void
     {
-        if (character.config.frames.length == 1.0)
+        if (character.config.animations.length == 1.0)
         {
-            InitState.logger.logError("You must have at least one frames!");
+            InitState.log.error("You must have at least one animation!");
 
             return;
         }
 
-        var frames:CharacterFramesConfig = character.config.frames[framesIndex];
+        var animation:AnimData = character.config.animations[animationIndex];
 
-        character.config.frames.remove(frames);
+        character.config.animations.remove(animation);
 
-        if (character.animation.exists(frames.name))
-            character.animation.remove(frames.name);
+        if (character.animation.exists(animation.name))
+            character.animation.remove(animation.name);
 
-        framesIndex = 0;
+        animationIndex = 0;
 
-        frames = character.config.frames[framesIndex];
+        animation = character.config.animations[animationIndex];
 
-        character.animation.play(frames.name, true);
+        character.animation.play(animation.name, true);
 
-        refreshFramesTab();
+        refreshAnimationsTab();
 
-        InitState.logger.logInfo("[INFO]", 'Deleted "${frames.name}"!');
+        InitState.log.info("[INFO]", 'Deleted "${animation.name}"!');
     }
 
-    public function setFramesOffset(frames:CharacterFramesConfig, x:Float = 0.0, y:Float = 0.0):Void
+    public function setAnimationOffset(animation:AnimData, x:Float = 0.0, y:Float = 0.0):Void
     {
-        frames.offset ??= {x: 0.0, y: 0.0};
+        animation.offset ??= {x: 0.0, y: 0.0};
 
-        frames.offset.x = x;
+        animation.offset.x = x;
 
-        frames.offset.y = y;
+        animation.offset.y = y;
 
-        ui.findComponent("_____________label", Label).text = 'Offset: (${frames.offset.x ?? 0.0}, ${frames.offset.y ?? 0.0})';
+        ui.findComponent("_____________label", Label).text = 'Offset: (${animation.offset.x ?? 0.0}, ${animation.offset.y ?? 0.0})';
     }
 
-    public function addFramesOffset(frames:CharacterFramesConfig, x:Float = 0.0, y:Float = 0.0):Void
+    public function addAnimationOffset(animation:AnimData, x:Float = 0.0, y:Float = 0.0):Void
     {
-        frames.offset ??= {x: 0.0, y: 0.0};
+        animation.offset ??= {x: 0.0, y: 0.0};
 
-        setFramesOffset(frames, (frames.offset.x ?? 0.0) + x, (frames.offset.y ?? 0.0) + y);
+        setAnimationOffset(animation, (animation.offset.x ?? 0.0) + x, (animation.offset.y ?? 0.0) + y);
     }
 }

@@ -9,75 +9,64 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import core.Assets;
 import core.Paths;
 
+import data.StrumSkin;
+import data.StrumSkin.RawStrumSkin;
+
 import music.Conductor;
 
 using StringTools;
 
 class Strum extends FlxSprite
 {
-    public static var configs:Map<String, StrumConfig> = new Map<String, StrumConfig>();
-
-    public static var directions:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
-    
-    public static function findConfig(path:String):StrumConfig
-    {
-        if (configs.exists(path))
-            return configs[path];
-
-        configs[path] = Json.parse(Assets.getText(Paths.json(path)));
-
-        return configs[path];
-    }
-
     public var conductor:Conductor;
 
-    public var parent:StrumLine;
+    public var strumline:Strumline;
     
-    public var config(default, set):StrumConfig;
+    public var skin(default, set):RawStrumSkin;
 
     @:noCompletion
-    function set_config(_config:StrumConfig):StrumConfig
+    function set_skin(_skin:RawStrumSkin):RawStrumSkin
     {
-        config = _config;
+        skin = _skin;
 
-        switch (config.format ?? "".toLowerCase():String)
+        switch (skin.format ?? "".toLowerCase():String)
         {
             case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
+                frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png(skin.png)), Paths.xml(skin.xml));
             
             case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
+                frames = FlxAtlasFrames.fromTexturePackerXml(Assets.getGraphic(Paths.png(skin.png)), Paths.xml(skin.xml));
         }
 
-        for (i in 0 ... Strum.directions.length)
+        for (i in 0 ... Note.DIRECTIONS.length)
         {
-            animation.addByPrefix(Strum.directions[i].toLowerCase() + "Static", Strum.directions[i].toLowerCase() + "Static0", 24.0, false);
+            animation.addByPrefix(Note.DIRECTIONS[i].toLowerCase() + "Static", Note.DIRECTIONS[i].toLowerCase() + "Static0", 24.0, false);
 
-            animation.addByPrefix(Strum.directions[i].toLowerCase() + "Press", Strum.directions[i].toLowerCase() + "Press0", 24.0, false);
+            animation.addByPrefix(Note.DIRECTIONS[i].toLowerCase() + "Press", Note.DIRECTIONS[i].toLowerCase() + "Press0", 24.0, false);
             
-            animation.addByPrefix(Strum.directions[i].toLowerCase() + "Confirm", Strum.directions[i].toLowerCase() + "Confirm0", 24.0, false);
+            animation.addByPrefix(Note.DIRECTIONS[i].toLowerCase() + "Confirm", Note.DIRECTIONS[i].toLowerCase() + "Confirm0", 24.0, false);
         }
 
-        antialiasing = config.antialiasing ?? true;
+        antialiasing = skin.antialiasing ?? true;
 
-        return config;
+        return skin;
     }
 
     public var direction:Int;
 
-    public var confirmCount:Float;
+    public var confirmTimer:Float;
 
-    public function new(conductor:Conductor, x:Float = 0.0, y:Float = 0.0):Void
+    public function new(_conductor:Conductor, x:Float = 0.0, y:Float = 0.0):Void
     {
         super(x, y);
 
-        this.conductor = conductor;
+        conductor = _conductor;
         
-        config = findConfig("assets/data/game/notes/Strum/classic");
+        skin = StrumSkin.get("assets/data/game/notes/Strum/default");
 
         direction = 0;
 
-        confirmCount = 0.0;
+        confirmTimer = 0.0;
     }
 
     override function update(elapsed:Float):Void
@@ -89,27 +78,16 @@ class Strum extends FlxSprite
 
         if ((animation.name ?? "").endsWith("Confirm"))
         {
-            confirmCount += elapsed;
+            confirmTimer += elapsed;
 
-            if (confirmCount >= (conductor.crotchet * 0.25) * 0.001)
+            if (confirmTimer >= conductor.stepLength * 0.001)
             {
-                confirmCount = 0.0;
+                confirmTimer = 0.0;
 
-                animation.play(directions[direction].toLowerCase() + (parent.automated ? "Static" : "Press"));
+                animation.play(Note.DIRECTIONS[direction].toLowerCase() + (strumline.automated ? "Static" : "Press"));
             }
         }
         else
-            confirmCount = 0.0;
+            confirmTimer = 0.0;
     }
 }
-
-typedef StrumConfig =
-{
-    var format:String;
-
-    var png:String;
-
-    var xml:String;
-
-    var ?antialiasing:Bool;
-};

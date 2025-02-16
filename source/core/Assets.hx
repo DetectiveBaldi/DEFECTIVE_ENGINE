@@ -18,6 +18,8 @@ import flixel.graphics.FlxGraphic;
 
 import core.Options;
 
+using StringTools;
+
 class Assets
 {
     public static var persistentCache:Bool;
@@ -58,11 +60,9 @@ class Assets
             return graphics[path];
 
         var graphic:FlxGraphic = FlxGraphic.fromBitmapData(BitmapData.fromBytes(getByteSet(path)));
-
-        #if (cpp && windows)
-            if (Options.gpuCaching && gpuCaching)
-                graphic.bitmap.disposeImage();
-        #end
+        
+        if (Options.gpuCaching && gpuCaching)
+            graphic.bitmap.disposeImage();
 
         graphic.persist = true;
 
@@ -83,8 +83,6 @@ class Assets
         var graphic:FlxGraphic = graphics[path];
 
         FlxG.bitmap.remove(graphic);
-
-        graphic = null;
 
         graphics.remove(path);
 
@@ -114,7 +112,7 @@ class Assets
 
         var output:Sound;
 
-        if (Options.soundStreaming && soundStreaming)
+        if (Options.soundStreaming && soundStreaming && path.endsWith(".ogg"))
             output = Sound.fromAudioBuffer(AudioBuffer.fromVorbisFile(VorbisFile.fromBytes(getByteSet(path))));
         else
             output = Sound.fromAudioBuffer(AudioBuffer.fromBytes(getByteSet(path)));
@@ -138,8 +136,6 @@ class Assets
         sound.close();
 
         openfl.utils.Assets.cache.removeSound(path);
-
-        sound = null;
 
         sounds.remove(path);
 
@@ -172,8 +168,6 @@ class Assets
 
         var byteSet:Bytes = byteSets[path];
 
-        byteSet = null;
-
         byteSets.remove(path);
     }
 
@@ -193,7 +187,7 @@ class Assets
     }
 
     /**
-     * Gets the content of the specified text file. Then, it is returned
+     * Gets the content of the specified text file. Then, it is returned.
      * @param path The file path of the text you want to recieve content from.
      * @return `String`
      */

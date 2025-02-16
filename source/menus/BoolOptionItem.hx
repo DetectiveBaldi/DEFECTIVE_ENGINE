@@ -11,7 +11,7 @@ import core.Assets;
 
 class BoolOptionItem extends VariableOptionItem<Bool>
 {
-    public var enabled:Bool;
+    public var selectable:Bool;
 
     public var checkbox:FlxSprite;
 
@@ -19,7 +19,7 @@ class BoolOptionItem extends VariableOptionItem<Bool>
     {
         super(x, y, name, description, option);
 
-        enabled = false;
+        selectable = false;
 
         checkbox = new FlxSprite();
 
@@ -42,7 +42,7 @@ class BoolOptionItem extends VariableOptionItem<Bool>
     {
         super.update(elapsed);
         
-        if ((FlxG.keys.justPressed.ENTER || FlxG.mouse.justPressed) && enabled)
+        if ((FlxG.keys.justPressed.ENTER || FlxG.mouse.justPressed) && selectable)
         {
             value = !value;
 

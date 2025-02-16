@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="classic.png" width="549" height="495">
+	<SubTexture name="down0000" x="5" y="5" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="downHoldPiece0000" x="495" y="277" width="49" height="43" frameX="-0" frameY="-0" frameWidth="49" frameHeight="43"/>
+	<SubTexture name="downHoldTail0000" x="495" y="5" width="49" height="63" frameX="-0" frameY="-0" frameWidth="49" frameHeight="63"/>
+	<SubTexture name="left0000" x="250" y="5" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="leftHoldPiece0000" x="495" y="325" width="49" height="43" frameX="-0" frameY="-0" frameWidth="49" frameHeight="43"/>
+	<SubTexture name="leftHoldTail0000" x="495" y="73" width="49" height="63" frameX="-0" frameY="-0" frameWidth="49" frameHeight="63"/>
+	<SubTexture name="right0000" x="5" y="250" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="rightHoldPiece0000" x="495" y="373" width="49" height="43" frameX="-0" frameY="-0" frameWidth="49" frameHeight="43"/>
+	<SubTexture name="rightHoldTail0000" x="495" y="141" width="49" height="63" frameX="-0" frameY="-0" frameWidth="49" frameHeight="63"/>
+	<SubTexture name="up0000" x="250" y="250" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+	<SubTexture name="upHoldPiece0000" x="495" y="421" width="49" height="43" frameX="-0" frameY="-0" frameWidth="49" frameHeight="43"/>
+	<SubTexture name="upHoldTail0000" x="495" y="209" width="49" height="63" frameX="-0" frameY="-0" frameWidth="49" frameHeight="63"/>
+</TextureAtlas>

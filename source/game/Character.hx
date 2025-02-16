@@ -12,9 +12,13 @@ import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 
 import core.Assets;
-import core.Inputs;
 import core.Options;
 import core.Paths;
+
+import data.AnimData;
+import data.CharacterData.RawCharacterData;
+
+import game.notes.Strumline;
 
 import music.Conductor;
 
@@ -22,11 +26,6 @@ using StringTools;
 
 class Character extends FlxSprite
 {
-    public static function findConfig(path:String):CharacterConfig
-    {
-        return Json.parse(Assets.getText(Paths.json(path)));
-    }
-    
     public var conductor(default, set):Conductor;
 
     @:noCompletion
@@ -43,44 +42,16 @@ class Character extends FlxSprite
         return conductor;
     }
 
-    public var inputs:Array<Input>;
+    public var strumline:Strumline;
+
+    public var keys:Array<Int>;
     
-    public var config:CharacterConfig;
+    public var config(default, set):RawCharacterData;
 
-    public var danceSteps:Array<String>;
-
-    public var danceStep:Int;
-
-    public var danceInterval:Float;
-
-    public var singDuration:Float;
-
-    public var skipDance:Bool;
-
-    public var skipSing:Bool;
-
-    public var singCount:Float;
-
-    public var role:CharacterRole;
-
-    public function new(conductor:Conductor, x:Float = 0.0, y:Float = 0.0, config:CharacterConfig, role:CharacterRole):Void
+    @:noCompletion
+    function set_config(_config:RawCharacterData):RawCharacterData
     {
-        super(x, y);
-
-        this.conductor = conductor;
-
-        inputs =
-        [
-            new Input(Options.keybinds["NOTE:LEFT"]),
-
-            new Input(Options.keybinds["NOTE:DOWN"]),
-
-            new Input(Options.keybinds["NOTE:UP"]),
-
-            new Input(Options.keybinds["NOTE:RIGHT"])
-        ];
-        
-        this.config = config;
+        config = _config;
 
         switch (config.format ?? "".toLowerCase():String)
         {
@@ -99,25 +70,25 @@ class Character extends FlxSprite
 
         flipY = config.flipY ?? false;
 
-        for (i in 0 ... config.frames.length)
+        for (i in 0 ... config.animations.length)
         {
-            var _frames:CharacterFramesConfig = config.frames[i];
+            var _animation:AnimData = config.animations[i];
 
-            _frames.frameRate ??= 24.0;
+            _animation.frameRate ??= 24.0;
 
-            _frames.looped ??= false;
+            _animation.looped ??= false;
 
-            _frames.flipX ??= false;
+            _animation.flipX ??= false;
 
-            _frames.flipY ??= false;
+            _animation.flipY ??= false;
 
-            if (animation.exists(_frames.name))
-                throw "game.Character: Invalid frames name!";
+            if (animation.exists(_animation.name))
+                throw "Invalid animation name!";
 
-            if (_frames.indices.length > 0)
-                animation.addByIndices(_frames.name, _frames.prefix, _frames.indices, "", _frames.frameRate, _frames.looped, _frames.flipX, _frames.flipY);
+            if (_animation.indices.length > 0)
+                animation.addByIndices(_animation.name, _animation.prefix, _animation.indices, "", _animation.frameRate, _animation.looped, _animation.flipX, _animation.flipY);
             else
-                animation.addByPrefix(_frames.name, _frames.prefix, _frames.frameRate, _frames.looped, _frames.flipX, _frames.flipY);
+                animation.addByPrefix(_animation.name, _animation.prefix, _animation.frameRate, _animation.looped, _animation.flipX, _animation.flipY);
         }
 
         danceSteps = config.danceSteps;
@@ -128,13 +99,38 @@ class Character extends FlxSprite
 
         singDuration = config.singDuration ?? 8.0;
 
+        singTimer = 0.0;
+
+        return config;
+    }
+
+    public var danceSteps:Array<String>;
+
+    public var danceStep:Int;
+
+    public var danceInterval:Float;
+
+    public var singDuration:Float;
+
+    public var skipDance:Bool;
+
+    public var skipSing:Bool;
+
+    public var singTimer:Float;
+
+    public function new(_conductor:Conductor, x:Float = 0.0, y:Float = 0.0, _config:RawCharacterData):Void
+    {
+        super(x, y);
+
+        conductor = _conductor;
+
+        keys = [Options.controls["NOTE:LEFT"], Options.controls["NOTE:DOWN"], Options.controls["NOTE:UP"], Options.controls["NOTE:RIGHT"]];
+        
+        config = _config;
+
         skipDance = false;
 
         skipSing = false;
-
-        singCount = 0.0;
-
-        this.role = role;
 
         dance();
 
@@ -144,31 +140,28 @@ class Character extends FlxSprite
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
-
-        if (conductor == null)
-            return;
-
-        if (Inputs.inputsJustPressed(inputs) && role == PLAYABLE)
-            singCount = 0.0;
+        
+        if (FlxG.keys.anyJustPressed(keys) && !strumline.automated)
+            singTimer = 0.0;
 
         if ((animation.name ?? "").startsWith("Sing"))
         {
-            singCount += elapsed;
+            singTimer += elapsed;
 
-            var requiredCount:Float = singDuration * ((conductor.crotchet * 0.25) * 0.001);
+            var requiredTime:Float = singDuration * (conductor.beatLength * 0.25 * 0.001);
 
             if ((animation.name ?? "").endsWith("MISS"))
-                requiredCount *= FlxG.random.float(1.35, 1.85);
+                requiredTime *= FlxG.random.float(1.35, 1.85);
 
-            if (singCount >= requiredCount && (role == OTHER || !Inputs.inputsPressed(inputs)))
+            if (singTimer >= requiredTime && (!FlxG.keys.anyPressed(keys) || strumline.automated))
             {
-                singCount = 0.0;
+                singTimer = 0.0;
                 
                 dance(true);
             }
         }
         else
-            singCount = 0.0;
+            singTimer = 0.0;
     }
 
     override function destroy():Void
@@ -182,12 +175,12 @@ class Character extends FlxSprite
     {
         var output:FlxPoint = super.getScreenPosition(result, camera);
 
-        for (i in 0 ... config.frames.length)
+        for (i in 0 ... config.animations.length)
         {
-            var _frames:CharacterFramesConfig = config.frames[i];
+            var _animation:AnimData = config.animations[i];
             
-            if (animation.name ?? "" == _frames.name)
-                output.add(_frames.offset?.x ?? 0.0, _frames.offset?.y ?? 0.0);
+            if (animation.name ?? "" == _animation.name)
+                output.add(_animation.offset?.x ?? 0.0, _animation.offset?.y ?? 0.0);
         }
 
         return output;
@@ -199,44 +192,17 @@ class Character extends FlxSprite
             dance();
     }
 
-    public function dance(forceful:Bool = false):Void
+    public function dance(force:Bool = false):Void
     {
         if (skipDance)
             return;
         
-        if (!forceful && (animation.name ?? "").startsWith("Sing"))
+        if (!force && (animation.name ?? "").startsWith("Sing"))
             return;
 
-        animation.play(danceSteps[danceStep = FlxMath.wrap(danceStep + 1, 0, danceSteps.length - 1)], forceful);
+        animation.play(danceSteps[danceStep = FlxMath.wrap(danceStep + 1, 0, danceSteps.length - 1)], force);
     }
 }
-
-typedef CharacterConfig =
-{
-    var name:String;
-    
-    var format:String;
-
-    var png:String;
-
-    var xml:String;
-
-    var ?antialiasing:Bool;
-
-    var ?scale:{?x:Float, ?y:Float};
-
-    var ?flipX:Bool;
-
-    var ?flipY:Bool;
-
-    var frames:Array<CharacterFramesConfig>;
-
-    var danceSteps:Array<String>;
-
-    var ?danceInterval:Float;
-
-    var ?singDuration:Float;
-};
 
 typedef CharacterFramesConfig =
 {
@@ -256,10 +222,3 @@ typedef CharacterFramesConfig =
 
     var ?offset:{?x:Float, ?y:Float};
 };
-
-enum abstract CharacterRole(String) from String to String
-{
-    var PLAYABLE:CharacterRole;
-
-    var OTHER:CharacterRole;
-}

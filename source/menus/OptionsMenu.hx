@@ -52,22 +52,22 @@ class OptionsMenu extends FlxState
 
             _option.alpha = 0.5;
 
-            if (Std.isOfType(_option, BoolOptionItem))
-                cast (_option, BoolOptionItem).enabled = false;
+            if (_option is BoolOptionItem)
+                cast (_option, BoolOptionItem).selectable = false;
 
-            if (Std.isOfType(_option, KeybindOptionItem))
-                cast (_option, KeybindOptionItem).enabled = false;
+            if (_option is ControlOptionItem)
+                cast (_option, ControlOptionItem).selectable = false;
         }
 
         var _option:BaseOptionItem = options.members[option];
 
         _option.alpha = 1.0;
 
-        if (Std.isOfType(_option, BoolOptionItem))
-            cast (_option, BoolOptionItem).enabled = true;
+        if (_option is BoolOptionItem)
+            cast (_option, BoolOptionItem).selectable = true;
 
-        if (Std.isOfType(_option, KeybindOptionItem))
-            cast (_option, KeybindOptionItem).enabled = true;
+        if (_option is ControlOptionItem)
+            cast (_option, ControlOptionItem).selectable = true;
 
         return option;
     }
@@ -203,31 +203,31 @@ class OptionsMenu extends FlxState
 
         options.add(____bool);
 
-        var __header:HeaderOptionItem = new HeaderOptionItem(0.0, 0.0, "Keybinds", "");
+        var __header:HeaderOptionItem = new HeaderOptionItem(0.0, 0.0, "Controls", "");
 
         __header.setPosition(FlxG.width - __header.width + 165.0, ____bool.y + ____bool.height);
 
         options.add(__header);
 
-        var keybind:KeybindOptionItem = new KeybindOptionItem(0.0, 0.0, "Left Note", "Keybindings for the first note in the strum line.", "NOTE:LEFT");
+        var keybind:ControlOptionItem = new ControlOptionItem(0.0, 0.0, "Left Note", "Keybindings for the first note in the strumline.", "NOTE:LEFT");
 
         keybind.setPosition(FlxG.width - keybind.width + 100.0, __header.y + __header.height);
 
         options.add(keybind);
 
-        var _keybind:KeybindOptionItem = new KeybindOptionItem(0.0, 0.0, "Down Note", "Keybindings for the second note in the strum line.", "NOTE:DOWN");
+        var _keybind:ControlOptionItem = new ControlOptionItem(0.0, 0.0, "Down Note", "Keybindings for the second note in the strumline.", "NOTE:DOWN");
 
         _keybind.setPosition(FlxG.width - _keybind.width + 100.0, keybind.y + keybind.height);
 
         options.add(_keybind);
 
-        var __keybind:KeybindOptionItem = new KeybindOptionItem(0.0, 0.0, "Up Note", "Keybindings for the third note in the strum line.", "NOTE:UP");
+        var __keybind:ControlOptionItem = new ControlOptionItem(0.0, 0.0, "Up Note", "Keybindings for the third note in the strumline.", "NOTE:UP");
 
         __keybind.setPosition(FlxG.width - __keybind.width + 100.0, _keybind.y + _keybind.height);
 
         options.add(__keybind);
 
-        var ___keybind:KeybindOptionItem = new KeybindOptionItem(0.0, 0.0, "Right Note", "Keybindings for the fourth note in the strum line.", "NOTE:RIGHT");
+        var ___keybind:ControlOptionItem = new ControlOptionItem(0.0, 0.0, "Right Note", "Keybindings for the fourth note in the strumline.", "NOTE:RIGHT");
 
         ___keybind.setPosition(FlxG.width - ___keybind.width + 100.0, __keybind.y + __keybind.height);
 
@@ -239,13 +239,13 @@ class OptionsMenu extends FlxState
 
         options.add(___header);
 
-        var _____bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Downscroll", "If checked, flips the strum lines' vertical position.", "downscroll");
+        var _____bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Downscroll", "If checked, flips the strumlines' vertical position.", "downscroll");
 
         _____bool.setPosition(FlxG.width - _____bool.width + 50.0, ___header.y + ___header.height);
 
         options.add(_____bool);
 
-        var ______bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Middlescroll", "If checked, centers the playable strum line and\nhides the opponent's.", "middlescroll");
+        var ______bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Middlescroll", "If checked, centers the playable strumline and\nhides the opponent's.", "middlescroll");
 
         ______bool.setPosition(FlxG.width - ______bool.width + 50.0, _____bool.y + _____bool.height);
 
@@ -322,7 +322,7 @@ class OptionsMenu extends FlxState
 
         if (FlxG.keys.justPressed.PAGEDOWN)
         {
-            var _option:BaseOptionItem = options.group.getFirst((__option:BaseOptionItem) -> Std.isOfType(__option, HeaderOptionItem) && options.members.indexOf(__option) > option);
+            var _option:HeaderOptionItem = cast options.group.getFirst((__option:BaseOptionItem) -> Std.isOfType(__option, HeaderOptionItem) && options.members.indexOf(__option) > option);
 
             if (_option != null)
             {
@@ -336,7 +336,7 @@ class OptionsMenu extends FlxState
 
         if (FlxG.keys.justPressed.PAGEUP)
         {
-            var _option:BaseOptionItem = options.group.getLast((__option:BaseOptionItem) -> Std.isOfType(__option, HeaderOptionItem) && options.members.indexOf(__option) < option);
+            var _option:HeaderOptionItem = cast options.group.getLast((__option:BaseOptionItem) -> Std.isOfType(__option, HeaderOptionItem) && options.members.indexOf(__option) < option);
 
             if (_option != null)
             {

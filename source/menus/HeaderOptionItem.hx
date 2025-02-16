@@ -11,9 +11,9 @@ class HeaderOptionItem extends BaseOptionItem
 {
     public var gear:FlxSprite;
 
-    public function new(x:Float = 0.0, y:Float = 0.0, name:String, description:String):Void
+    public function new(x:Float = 0.0, y:Float = 0.0, _name:String, _description:String):Void
     {
-        super(x, y, name, description);
+        super(x, y, _name, _description);
 
         gear = new FlxSprite(Assets.getGraphic(Paths.png("assets/images/menus/HeaderOptionItem/gear")));
 

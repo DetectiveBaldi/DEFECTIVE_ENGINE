@@ -1,8 +1,8 @@
 package game;
 
-import flixel.math.FlxMath;
-
 import flixel.util.FlxColor;
+
+import data.HealthBarIconData;
 
 import music.Conductor;
 
@@ -72,15 +72,15 @@ class HealthBar extends ProgressBar
         return playerIcon;
     }
 
-    public function new(x:Float = 0.0, y:Float = 0.0, barWidth:Int = 600, barHeight:Int = 25, fillDirection:ProgressBarFillDirection, conductor:Conductor):Void
+    public function new(x:Float = 0.0, y:Float = 0.0, barWidth:Int = 600, barHeight:Int = 25, fillDirection:ProgressBarFillDirection, _conductor:Conductor):Void
     {
         super(x, y, barWidth, barHeight, fillDirection);
 
         borderSize = 5;
 
-        this.conductor = conductor;
+        conductor = _conductor;
 
-        opponentIcon = new HealthBarIcon(0.0, 0.0, HealthBarIcon.findConfig("assets/data/game/HealthBarIcon/BOYFRIEND_PIXEL"));
+        opponentIcon = new HealthBarIcon(0.0, 0.0, HealthBarIconData.get("assets/data/game/HealthBarIcon/BOYFRIEND_PIXEL"));
 
         opponentIcon.flipX = fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM;
 
@@ -88,7 +88,7 @@ class HealthBar extends ProgressBar
 
         add(opponentIcon);
 
-        playerIcon = new HealthBarIcon(0.0, 0.0, HealthBarIcon.findConfig("assets/data/game/HealthBarIcon/BOYFRIEND"));
+        playerIcon = new HealthBarIcon(0.0, 0.0, HealthBarIconData.get("assets/data/game/HealthBarIcon/BOYFRIEND"));
 
         playerIcon.flipX = !(fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM);
 

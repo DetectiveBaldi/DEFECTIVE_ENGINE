@@ -23,6 +23,8 @@
 
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" />
 
+	<window if="html5" resizable="true" />
+
 	<!-- ______________________________ Defines, Haxedefs, and Libraries _____________________________ -->
 
 	<haxelib name="flixel" />
@@ -34,8 +36,6 @@
 	<haxedef name="FLX_NO_HEALTH" />
 
 	<haxelib name="flixel-addons" />
-
-	<haxelib name="flixel-text-input" />
 
 	<haxelib name="haxeui-flixel" />
 

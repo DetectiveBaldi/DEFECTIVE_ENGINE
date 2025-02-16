@@ -11,10 +11,9 @@ import util.MathUtil;
 
 class PerfTracker extends TextField
 {
-    @:noCompletion
-    var timestamps:Array<Float>;
+    public var timestamps:Array<Float>;
 
-    public function new(x:Float = 0.0, y:Float = 0.0):Void
+    public function new(_x:Float = 0.0, _y:Float = 0.0):Void
     {
         super();
 
@@ -22,13 +21,15 @@ class PerfTracker extends TextField
 
         height = 100;
 
-        this.x = x;
+        x = _x;
 
-        this.y = y;
+        y = _y;
 
         selectable = false;
 
-        defaultTextFormat = new TextFormat("_sans", 12, 0xFFFFFFFF, true);
+        defaultTextFormat = new TextFormat("Monsterrat", 14, 0xFFFFFFFF, true);
+
+        text = "FPS: 0";
 
         timestamps = new Array<Float>();
     }
@@ -45,6 +46,14 @@ class PerfTracker extends TextField
         while (timestamps[0] < now - 1.0)
             timestamps.shift();
 
-        text = 'FPS: ${MathUtil.minInt(FlxG.drawFramerate, timestamps.length)}\nRAM: ${flixel.math.FlxMath.roundDecimal(openfl.system.System.totalMemoryNumber / Math.pow(1024, 2), 2)} MB\nVRAM: ${flixel.math.FlxMath.roundDecimal(FlxG.stage.context3D.totalGPUMemory / Math.pow(1024, 2), 2)} MB';
+        text = 'FPS: ${MathUtil.minInt(FlxG.drawFramerate, timestamps.length)}';
+
+        #if debug
+            text += '\nRAM: ${flixel.util.FlxStringUtil.formatBytes(openfl.system.System.totalMemoryNumber)}';
+
+            text += '\nVRAM: ${flixel.util.FlxStringUtil.formatBytes(FlxG.stage.context3D.totalGPUMemory)}';
+
+            text += '\nMax Texture Size: ${FlxG.bitmap.maxTextureSize}^2px';
+        #end
     }
 }

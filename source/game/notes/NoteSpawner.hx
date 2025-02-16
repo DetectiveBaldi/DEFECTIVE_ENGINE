@@ -1,16 +1,11 @@
 package game.notes;
 
-import haxe.ds.ArraySort;
-
 import flixel.FlxBasic;
-import flixel.FlxCamera;
-import flixel.FlxG;
 
 import flixel.group.FlxGroup.FlxTypedGroup;
 
-import game.Chart;
-import game.Chart.LoadedNote;
-import game.GameState;
+import data.Chart;
+import data.Chart.RawNote;
 
 import music.Conductor;
 
@@ -20,49 +15,37 @@ using util.ArrayUtil;
 
 class NoteSpawner extends FlxBasic
 {
-    public var game:GameState;
+    public var conductor:Conductor;
 
-    public var conductor(get, never):Conductor;
+    public var chart:Chart;
 
-    @:noCompletion
-    function get_conductor():Conductor
-    {
-        return game.conductor;
-    }
-
-    public var hudCamera(get, never):FlxCamera;
-
-    @:noCompletion
-    function get_hudCamera():FlxCamera
-    {
-        return game.hudCamera;
-    }
-
-    public var chart(get, never):Chart;
-
-    @:noCompletion
-    function get_chart():Chart
-    {
-        return game.chart;
-    }
+    public var strumlines:FlxTypedGroup<Strumline>;
 
     public var notes:FlxTypedGroup<Note>;
 
-    public var noteHashes:Array<String>;
+    public var sustains:FlxTypedGroup<Sustain>;
+
+    public var trails:FlxTypedGroup<SustainTrail>;
 
     public var noteIndex:Int;
 
-    public function new(game:GameState):Void
+    public function new(_conductor:Conductor, _chart:Chart, _strumlines:FlxTypedGroup<Strumline>):Void
     {
         super();
 
         visible = false;
 
-        this.game = game;
+        conductor = _conductor;
+        
+        chart = _chart;
+
+        strumlines = _strumlines;
 
         notes = new FlxTypedGroup<Note>();
 
-        noteHashes = new Array<String>();
+        sustains = new FlxTypedGroup<Sustain>();
+
+        trails = new FlxTypedGroup<SustainTrail>();
 
         noteIndex = 0;
     }
@@ -73,37 +56,40 @@ class NoteSpawner extends FlxBasic
 
         while (noteIndex < chart.notes.length)
         {
-            var note:LoadedNote = chart.notes[noteIndex];
+            var note:RawNote = chart.notes[noteIndex];
 
-            if (note.time > conductor.time + hudCamera.height / hudCamera.zoom / game.chartSpeed / note.speed / 0.45)
+            var strumline:Strumline = strumlines.members[note.lane];
+
+            if (note.time - conductor.time > 1500.0 / strumline.scrollSpeed)
                 break;
-
-            var hash:String = '${note.time}${note.direction}${note.lane}';
-
-            if (noteHashes.contains(hash))
-            {
-                noteIndex++;
-
-                continue;
-            }
-
-            noteHashes.push(hash);
-
-            var strumLine:StrumLine = game.strumLines.members[note.lane];
 
             var _note:Note = notes.recycle(Note, () -> new Note());
 
+            _note.visible = true;
+        
             _note.time = note.time;
-
-            _note.speed = note.speed;
 
             _note.direction = note.direction;
 
-            _note.lane = note.lane;
-
             _note.length = note.length;
 
-            _note.animation.play(Note.directions[_note.direction].toLowerCase());
+            _note.lane = note.lane;
+            
+            _note.status = IDLING;
+
+            _note.showPop = false;
+
+            _note.finishedHold = false;
+
+            _note.unholdTime = 0.0;
+
+            _note.sustain = null;
+
+            _note.strumline = strumline;
+
+            _note.strum = strumline.strums.members[_note.direction];
+
+            _note.animation.play(Note.DIRECTIONS[_note.direction].toLowerCase());
 
             _note.flipY = false;
 
@@ -111,47 +97,56 @@ class NoteSpawner extends FlxBasic
 
             _note.updateHitbox();
 
-            _note.setPosition((FlxG.width - _note.width) * 0.5, strumLine.downscroll ? -_note.height : hudCamera.height / hudCamera.zoom);
+            _note.setPosition(camera.viewMarginRight, 0.0);
 
-            strumLine.notes.add(_note);
+            notes.add(_note);
 
-            strumLine.onNoteSpawn.dispatch(_note);
+            strumline.notes.add(_note);
 
-            var crotchet:Float = (60.0 / conductor.getTimeChange(chart.tempo, _note.time).tempo) * 1000.0;
+            strumline.onNoteSpawn.dispatch(_note);
 
-            for (k in 0 ... Math.round(_note.length / (crotchet * 0.25)))
+            if (note.length > 0.0)
             {
-                var sustain:Note = notes.recycle(Note, () -> new Note());
+                var sustain:Sustain = sustains.recycle(Sustain, () -> new Sustain());
 
-                sustain.time = _note.time + (crotchet * 0.25 * (k + 1.0));
+                sustain.note = _note;
 
-                sustain.speed = _note.speed;
+                sustain.animation.play(Note.DIRECTIONS[_note.direction].toLowerCase() + "HoldPiece");
 
-                sustain.direction = _note.direction;
-                
-                sustain.lane = _note.lane;
+                sustain.flipY = strumline.downscroll;
 
-                sustain.length = crotchet;
-
-                sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldPiece");
-
-                if (k >= Math.round(_note.length / (crotchet * 0.25)) - 1.0)
-                    sustain.animation.play(Note.directions[sustain.direction].toLowerCase() + "HoldTail");
-
-                sustain.flipY = strumLine.downscroll;
-
-                sustain.scale.set(0.7, 0.7);
+                sustain.setGraphicSize(sustain.frameWidth * 0.7, _note.length * strumline.scrollSpeed * 0.45);
 
                 sustain.updateHitbox();
 
-                sustain.setPosition((FlxG.width - sustain.width) * 0.5, strumLine.downscroll ? -sustain.height : hudCamera.height / hudCamera.zoom);
+                sustain.setPosition(camera.viewMarginRight, 0.0);
 
-                strumLine.notes.add(sustain);
+                sustains.add(sustain);
+
+                strumline.sustains.add(sustain);
+
+                _note.sustain = sustain;
+
+                var trail:SustainTrail = trails.recycle(SustainTrail, () -> new SustainTrail());
+
+                trail.sustain = sustain;
+
+                trail.animation.play(Note.DIRECTIONS[_note.direction].toLowerCase() + "HoldTail");
+
+                trail.flipY = strumline.downscroll;
+
+                trail.scale.set(0.7, 0.7);
+
+                trail.updateHitbox();
+
+                trail.setPosition(camera.viewMarginRight, 0.0);
+
+                trails.add(trail);
+
+                strumline.trails.add(trail);
+
+                sustain.trail = trail;
             }
-            
-            ArraySort.sort(notes.members, (__note:Note, ___note:Note) -> Std.int(__note.time - ___note.time));
-
-            ArraySort.sort(strumLine.notes.members, (__note:Note, ___note:Note) -> Std.int(__note.time - ___note.time));
 
             noteIndex++;
         }

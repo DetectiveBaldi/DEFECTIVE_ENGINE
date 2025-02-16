@@ -1,30 +1,18 @@
 package game;
 
-import haxe.Json;
-
 import flixel.FlxSprite;
 
 import core.Assets;
 import core.Paths;
 
+import data.HealthBarIconData.RawHealthBarIconData;
+
 class HealthBarIcon extends FlxSprite
 {
-    public static var configs:Map<String, HealthBarIconConfig> = new Map<String, HealthBarIconConfig>();
-
-    public static function findConfig(path:String):HealthBarIconConfig
-    {
-        if (configs.exists(path))
-            return configs[path];
-
-        configs[path] = Json.parse(Assets.getText(Paths.json(path)));
-
-        return configs[path];
-    }
-
-    public var config(default, set):HealthBarIconConfig;
+    public var config(default, set):RawHealthBarIconData;
 
     @:noCompletion
-    function set_config(_config:HealthBarIconConfig):HealthBarIconConfig
+    function set_config(_config:RawHealthBarIconData):RawHealthBarIconData
     {
         config = _config;
 
@@ -39,23 +27,12 @@ class HealthBarIcon extends FlxSprite
         return config;
     }
 
-    public function new(x:Float = 0.0, y:Float = 0.0, config:HealthBarIconConfig):Void
+    public function new(x:Float = 0.0, y:Float = 0.0, _config:RawHealthBarIconData):Void
     {
         super(x, y);
 
         active = false;
 
-        this.config = config;
+        config = _config;
     }
 }
-
-typedef HealthBarIconConfig =
-{
-    var png:String;
-
-    var ?antialiasing:Bool;
-
-    var ?scale:{?x:Float, ?y:Float};
-
-    var ?healthBarColor:String;
-};

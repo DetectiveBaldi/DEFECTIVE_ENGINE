@@ -7,6 +7,30 @@ class ArrayUtil
         var output:T = null;
 
         if (func == null)
+            output = arr[0];
+        else
+        {
+            for (i in 0 ... arr.length)
+            {
+                var t:T = arr[i];
+
+                if (func(t))
+                {
+                    output = t;
+
+                    break;
+                }
+            }
+        }
+
+        return output;
+    }
+
+    public static function newest<T>(arr:Array<T>, func:(T)->Bool = null):T
+    {
+        var output:T = null;
+
+        if (func == null)
             output = arr[arr.length - 1];
         else
         {
@@ -24,30 +48,6 @@ class ArrayUtil
                 }
 
                 i--;
-            }
-        }
-
-        return output;
-    }
-
-    public static function newest<T>(arr:Array<T>, func:(T)->Bool = null):T
-    {
-        var output:T = null;
-
-        if (func == null)
-            output = arr[0];
-        else
-        {
-            for (i in 0 ... arr.length)
-            {
-                var t:T = arr[i];
-
-                if (func(t))
-                {
-                    output = t;
-
-                    break;
-                }
             }
         }
 

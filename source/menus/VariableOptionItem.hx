@@ -21,18 +21,18 @@ class VariableOptionItem<T> extends BaseOptionItem
     {
         Reflect.setProperty(Options, option, _value);
 
-        onUpdate.dispatch(_value);
+        onUpdate.dispatch(value);
 
         return value;
     }
 
     public var onUpdate:FlxTypedSignal<(value:T)->Void>;
 
-    public function new(x:Float = 0.0, y:Float = 0.0, name:String, description:String, option:String):Void
+    public function new(x:Float = 0.0, y:Float = 0.0, name:String, description:String, _option:String):Void
     {
         super(x, y, name, description);
 
-        this.option = option;
+        option = _option;
 
         onUpdate = new FlxTypedSignal<(value:T)->Void>();
     }

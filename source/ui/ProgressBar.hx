@@ -104,9 +104,9 @@ class ProgressBar extends FlxSpriteGroup
         return borderSize;
     }
 
-    public function new(x:Float = 0.0, y:Float = 0.0, barWidth:Int = 600, barHeight:Int = 25, fillDirection:ProgressBarFillDirection):Void
+    public function new(_x:Float = 0.0, _y:Float = 0.0, _barWidth:Int = 600, _barHeight:Int = 25, _fillDirection:ProgressBarFillDirection):Void
     {
-        super(x, y);
+        super(_x, _y);
         
         @:bypassAccessor
         value = 50.0;
@@ -119,12 +119,12 @@ class ProgressBar extends FlxSpriteGroup
 
         onFilled = new FlxSignal();
 
-        this.barWidth = barWidth;
+        barWidth = _barWidth;
 
-        this.barHeight = barHeight;
+        barHeight = _barHeight;
 
         @:bypassAccessor
-        this.fillDirection = fillDirection;
+        fillDirection = _fillDirection;
         
         emptiedSide = new ProgressBarSideSprite();
 
@@ -163,11 +163,7 @@ class ProgressBar extends FlxSpriteGroup
 
         onEmptied.destroy();
 
-        onEmptied = null;
-
         onFilled.destroy();
-
-        onFilled = null;
 
         emptiedSide.clipRect.put();
 

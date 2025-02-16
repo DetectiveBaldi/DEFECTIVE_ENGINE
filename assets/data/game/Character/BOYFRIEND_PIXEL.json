@@ -13,7 +13,7 @@
 
     "flipX": true,
 
-    "frames":
+    "animations":
     [
         {"name": "dance", "prefix": "BF IDLE instance 1", "indices": []},
 

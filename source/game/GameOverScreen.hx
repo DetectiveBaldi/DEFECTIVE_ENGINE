@@ -9,25 +9,27 @@ import flixel.util.FlxColor;
 import core.Assets;
 import core.Paths;
 
+import data.CharacterData;
+
 import music.MusicSubState;
 
 class GameOverScreen extends MusicSubState
 {
-    public var game:GameState;
+    public var game:PlayState;
 
     public var player:Character;
+
+    public var tune:FlxSound;
 
     public var start:FlxSound;
 
     public var end:FlxSound;
 
-    public var tune:FlxSound;
-
-    public function new(game:GameState):Void
+    public function new(_game:PlayState):Void
     {
         super();
 
-        this.game = game;
+        game = _game;
     }
 
     override function create():Void
@@ -36,15 +38,17 @@ class GameOverScreen extends MusicSubState
 
         conductor.tempo = 100.0;
 
-        conductor.time = -conductor.crotchet * 5.0;
+        conductor.time = -conductor.beatLength * 5.0;
 
         game.gameCamera.followLerp = 0.0185;
 
-        game.playerGroup.visible = false;
+        game.players.visible = false;
 
         var _player:Character = game.player;
 
-        player = new Character(conductor, 0.0, 0.0, Character.findConfig("assets/data/game/Character/BOYFRIEND_GAMEOVER"), PLAYABLE);
+        player = new Character(conductor, 0.0, 0.0, CharacterData.get("assets/data/game/Character/BOYFRIEND_GAMEOVER"));
+
+        player.strumline = game.playField.playerStrumline;
 
         player.skipDance = true;
 
@@ -56,9 +60,13 @@ class GameOverScreen extends MusicSubState
 
         game.gameCameraTarget.setPosition(player.getMidpoint().x, player.getMidpoint().y);
 
+        tune = FlxG.sound.load(Assets.getSound(Paths.ogg("assets/music/game/GameOverScreen/tune")), 1.0, true);
+
         start = FlxG.sound.load(Assets.getSound(Paths.ogg("assets/sounds/game/GameOverScreen/start"), false));
 
         start.play();
+
+        end = FlxG.sound.load(Assets.getSound(Paths.ogg("assets/sounds/game/GameOverScreen/end"), false));
     }
 
     override function update(elapsed:Float):Void
@@ -69,17 +77,15 @@ class GameOverScreen extends MusicSubState
         {
             if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE)
             {
-                FlxG.camera.fade(FlxColor.BLACK, conductor.crotchet * 0.001 * 7.5, false, () -> FlxG.resetState());
+                FlxG.camera.fade(FlxColor.BLACK, conductor.beatLength * 0.001 * 7.5, false, () -> FlxG.resetState());
 
                 player.skipDance = true;
 
                 player.animation.play("end");
 
-                end = FlxG.sound.load(Assets.getSound(Paths.ogg("assets/sounds/game/GameOverScreen/end"), false));
+                tune.stop();
 
                 end.play();
-
-                tune.stop();
             }
         }
     }
@@ -91,8 +97,6 @@ class GameOverScreen extends MusicSubState
         if (beat == 0.0)
         {
             player.skipDance = false;
-
-            tune = FlxG.sound.load(Assets.getSound(Paths.ogg("assets/music/game/GameOverScreen/tune")), 1.0, true);
 
             tune.play();
         }

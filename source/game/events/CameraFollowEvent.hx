@@ -1,43 +1,41 @@
 package game.events;
 
-import flixel.math.FlxPoint;
-
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 
-import game.GameState;
+import game.PlayState;
 
 class CameraFollowEvent
 {
-    public static function spawn(game:GameState, x:Float, y:Float, characterMap:String, character:String, duration:Float, ease:String):Void
+    public static function dispatch(game:PlayState, x:Float, y:Float, characterRole:String, duration:Float, ease:String):Void
     {
-        switch (characterMap:String)
+        switch (characterRole:String)
         {
-            case "spectatorMap":
+            case "spectator":
             {
-                x = game.spectatorMap[character].getMidpoint().x;
+                x = game.spectator.getMidpoint().x;
 
-                y = game.spectatorMap[character].getMidpoint().y;
+                y = game.spectator.getMidpoint().y;
             }
 
-            case "opponentMap":
+            case "opponent":
             {
-                x = game.opponentMap[character].getMidpoint().x;
+                x = game.opponent.getMidpoint().x;
 
-                y = game.opponentMap[character].getMidpoint().y;
+                y = game.opponent.getMidpoint().y;
             }
 
-            case "playerMap":
+            case "player":
             {
-                x = game.playerMap[character].getMidpoint().x;
+                x = game.player.getMidpoint().x;
 
-                y = game.playerMap[character].getMidpoint().y;
+                y = game.player.getMidpoint().y;
             }
         }
 
         if (duration > 0.0)
         {
-            game.gameCamera.target = null;
+            game.gameCamera.follow(null, LOCKON, 0.05);
 
             game.gameCameraTarget.setPosition(x, y);
 
