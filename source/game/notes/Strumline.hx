@@ -74,6 +74,8 @@ class Strumline extends FlxGroup
 
     public var downscroll:Bool;
 
+    public var registerInputs:Bool;
+
     public var automated:Bool;
 
     public var characters:FlxTypedSpriteGroup<Character>;
@@ -151,6 +153,8 @@ class Strumline extends FlxGroup
 
         downscroll = Options.downscroll;
 
+        registerInputs = true;
+
         automated = false;
 
         lastStep = 0;
@@ -159,20 +163,6 @@ class Strumline extends FlxGroup
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
-
-        while (notesPendingRemoval.length > 0.0)
-        {
-            var note:Note = notesPendingRemoval.pop();
-
-            notes.members.remove(note);
-
-            if (note.length > 0.0)
-            {
-                sustains.members.remove(note.sustain);
-
-                trails.members.remove(note.sustain.trail);
-            }
-        }
 
         for (i in 0 ... notes.members.length)
         {
@@ -216,6 +206,20 @@ class Strumline extends FlxGroup
             }
         }
 
+        while (notesPendingRemoval.length > 0.0)
+        {
+            var note:Note = notesPendingRemoval.pop();
+
+            notes.members.remove(note);
+
+            if (note.length > 0.0)
+            {
+                sustains.members.remove(note.sustain);
+
+                trails.members.remove(note.sustain.trail);
+            }
+        }
+
         lastStep = conductor.step;
     }
 
@@ -252,7 +256,7 @@ class Strumline extends FlxGroup
     {
         var dir:Int = keys[ev.keyCode] ?? -1;
 
-        if (dir == -1 || keysHeld[dir] || automated)
+        if (keysHeld[dir] || !registerInputs || dir == -1)
             return;
 
         keysHeld[dir] = true;
@@ -270,7 +274,7 @@ class Strumline extends FlxGroup
     {
         var dir:Int = keys[ev.keyCode] ?? -1;
 
-        if (dir == -1 || automated)
+        if (dir == -1)
             return;
 
         keysHeld[dir] = false;

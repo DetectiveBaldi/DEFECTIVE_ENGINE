@@ -16,7 +16,7 @@ import core.Options;
 
 import plugins.Log;
 
-import ui.PerfTracker;
+import ui.PerfStats;
 
 import util.MathUtil;
 
@@ -26,7 +26,7 @@ class InitState extends FlxState
 
     public static var log:Log;
 
-    public static var perfTracker:PerfTracker;
+    public static var perfStats:PerfStats;
 
     public function new(_nextState:NextState):Void
     {
@@ -73,9 +73,9 @@ class InitState extends FlxState
 
         FlxG.plugins.addPlugin(log);
 
-        perfTracker = new PerfTracker(10.0, 5.0);
+        perfStats = new PerfStats(10.0, 5.0);
         
-        FlxG.game.addChildAt(perfTracker, FlxG.game.getChildIndex(FlxG.game.debugger));
+        FlxG.game.addChildAt(perfStats, FlxG.game.getChildIndex(FlxG.game.debugger));
 
         FlxG.switchState(nextState);
     }

@@ -9,7 +9,7 @@ import flixel.FlxG;
 
 import util.MathUtil;
 
-class PerfTracker extends TextField
+class PerfStats extends TextField
 {
     public var timestamps:Array<Float>;
 
@@ -46,14 +46,17 @@ class PerfTracker extends TextField
         while (timestamps[0] < now - 1.0)
             timestamps.shift();
 
-        text = 'FPS: ${MathUtil.minInt(FlxG.drawFramerate, timestamps.length)}';
+        var _text:String = 'FPS: ${MathUtil.minInt(FlxG.drawFramerate, timestamps.length)}';
 
         #if debug
-            text += '\nRAM: ${flixel.util.FlxStringUtil.formatBytes(openfl.system.System.totalMemoryNumber)}';
+            _text += '\nRAM: ${flixel.util.FlxStringUtil.formatBytes(openfl.system.System.totalMemoryNumber)}';
 
-            text += '\nVRAM: ${flixel.util.FlxStringUtil.formatBytes(FlxG.stage.context3D.totalGPUMemory)}';
+            _text += '\nVRAM: ${flixel.util.FlxStringUtil.formatBytes(FlxG.stage.context3D.totalGPUMemory)}';
 
-            text += '\nMax Texture Size: ${FlxG.bitmap.maxTextureSize}^2px';
+            _text += '\nMax Texture Size: ${FlxG.bitmap.maxTextureSize}^2px';
         #end
+
+        if (text != _text)
+            text = _text;
     }
 }

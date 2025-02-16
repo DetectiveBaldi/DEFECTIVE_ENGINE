@@ -382,7 +382,7 @@ class PlayState extends MusicSubState
         playerVocals?.stop();
 
         for (i in 0 ... playField.strumlines.members.length)
-            playField.strumlines.members[i].removeKeyboardListeners();
+            playField.strumlines.members[i].registerInputs = false;
     }
 
     public function getSpectator(name:String):Character
