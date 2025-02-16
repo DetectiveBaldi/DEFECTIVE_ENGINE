@@ -1,7 +1,8 @@
 ## Credits
 - [Detective Baldi](https://x.com/DetectiveBaldi): Programming
-- [KayipKux](https://x.com/KayipKux): Artist and Composer
-- [Berry](https://x.com/berryreal_): Concept Designer
+- [KayipKux](https://x.com/KayipKux): Artist and composer
+- [Berry](https://x.com/berryreal_): Concept designer
+- [Sword352](https://github.com/Sword352): [FnF Eternal](https://github.com/Sword352/FnF-Eternal) and the baseline of several new feature rewrites
 
 ## Building
 Follow these steps to build the game:
