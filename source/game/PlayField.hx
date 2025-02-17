@@ -155,6 +155,8 @@ class PlayField extends FlxGroup
 
         opponentStrumline = new Strumline(conductor);
 
+        opponentStrumline.visible = !Options.middlescroll;
+
         opponentStrumline.automated = true;
 
         opponentStrumline.removeKeyboardListeners();

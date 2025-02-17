@@ -140,28 +140,31 @@ class Character extends FlxSprite
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
-        
-        if (FlxG.keys.anyJustPressed(keys) && !strumline.automated)
-            singTimer = 0.0;
 
-        if ((animation.name ?? "").startsWith("Sing"))
+        if (conductor != null && strumline != null)
         {
-            singTimer += elapsed;
-
-            var requiredTime:Float = singDuration * (conductor.beatLength * 0.25 * 0.001);
-
-            if ((animation.name ?? "").endsWith("MISS"))
-                requiredTime *= FlxG.random.float(1.35, 1.85);
-
-            if (singTimer >= requiredTime && (!FlxG.keys.anyPressed(keys) || strumline.automated))
-            {
+            if (FlxG.keys.anyJustPressed(keys) && !strumline.automated)
                 singTimer = 0.0;
-                
-                dance(true);
+
+            if ((animation.name ?? "").startsWith("Sing"))
+            {
+                singTimer += elapsed;
+
+                var requiredTime:Float = singDuration * (conductor.beatLength * 0.25 * 0.001);
+
+                if ((animation.name ?? "").endsWith("MISS"))
+                    requiredTime *= FlxG.random.float(1.35, 1.85);
+
+                if (singTimer >= requiredTime && (!FlxG.keys.anyPressed(keys) || strumline.automated))
+                {
+                    singTimer = 0.0;
+                    
+                    dance(true);
+                }
             }
+            else
+                singTimer = 0.0;
         }
-        else
-            singTimer = 0.0;
     }
 
     override function destroy():Void

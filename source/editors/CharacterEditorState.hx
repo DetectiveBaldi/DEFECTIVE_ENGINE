@@ -45,7 +45,6 @@ import data.AnimData;
 import data.CharacterData;
 
 import game.Character;
-
 import game.levels.Level1;
 
 using StringTools;

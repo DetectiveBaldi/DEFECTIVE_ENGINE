@@ -410,7 +410,7 @@ class Strumline extends FlxGroup
 
     public function isHolding(note:Note):Bool
     {
-        return note.status != MISSED && (automated || keysHeld[note.direction] || (note.status == HIT && conductor.time >= note.time + note.length - 50.0));
+        return note.status != MISSED && (automated || keysHeld[note.direction] || (note.status == HIT && conductor.time >= note.time + note.length));
     }
 
     public function holdSustainNote(note:Note):Void
