@@ -33,6 +33,8 @@ class Strumline extends FlxGroup
 
     public var keysHeld:Array<Bool>;
 
+    public var registerInputs:Bool;
+
     public var strums:FlxTypedSpriteGroup<Strum>;
 
     public var spacing(default, set):Float;
@@ -91,6 +93,8 @@ class Strumline extends FlxGroup
         addKeyboardListeners();
 
         keysHeld = [for (i in 0 ... 4) false];
+
+        registerInputs = true;
 
         strums = new FlxTypedSpriteGroup<Strum>();
 
@@ -262,7 +266,7 @@ class Strumline extends FlxGroup
     {
         var dir:Int = keys[ev.keyCode] ?? -1;
 
-        if (keysHeld[dir] || dir == -1)
+        if (keysHeld[dir] || !registerInputs || dir == -1)
             return;
 
         keysHeld[dir] = true;

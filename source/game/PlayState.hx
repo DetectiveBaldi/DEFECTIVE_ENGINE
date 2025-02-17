@@ -342,13 +342,17 @@ class PlayState extends MusicSubState
 
         instrumental.onComplete = endSong;
 
+        instrumental = FlxG.sound.load(Assets.getSound(Paths.ogg('assets/music/game/levels/${level}/Instrumental')));
+
         if (FileSystem.exists(Paths.ogg('assets/music/game/levels/${level}/Vocals-Main')))
             mainVocals = FlxG.sound.load(Assets.getSound(Paths.ogg('assets/music/game/levels/${level}/Vocals-Main')));
         else
         {
-            opponentVocals = FlxG.sound.load(Assets.getSound(Paths.ogg('assets/music/game/levels/${level}/Vocals-Opponent')));
+            if (FileSystem.exists(Paths.ogg('assets/music/game/levels/${level}/Vocals-Opponent')))
+                opponentVocals = FlxG.sound.load(Assets.getSound(Paths.ogg('assets/music/game/levels/${level}/Vocals-Opponent')));
 
-            playerVocals = FlxG.sound.load(Assets.getSound(Paths.ogg ('assets/music/game/levels/${level}/Vocals-Player')));
+            if (FileSystem.exists(Paths.ogg('assets/music/game/levels/${level}/Vocals-Player')))
+                playerVocals = FlxG.sound.load(Assets.getSound(Paths.ogg ('assets/music/game/levels/${level}/Vocals-Player')));
         }
     }
 
@@ -385,7 +389,7 @@ class PlayState extends MusicSubState
         var strumlines:FlxTypedGroup<Strumline> = playField.strumlines;
 
         for (i in 0 ... strumlines.members.length)
-            strumlines.members[i].removeKeyboardListeners();
+            strumlines.members[i].registerInputs = false;
     }
 
     public function getSpectator(name:String):Character
