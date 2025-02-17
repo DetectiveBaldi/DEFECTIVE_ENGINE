@@ -7,8 +7,8 @@ import sys.FileSystem;
 import core.Assets;
 import core.Paths;
 
+import util.MathUtil;
 import util.TimedObjectUtil;
-
 import util.TimedObjectUtil.RawTimedObject;
 import util.TimedObjectUtil.TimedObject;
 
@@ -105,42 +105,7 @@ class PsychConverter
         output.tempo = raw.bpm;
 
         output.scrollSpeed = raw.speed;
-
-        for (i in 0 ... raw.notes.length)
-        {
-            var section:Dynamic = raw.notes[i];
-
-            var _section:PsychSection =
-            {
-                sectionNotes:
-                [
-                    for (j in 0 ... section.sectionNotes.length)
-                    {
-                        var note:Array<Dynamic> = section.sectionNotes[j];
-
-                        {time: note[0], direction: note[1], length: note[2]}
-                    }
-                ],
-
-                sectionBeats: section.sectionBeats,
-
-                mustHitSection: section.mustHitSection,
-
-                changeBPM: section.changeBPM,
-
-                bpm: section.bpm
-            };
-            
-            TimedObjectUtil.sort(_section.sectionNotes);
-
-            for (j in 0 ... _section.sectionNotes.length)
-            {
-                var note:PsychNote = _section.sectionNotes[j];
-
-                output.notes.push({time: note.time, direction: note.direction % 4, lane: 1 - Math.floor(note.direction * 0.25), length: note.length});
-            }
-        }
-
+        
         var time:Float = 0.0;
 
         var tempo:Float = output.tempo;
@@ -184,6 +149,13 @@ class PsychConverter
             }
 
             time += beatLength * (Math.round(_section.sectionBeats * 4.0) * 0.25);
+
+            for (j in 0 ... _section.sectionNotes.length)
+            {
+                var note:PsychNote = _section.sectionNotes[j];
+
+                output.notes.push({time: note.time, direction: note.direction % 4, lane: 1 - Math.floor(note.direction * 0.25), length: MathUtil.maxInt(Math.round(note.length - beatLength * 0.25), 0)});
+            }
         }
 
         sys.FileSystem.createDirectory("assets/data/game/PsychConverter/");
