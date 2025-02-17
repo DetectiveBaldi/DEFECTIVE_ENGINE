@@ -28,6 +28,7 @@ import data.HealthBarIconData;
 
 import editors.CharacterEditorState;
 
+import game.notes.Strumline;
 import game.events.CameraFollowEvent;
 import game.events.CameraZoomEvent;
 import game.events.ScrollSpeedChangeEvent;
@@ -381,8 +382,10 @@ class PlayState extends MusicSubState
 
         playerVocals?.stop();
 
-        for (i in 0 ... playField.strumlines.members.length)
-            playField.strumlines.members[i].registerInputs = false;
+        var strumlines:FlxTypedGroup<Strumline> = playField.strumlines;
+
+        for (i in 0 ... strumlines.members.length)
+            strumlines.members[i].removeKeyboardListeners();
     }
 
     public function getSpectator(name:String):Character

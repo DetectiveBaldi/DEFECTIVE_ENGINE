@@ -63,7 +63,7 @@ class NoteSpawner extends FlxBasic
             if (note.time - conductor.time > 1500.0 / strumline.scrollSpeed)
                 break;
 
-            var _note:Note = notes.recycle(Note, () -> new Note());
+            var _note:Note = notes.recycle(Note, noteConstructor);
 
             _note.visible = true;
         
@@ -107,7 +107,7 @@ class NoteSpawner extends FlxBasic
 
             if (note.length > 0.0)
             {
-                var sustain:Sustain = sustains.recycle(Sustain, () -> new Sustain());
+                var sustain:Sustain = sustains.recycle(Sustain, sustainConstructor);
 
                 sustain.note = _note;
 
@@ -127,7 +127,7 @@ class NoteSpawner extends FlxBasic
 
                 _note.sustain = sustain;
 
-                var trail:SustainTrail = trails.recycle(SustainTrail, () -> new SustainTrail());
+                var trail:SustainTrail = trails.recycle(SustainTrail, trailConstructor);
 
                 trail.sustain = sustain;
 
@@ -150,5 +150,20 @@ class NoteSpawner extends FlxBasic
 
             noteIndex++;
         }
+    }
+
+    public function noteConstructor():Note
+    {
+        return new Note();
+    }
+
+    public function sustainConstructor():Sustain
+    {
+        return new Sustain();
+    }
+
+    public function trailConstructor():SustainTrail
+    {
+        return new SustainTrail();
     }
 }

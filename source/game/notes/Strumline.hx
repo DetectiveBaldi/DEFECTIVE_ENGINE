@@ -74,8 +74,6 @@ class Strumline extends FlxGroup
 
     public var downscroll:Bool;
 
-    public var registerInputs:Bool;
-
     public var automated:Bool;
 
     public var characters:FlxTypedSpriteGroup<Character>;
@@ -90,11 +88,9 @@ class Strumline extends FlxGroup
 
         conductor = _conductor;
 
-        keys = [Options.controls["NOTE:LEFT"] => 0, Options.controls["NOTE:DOWN"] => 1, Options.controls["NOTE:UP"] => 2, Options.controls["NOTE:RIGHT"] => 3];
+        addKeyboardListeners();
 
         keysHeld = [for (i in 0 ... 4) false];
-
-        addKeyboardListeners();
 
         strums = new FlxTypedSpriteGroup<Strum>();
 
@@ -153,8 +149,6 @@ class Strumline extends FlxGroup
 
         downscroll = Options.downscroll;
 
-        registerInputs = true;
-
         automated = false;
 
         lastStep = 0;
@@ -163,6 +157,22 @@ class Strumline extends FlxGroup
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
+
+        while (notesPendingRemoval.length > 0.0)
+        {
+            var note:Note = notesPendingRemoval.pop();
+
+            notes.members.remove(note);
+
+            note.kill();
+
+            if (note.length > 0.0)
+            {
+                sustains.members.remove(note.sustain);
+
+                trails.members.remove(note.sustain.trail);
+            }
+        }
 
         for (i in 0 ... notes.members.length)
         {
@@ -206,20 +216,6 @@ class Strumline extends FlxGroup
             }
         }
 
-        while (notesPendingRemoval.length > 0.0)
-        {
-            var note:Note = notesPendingRemoval.pop();
-
-            notes.members.remove(note);
-
-            if (note.length > 0.0)
-            {
-                sustains.members.remove(note.sustain);
-
-                trails.members.remove(note.sustain.trail);
-            }
-        }
-
         lastStep = conductor.step;
     }
 
@@ -240,23 +236,33 @@ class Strumline extends FlxGroup
 
     public function addKeyboardListeners():Void
     {
+        if (keys != null)
+            return;
+
         FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown);
 
         FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
+
+        keys = [Options.controls["NOTE:LEFT"] => 0, Options.controls["NOTE:DOWN"] => 1, Options.controls["NOTE:UP"] => 2, Options.controls["NOTE:RIGHT"] => 3];
     }
 
     public function removeKeyboardListeners():Void
     {
+        if (keys == null)
+            return;
+
         FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
 
         FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
+
+        keys = null;
     }
 
     public function keyDown(ev:KeyboardEvent):Void
     {
         var dir:Int = keys[ev.keyCode] ?? -1;
 
-        if (keysHeld[dir] || !registerInputs || dir == -1)
+        if (keysHeld[dir] || dir == -1)
             return;
 
         keysHeld[dir] = true;

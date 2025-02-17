@@ -103,6 +103,18 @@ class Note extends FlxSprite
             y += (time - strumline.conductor.time) * (strumline.downscroll ? -1 : 1) * strumline.scrollSpeed * 0.45;
     }
 
+    override function kill():Void
+    {
+        super.kill();
+
+        if (length > 0.0)
+        {
+            sustain.kill();
+
+            sustain.trail.kill();
+        }
+    }
+
     public function isHittable():Bool
     {
         return status == IDLING && ((strumline.automated && time <= strumline.conductor.time) || (!strumline.automated && Math.abs(time - strumline.conductor.time) <= 166.6));
