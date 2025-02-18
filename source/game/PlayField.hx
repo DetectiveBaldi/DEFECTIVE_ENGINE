@@ -208,7 +208,7 @@ class PlayField extends FlxGroup
     {
         var ratings:Array<Rating> = Rating.list;
 
-        var rating:Rating = Rating.compute(ratings, Math.abs(event.note.time - conductor.time));
+        var rating:Rating = Rating.fromTiming(Math.abs(event.note.time - conductor.time));
 
         if (rating != ratings[0])
             event.showPop = false;

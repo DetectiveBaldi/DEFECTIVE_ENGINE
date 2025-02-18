@@ -22,11 +22,11 @@ class Rating
 
     public var health:Float;
 
-    public static function compute(ratings:Array<Rating>, timing:Float):Rating
+    public static function fromTiming(timing:Float):Rating
     {
-        for (i in 0 ... ratings.length)
+        for (i in 0 ... list.length)
         {
-            var rating:Rating = ratings[i];
+            var rating:Rating = list[i];
 
             if (timing <= rating.timing)
                 return rating;

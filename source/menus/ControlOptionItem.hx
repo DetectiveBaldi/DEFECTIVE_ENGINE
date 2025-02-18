@@ -34,7 +34,7 @@ class ControlOptionItem extends VariableOptionItem<Int>
 
     public var control:FlxSprite;
 
-    public var keyboard:FlxKeyboard;
+    public var input:FlxKeyboard;
 
     public function new(x:Float = 0.0, y:Float = 0.0, name:String, description:String, option:String):Void
     {
@@ -60,11 +60,11 @@ class ControlOptionItem extends VariableOptionItem<Int>
 
         add(control);
 
-        keyboard = new FlxKeyboard();
+        input = new FlxKeyboard();
 
-        keyboard.enabled = false;
+        input.enabled = false;
 
-        FlxG.inputs.addInput(keyboard);
+        FlxG.inputs.addInput(input);
 
         nameText.text = '${name}: ${FlxKey.toStringMap[value]}';
     }
@@ -85,14 +85,14 @@ class ControlOptionItem extends VariableOptionItem<Int>
 
                     nameText.text = "...";
 
-                    keyboard.enabled = true;
+                    input.enabled = true;
 
-                    keyboard.reset();
+                    input.reset();
                 }
             }
             else
             {
-                var firstJustPressed:Int = keyboard.firstJustPressed();
+                var firstJustPressed:Int = input.firstJustPressed();
 
                 if (firstJustPressed != -1.0)
                 {
@@ -106,7 +106,7 @@ class ControlOptionItem extends VariableOptionItem<Int>
 
                     nameText.text = '${name}: ${FlxKey.toStringMap[value]}';
 
-                    keyboard.enabled = false;
+                    input.enabled = false;
 
                     var scroll:FlxSound = FlxG.sound.play(Assets.getSound(Paths.ogg("assets/sounds/menus/OptionsMenu/scroll"), false), 0.35);
 
@@ -126,10 +126,10 @@ class ControlOptionItem extends VariableOptionItem<Int>
 
         FlxG.keys.reset();
 
-        FlxG.inputs.remove(keyboard);
+        FlxG.inputs.remove(input);
 
-        keyboard.enabled = false;
+        input.enabled = false;
 
-        keyboard.destroy();
+        input.destroy();
     }
 }
