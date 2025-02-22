@@ -14,7 +14,7 @@ class HealthBarIconData
         if (exists(path))
             return list[path];
 
-        list[path] = Json.parse(Assets.getText(Paths.json(path)));
+        list[path] = Json.parse(Assets.getText(Paths.json('assets/data/game/HealthBarIcon/${path}')));
 
         return list[path];
     }

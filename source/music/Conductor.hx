@@ -2,6 +2,8 @@ package music;
 
 import flixel.FlxBasic;
 
+import flixel.util.FlxDestroyUtil;
+
 import flixel.util.FlxSignal.FlxTypedSignal;
 
 import data.Chart.RawTimeChange;
@@ -77,11 +79,11 @@ class Conductor extends FlxBasic
 
         onMeasureHit = new FlxTypedSignal<(measure:Int)->Void>();
 
-        tempo = 150.0;
+        tempo = 100.0;
 
         time = 0.0;
 
-        timeChange = {time: 0.0, tempo: 150.0, step: 0.0};
+        timeChange = {time: 0.0, tempo: 100.0, step: 0.0};
 
         timeChanges = new Array<RawTimeChange>();
     }
@@ -141,17 +143,15 @@ class Conductor extends FlxBasic
     {
         super.destroy();
 
-        onStepHit.destroy();
+        onStepHit = cast FlxDestroyUtil.destroy(onStepHit);
 
-        onStepHit = null;
+        onBeatHit = cast FlxDestroyUtil.destroy(onBeatHit);
 
-        onBeatHit.destroy();
+        onMeasureHit = cast FlxDestroyUtil.destroy(onMeasureHit);
 
-        onBeatHit = null;
+        timeChange = null;
 
-        onMeasureHit.destroy();
-
-        onMeasureHit = null;
+        timeChanges = null;
     }
 
     public function getTimeChange(_tempo:Float, _time:Float):RawTimeChange

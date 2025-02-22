@@ -1,12 +1,12 @@
 package data;
 
-typedef AnimData =
+typedef AnimationData =
 {
     var name:String;
     
     var prefix:String;
     
-    var indices:Array<Int>;
+    var ?indices:Array<Int>;
     
     var ?frameRate:Float;
     

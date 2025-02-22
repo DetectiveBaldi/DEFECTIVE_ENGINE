@@ -16,7 +16,7 @@ class StrumSkin
         if (exists(path))
             return list[path];
 
-        list[path] = Json.parse(Assets.getText(Paths.json(path)));
+        list[path] = Json.parse(Assets.getText(Paths.json('assets/data/game/notes/Strum/${path}')));
 
         return list[path];
     }

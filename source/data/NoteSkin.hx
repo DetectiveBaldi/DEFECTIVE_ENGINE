@@ -14,7 +14,7 @@ class NoteSkin
         if (exists(path))
             return list[path];
 
-        list[path] = Json.parse(Assets.getText(Paths.json(path)));
+        list[path] = Json.parse(Assets.getText(Paths.json('assets/data/game/notes/Note/${path}')));
 
         return list[path];
     }

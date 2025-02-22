@@ -1,5 +1,7 @@
 package game;
 
+import flixel.math.FlxMath;
+
 import flixel.util.FlxColor;
 
 import data.HealthBarIconData;
@@ -80,7 +82,7 @@ class HealthBar extends ProgressBar
 
         conductor = _conductor;
 
-        opponentIcon = new HealthBarIcon(0.0, 0.0, HealthBarIconData.get("assets/data/game/HealthBarIcon/BOYFRIEND_PIXEL"));
+        opponentIcon = new HealthBarIcon(0.0, 0.0, HealthBarIconData.get("BOYFRIEND_PIXEL"));
 
         opponentIcon.flipX = fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM;
 
@@ -88,7 +90,7 @@ class HealthBar extends ProgressBar
 
         add(opponentIcon);
 
-        playerIcon = new HealthBarIcon(0.0, 0.0, HealthBarIconData.get("assets/data/game/HealthBarIcon/BOYFRIEND"));
+        playerIcon = new HealthBarIcon(0.0, 0.0, HealthBarIconData.get("BOYFRIEND"));
 
         playerIcon.flipX = !(fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM);
 
@@ -117,16 +119,20 @@ class HealthBar extends ProgressBar
 
     public function beatHit(beat:Int):Void
     {
-        opponentIcon.scale *= 1.35 + (1.05 - 1.35) * (value / max);
+        opponentIcon.scale *= 1.35 + -0.35 * (value / max);
 
-        playerIcon.scale *= 1.05 + (1.35 - 1.05) * (value / max);
+        playerIcon.scale *= 1.0 + 0.35 * (value / max);
     }
 
     public dynamic function scaleIcons(elapsed:Float):Void
     {
-        opponentIcon.scale.set((opponentIcon.config.scale?.x ?? 1.0) + (opponentIcon.scale.x - (opponentIcon.config.scale?.x ?? 1.0)) * Math.exp(-15.0 * elapsed), (opponentIcon.config.scale?.y ?? 1.0) + (opponentIcon.scale.y - (opponentIcon.config.scale?.y ?? 1.0)) * Math.exp(-15.0 * elapsed));
+        opponentIcon.scale.x = FlxMath.lerp(opponentIcon.scale.x, opponentIcon.config.scale?.x ?? 1.0, FlxMath.getElapsedLerp(0.15, elapsed));
 
-        playerIcon.scale.set((playerIcon.config.scale?.x ?? 1.0) + (playerIcon.scale.x - (playerIcon.config.scale?.x ?? 1.0)) * Math.exp(-15.0 * elapsed), (playerIcon.config.scale?.y ?? 1.0) + (playerIcon.scale.y - (playerIcon.config.scale?.y ?? 1.0)) * Math.exp(-15.0 * elapsed));
+        opponentIcon.scale.y = FlxMath.lerp(opponentIcon.scale.y, opponentIcon.config.scale?.y ?? 1.0, FlxMath.getElapsedLerp(0.15, elapsed));
+
+        playerIcon.scale.x = FlxMath.lerp(playerIcon.scale.x, playerIcon.config.scale?.x ?? 1.0, FlxMath.getElapsedLerp(0.15, elapsed));
+
+        playerIcon.scale.y = FlxMath.lerp(playerIcon.scale.y, playerIcon.config.scale?.y ?? 1.0, FlxMath.getElapsedLerp(0.15, elapsed));
     }
 
     public dynamic function positionIcons():Void

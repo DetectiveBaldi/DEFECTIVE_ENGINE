@@ -11,10 +11,10 @@ class PlayStats
 
     public var bonus:Float;
 
-    public var rating(get, never):Float;
+    public var accuracy(get, never):Float;
 
     @:noCompletion
-    function get_rating():Float
+    function get_accuracy():Float
     {
         return bonus / (hits + misses) * 100.0;
     }

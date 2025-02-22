@@ -57,8 +57,7 @@ class PlayField extends FlxGroup
     {
         scrollSpeed = _scrollSpeed;
 
-        for (i in 0 ... strumlines.members.length)
-            strumlines.members[i].scrollSpeed = scrollSpeed;
+        strumlines.forEach((strumline:Strumline) -> strumline.scrollSpeed = scrollSpeed);
 
         return scrollSpeed;
     }
@@ -83,7 +82,7 @@ class PlayField extends FlxGroup
 
         playStats = {score: 0, hits: 0, misses: 0, bonus: 0.0}
 
-        statsText = new FlxText(0.0, 0.0, FlxG.width, "Points: 0 | Misses: 0 | Rating: 0.0%", 24);
+        statsText = new FlxText(0.0, 0.0, FlxG.width, "Points: 0 | Misses: 0 | Accuracy: 0.0%", 24);
 
         statsText.antialiasing = true;
 
@@ -196,12 +195,9 @@ class PlayField extends FlxGroup
 
         var misses:Int = playStats.misses;
 
-        var rating:Float = playStats.rating;
+        var accuracy:Float = playStats.accuracy;
 
-        if (Math.isNaN(rating))
-            rating = 0.0;
-
-        statsText.text = 'Score: ${score} | Misses: ${misses} | Rating: ${StringUtil.appendDecimal(FlxMath.roundDecimal(rating, 2))}%';
+        statsText.text = 'Score: ${score} | Misses: ${misses} | Accuracy: ${StringUtil.appendDecimal(FlxMath.roundDecimal(accuracy, 2))}%';
     }
 
     public function noteHit(event:NoteHitEvent):Void

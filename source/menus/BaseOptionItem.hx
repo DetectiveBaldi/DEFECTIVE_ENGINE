@@ -15,30 +15,30 @@ import core.Paths;
 
 class BaseOptionItem extends FlxSpriteGroup
 {
-    public var name(default, set):String;
+    public var title(default, set):String;
 
     @:noCompletion
-    function set_name(_name:String):String
+    function set_title(_title:String):String
     {
-        name = _name;
+        title = _title;
 
-        nameText.text = name;
+        titleText.text = title;
 
-        return name;
+        return title;
     }
 
     public var description:String;
 
     public var background:FlxSprite;
 
-    public var nameText:FlxText;
+    public var titleText:FlxText;
 
-    public function new(x:Float = 0.0, y:Float = 0.0, _name:String, _description:String):Void
+    public function new(x:Float = 0.0, y:Float = 0.0, _title:String, _description:String):Void
     {
         super(x, y);
 
         @:bypassAccessor
-        name = _name;
+        title = _title;
 
         description = _description;
 
@@ -54,18 +54,18 @@ class BaseOptionItem extends FlxSpriteGroup
 
         add(background);
 
-        nameText = new FlxText(0.0, 0.0, background.width, name, 48);
+        titleText = new FlxText(0.0, 0.0, background.width, title, 48);
 
-        nameText.antialiasing = true;
+        titleText.antialiasing = true;
 
-        nameText.color = FlxColor.BLACK;
+        titleText.color = FlxColor.BLACK;
 
-        nameText.font = Paths.ttf("assets/fonts/Ubuntu Regular");
+        titleText.font = Paths.ttf("assets/fonts/Ubuntu Regular");
 
-        nameText.alignment = CENTER;
+        titleText.alignment = CENTER;
 
-        nameText.setPosition(background.getMidpoint().x - nameText.width * 0.5, background.getMidpoint().y - nameText.height * 0.5);
+        titleText.setPosition(background.getMidpoint().x - titleText.width * 0.5, background.getMidpoint().y - titleText.height * 0.5);
 
-        add(nameText);
+        add(titleText);
     }
 }

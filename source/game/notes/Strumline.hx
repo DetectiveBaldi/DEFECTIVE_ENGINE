@@ -10,6 +10,7 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 import flixel.sound.FlxSound;
 
+import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal.FlxTypedSignal;
 
 import core.Assets;
@@ -229,13 +230,15 @@ class Strumline extends FlxGroup
 
         removeKeyboardListeners();
 
-        onNoteHit.destroy();
+        keysHeld = null;
 
-        onNoteMiss.destroy();
+        onNoteHit = cast FlxDestroyUtil.destroy(onNoteHit);
 
-        onNoteSpawn.destroy();
+        onNoteMiss = cast FlxDestroyUtil.destroy(onNoteMiss);
 
-        onGhostTap.destroy();
+        onNoteSpawn = cast FlxDestroyUtil.destroy(onNoteSpawn);
+
+        onGhostTap = cast FlxDestroyUtil.destroy(onGhostTap);
     }
 
     public function addKeyboardListeners():Void

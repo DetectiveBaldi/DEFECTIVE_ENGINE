@@ -46,7 +46,7 @@ class GameOverScreen extends MusicSubState
 
         var _player:Character = game.player;
 
-        player = new Character(conductor, 0.0, 0.0, CharacterData.get("assets/data/game/Character/BOYFRIEND_GAMEOVER"));
+        player = new Character(conductor, 0.0, 0.0, CharacterData.get("BOYFRIEND_GAMEOVER"));
 
         player.strumline = game.playField.playerStrumline;
 

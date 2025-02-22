@@ -14,7 +14,7 @@ class NotePopSkin
         if (exists(path))
             return list[path];
 
-        list[path] = Json.parse(Assets.getText(Paths.json(path)));
+        list[path] = Json.parse(Assets.getText(Paths.json('assets/data/game/notes/NotePop/${path}')));
 
         return list[path];
     }
@@ -35,5 +35,5 @@ typedef RawNotePopSkin =
 
     var ?antialiasing:Bool;
 
-    var animations:Array<AnimData>;
+    var animations:Array<AnimationData>;
 }

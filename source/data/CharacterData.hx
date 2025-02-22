@@ -14,7 +14,7 @@ class CharacterData
         if (exists(path))
             return list[path];
 
-        list[path] = Json.parse(Assets.getText(Paths.json(path)));
+        list[path] = Json.parse(Assets.getText(Paths.json('assets/data/game/Character/${path}')));
 
         return list[path];
     }
@@ -43,7 +43,7 @@ typedef RawCharacterData =
 
     var ?flipY:Bool;
 
-    var animations:Array<AnimData>;
+    var animations:Array<AnimationData>;
 
     var danceSteps:Array<String>;
 

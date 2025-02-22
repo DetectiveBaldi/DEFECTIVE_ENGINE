@@ -1,5 +1,6 @@
 package menus;
 
+import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal.FlxTypedSignal;
 
 import core.Options;
@@ -28,9 +29,9 @@ class VariableOptionItem<T> extends BaseOptionItem
 
     public var onUpdate:FlxTypedSignal<(value:T)->Void>;
 
-    public function new(x:Float = 0.0, y:Float = 0.0, name:String, description:String, _option:String):Void
+    public function new(_x:Float = 0.0, _y:Float = 0.0, _title:String, _description:String, _option:String):Void
     {
-        super(x, y, name, description);
+        super(_x, _y, _title, _description);
 
         option = _option;
 
@@ -41,6 +42,6 @@ class VariableOptionItem<T> extends BaseOptionItem
     {
         super.destroy();
 
-        onUpdate.destroy();
+        onUpdate = cast FlxDestroyUtil.destroy(onUpdate);
     }
 }

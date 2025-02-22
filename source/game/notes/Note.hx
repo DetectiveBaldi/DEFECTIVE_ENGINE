@@ -70,7 +70,7 @@ class Note extends FlxSprite
     {
         super(x, y);
 
-        skin = NoteSkin.get("assets/data/game/notes/Note/default");
+        skin = NoteSkin.get("default");
 
         antialiasing = true;
 

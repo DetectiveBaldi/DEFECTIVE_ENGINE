@@ -41,7 +41,7 @@ import haxe.ui.focus.FocusManager;
 import core.Assets;
 import core.Paths;
 
-import data.AnimData;
+import data.AnimationData;
 import data.CharacterData;
 
 import game.Character;
@@ -87,13 +87,13 @@ class CharacterEditorState extends FlxState
 
         add(background);
 
-        character = new Character(null, 0.0, 0.0, CharacterData.get("assets/data/game/Character/BOYFRIEND"));
+        character = new Character(null, 0.0, 0.0, CharacterData.get("BOYFRIEND"));
 
         character.screenCenter();
 
         add(character);
 
-        animationIndex = character.config.animations.indexOf(character.config.animations.oldest((animation:AnimData) -> character.animation.name == animation.name));
+        animationIndex = character.config.animations.indexOf(character.config.animations.oldest((animation:AnimationData) -> character.animation.name == animation.name));
 
         ui = ComponentBuilder.fromFile("assets/data/editors/CharacterEditorState/ui.xml");
 
@@ -123,7 +123,7 @@ class CharacterEditorState extends FlxState
                 return;
             }
 
-            character.config = CharacterData.get('assets/data/game/Character/${ui.findComponent("textfield", TextField).text}');
+            character.config = CharacterData.get('${ui.findComponent("textfield", TextField).text}');
 
             character.screenCenter();
 
@@ -270,7 +270,7 @@ class CharacterEditorState extends FlxState
             if (FlxG.keys.justPressed.S)
                 animationIndex = FlxMath.wrap(animationIndex + 1, 0, character.config.animations.length - 1);
 
-            var animation:AnimData = character.config.animations[animationIndex];
+            var animation:AnimationData = character.config.animations[animationIndex];
 
             if (FlxG.keys.justPressed.UP)
                 addAnimationOffset(animation, 0.0, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0);
@@ -304,7 +304,7 @@ class CharacterEditorState extends FlxState
 
                 if (FlxG.keys.justPressed.V)
                 {
-                    var animation:AnimData = character.config.animations[animationIndex];
+                    var animation:AnimationData = character.config.animations[animationIndex];
 
                     var offset:{?x:Float, ?y:Float} = Json.parse(Clipboard.generalClipboard.getData(TEXT_FORMAT));
 
@@ -360,7 +360,7 @@ class CharacterEditorState extends FlxState
 
     public function refreshAnimationsTab():Void
     {
-        var animation:AnimData = character.config.animations[animationIndex];
+        var animation:AnimationData = character.config.animations[animationIndex];
 
         ui.findComponent("_____textfield", TextField).text = animation.name;
 
@@ -397,7 +397,7 @@ class CharacterEditorState extends FlxState
 
         var indices:Array<Int> = FlxStringUtil.toIntArray(ui.findComponent("textarea", TextArea).text) ?? new Array<Int>();
 
-        var animation:AnimData = character.config.animations.oldest((animation:AnimData) -> ui.findComponent("_____textfield", TextField).text == animation.name);
+        var animation:AnimationData = character.config.animations.oldest((animation:AnimationData) -> ui.findComponent("_____textfield", TextField).text == animation.name);
 
         if (animation == null)
         {
@@ -458,7 +458,7 @@ class CharacterEditorState extends FlxState
             return;
         }
 
-        var animation:AnimData = character.config.animations[animationIndex];
+        var animation:AnimationData = character.config.animations[animationIndex];
 
         character.config.animations.remove(animation);
 
@@ -476,7 +476,7 @@ class CharacterEditorState extends FlxState
         InitState.log.info("[INFO]", 'Deleted "${animation.name}"!');
     }
 
-    public function setAnimationOffset(animation:AnimData, x:Float = 0.0, y:Float = 0.0):Void
+    public function setAnimationOffset(animation:AnimationData, x:Float = 0.0, y:Float = 0.0):Void
     {
         animation.offset ??= {x: 0.0, y: 0.0};
 
@@ -487,7 +487,7 @@ class CharacterEditorState extends FlxState
         ui.findComponent("_____________label", Label).text = 'Offset: (${animation.offset.x ?? 0.0}, ${animation.offset.y ?? 0.0})';
     }
 
-    public function addAnimationOffset(animation:AnimData, x:Float = 0.0, y:Float = 0.0):Void
+    public function addAnimationOffset(animation:AnimationData, x:Float = 0.0, y:Float = 0.0):Void
     {
         animation.offset ??= {x: 0.0, y: 0.0};
 

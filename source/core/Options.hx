@@ -9,7 +9,7 @@ class Options
     @:noCompletion
     static function get_autoPause():Bool
     {
-        return FlxG.save.data.options.autoPause ??= false;
+        return FlxG.save.data.options.autoPause ??= true;
     }
 
     @:noCompletion
@@ -25,7 +25,7 @@ class Options
     @:noCompletion
     static function get_fullscreen():Bool
     {
-        return FlxG.save.data.options.fullscreen ??= false;
+        return FlxG.save.data.options.fullscreen ??= true;
     }
 
     @:noCompletion

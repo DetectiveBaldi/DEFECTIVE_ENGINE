@@ -62,7 +62,7 @@ class Strum extends FlxSprite
 
         conductor = _conductor;
         
-        skin = StrumSkin.get("assets/data/game/notes/Strum/default");
+        skin = StrumSkin.get("default");
 
         direction = 0;
 

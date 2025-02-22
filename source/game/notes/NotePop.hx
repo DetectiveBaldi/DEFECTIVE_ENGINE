@@ -13,7 +13,7 @@ import flixel.math.FlxPoint;
 import core.Assets;
 import core.Paths;
 
-import data.AnimData;
+import data.AnimationData;
 import data.NotePopSkin;
 import data.NotePopSkin.RawNotePopSkin;
 
@@ -41,7 +41,7 @@ class NotePop extends FlxSprite
 
         for (i in 0 ... skin.animations.length)
         {
-            var _animation:AnimData = skin.animations[i];
+            var _animation:AnimationData = skin.animations[i];
 
             _animation.frameRate ??= 24.0;
 
@@ -64,7 +64,7 @@ class NotePop extends FlxSprite
     {
         super(x, y);
 
-        skin = NotePopSkin.get("assets/data/game/notes/NotePop/default");
+        skin = NotePopSkin.get("default");
 
         animation.onFinish.add((name:String) -> kill());
 
@@ -79,7 +79,7 @@ class NotePop extends FlxSprite
 
         for (i in 0 ... skin.animations.length)
         {
-            var _animation:AnimData = skin.animations[i];
+            var _animation:AnimationData = skin.animations[i];
 
             if ((animation.name ?? "") == _animation.name)
                 output.subtract(_animation.offset?.x ?? 0.0, _animation.offset?.y ?? 0.0);

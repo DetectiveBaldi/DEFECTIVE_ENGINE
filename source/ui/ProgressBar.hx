@@ -11,6 +11,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxRect;
 
 import flixel.util.FlxColor;
+import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
 
 /**
@@ -161,13 +162,13 @@ class ProgressBar extends FlxSpriteGroup
     {
         super.destroy();
 
-        onEmptied.destroy();
+        onEmptied = cast FlxDestroyUtil.destroy(onEmptied);
 
-        onFilled.destroy();
+        onFilled = cast FlxDestroyUtil.destroy(onFilled);
 
-        emptiedSide.clipRect.put();
+        emptiedSide.clipRect = FlxDestroyUtil.put(emptiedSide.clipRect);
 
-        filledSide.clipRect.put();
+        filledSide.clipRect = FlxDestroyUtil.put(filledSide.clipRect);
     }
 
     public function updateClipping():Void

@@ -1,7 +1,5 @@
 package game;
 
-import haxe.Json;
-
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -15,7 +13,7 @@ import core.Assets;
 import core.Options;
 import core.Paths;
 
-import data.AnimData;
+import data.AnimationData;
 import data.CharacterData.RawCharacterData;
 
 import game.notes.Strumline;
@@ -72,7 +70,7 @@ class Character extends FlxSprite
 
         for (i in 0 ... config.animations.length)
         {
-            var _animation:AnimData = config.animations[i];
+            var _animation:AnimationData = config.animations[i];
 
             _animation.frameRate ??= 24.0;
 
@@ -172,6 +170,10 @@ class Character extends FlxSprite
         super.destroy();
 
         conductor?.onBeatHit?.remove(beatHit);
+
+        keys = null;
+
+        danceSteps = null;
     }
 
     override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
@@ -180,7 +182,7 @@ class Character extends FlxSprite
 
         for (i in 0 ... config.animations.length)
         {
-            var _animation:AnimData = config.animations[i];
+            var _animation:AnimationData = config.animations[i];
             
             if (animation.name ?? "" == _animation.name)
                 output.add(_animation.offset?.x ?? 0.0, _animation.offset?.y ?? 0.0);
@@ -203,25 +205,10 @@ class Character extends FlxSprite
         if (!force && (animation.name ?? "").startsWith("Sing"))
             return;
 
-        animation.play(danceSteps[danceStep = FlxMath.wrap(danceStep + 1, 0, danceSteps.length - 1)], force);
+        var i:Int = danceSteps.indexOf(animation.name);
+
+        i = FlxMath.wrap(i + 1, 0, danceSteps.length - 1);
+
+        animation.play(danceSteps[i], force);
     }
 }
-
-typedef CharacterFramesConfig =
-{
-    var name:String;
-    
-    var prefix:String;
-    
-    var indices:Array<Int>;
-    
-    var ?frameRate:Float;
-    
-    var ?looped:Bool;
-    
-    var ?flipX:Bool;
-    
-    var ?flipY:Bool;
-
-    var ?offset:{?x:Float, ?y:Float};
-};

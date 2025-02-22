@@ -11,6 +11,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxTween.FlxTweenManager;
 
+import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
 import flixel.util.FlxSignal.FlxTypedSignal;
 
@@ -139,13 +140,13 @@ class Countdown extends FlxGroup
     {
         super.destroy();
 
-        onStart.destroy();
+        onStart = cast FlxDestroyUtil.destroy(onStart);
 
-        onTick.destroy();
+        onTick = cast FlxDestroyUtil.destroy(onTick);
 
-        onFinish.destroy();
+        onFinish = cast FlxDestroyUtil.destroy(onFinish);
 
-        onSkip.destroy();
+        onSkip = cast FlxDestroyUtil.destroy(onSkip);
 
         three.destroy();
 

@@ -15,9 +15,9 @@ class BoolOptionItem extends VariableOptionItem<Bool>
 
     public var checkbox:FlxSprite;
 
-    public function new(x:Float = 0.0, y:Float = 0.0, name:String, description:String, option:String):Void
+    public function new(_x:Float = 0.0, _y:Float = 0.0, _title:String, _description:String, _option:String):Void
     {
-        super(x, y, name, description, option);
+        super(_x, _y, _title, _description, _option);
 
         selectable = false;
 

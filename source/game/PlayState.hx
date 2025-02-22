@@ -99,8 +99,6 @@ class PlayState extends MusicSubState
     {
         super.create();
 
-        gameCamera.zoom = 0.75;
-
         gameCameraTarget = new FlxObject();
 
         add(gameCameraTarget);
@@ -129,7 +127,7 @@ class PlayState extends MusicSubState
 
         stage.add(spectators);
 
-        spectator = new Character(conductor, 0.0, 0.0, CharacterData.get("assets/data/game/Character/GIRLFRIEND"));
+        spectator = new Character(conductor, 0.0, 0.0, CharacterData.get("GIRLFRIEND"));
 
         spectator.skipSing = true;
 
@@ -137,13 +135,13 @@ class PlayState extends MusicSubState
 
         stage.add(opponents);
 
-        opponent = new Character(conductor, 0.0, 0.0, CharacterData.get("assets/data/game/Character/BOYFRIEND_PIXEL"));
+        opponent = new Character(conductor, 0.0, 0.0, CharacterData.get("BOYFRIEND_PIXEL"));
 
         players = new FlxTypedSpriteGroup<Character>();
 
         stage.add(players);
 
-        player = new Character(conductor, 0.0, 0.0, CharacterData.get("assets/data/game/Character/BOYFRIEND"));
+        player = new Character(conductor, 0.0, 0.0, CharacterData.get("BOYFRIEND"));
 
         playField = new PlayField(conductor, chart, instrumental);
 
@@ -153,11 +151,11 @@ class PlayState extends MusicSubState
 
         playField.healthBar.onEmptied.add(gameOver);
 
-        playField.healthBar.opponentIcon.config = HealthBarIconData.get('assets/data/game/HealthBarIcon/${opponent.config.name}');
+        playField.healthBar.opponentIcon.config = HealthBarIconData.get('${opponent.config.name}');
 
         playField.healthBar.opponentIcon = playField.healthBar.opponentIcon;
 
-        playField.healthBar.playerIcon.config = HealthBarIconData.get('assets/data/game/HealthBarIcon/${player.config.name}');
+        playField.healthBar.playerIcon.config = HealthBarIconData.get('${player.config.name}');
 
         playField.healthBar.playerIcon = playField.healthBar.playerIcon;
 
@@ -386,10 +384,7 @@ class PlayState extends MusicSubState
 
         playerVocals?.stop();
 
-        var strumlines:FlxTypedGroup<Strumline> = playField.strumlines;
-
-        for (i in 0 ... strumlines.members.length)
-            strumlines.members[i].registerInputs = false;
+        playField.strumlines.forEach((strumline:Strumline) -> strumline.registerInputs = false);
     }
 
     public function getSpectator(name:String):Character

@@ -6,8 +6,6 @@ import flixel.FlxSprite;
 import flixel.input.keyboard.FlxKey;
 import flixel.input.keyboard.FlxKeyboard;
 
-import flixel.math.FlxMath;
-
 import flixel.sound.FlxSound;
 
 import core.Assets;
@@ -36,13 +34,13 @@ class ControlOptionItem extends VariableOptionItem<Int>
 
     public var input:FlxKeyboard;
 
-    public function new(x:Float = 0.0, y:Float = 0.0, name:String, description:String, option:String):Void
+    public function new(_x:Float = 0.0, _y:Float = 0.0, _title:String, _description:String, _option:String):Void
     {
-        super(x, y, name, description, option);
+        super(_x, _y, _title, _description, _option);
 
-        nameText.size = 36;
+        titleText.size = 36;
 
-        nameText.setPosition(background.getMidpoint().x - nameText.width * 0.5, background.getMidpoint().y - nameText.height * 0.5);
+        titleText.setPosition(background.getMidpoint().x - titleText.width * 0.5, background.getMidpoint().y - titleText.height * 0.5);
 
         selectable = false;
 
@@ -66,7 +64,7 @@ class ControlOptionItem extends VariableOptionItem<Int>
 
         FlxG.inputs.addInput(input);
 
-        nameText.text = '${name}: ${FlxKey.toStringMap[value]}';
+        titleText.text = '${title}: ${FlxKey.toStringMap[value]}';
     }
 
     override function update(elapsed:Float):Void
@@ -83,7 +81,7 @@ class ControlOptionItem extends VariableOptionItem<Int>
 
                     FlxG.keys.enabled = false;
 
-                    nameText.text = "...";
+                    titleText.text = "...";
 
                     input.enabled = true;
 
@@ -104,7 +102,7 @@ class ControlOptionItem extends VariableOptionItem<Int>
 
                     value = firstJustPressed;
 
-                    nameText.text = '${name}: ${FlxKey.toStringMap[value]}';
+                    titleText.text = '${title}: ${FlxKey.toStringMap[value]}';
 
                     input.enabled = false;
 
