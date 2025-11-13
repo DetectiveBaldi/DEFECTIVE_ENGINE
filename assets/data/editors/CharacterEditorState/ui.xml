@@ -35,7 +35,7 @@
                     </hbox>
 
                     <hbox id="____hbox">
-                        <label id="____label" text="Dance Interval" verticalAlign="center" />
+                        <label id="____label" text="Dance Every: (Beats)" verticalAlign="center" />
 
                         <number-stepper id="__number-stepper" step="1.0" />
                     </hbox>
@@ -60,40 +60,56 @@
 
                     <textfield id="__textfield" />
 
-                    <label id="_______label" text="Path to .png" verticalAlign="center" />
+                    <label id="_______label" text="Path to .png and .xml" verticalAlign="center" />
 
                     <textfield id="___textfield" width="250" />
 
-                    <label id="________label" text="Path to .xml" verticalAlign="center" />
-
-                    <textfield id="____textfield" width="250" />
-
                     <button id="__button" text="Refresh" />
+
+                    <hbox id="_______hbox">
+                        <label id="________label" text="Path to Health Icon" verticalAlign="center" />
+
+                        <textfield id="____textfield" width="150" />
+                    </hbox>
+
+                    <hbox id="________hbox">
+                        <label id="_________label" text="Health Color" verticalAlign="center" />
+
+                        <textfield id="_____textfield" width="150" />
+                    </hbox>
+
+                    <button id="___button" text="Refresh" />
+
+                    <label id="__________label" text="Death Character" verticalAlign="center" />
+
+                    <textfield id="______textfield" width="150" />
+
+                    <button id="____button" text="Save" />
                 </vbox>
             </box>
 
             <box id="__box" text="Animations">
                 <vbox id="___vbox" style="padding:10px; spacing:10px">
-                    <hbox id="_______hbox">
-                        <label id="_________label" text="Name" verticalAlign="center" />
-
-                        <textfield id="_____textfield" />
-                    </hbox>
-
-                    <hbox id="________hbox">
-                        <label id="__________label" text="Prefix" verticalAlign="center" />
-
-                        <textfield id="______textfield" />
-                    </hbox>
-
                     <hbox id="_________hbox">
-                        <label id="___________label" text="Indices" verticalAlign="center" />
+                        <label id="___________label" text="Name" verticalAlign="center" />
+
+                        <textfield id="_______textfield" />
+                    </hbox>
+
+                    <hbox id="__________hbox">
+                        <label id="____________label" text="Prefix" verticalAlign="center" />
+
+                        <textfield id="________textfield" />
+                    </hbox>
+
+                    <hbox id="___________hbox">
+                        <label id="_____________label" text="Indices" verticalAlign="center" />
 
                         <textarea id="textarea" style="height:auto; max-height:60px;" restrictChars="0-9," />
                     </hbox>
 
-                    <hbox id="__________hbox">
-                        <label id="____________label" text="Frame Rate" verticalAlign="center" />
+                    <hbox id="____________hbox">
+                        <label id="______________label" text="Frame Rate" verticalAlign="center" />
 
                         <number-stepper id="____number-stepper" step="1" />
                     </hbox>
@@ -104,12 +120,12 @@
 
                     <checkbox id="_____checkbox" text="Flip Y" />
 
-                    <label id="_____________label" verticalAlign="center" />
+                    <label id="_______________label" verticalAlign="center" />
 
-                    <hbox id="___________hbox">
-                        <button id="___button" text="Save" />
+                    <hbox id="_____________hbox">
+                        <button id="_____button" text="Save" />
 
-                        <button id="____button" text="Delete" />
+                        <button id="______button" text="Delete" />
                     </hbox>
                 </vbox>
             </box>

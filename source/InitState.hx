@@ -11,28 +11,51 @@ import flixel.FlxState;
 
 import flixel.util.typeLimit.NextState;
 
-import core.Assets;
+import core.AssetCache;
 import core.Options;
+import core.Paths;
+import core.SaveManager;
 
-import plugins.Log;
+import data.LevelData;
+import data.Playlist;
+import data.WeekData;
 
-import ui.PerfStats;
+import game.HighScore;
+import game.PlayState;
 
-import util.MathUtil;
+import plugins.FullscreenPlugin;
+
+import util.MacroUtil;
+
+using util.ArrayUtil;
 
 class InitState extends FlxState
 {
-    public var nextState:NextState;
+    public static var fullscreenPlugin:FullscreenPlugin;
 
-    public static var log:Log;
-
-    public static var perfStats:PerfStats;
-
-    public function new(_nextState:NextState):Void
+    public static function setAutoPause(autoPause:Bool):Void
     {
-        super();
+        FlxG.autoPause = autoPause;
 
-        nextState = _nextState;
+        #if FLX_DEBUG
+        FlxG.console.autoPause = autoPause;
+        #end
+    }
+
+    public static function setFrameRateCap(frameRate:Int):Void
+    {
+        if (frameRate > FlxG.updateFramerate)
+        {
+            FlxG.updateFramerate = frameRate;
+
+            FlxG.drawFramerate = frameRate;
+        }
+        else
+        {
+            FlxG.drawFramerate = frameRate;
+
+            FlxG.updateFramerate = frameRate;
+        }
     }
 
     override function create():Void
@@ -41,42 +64,62 @@ class InitState extends FlxState
 
         Toolkit.init();
 
-        Toolkit.theme = "dark";
+        Toolkit.theme = Theme.DARK;
 
         FocusManager.instance.autoFocus = false;
 
         FlxG.fixedTimestep = false;
 
-        FlxG.updateFramerate = MathUtil.maxInt(FlxG.stage.window.displayMode.refreshRate, 144);
+        SaveManager.init();
 
-        FlxG.drawFramerate = MathUtil.maxInt(FlxG.stage.window.displayMode.refreshRate, 144);
+        SaveManager.mergeData();
+
+        setAutoPause(Options.autoPause);
+
+        setFrameRateCap(Options.frameRate);
+
+        FlxG.fullscreen = true;
 
         FlxG.mouse.visible = false;
 
+        #if FLX_DEBUG
         FlxG.console.registerClass(InitState);
         
         FlxG.console.registerClass(Options);
 
+        FlxG.console.registerClass(SaveManager);
+
+        FlxG.console.registerClass(HighScore);
+        #end
+
         FlxG.plugins.drawOnTop = true;
 
-        Options.init();
+        AssetCache.init();
 
-        FlxG.autoPause = Options.autoPause;
+        Playlist.init();
 
-        FlxG.console.autoPause = Options.autoPause;
-        
-        FlxG.fullscreen = Options.fullscreen;
+        fullscreenPlugin = new FullscreenPlugin();
 
-        Assets.init();
+        FlxG.plugins.addPlugin(fullscreenPlugin);
 
-        log = new Log();
+        var definedWeek:String = MacroUtil.getDefine("WEEK");
 
-        FlxG.plugins.addPlugin(log);
+        if (definedWeek != null)
+            definedWeek = definedWeek.split("=")[0];
 
-        perfStats = new PerfStats(10.0, 5.0);
-        
-        FlxG.game.addChildAt(perfStats, FlxG.game.getChildIndex(FlxG.game.debugger));
+        var definedLevel:String = MacroUtil.getDefine("LEVEL");
 
-        FlxG.switchState(nextState);
+        if (definedLevel != null)
+            definedLevel = definedLevel.split("=")[0];
+
+        if (definedWeek == null && definedLevel == null)
+            throw "Invalid launch parameters!";
+        else
+        {
+            if (definedWeek == null)
+                PlayState.loadLevel(LevelData.list.first((level:LevelData) -> level.name == definedLevel));
+            else
+                PlayState.loadWeek(WeekData.list.first((week:WeekData) -> week.name == definedWeek));
+        }
     }
 }

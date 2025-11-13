@@ -4,7 +4,7 @@ import flixel.math.FlxMath;
 
 import flixel.util.FlxColor;
 
-import data.HealthBarIconData;
+import core.AssetCache;
 
 import music.Conductor;
 
@@ -12,21 +12,7 @@ import ui.ProgressBar;
 
 class HealthBar extends ProgressBar
 {
-    public var conductor(default, set):Conductor;
-
-    @:noCompletion
-    function set_conductor(_conductor:Conductor):Conductor
-    {
-        var __conductor:Conductor = conductor;
-
-        conductor = _conductor;
-
-        conductor?.onBeatHit?.add(beatHit);
-
-        __conductor?.onBeatHit?.remove(beatHit);
-
-        return conductor;
-    }
+    public var conductor:Conductor;
 
     @:noCompletion
     override function set_fillDirection(_fillDirection:ProgressBarFillDirection):ProgressBarFillDirection
@@ -42,47 +28,19 @@ class HealthBar extends ProgressBar
         return fillDirection;
     }
 
-    public var opponentIcon(default, set):HealthBarIcon;
+    public var opponentIcon:HealthIcon;
 
-    @:noCompletion
-    function set_opponentIcon(_opponentIcon:HealthBarIcon):HealthBarIcon
+    public var playerIcon:HealthIcon;
+
+    public function new(x:Float = 0.0, y:Float = 0.0, beatDispatcher:IBeatDispatcher):Void
     {
-        opponentIcon = _opponentIcon;
+        super(x, y, 600, 25, 5, RIGHT_TO_LEFT);
 
-        var opponentIconHealthBarColor:String = opponentIcon.config.healthBarColor;
+        conductor = beatDispatcher.conductor;
 
-        var emptiedSideColor:FlxColor = opponentIconHealthBarColor == null ? FlxColor.RED : FlxColor.fromString(opponentIconHealthBarColor);
+        conductor.onBeatHit.add(beatHit);
 
-        emptiedSide.color = emptiedSideColor;
-
-        return opponentIcon;
-    }
-
-    public var playerIcon(default, set):HealthBarIcon;
-
-    @:noCompletion
-    function set_playerIcon(_playerIcon:HealthBarIcon):HealthBarIcon
-    {
-        playerIcon = _playerIcon;
-
-        var playerIconHealthBarColor:String = playerIcon.config.healthBarColor;
-
-        var filledSideColor:FlxColor = playerIconHealthBarColor == null ? FlxColor.LIME : FlxColor.fromString(playerIconHealthBarColor);
-
-        filledSide.color = filledSideColor;
-
-        return playerIcon;
-    }
-
-    public function new(x:Float = 0.0, y:Float = 0.0, barWidth:Int = 600, barHeight:Int = 25, fillDirection:ProgressBarFillDirection, _conductor:Conductor):Void
-    {
-        super(x, y, barWidth, barHeight, fillDirection);
-
-        borderSize = 5;
-
-        conductor = _conductor;
-
-        opponentIcon = new HealthBarIcon(0.0, 0.0, HealthBarIconData.get("BOYFRIEND_PIXEL"));
+        opponentIcon = new HealthIcon("bf-pixel");
 
         opponentIcon.flipX = fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM;
 
@@ -90,7 +48,7 @@ class HealthBar extends ProgressBar
 
         add(opponentIcon);
 
-        playerIcon = new HealthBarIcon(0.0, 0.0, HealthBarIconData.get("BOYFRIEND"));
+        playerIcon = new HealthIcon("bf");
 
         playerIcon.flipX = !(fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM);
 
@@ -103,11 +61,9 @@ class HealthBar extends ProgressBar
     {
         super.update(elapsed);
 
-        if (scaleIcons != null)
-            scaleIcons(elapsed);
+        updateIconsAnimation();
 
-        if (positionIcons != null)
-            positionIcons();
+        scaleIcons(elapsed);
     }
 
     override function destroy():Void
@@ -121,21 +77,40 @@ class HealthBar extends ProgressBar
     {
         opponentIcon.scale *= 1.35 + -0.35 * (value / max);
 
+        opponentIcon.updateHitbox();
+
         playerIcon.scale *= 1.0 + 0.35 * (value / max);
+
+        playerIcon.updateHitbox();
+
+        positionIcons();
     }
 
-    public dynamic function scaleIcons(elapsed:Float):Void
+    public function updateIconsAnimation():Void
     {
-        opponentIcon.scale.x = FlxMath.lerp(opponentIcon.scale.x, opponentIcon.config.scale?.x ?? 1.0, FlxMath.getElapsedLerp(0.15, elapsed));
-
-        opponentIcon.scale.y = FlxMath.lerp(opponentIcon.scale.y, opponentIcon.config.scale?.y ?? 1.0, FlxMath.getElapsedLerp(0.15, elapsed));
-
-        playerIcon.scale.x = FlxMath.lerp(playerIcon.scale.x, playerIcon.config.scale?.x ?? 1.0, FlxMath.getElapsedLerp(0.15, elapsed));
-
-        playerIcon.scale.y = FlxMath.lerp(playerIcon.scale.y, playerIcon.config.scale?.y ?? 1.0, FlxMath.getElapsedLerp(0.15, elapsed));
+        playerIcon.animation.curAnim.curFrame = (percent < 20.0) ? 1 : 0;
+        
+        opponentIcon.animation.curAnim.curFrame = (percent > 80.0) ? 1 : 0;
     }
 
-    public dynamic function positionIcons():Void
+    public function scaleIcons(elapsed:Float):Void
+    {
+        var scale:Float = FlxMath.lerp(opponentIcon.width, 150.0, FlxMath.getElapsedLerp(0.15, elapsed));
+
+        opponentIcon.setGraphicSize(scale, scale);
+
+        opponentIcon.updateHitbox();
+
+        scale = FlxMath.lerp(playerIcon.width, 150.0, FlxMath.getElapsedLerp(0.15, elapsed));
+
+        playerIcon.setGraphicSize(scale, scale);
+
+        playerIcon.updateHitbox();
+
+        positionIcons();
+    }
+
+    public function positionIcons():Void
     {
         switch (fillDirection:ProgressBarFillDirection)
         {

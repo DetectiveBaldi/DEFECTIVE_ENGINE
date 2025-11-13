@@ -1,12 +1,14 @@
 package game.notes;
 
+import flixel.FlxCamera;
 import flixel.FlxSprite;
 
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxFrame;
 
 import flixel.util.FlxColor;
 
-import core.Assets;
+import core.AssetCache;
 import core.Paths;
 
 class Sustain extends FlxSprite
@@ -19,18 +21,15 @@ class Sustain extends FlxSprite
     {
         super(x, y);
 
-        frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png("assets/images/game/notes/Note/default")), Paths.xml("assets/images/game/notes/Note/default"));
+        frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("game/notes/Note/default"),
+            Paths.image(Paths.xml("game/notes/Note/default")));
 
         for (i in 0 ... Note.DIRECTIONS.length)
         {
-            animation.addByPrefix(Note.DIRECTIONS[i].toLowerCase(), Note.DIRECTIONS[i].toLowerCase() + "0", 24.0, false);
+            var direction:String = Note.DIRECTIONS[i].toLowerCase();
 
-            animation.addByPrefix(Note.DIRECTIONS[i].toLowerCase() + "HoldPiece", Note.DIRECTIONS[i].toLowerCase() + "HoldPiece0", 24.0, false);
-            
-            animation.addByPrefix(Note.DIRECTIONS[i].toLowerCase() + "HoldTail", Note.DIRECTIONS[i].toLowerCase() + "HoldTail0", 24.0, false);
+            animation.addByPrefix('${direction}HoldPiece', '${direction}HoldPiece0', 24.0, false);
         }
-
-        antialiasing = true;
     }
 
     override function update(elapsed:Float):Void
@@ -42,42 +41,25 @@ class Sustain extends FlxSprite
         if (note.status == HIT)
             length -= note.strumline.conductor.time - note.time;
 
-        var expectedHeight:Float = (length * 0.45 * note.strumline.scrollSpeed);
+        var sustainHeight:Float = Math.max(length * 0.45 * note.strumline.scrollSpeed, 0.0);
 
-        setGraphicSize(frameWidth * 0.7, expectedHeight);
+        setGraphicSize(frameWidth * 0.7, sustainHeight);
 
         updateHitbox();
 
-        x = note.getMidpoint().x - width * 0.5;
+        setPosition(note.getMidpoint().x - width * 0.5, note.y + note.height * 0.5);
 
-        y = note.y + note.height * 0.5;
+        if (note.strum.downscroll)
+            y -= sustainHeight;
 
-        if (note.strumline.downscroll)
-            y -= expectedHeight;
+        trail.setPosition(getMidpoint().x - trail.width * 0.5, y + sustainHeight);
 
-        trail.x = getMidpoint().x - trail.width * 0.5;
+        if (note.strum.downscroll)
+            trail.y -= sustainHeight + trail.height;
 
-        trail.y = y + expectedHeight;
+        trail.y -= 2.0 * (note.strum.downscroll ? -1.0 : 1.0);
 
-        if (note.strumline.downscroll)
-            trail.y -= expectedHeight + trail.height;
-
-        trail.y -= 2.0 * (note.strumline.downscroll ? -1.0 : 1.0);
-
-        if (note.status == MISSED)
-        {
-            color = 0xFFD3D3D3;
-
-            alpha = 0.5;
-        }
-        else
-        {
-            color = FlxColor.WHITE;
-
-            alpha = 1.0;
-        }
-
-        trail.color = color;
+        alpha = note.alpha;
 
         trail.alpha = alpha;
     }

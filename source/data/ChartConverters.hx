@@ -2,91 +2,61 @@ package data;
 
 import haxe.Json;
 
-import sys.FileSystem;
+import openfl.utils.Assets;
 
-import core.Assets;
-import core.Paths;
+import flixel.util.FlxStringUtil;
 
-import util.MathUtil;
-import util.TimedObjectUtil;
-import util.TimedObjectUtil.RawTimedObject;
-import util.TimedObjectUtil.TimedObject;
+import data.Chart;
+
+import util.TimingUtil;
 
 using StringTools;
 
 using util.ArrayUtil;
-
-class ChartConverters
-{
-    public static function build(path:String):Chart
-    {
-        var rawMetaPath:String = path + (path.endsWith("/") ? "meta" : "/meta");
-
-        if (FileSystem.exists(Paths.json(rawMetaPath)))
-        {
-            var rawChartPath:String = (path.endsWith("/") ? path : '${path}/') + FileSystem.readDirectory(path).oldest((_path:String) -> _path.startsWith("chart")).replace(".json", "");
-
-            var diff:String = rawChartPath.contains("-") ? rawChartPath.split("-").newest() : "normal";
-
-            return FunkinConverter.build(rawChartPath, rawMetaPath, diff);
-        }
-        else
-        {
-            var rawChartPath:String = path + (path.endsWith("/") ? "chart" : "/chart");
-
-            var rawChart:Dynamic = Json.parse(Assets.getText(Paths.json(rawChartPath)));
-
-            if (Reflect.hasField(rawChart, "format"))
-                return PsychConverter.build(rawChartPath);
-            else
-                return Chart.build(rawChartPath);
-        }
-    }
-}
+using util.MathUtil;
 
 class FunkinConverter
 {
-    public static function build(chartPath:String, metaPath:String, diff:String):Chart
+    public static function run(chartPath:String, metaPath:String, difficulty:String):Chart
     {
         var output:Chart = new Chart();
 
-        var rawChart:Dynamic = Json.parse(Assets.getText(Paths.json(chartPath)));
+        var rawChart:Dynamic = Json.parse(Assets.getText(chartPath));
 
-        var notes:Array<FunkinNote> = Reflect.field(rawChart.notes, diff);
+        var notes:Array<FunkinNote> = Reflect.field(rawChart.notes, difficulty);
 
-        TimedObjectUtil.sortRaw(notes);
-
-        var rawMeta:Dynamic = Json.parse(Assets.getText(Paths.json(metaPath)));
-
-        var timeChanges:Array<FunkinTimeChange> = rawMeta.timeChanges;
-
-        TimedObjectUtil.sortRaw(timeChanges);
+        var rawMeta:Dynamic = Json.parse(Assets.getText(metaPath));
 
         output.name = rawMeta.songName;
 
-        output.tempo = timeChanges[0].bpm;
-
-        output.scrollSpeed = Reflect.field(rawChart.scrollSpeed, diff);
+        output.scrollSpeed = Reflect.field(rawChart.scrollSpeed, difficulty);
 
         for (i in 0 ... notes.length)
         {
             var note:FunkinNote = notes[i];
 
-            output.notes.push({time: note.t, direction: note.d % 4, lane: 1 - Math.floor(note.d * 0.25), length: note.l});
+            var kind:NoteKindData = {type: note.k, altAnimation: false, noAnimation: false, specSing: false, charIds: null}
+
+            output.notes.push({time: note.t, direction: note.d % 4, lane: 1 - Math.floor(note.d * 0.25), length: note.l,
+                kind: kind});
         }
 
-        for (i in 1 ... timeChanges.length)
+        var timingPoints:Array<FunkinTimingPoint> = rawMeta.timingPoints;
+
+        for (i in 0 ... timingPoints.length)
         {
-            var timeChange:FunkinTimeChange = timeChanges[i];
+            var timeChange:FunkinTimingPoint = timingPoints[i];
 
-            output.timeChanges.push({time: timeChange.t, tempo: timeChange.bpm, step: 0.0});
+            output.timingPoints.push({time: timeChange.t, tempo: timeChange.bpm, beatsPerMeasure: timeChange.n});
         }
 
-        sys.FileSystem.createDirectory("assets/data/game/FunkinConverter/");
+        var characters:Dynamic = rawMeta.playData.characters;
 
-        sys.FileSystem.createDirectory('assets/data/game/FunkinConverter/${output.name}/');
+        output.spectator = characters.girlfriend;
 
-        sys.io.File.saveContent('assets/data/game/FunkinConverter/${output.name}.json', Json.stringify({name: output.name, tempo: output.tempo, scrollSpeed: output.scrollSpeed, notes: output.notes, events: output.events, timeChanges: output.timeChanges}));
+        output.opponent = characters.opponent;
+
+        output.player = characters.player;
 
         return output;
     }
@@ -94,25 +64,31 @@ class FunkinConverter
 
 class PsychConverter
 {
-    public static function build(path:String):Chart
+    public static function run(chartPath:String):Chart
     {
         var output:Chart = new Chart();
 
-        var raw:Dynamic = Json.parse(Assets.getText(Paths.json(path)));
+        var raw:Dynamic = Json.parse(Assets.getText(chartPath));
+
+        var section:Dynamic = raw.notes[0];
 
         output.name = raw.song;
-
-        output.tempo = raw.bpm;
 
         output.scrollSpeed = raw.speed;
         
         var time:Float = 0.0;
 
-        var tempo:Float = output.tempo;
+        var tempo:Float = raw.bpm;
+
+        var beatsPerMeasure:Int = section.sectionBeats ?? 4;
+
+        output.timingPoints.push({time: 0.0, tempo: tempo, beatsPerMeasure: beatsPerMeasure});
+
+        var character:String = "";
 
         for (i in 0 ... raw.notes.length)
         {
-            var section:Dynamic = raw.notes[i];
+            section = raw.notes[i];
 
             var _section:PsychSection =
             {
@@ -122,7 +98,7 @@ class PsychConverter
                     {
                         var note:Array<Dynamic> = section.sectionNotes[j];
 
-                        {time: note[0], direction: note[1], length: note[2]}
+                        {time: note[0], direction: note[1], length: note[2], type: note[3]}
                     }
                 ],
 
@@ -130,12 +106,22 @@ class PsychConverter
 
                 mustHitSection: section.mustHitSection,
 
+                altAnim: section.altAnim,
+
+                gfSection: section.gfSection,
+
                 changeBPM: section.changeBPM,
 
                 bpm: section.bpm
             };
 
-            TimedObjectUtil.sort(_section.sectionNotes);
+            character = _section.mustHitSection ? "player" : "opponent";
+
+            if (_section.gfSection)
+                character = "spectator";
+            
+            output.events.push({time: time, name: "SetCamFocus", value: {x: 0.0, y: 0.0, charType: character,
+                duration: 0.0, ease: "linear"}});
 
             var beatLength:Float = (60.0 / tempo * 1000.0);
 
@@ -145,37 +131,70 @@ class PsychConverter
 
                 beatLength = (60.0 / tempo * 1000.0);
 
-                output.timeChanges.push({time: time, tempo: tempo, step: 0.0});
+                output.timingPoints.push({time: time, tempo: tempo, beatsPerMeasure: Math.round(_section.sectionBeats)});
             }
 
-            time += beatLength * (Math.round(_section.sectionBeats * 4.0) * 0.25);
+            time += beatLength * _section.sectionBeats;
 
             for (j in 0 ... _section.sectionNotes.length)
             {
                 var note:PsychNote = _section.sectionNotes[j];
 
-                output.notes.push({time: note.time, direction: note.direction % 4, lane: 1 - Math.floor(note.direction * 0.25), length: MathUtil.maxInt(Math.round(note.length - beatLength * 0.25), 0)});
+                var type:String = note.type ?? "";
+
+                var kind:NoteKindData = {type: "", altAnimation: false, noAnimation: false, specSing: false, charIds: null}
+
+                if (type == "Alt Animation")
+                    kind.altAnimation = true;
+
+                if (_section.altAnim || type == "No Animation")
+                    kind.noAnimation = true;
+
+                if (_section.gfSection || type == "GF Sing")
+                    kind.specSing = true;
+
+                if (type.startsWith("mamacitas-char-id"))
+                {
+                    var charIds:Array<Int> = new Array<Int>();
+
+                    var commas:String = type.split("-").last();
+
+                    var ids:Array<Int> = FlxStringUtil.toIntArray(commas);
+
+                    for (i in 0 ... ids.length)
+                        charIds.push(ids[i]);
+
+                    kind.charIds = charIds;
+                }
+
+                output.notes.push({time: note.time, direction: note.direction % 4, lane: 1 - Math.floor(note.direction * 0.25),
+                    length: Math.max(note.length - beatLength * 0.25, 0.0), kind: kind});
             }
         }
 
-        sys.FileSystem.createDirectory("assets/data/game/PsychConverter/");
+        output.spectator = raw.gfVersion;
 
-        sys.FileSystem.createDirectory('assets/data/game/PsychConverter/${output.name}/');
+        output.opponent = raw.player2;
 
-        sys.io.File.saveContent('assets/data/game/PsychConverter/${output.name}.json', Json.stringify({name: output.name, tempo: output.tempo, scrollSpeed: output.scrollSpeed, notes: output.notes, events: output.events, timeChanges: output.timeChanges}));
+        output.player = raw.player1;
 
         return output;
     }
 }
 
-typedef FunkinEvent = RawTimedObject &
+typedef FunkinTimedObject =
+{
+    var t:Float;
+}
+
+typedef FunkinEvent = FunkinTimedObject &
 {
     var e:String;
 
     var v:Dynamic;
 };
 
-typedef FunkinNote = RawTimedObject &
+typedef FunkinNote = FunkinTimedObject &
 {
     var d:Int;
 
@@ -184,7 +203,7 @@ typedef FunkinNote = RawTimedObject &
     var k:String;
 };
 
-typedef FunkinTimeChange = RawTimedObject &
+typedef FunkinTimingPoint = FunkinTimedObject &
 {
     var b:Float;
 
@@ -205,6 +224,10 @@ typedef PsychSection =
 
     var mustHitSection:Bool;
 
+    var altAnim:Bool;
+
+    var gfSection:Bool;
+
     var changeBPM:Bool;
 
     var bpm:Float;
@@ -224,4 +247,6 @@ typedef PsychNote = TimedObject &
     var direction:Int;
 
     var length:Float;
+
+    var type:String;
 };

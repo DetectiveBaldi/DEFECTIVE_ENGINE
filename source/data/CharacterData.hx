@@ -1,43 +1,18 @@
 package data;
 
-import haxe.Json;
+import data.AxisData;
 
-import core.Assets;
-import core.Paths;
-
-class CharacterData
-{
-    public static var list:Map<String, RawCharacterData> = new Map<String, RawCharacterData>();
-
-    public static function get(path:String):RawCharacterData
-    {
-        if (exists(path))
-            return list[path];
-
-        list[path] = Json.parse(Assets.getText(Paths.json('assets/data/game/Character/${path}')));
-
-        return list[path];
-    }
-
-    public static function exists(path:String):Bool
-    {
-        return list.exists(path);
-    }
-}
-
-typedef RawCharacterData =
+typedef CharacterData =
 {
     var name:String;
     
     var format:String;
 
-    var png:String;
-
-    var xml:String;
+    var image:String;
 
     var ?antialiasing:Bool;
 
-    var ?scale:{?x:Float, ?y:Float};
+    var ?scale:AxisData;
 
     var ?flipX:Bool;
 
@@ -47,7 +22,15 @@ typedef RawCharacterData =
 
     var danceSteps:Array<String>;
 
-    var ?danceInterval:Float;
+    var ?danceEvery:Float;
 
     var ?singDuration:Float;
+
+    var cameraPoint:AxisData;
+
+    var healthIcon:String;
+
+    var ?healthColor:String;
+
+    var ?deadCharacter:String;
 }

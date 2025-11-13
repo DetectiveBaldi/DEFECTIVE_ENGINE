@@ -16,5 +16,5 @@ typedef AnimationData =
     
     var ?flipY:Bool;
 
-    var ?offset:{?x:Float, ?y:Float};
+    var ?offset:AxisData;
 }

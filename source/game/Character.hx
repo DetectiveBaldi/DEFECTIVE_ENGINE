@@ -1,5 +1,9 @@
 package game;
 
+import haxe.Json;
+
+import openfl.utils.Assets;
+
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -9,58 +13,155 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 
-import core.Assets;
+import flixel.util.FlxDestroyUtil;
+
+import core.AssetCache;
 import core.Options;
 import core.Paths;
 
 import data.AnimationData;
-import data.CharacterData.RawCharacterData;
+import data.AxisData;
+import data.CharacterData;
 
+import game.notes.Note;
 import game.notes.Strumline;
 
 import music.Conductor;
 
 using StringTools;
 
+using util.ArrayUtil;
+
 class Character extends FlxSprite
 {
-    public var conductor(default, set):Conductor;
-
-    @:noCompletion
-    function set_conductor(_conductor:Conductor):Conductor
+    public static function getConfig(file:String):CharacterData
     {
-        var __conductor:Conductor = conductor;
-
-        conductor = _conductor;
-
-        conductor?.onBeatHit?.add(beatHit);
-
-        __conductor?.onBeatHit?.remove(beatHit);
-
-        return conductor;
+        return Json.parse(Assets.getText(Paths.data(Paths.json('game/Character/${file}'))));
     }
+    
+    public var conductor:Conductor;
 
     public var strumline:Strumline;
 
-    public var keys:Array<Int>;
+    public var lastScale:FlxPoint;
     
-    public var config(default, set):RawCharacterData;
+    public var config:CharacterData;
 
-    @:noCompletion
-    function set_config(_config:RawCharacterData):RawCharacterData
+    public var danceSteps:Array<String>;
+
+    public var danceEvery:Float;
+
+    public var singDuration:Float;
+
+    public var deadCharacter:String;
+
+    public var danceIndex:Int;
+
+    public var skipDance:Bool;
+
+    public var skipSing:Bool;
+
+    public var holdTimer:Float;
+
+    public function new(beatDispatcher:IBeatDispatcher, x:Float = 0.0, y:Float = 0.0, _config:CharacterData):Void
     {
-        config = _config;
+        super(x, y);
 
+        conductor = beatDispatcher?.conductor;
+
+        conductor?.onBeatHit?.add(beatHit);
+
+        lastScale = FlxPoint.get();
+        
+        loadConfig(_config);
+
+        danceIndex = 0;
+
+        skipDance = false;
+
+        skipSing = false;
+
+        holdTimer = 0.0;
+
+        dance();
+
+        danceIndex = 0;
+
+        animation.finish();
+    }
+
+    override function update(elapsed:Float):Void
+    {
+        super.update(elapsed);
+
+        calcOffsetsByScale();
+
+        if (conductor == null || strumline == null)
+            return;
+
+        if (isSinging())
+        {
+            holdTimer += elapsed;
+
+            var singTimeSec:Float = singDuration * (conductor.beatLength * 0.25 * 0.001);
+
+            if ((animation.name ?? "").endsWith("MISS"))
+                singTimeSec *= 2.0;
+
+            if (holdTimer >= singTimeSec)
+            {
+                holdTimer = 0.0;
+                
+                dance(true);
+            }
+        }
+        else
+            holdTimer = 0.0;
+    }
+
+    override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
+    {
+        var output:FlxPoint = super.getScreenPosition(result, camera);
+
+        var animData:AnimationData = config.animations.first((anim:AnimationData) -> animation.name ?? "" == anim.name);
+
+        if (animData != null)
+            output.add(animData.offset.x, animData.offset.y);
+
+        return output;
+    }
+
+    override function destroy():Void
+    {
+        super.destroy();
+
+        conductor?.onBeatHit?.remove(beatHit);
+
+        lastScale = FlxDestroyUtil.put(lastScale);
+
+        danceSteps = null;
+    }
+
+    public function loadConfig(newConfig:CharacterData):CharacterData
+    {
+        config = newConfig;
+
+        var pngPath:String = 'game/Character/${config.image}';
+
+        var xmlPath:String = Paths.image(Paths.xml('game/Character/${config.image}'));
+        
         switch (config.format ?? "".toLowerCase():String)
         {
-            case "sparrow": frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
+            case "sparrow": frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic(pngPath), xmlPath);
 
-            case "texturepackerxml": frames = FlxAtlasFrames.fromTexturePackerXml(Assets.getGraphic(Paths.png(config.png)), Paths.xml(config.xml));
+            case "texturepackerxml": frames = FlxAtlasFrames.fromTexturePackerXml(AssetCache.getGraphic(pngPath), xmlPath);
         }
 
         antialiasing = config.antialiasing ?? true;
 
         scale.set(config.scale?.x ?? 1.0, config.scale?.y ?? 1.0);
+
+        lastScale.copyFrom(scale);
 
         updateHitbox();
 
@@ -70,130 +171,66 @@ class Character extends FlxSprite
 
         for (i in 0 ... config.animations.length)
         {
-            var _animation:AnimationData = config.animations[i];
+            var animData:AnimationData = config.animations[i];
 
-            _animation.frameRate ??= 24.0;
+            animData.frameRate ??= 24.0;
 
-            _animation.looped ??= false;
+            animData.looped ??= false;
 
-            _animation.flipX ??= false;
+            animData.flipX ??= false;
 
-            _animation.flipY ??= false;
+            animData.flipY ??= false;
 
-            if (animation.exists(_animation.name))
-                throw "Invalid animation name!";
+            animData.offset ??= {x: 0.0, y: 0.0}
 
-            if (_animation.indices.length > 0)
-                animation.addByIndices(_animation.name, _animation.prefix, _animation.indices, "", _animation.frameRate, _animation.looped, _animation.flipX, _animation.flipY);
+            if (animData.indices != null)
+                animation.addByIndices(animData.name, animData.prefix, animData.indices, "", animData.frameRate,
+                    animData.looped, animData.flipX, animData.flipY);
             else
-                animation.addByPrefix(_animation.name, _animation.prefix, _animation.frameRate, _animation.looped, _animation.flipX, _animation.flipY);
+                animation.addByPrefix(animData.name, animData.prefix, animData.frameRate, animData.looped,
+                    animData.flipX, animData.flipY);
         }
 
         danceSteps = config.danceSteps;
 
-        danceStep = 0;
-
-        danceInterval = config.danceInterval ?? 2.0;
+        danceEvery = config.danceEvery ?? 2.0;
 
         singDuration = config.singDuration ?? 8.0;
 
-        singTimer = 0.0;
+        deadCharacter = config.deadCharacter ?? "bf-dead";
 
         return config;
     }
 
-    public var danceSteps:Array<String>;
-
-    public var danceStep:Int;
-
-    public var danceInterval:Float;
-
-    public var singDuration:Float;
-
-    public var skipDance:Bool;
-
-    public var skipSing:Bool;
-
-    public var singTimer:Float;
-
-    public function new(_conductor:Conductor, x:Float = 0.0, y:Float = 0.0, _config:RawCharacterData):Void
+    public function isSinging():Bool
     {
-        super(x, y);
-
-        conductor = _conductor;
-
-        keys = [Options.controls["NOTE:LEFT"], Options.controls["NOTE:DOWN"], Options.controls["NOTE:UP"], Options.controls["NOTE:RIGHT"]];
-        
-        config = _config;
-
-        skipDance = false;
-
-        skipSing = false;
-
-        dance();
-
-        animation.finish();
+        return (animation.name ?? "").startsWith("Sing");
     }
 
-    override function update(elapsed:Float):Void
+    public function calcOffsetsByScale():Void
     {
-        super.update(elapsed);
+        if (scale.equals(lastScale))
+            return;
 
-        if (conductor != null && strumline != null)
-        {
-            if (FlxG.keys.anyJustPressed(keys) && !strumline.automated)
-                singTimer = 0.0;
+        var xRatio:Float = scale.x / lastScale.x;
 
-            if ((animation.name ?? "").startsWith("Sing"))
-            {
-                singTimer += elapsed;
-
-                var requiredTime:Float = singDuration * (conductor.beatLength * 0.25 * 0.001);
-
-                if ((animation.name ?? "").endsWith("MISS"))
-                    requiredTime *= FlxG.random.float(1.35, 1.85);
-
-                if (singTimer >= requiredTime && (!FlxG.keys.anyPressed(keys) || strumline.automated))
-                {
-                    singTimer = 0.0;
-                    
-                    dance(true);
-                }
-            }
-            else
-                singTimer = 0.0;
-        }
-    }
-
-    override function destroy():Void
-    {
-        super.destroy();
-
-        conductor?.onBeatHit?.remove(beatHit);
-
-        keys = null;
-
-        danceSteps = null;
-    }
-
-    override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
-    {
-        var output:FlxPoint = super.getScreenPosition(result, camera);
+        var yRatio:Float = scale.y / lastScale.y;
 
         for (i in 0 ... config.animations.length)
         {
-            var _animation:AnimationData = config.animations[i];
+            var animData:AnimationData = config.animations[i];
             
-            if (animation.name ?? "" == _animation.name)
-                output.add(_animation.offset?.x ?? 0.0, _animation.offset?.y ?? 0.0);
+            animData.offset.x *= xRatio;
+            
+            animData.offset.y *= yRatio;
         }
 
-        return output;
+        lastScale.copyFrom(scale);
     }
 
     public function beatHit(beat:Int):Void
     {
-        if (beat % danceInterval == 0.0)
+        if (beat % danceEvery == 0.0)
             dance();
     }
 
@@ -201,14 +238,21 @@ class Character extends FlxSprite
     {
         if (skipDance)
             return;
-        
-        if (!force && (animation.name ?? "").startsWith("Sing"))
-            return;
 
-        var i:Int = danceSteps.indexOf(animation.name);
+        if (!force)
+        {
+            if (isSinging())
+                return;
 
-        i = FlxMath.wrap(i + 1, 0, danceSteps.length - 1);
+            if (danceSteps.length != 1.0)
+            {
+                if (!animation.finished && danceSteps.contains(animation.name))
+                    return;
+            }
+        }
 
-        animation.play(danceSteps[i], force);
+        danceIndex = FlxMath.wrap(danceIndex + 1, 0, danceSteps.length - 1);
+
+        animation.play(danceSteps[danceIndex], force);
     }
 }

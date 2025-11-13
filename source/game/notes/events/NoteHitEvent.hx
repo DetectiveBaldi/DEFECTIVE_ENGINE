@@ -4,7 +4,7 @@ class NoteHitEvent
 {
     public var note:Note;
 
-    public var showPop:Bool;
+    public var playSplash:Bool;
 
     public function new():Void
     {
@@ -15,6 +15,6 @@ class NoteHitEvent
     {
         note = _note;
 
-        showPop = !note.strumline.automated;
+        playSplash = !note.strumline.botplay;
     }
 }

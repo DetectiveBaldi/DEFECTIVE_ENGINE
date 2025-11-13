@@ -6,7 +6,7 @@ class GhostTapEvent
 {
     public var direction:Int;
 
-    public var penalize:Bool;
+    public var ghostTapping:Bool;
 
     public function new():Void
     {
@@ -17,6 +17,6 @@ class GhostTapEvent
     {
         direction = _direction;
         
-        penalize = !Options.ghostTapping;
+        ghostTapping = Options.ghostTapping;
     }
 }

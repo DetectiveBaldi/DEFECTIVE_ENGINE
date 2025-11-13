@@ -6,19 +6,43 @@ import flixel.util.FlxDestroyUtil;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
 
-import data.Chart.RawTimeChange;
+import data.Chart.TimingPointData;
 
-/**
- * A class which handles musical timing events throughout the game. It is the heart of `game.PlayState`.
- */
-class Conductor extends FlxBasic
+using util.ArrayUtil;
+using util.TimingUtil;
+
+class Conductor
 {
+    public var decStep(get, never):Float;
+
+    @:noCompletion
+    function get_decStep():Float
+    {
+        return getStepAt(time);
+    }
+
+    public var decBeat(get, never):Float;
+
+    @:noCompletion
+    function get_decBeat():Float
+    {
+        return getBeatAt(time);
+    }
+
+    public var decMeasure(get, never):Float;
+
+    @:noCompletion
+    function get_decMeasure():Float
+    {
+        return getMeasureAt(time);
+    }
+
     public var step(get, never):Int;
 
     @:noCompletion
     function get_step():Int
     {
-        return Math.floor(((time - timeChange.time) / stepLength) + timeChange.step);
+        return Math.floor(decStep);
     }
 
     public var beat(get, never):Int;
@@ -26,7 +50,7 @@ class Conductor extends FlxBasic
     @:noCompletion
     function get_beat():Int
     {
-        return Math.floor(step * 0.25);
+        return Math.floor(decBeat);
     }
 
     public var measure(get, never):Int;
@@ -34,7 +58,7 @@ class Conductor extends FlxBasic
     @:noCompletion
     function get_measure():Int
     {
-        return Math.floor(beat * 0.25);
+        return Math.floor(decMeasure);
     }
 
     public var onStepHit:FlxTypedSignal<(step:Int)->Void>;
@@ -43,14 +67,44 @@ class Conductor extends FlxBasic
 
     public var onMeasureHit:FlxTypedSignal<(measure:Int)->Void>;
 
-    public var tempo:Float;
+    public var tempo(get, set):Float;
+
+    @:noCompletion
+    function get_tempo():Float
+    {
+        return timingPoint.tempo;
+    }
+
+    @:noCompletion
+    function set_tempo(val:Float):Float
+    {
+        timingPoint.tempo = val;
+
+        return tempo;
+    }
+
+    public var beatsPerMeasure(get, set):Int;
+
+    @:noCompletion
+    function get_beatsPerMeasure():Int
+    {
+        return timingPoint.beatsPerMeasure;
+    }
+
+    @:noCompletion
+    function set_beatsPerMeasure(val:Int):Int
+    {
+        timingPoint.beatsPerMeasure = val;
+
+        return beatsPerMeasure;
+    }
 
     public var stepLength(get, never):Float;
 
     @:noCompletion
     function get_stepLength():Float
     {
-        return 60.0 / tempo * 0.25 * 1000.0;
+        return timingPoint.stepLength;
     }
 
     public var beatLength(get, never):Float;
@@ -58,114 +112,200 @@ class Conductor extends FlxBasic
     @:noCompletion
     function get_beatLength():Float
     {
-        return stepLength * 4.0;
+        return timingPoint.beatLength;
+    }
+
+    public var measureLength(get, never):Float;
+
+    @:noCompletion
+    function get_measureLength():Float
+    {
+        return timingPoint.measureLength;
     }
 
     public var time:Float;
 
-    public var timeChange:RawTimeChange;
+    public var timingPoints:Array<TimingPoint>;
 
-    public var timeChanges:Array<RawTimeChange>;
+    public var timingPoint(get, never):TimingPoint;
+    
+    @:noCompletion
+    function get_timingPoint():TimingPoint
+    {
+        return getTimingPointAtTime(time);
+    }
 
     public function new():Void
     {
-        super();
-
-        visible = false;
-
         onStepHit = new FlxTypedSignal<(step:Int)->Void>();
 
         onBeatHit = new FlxTypedSignal<(beat:Int)->Void>();
 
         onMeasureHit = new FlxTypedSignal<(measure:Int)->Void>();
 
-        tempo = 100.0;
-
         time = 0.0;
 
-        timeChange = {time: 0.0, tempo: 100.0, step: 0.0};
-
-        timeChanges = new Array<RawTimeChange>();
+        timingPoints = new Array<TimingPoint>();
     }
 
-    override function update(elapsed:Float):Void
+    public function update(time:Float):Void
     {
-        super.update(elapsed);
-        
-        var _step:Int = step;
+        var lastStep:Int = step;
 
-        var _beat:Int = beat;
+        var lastBeat:Int = beat;
 
-        var _measure:Int = measure;
+        var lastMeasure:Int = measure;
 
-        time += elapsed * 1000.0;
+        this.time = time;
 
-        var i:Int = timeChanges.length - 1;
-
-        while (i >= 0)
-        {
-            var _timeChange = timeChanges[i];
-            
-            if (time < _timeChange.time)
-            {
-                i--;
-
-                continue;
-            }
-
-            if (tempo != _timeChange.tempo)
-            {
-                var _time:Float = timeChange.time;
-
-                timeChange.time = _timeChange.time;
-
-                timeChange.tempo = _timeChange.tempo;
-
-                timeChange.step += (timeChange.time - _time) / stepLength;
-
-                tempo = timeChange.tempo;
-            }
-            
-            break;
-        }
-
-        if (step != _step)
+        if (step != lastStep)
             onStepHit.dispatch(step);
 
-        if (beat != _beat)
+        if (beat != lastBeat)
             onBeatHit.dispatch(beat);
 
-        if (measure != _measure)
+        if (measure != lastMeasure)
             onMeasureHit.dispatch(measure);
     }
 
-    override function destroy():Void
+    public function destroy():Void
     {
-        super.destroy();
-
         onStepHit = cast FlxDestroyUtil.destroy(onStepHit);
 
         onBeatHit = cast FlxDestroyUtil.destroy(onBeatHit);
 
         onMeasureHit = cast FlxDestroyUtil.destroy(onMeasureHit);
 
-        timeChange = null;
-
-        timeChanges = null;
+        timingPoints = null;
     }
-
-    public function getTimeChange(_tempo:Float, _time:Float):RawTimeChange
+    
+    public function getTimingPointAtTime(time:Float):TimingPoint
     {
-        var timeChange:RawTimeChange = {tempo: _tempo, time: 0.0, step: 0.0};
+        var res:TimingPoint = timingPoints[0];
 
-        for (i in 0 ... timeChanges.length)
+        for (i in 1 ... timingPoints.length)
         {
-            var _timeChange:RawTimeChange = timeChanges[i];
+            var timingPoint:TimingPoint = timingPoints[i];
 
-            if (_time >= _timeChange.time)
-                timeChange = _timeChange;
+            if (time < timingPoint.time)
+                break;
+
+            res = timingPoint;
         }
 
-        return timeChange;
+        return res;
     }
+
+    public function getTimingPointAtBeat(beat:Float):TimingPoint
+    {
+        var output:TimingPoint = timingPoints[0];
+
+        for (i in 1 ... timingPoints.length)
+        {
+            var point:TimingPoint = timingPoints[i];
+
+            if (beat < point.beatOffset)
+                break;
+
+            output = point;
+        }
+
+        return output;
+    }
+
+    public function getStepAt(time:Float):Float
+    {
+        return getBeatAt(time) * 4.0;
+    }
+
+    public function getBeatAt(time:Float):Float
+    {
+        var point:TimingPoint = timingPoint;
+
+        return point.beatOffset + (time - point.time) / beatLength;
+    }
+
+    public function getMeasureAt(time:Float):Float
+    {
+        var point:TimingPoint = timingPoint;
+
+        return point.measureOffset + (time - point.time) / measureLength;
+    }
+
+    public function stepToTime(step:Float):Float
+    {
+        return beatToTime(step) * 0.25;
+    }
+
+    public function beatToTime(beat:Float):Float
+    {
+        var point:TimingPoint = getTimingPointAtBeat(beat);
+
+        return point.time + beatLength * (beat - point.beatOffset);
+    }
+
+    public function measureToTime(measure:Float):Float
+    {
+        var point:TimingPoint = timingPoint;
+
+        return point.time + measureLength * (measure - point.measureOffset);
+    }
+
+    public function writeTimingPointData(list:Array<TimingPointData>):Void
+    {
+        for (i in 0 ... list.length)
+            timingPoints.push(TimingPoint.decodeData(list[i]));
+    }
+
+    public function calibrateTimingPoints():Void
+    {
+        var timeOffset:Float = 0.0;
+
+        var beatOffset:Float = 0.0;
+
+        var measureOffset:Float = 0.0;
+
+        var lastTempo:Float = 0.0;
+
+        var lastBeatsPerMeasure:Int = 0;
+
+        for (timingPoint in timingPoints)
+        {
+            if (timingPoint.time == 0.0)
+            {
+                lastTempo = timingPoint.tempo;
+
+                lastBeatsPerMeasure = timingPoint.beatsPerMeasure;
+
+                continue;
+            }
+
+            var beatDifference:Float = (timingPoint.time - timeOffset) / (60.0 / lastTempo * 1000.0);
+
+            measureOffset += beatDifference / lastBeatsPerMeasure;
+
+            beatOffset += beatDifference;
+
+            timeOffset = timingPoint.time;
+
+            lastTempo = timingPoint.tempo;
+
+            lastBeatsPerMeasure = timingPoint.beatsPerMeasure;
+
+            timingPoint.beatOffset = beatOffset;
+
+            timingPoint.measureOffset = measureOffset;
+        }
+    }
+}
+
+interface IBeatDispatcher
+{
+    public var conductor:Conductor;
+
+    public function stepHit(step:Int):Void;
+
+    public function beatHit(beat:Int):Void;
+
+    public function measureHit(measure:Int):Void;
 }

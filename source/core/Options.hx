@@ -2,6 +2,8 @@ package core;
 
 import flixel.FlxG;
 
+import flixel.math.FlxMath;
+
 class Options
 {
     public static var autoPause(get, set):Bool;
@@ -9,93 +11,85 @@ class Options
     @:noCompletion
     static function get_autoPause():Bool
     {
-        return FlxG.save.data.options.autoPause ??= true;
+        return SaveManager.options.data.autoPause ??= true;
     }
 
     @:noCompletion
     static function set_autoPause(_autoPause:Bool):Bool
     {
-        FlxG.save.data.options.autoPause = _autoPause;
+        SaveManager.options.data.autoPause = _autoPause;
 
         return autoPause;
     }
 
-    public static var fullscreen(get, set):Bool;
+    public static var frameRate(get, set):Int;
 
     @:noCompletion
-    static function get_fullscreen():Bool
+    static function get_frameRate():Int
     {
-        return FlxG.save.data.options.fullscreen ??= true;
+        return SaveManager.options.data.frameRate ??= 60;
+    }
+
+    static function set_frameRate(_frameRate:Int):Int
+    {
+        SaveManager.options.data.frameRate = _frameRate;
+
+        return frameRate;
+    }
+
+    public static var flashingLights(get, set):Bool;
+
+    @:noCompletion
+    static function get_flashingLights():Bool
+    {
+        return SaveManager.options.data.flashingLights ??= true;
     }
 
     @:noCompletion
-    static function set_fullscreen(_fullscreen:Bool):Bool
+    static function set_flashingLights(_flashingLights:Bool):Bool
     {
-        FlxG.save.data.options.fullscreen = _fullscreen;
+        SaveManager.options.data.flashingLights = _flashingLights;
 
-        return fullscreen;
+        return flashingLights;
     }
 
-    public static var gpuCaching(get, set):Bool;
+    public static var shaders(get, set):Bool;
 
     @:noCompletion
-    static function get_gpuCaching():Bool
+    static function get_shaders():Bool
     {
-        return FlxG.save.data.options.gpuCaching ??= true;
-    }
-
-    @:noCompletion
-    static function set_gpuCaching(_gpuCaching:Bool):Bool
-    {
-        FlxG.save.data.options.gpuCaching = _gpuCaching;
-
-        return gpuCaching;
-    }
-
-    public static var soundStreaming(get, set):Bool;
-
-    @:noCompletion
-    static function get_soundStreaming():Bool
-    {
-        return FlxG.save.data.options.soundStreaming ??= true;
+        return SaveManager.options.data.shaders ??= true;
     }
 
     @:noCompletion
-    static function set_soundStreaming(_soundStreaming:Bool):Bool
+    static function set_shaders(_shaders:Bool):Bool
     {
-        FlxG.save.data.options.soundStreaming = _soundStreaming;
+        SaveManager.options.data.shaders = _shaders;
 
-        return soundStreaming;
-    }
-    
-    public static var persistentCache(get, set):Bool;
-
-    @:noCompletion
-    static function get_persistentCache():Bool
-    {
-        return FlxG.save.data.options.persistentCache ??= true;
-    }
-    
-    @:noCompletion
-    static function set_persistentCache(_persistentCache:Bool):Bool
-    {
-        FlxG.save.data.options.persistentCache = _persistentCache;
-
-        return _persistentCache;
+        return shaders;
     }
 
-    public static var controls(get, set):Map<String, Int>;
+    public static var controls(get, set):Map<String, Array<Int>>;
 
     @:noCompletion
-    static function get_controls():Map<String, Int>
+    static function get_controls():Map<String, Array<Int>>
     {
-        return FlxG.save.data.options.controls ??= ["NOTE:LEFT" => 65, "NOTE:DOWN" => 83, "NOTE:UP" => 87, "NOTE:RIGHT" => 68];
+        return SaveManager.options.data.controls ??= 
+        [
+            "NOTE:LEFT" => [65, 37],
+
+            "NOTE:DOWN" => [83, 40],
+            
+            "NOTE:UP" => [87, 38],
+            
+            "NOTE:RIGHT" => [68, 39]
+        ];
     }
 
     @:noCompletion
-    static function set_controls(_controls:Map<String, Int>):Map<String, Int>
+    static function set_controls(_controls:Map<String, Array<Int>>):Map<String, Array<Int>>
     {
-        FlxG.save.data.options.controls = _controls;
+        SaveManager.options.data.controls = _controls;
 
         return controls;
     }
@@ -105,31 +99,15 @@ class Options
     @:noCompletion
     static function get_downscroll():Bool
     {
-        return FlxG.save.data.options.downscroll ??= false;
+        return SaveManager.options.data.downscroll ??= false;
     }
 
     @:noCompletion
     static function set_downscroll(_downscroll:Bool):Bool
     {
-        FlxG.save.data.options.downscroll = _downscroll;
+        SaveManager.options.data.downscroll = _downscroll;
 
         return downscroll;
-    }
-
-    public static var middlescroll(get, set):Bool;
-
-    @:noCompletion
-    static function get_middlescroll():Bool
-    {
-        return FlxG.save.data.options.middlescroll ??= false;
-    }
-
-    @:noCompletion
-    static function set_middlescroll(_middlescroll:Bool):Bool
-    {
-        FlxG.save.data.options.middlescroll = _middlescroll;
-
-        return middlescroll;
     }
 
     public static var ghostTapping(get, set):Bool;
@@ -137,35 +115,78 @@ class Options
     @:noCompletion
     static function get_ghostTapping():Bool
     {
-        return FlxG.save.data.options.ghostTapping ??= false;
+        return SaveManager.options.data.ghostTapping ??= true;
     }
 
     @:noCompletion
     static function set_ghostTapping(_ghostTapping:Bool):Bool
     {
-        FlxG.save.data.options.ghostTapping = _ghostTapping;
+        SaveManager.options.data.ghostTapping = _ghostTapping;
 
         return ghostTapping;
     }
 
-    public static var gameModifiers(get, set):Map<String, Dynamic>;
+    public static var botplay(get, set):Bool;
 
     @:noCompletion
-    static function get_gameModifiers():Map<String, Dynamic>
+    static function get_botplay():Bool
     {
-        return FlxG.save.data.options.gameModifiers ??= new Map<String, Dynamic>();
+        return SaveManager.options.data.botplay ??= false;
     }
 
     @:noCompletion
-    static function set_gameModifiers(_gameModifiers:Map<String, Dynamic>):Map<String, Dynamic>
+    static function set_botplay(_botplay:Bool):Bool
     {
-        FlxG.save.data.options.gameModifiers = _gameModifiers;
+        SaveManager.options.data.botplay = _botplay;
 
-        return gameModifiers;
+        return botplay;
     }
 
-    public static function init():Void
+    public static var discordRPC(get, set):Bool;
+
+    @:noCompletion
+    static function get_discordRPC():Bool
     {
-        FlxG.save.data.options ??= {};
+        return #if (FEATURE_DISCORD_HANDLER) SaveManager.options.data.discordRPC ??= true #else false #end;
+    }
+
+    @:noCompletion
+    static function set_discordRPC(_discordRPC:Bool):Bool
+    {
+        SaveManager.options.data.discordRPC = _discordRPC;
+
+        return discordRPC;
+    }
+
+    public static var gpuCaching(get, set):Bool;
+
+    @:noCompletion
+    static function get_gpuCaching():Bool
+    {
+        return #if FEATURE_GPU_CACHING SaveManager.options.data.gpuCaching ??= false #else false #end ;
+    }
+
+    @:noCompletion
+    static function set_gpuCaching(_gpuCaching:Bool):Bool
+    {
+        SaveManager.options.data.gpuCaching = _gpuCaching;
+
+        return gpuCaching;
+    }
+
+    public static var soundStreaming(get, set):Bool;
+
+    @:noCompletion
+    static function get_soundStreaming():Bool
+    {
+        return #if FEATURE_SOUND_STREAMING SaveManager.options.data.soundStreaming ??= false #else false #end ;
+    }
+
+    @:noCompletion
+    static function set_soundStreaming(_soundStreaming:Bool):Bool
+    {
+        SaveManager.options.data.soundStreaming = _soundStreaming;
+
+        return soundStreaming;
     }
 }

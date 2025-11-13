@@ -1,5 +1,7 @@
 package game;
 
+using util.ArrayUtil;
+
 @:structInit
 class Rating
 {
@@ -24,7 +26,7 @@ class Rating
 
     public static function fromTiming(timing:Float):Rating
     {
-        for (i in 0 ... list.length)
+        for (i in 0 ... list.length - 1)
         {
             var rating:Rating = list[i];
 
@@ -32,6 +34,6 @@ class Rating
                 return rating;
         }
 
-        return null;
+        return list.last();
     }
 }

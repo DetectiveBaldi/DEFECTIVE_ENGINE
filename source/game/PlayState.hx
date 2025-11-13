@@ -1,52 +1,130 @@
 package game;
 
-import sys.FileSystem;
+import openfl.filters.BitmapFilter;
 
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
+import flixel.FlxState;
+import flixel.FlxSubState;
 
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
+
+import flixel.tweens.FlxTween;
+
+import flixel.util.FlxTimer;
+import flixel.util.typeLimit.NextState;
 
 import flixel.sound.FlxSound;
 
-import flixel.util.FlxStringUtil;
-
-import core.Assets;
+import core.AssetCache;
 import core.Paths;
 import core.Options;
+import core.SaveManager;
 
 import data.CharacterData;
 import data.Chart;
-import data.Chart.RawEvent;
-import data.Chart.RawNote;
-import data.ChartConverters;
-import data.HealthBarIconData;
+import data.Chart.EventData;
+import data.ChartLoader;
+import data.Difficulty;
+import data.LevelData;
+import data.WeekData;
 
-import editors.CharacterEditorState;
+import data.PlayStats;
 
+import game.notes.Note;
 import game.notes.Strumline;
-import game.events.CameraFollowEvent;
+
+import game.notes.events.GhostTapEvent;
+import game.notes.events.NoteHitEvent;
+
 import game.events.CameraZoomEvent;
-import game.events.ScrollSpeedChangeEvent;
+import game.events.SetCamFocusEvent;
 
-import menus.OptionsMenu;
+import interfaces.ISequenceHandler;
 
-import music.MusicSubState;
+import menus.options.OptionsMenu;
+
+import music.Conductor;
 
 import ui.Countdown;
-
-import util.TimedObjectUtil;
 
 using StringTools;
 
 using util.ArrayUtil;
+using util.MathUtil;
+using util.TimingUtil;
 
-class PlayState extends MusicSubState
+class PlayState extends FlxState implements IBeatDispatcher implements ISequenceHandler
 {
+    public static var week:WeekData;
+
+    public static var level:LevelData;
+
+    public static var isWeek(get, never):Bool;
+
+    @:noCompletion
+    static function get_isWeek():Bool
+    {
+        return week != null;
+    }
+
+    public static var weekStats:Map<String, PlayStats> = new Map<String, PlayStats>();
+    
+    public static function getClassFromLevel(level:LevelData = null, params:PlayStateParams = null):PlayState
+    {
+        level ??= PlayState.level;
+
+        return Type.createInstance(Type.resolveClass(level.getClassPath(".")), [params]);
+    }
+
+    public static function loadWeek(week:WeekData):Void
+    {
+        PlayState.week = week.copy();
+
+        level = week.levels[0];
+
+        weekStats.clear();
+
+        FlxG.switchState(() -> getClassFromLevel());
+    }
+
+    public static function loadLevel(level:LevelData, params:PlayStateParams = null):Void
+    {
+        week = null;
+
+        PlayState.level = level;
+
+        weekStats.clear();
+
+        FlxG.switchState(() -> getClassFromLevel(params));
+    }
+    
+    public function getClassFromNextState():Class<FlxState>
+    {
+        var nextState:NextState = params?.nextState;
+
+        if (nextState == null)
+            return null;
+        
+        return Type.getClass(nextState.createInstance());
+    }
+
+    public var params:PlayStateParams;
+
+    public var conductor:Conductor;
+
+    public var tweens:FlxTweenManager;
+
+    public var timers:FlxTimerManager;
+
+    /**
+     * Characters and stages are drawn on this camera.
+     */
     public var gameCamera(get, never):FlxCamera;
     
     @:noCompletion
@@ -55,13 +133,35 @@ class PlayState extends MusicSubState
         return FlxG.camera;
     }
 
-    public var gameCameraTarget:FlxObject;
+    public var cameraPoint:FlxObject;
+
+    /**
+     * Simplistic representation of what the camera is viewing. Values include "POINT" and "CHARACTER".
+     */
+    public var cameraTarget:String;
+
+    /**
+     * A more specific version `cameraTarget` that explicitly refers to the type of character the camera is viewing.
+     */
+    public var cameraCharTarget:String;
+
+    public var cameraLock:CameraLockMode;
+
+    public var gameCamBopStrength:Float;
 
     public var gameCameraZoom:Float;
 
+    /**
+     * Most UI elements are drawn on this camera.
+     */
     public var hudCamera:FlxCamera;
 
-    public var hudCameraZoom:Float;
+    public var hudCamBopStrength:Float;
+
+    /**
+     * Elements such as the pause menu and other sub states are drawn on this camera.
+     */
+    public var topCamera:FlxCamera;
 
     public var chart:Chart;
 
@@ -91,33 +191,90 @@ class PlayState extends MusicSubState
 
     public var playField:PlayField;
 
+    public var oppStrumline(get, never):Strumline;
+
+    @:noCompletion
+    function get_oppStrumline():Strumline
+    {
+        return playField.strumlines.members[0];
+    }
+
+    public var plrStrumline(get, never):Strumline;
+
+    @:noCompletion
+    function get_plrStrumline():Strumline
+    {
+        return playField.strumlines.members[1];
+    }
+
     public var countdown:Countdown;
 
-    public var debugInputs:Map<String, Int>;
+    public var startingSong:Bool;
+
+    public function new(params:PlayStateParams):Void
+    {
+        super();
+
+        this.params = params;
+    }
 
     override function create():Void
     {
         super.create();
 
-        gameCameraTarget = new FlxObject();
-
-        add(gameCameraTarget);
-
-        gameCamera.follow(gameCameraTarget, LOCKON, 0.05);
-
-        gameCameraZoom = gameCamera.zoom;
-
+        gameCamera.filters = new Array<BitmapFilter>();
+        
         hudCamera = new FlxCamera();
 
         hudCamera.bgColor.alpha = 0;
 
+        hudCamera.filters = new Array<BitmapFilter>();
+
         FlxG.cameras.add(hudCamera, false);
 
-        hudCameraZoom = hudCamera.zoom;
+        topCamera = new FlxCamera();
 
-        loadChart(FlxStringUtil.getClassName(this, true));
+        topCamera.bgColor.alpha = 0;
 
-        loadSong(FlxStringUtil.getClassName(this, true));
+        FlxG.cameras.add(topCamera, false);
+
+        conductor = new Conductor();
+
+        conductor.onStepHit.add(stepHit);
+
+        conductor.onBeatHit.add(beatHit);
+
+        conductor.onMeasureHit.add(measureHit);
+
+        tweens = new FlxTweenManager();
+
+        add(tweens);
+
+        timers = new FlxTimerManager();
+
+        add(timers);
+
+        cameraPoint = new FlxObject();
+
+        add(cameraPoint);
+
+        gameCamera.follow(cameraPoint, LOCKON, 0.05);
+
+        cameraTarget = "POINT";
+
+        cameraCharTarget = "";
+
+        cameraLock = DEFAULT;
+
+        gameCamBopStrength = 0.035;
+
+        gameCameraZoom = gameCamera.zoom;
+
+        hudCamBopStrength = 0.015;
+
+        loadChart();
+
+        loadSong();
 
         stage ??= new FlxGroup();
 
@@ -127,230 +284,254 @@ class PlayState extends MusicSubState
 
         stage.add(spectators);
 
-        spectator = new Character(conductor, 0.0, 0.0, CharacterData.get("GIRLFRIEND"));
+        if (chart.spectator != "")
+        {
+            spectator = new Character(this, 0.0, 0.0, Character.getConfig(chart.spectator));
 
-        spectator.skipSing = true;
+            spectator.skipSing = true;
+        }
 
         opponents = new FlxTypedSpriteGroup<Character>();
 
         stage.add(opponents);
 
-        opponent = new Character(conductor, 0.0, 0.0, CharacterData.get("BOYFRIEND_PIXEL"));
+        opponent = new Character(this, 0.0, 0.0, Character.getConfig(chart.opponent));
 
         players = new FlxTypedSpriteGroup<Character>();
 
         stage.add(players);
 
-        player = new Character(conductor, 0.0, 0.0, CharacterData.get("BOYFRIEND"));
+        player = new Character(this, 0.0, 0.0, Character.getConfig(chart.player));
 
-        playField = new PlayField(conductor, chart, instrumental);
+        playField = new PlayField(this, this, chart);
 
         playField.camera = hudCamera;
 
+        playField.onUpdateScore.add(updateScore);
+
         add(playField);
 
-        playField.healthBar.onEmptied.add(gameOver);
+        #if FLX_DEBUG
+        FlxG.watch.add(playField.playStats, "score", "Score");
 
-        playField.healthBar.opponentIcon.config = HealthBarIconData.get('${opponent.config.name}');
+        FlxG.watch.add(playField.playStats, "misses", "Misses");
 
-        playField.healthBar.opponentIcon = playField.healthBar.opponentIcon;
+        FlxG.watch.add(playField.playStats, "accuracy", "Accuracy (%)");
+        #end
 
-        playField.healthBar.playerIcon.config = HealthBarIconData.get('${player.config.name}');
+        playField.getSongTime = getSongTime;
 
-        playField.healthBar.playerIcon = playField.healthBar.playerIcon;
+        playField.getSongLength = getSongLength;
 
-        playField.opponentStrumline.characters = opponents;
+        var healthBar:HealthBar = playField.healthBar;
 
-        playField.opponentStrumline.vocals = opponentVocals ?? mainVocals;
+        healthBar.onEmptied.add(gameOver);
 
-        playField.playerStrumline.characters = players;
+        oppStrumline.onNoteSpawn.add(noteSpawn);
+        
+        plrStrumline.onNoteSpawn.add(noteSpawn);
 
-        playField.playerStrumline.vocals = playerVocals ?? mainVocals;
+        oppStrumline.characters = opponents;
 
-        spectators.group.memberAdded.add((spectator:Character) -> spectator.strumline = playField.opponentStrumline);
+        oppStrumline.spectators = spectators;
 
-        opponents.group.memberAdded.add((opponent:Character) -> opponent.strumline = playField.opponentStrumline);
+        oppStrumline.vocals = opponentVocals ?? mainVocals;
 
-        players.group.memberAdded.add((player:Character) -> player.strumline = playField.playerStrumline);
+        plrStrumline.characters = players;
 
-        spectators.add(spectator);
+        plrStrumline.spectators = spectators;
+
+        plrStrumline.vocals = playerVocals ?? mainVocals;
+
+        spectators.group.memberAdded.add((spectator:Character) -> spectator.strumline = oppStrumline);
+
+        opponents.group.memberAdded.add((opponent:Character) -> opponent.strumline = oppStrumline);
+
+        players.group.memberAdded.add((player:Character) -> player.strumline = plrStrumline);
+
+        if (spectator != null)
+            spectators.add(spectator);
 
         opponents.add(opponent);
 
         players.add(player);
 
-        countdown = new Countdown(conductor);
+        updateHealthBar("opponent");
+
+        updateHealthBar("player");
+
+        updateScore(playField.playStats);
+
+        countdown = new Countdown(this, this);
         
         countdown.camera = hudCamera;
 
-        countdown.onPause.add(() -> conductor.active = false);
-
-        countdown.onResume.add(() -> conductor.active = true);
-
-        countdown.onFinish.add(() ->
-        {
-            conductor.time = 0.0;
-
-            countdown.kill();
-
-            startSong();
-        });
-
-        countdown.onSkip.add(() ->
-        {
-            conductor.time = 0.0;
-
-            countdown.kill();
-
-            startSong();
-        });
-
-        countdown.start();
-
         add(countdown);
 
-        debugInputs = new Map<String, Int>();
-
-        debugInputs["EDITORS:CHARACTEREDITORSTATE"] = 55;
-
-        debugInputs["MENUS:OPTIONSMENU"] = 56;
+        startingSong = true;
     }
 
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
 
-        gameCamera.zoom = FlxMath.lerp(gameCamera.zoom, gameCameraZoom, FlxMath.getElapsedLerp(0.15, elapsed));
+        // Calculate new time here, we need to update camera target fields before updating the conductor.
+        var timeToUpdateTo:Float = conductor.time + 1000.0 * elapsed;
 
-        hudCamera.zoom = FlxMath.lerp(hudCamera.zoom, hudCameraZoom, FlxMath.getElapsedLerp(0.15, elapsed));
+        if (startingSong)
+            timeToUpdateTo = Math.min(timeToUpdateTo, 0.0);
+
+        // Update the camera target fields.
+        updateCameraTarget(timeToUpdateTo);
+            
+        // Update the conductor now.
+        conductor.update(timeToUpdateTo);
 
         while (eventIndex < chart.events.length)
         {
-            var event:RawEvent = chart.events[eventIndex];
+            var event:EventData = chart.events[eventIndex];
 
             if (conductor.time < event.time)
                 break;
 
-            switch (event.name:String)
-            {
-                case "Camera Follow":
-                    CameraFollowEvent.dispatch(this, event.value.x ?? 0.0, event.value.y ?? 0.0, event.value.characterRole ?? "", event.value.duration ?? -1.0, event.value.ease ?? "linear");
-
-                case "Camera Zoom":
-                    CameraZoomEvent.dispatch(this, event.value.camera, event.value.zoom, event.value.duration, event.value.ease);
-
-                case "Scroll Speed Change":
-                    ScrollSpeedChangeEvent.dispatch(this, event.value.scrollSpeed, event.value.duration, event.value.ease);
-            }
-
-            eventIndex++;
+            onEvent(event);
         }
 
-        if (countdown.finished || countdown.skipped)
+        if (startingSong)
         {
-            if (Math.abs(conductor.time - instrumental.time) >= 25.0)
-                conductor.time = instrumental.time;
-
-            if (mainVocals != null)
-                if (Math.abs(mainVocals.time - instrumental.time) >= 5.0)
-                    mainVocals.time = instrumental.time;
-
-            if (opponentVocals != null)
-                if (Math.abs(opponentVocals.time - instrumental.time) >= 5.0)
-                    opponentVocals.time = instrumental.time;
-
-            if (playerVocals != null)
-                if (Math.abs(playerVocals.time - instrumental.time) >= 5.0)
-                    playerVocals.time = instrumental.time;
+            if (conductor.time == 0.0)
+                startSong();
         }
+        else
+        {
+            if (instrumental.playing)
+            {
+                var conductorDesync:Float = Math.abs(conductor.time - instrumental.time);
 
-        if (FlxG.keys.checkStatus(debugInputs["EDITORS:CHARACTEREDITORSTATE"], JUST_PRESSED))
-            FlxG.switchState(() -> new CharacterEditorState());
+                if (conductorDesync >= 20.0)
+                    conductor.time = instrumental.time;
 
-        if (FlxG.keys.checkStatus(debugInputs["MENUS:OPTIONSMENU"], JUST_PRESSED))
-            FlxG.switchState(() -> new OptionsMenu());
+                var mainVocalsDesync:Float = 0.0;
+
+                if (mainVocals != null)
+                    mainVocalsDesync = Math.abs(mainVocals.time - instrumental.time);
+
+                var opponentVocalsDesync:Float = 0.0;
+
+                if (opponentVocals != null)
+                    opponentVocalsDesync = Math.abs(opponentVocals.time - instrumental.time);
+
+                var playerVocalsDesync:Float = 0.0;
+
+                if (playerVocals != null)
+                    playerVocalsDesync = Math.abs(playerVocals.time - instrumental.time);
+
+                if (mainVocalsDesync >= 20.0 || opponentVocalsDesync >= 20.0 || playerVocalsDesync >= 20.0)
+                    resyncVocals();
+            }
+            else
+            {
+                if (conductor.time >= instrumental.length)
+                    endSong();
+            }
+        }
         
+        gameCamera.zoom = FlxMath.lerp(gameCamera.zoom, gameCameraZoom, FlxMath.getElapsedLerp(0.15, elapsed));
+
+        hudCamera.zoom = FlxMath.lerp(hudCamera.zoom, 1.0, FlxMath.getElapsedLerp(0.15, elapsed));
+
+        if (FlxG.keys.justPressed.SEVEN)
+            FlxG.switchState(() -> new OptionsMenu(() -> getClassFromLevel()));
+
+        #if debug
+        if (FlxG.keys.justPressed.EIGHT)
+            FlxG.switchState(() -> new editors.CharacterEditorState(() -> PlayState.getClassFromLevel(params), player.config.name));
+        #end
+
+        if (FlxG.keys.justPressed.R)
+            gameOver();
+
         if (FlxG.keys.justPressed.ESCAPE)
             FlxG.resetState();
     }
 
-    override function measureHit(measure:Int):Void
+    public function stepHit(step:Int):Void
     {
-        super.measureHit(measure);
-
-        gameCamera.zoom += 0.035;
-
-        hudCamera.zoom += 0.015;
+        
     }
 
-    public function loadChart(level:String):Void
+    public function beatHit(beat:Int):Void
     {
-        chart = ChartConverters.build('assets/data/game/levels/${level}/');
 
-        TimedObjectUtil.sort(chart.notes);
+    }
 
-        if (Options.gameModifiers["shuffle"])
-        {
-            var shuffledDirections:Array<Int> = new Array<Int>();
+    public function measureHit(measure:Int):Void
+    {
+        gameCamera.zoom += gameCamBopStrength;
 
-            for (i in 0 ... 4)
-                shuffledDirections.push(FlxG.random.int(0, 4 - 1, shuffledDirections));
+        hudCamera.zoom += hudCamBopStrength;
+    }
 
-            for (i in 0 ... chart.notes.length)
-            {
-                var note:RawNote = chart.notes[i];
+    public function loadChart():Void
+    {
+        chart = ChartLoader.readPath(Paths.data(level.getClassPath()));
 
-                note.direction = shuffledDirections[note.direction];
-            }
-        }
+        chart.notes.sortTimed();
 
-        if (Options.gameModifiers["mirror"])
-        {
-            var mirroredDirections:Array<Int> = new Array<Int>();
+        chart.events.sortTimed();
 
-            for (i in 0 ... 4)
-                mirroredDirections.insert(0, i);
+        chart.timingPoints.sortTimed();
+        
+        conductor.writeTimingPointData(chart.timingPoints);
 
-            for (i in 0 ... chart.notes.length)
-            {
-                var note:RawNote = chart.notes[i];
+        conductor.calibrateTimingPoints();
 
-                note.direction = mirroredDirections[note.direction];
-            }
-        }
+        conductor.update(-conductor.beatLength * 5.0);
 
-        TimedObjectUtil.sort(chart.events);
+        #if FLX_DEBUG
+        FlxG.watch.add(conductor, "time", "Time");
 
-        TimedObjectUtil.sort(chart.timeChanges);
+        FlxG.watch.add(conductor, "step", "Step");
 
-        conductor.tempo = chart.tempo;
+        FlxG.watch.add(conductor, "beat", "Beat");
 
-        conductor.timeChange = {time: 0.0, tempo: chart.tempo, step: 0.0};
-
-        conductor.timeChanges = chart.timeChanges;
-
-        conductor.time = -conductor.beatLength * 5.0;
+        FlxG.watch.add(conductor, "measure", "Measure");
+        #end
 
         eventIndex = 0;
     }
 
-    public function loadSong(level:String):Void
+    public function onEvent(ev:EventData):Void
     {
-        instrumental = FlxG.sound.load(Assets.getSound(Paths.ogg('assets/music/game/levels/${level}/Instrumental')));
+        var val:Dynamic = ev.value;
 
-        instrumental.onComplete = endSong;
+        switch (ev.name:String)
+        {
+            case "CameraZoom":
+                CameraZoomEvent.dispatch(this, val.zoom, val.duration, val.ease);
 
-        instrumental = FlxG.sound.load(Assets.getSound(Paths.ogg('assets/music/game/levels/${level}/Instrumental')));
+            case "SetCamFocus":
+                SetCamFocusEvent.dispatch(this, val.x, val.y, val.charType, val.duration, val.ease);
+        }
 
-        if (FileSystem.exists(Paths.ogg('assets/music/game/levels/${level}/Vocals-Main')))
-            mainVocals = FlxG.sound.load(Assets.getSound(Paths.ogg('assets/music/game/levels/${level}/Vocals-Main')));
+        eventIndex++;
+    }
+
+    public function loadSong():Void
+    {
+        var songPath:String = '${level.getClassPath()}/';
+
+        instrumental = FlxG.sound.load(AssetCache.getMusic('${songPath}Instrumental'));
+
+        if (Paths.exists(Paths.music(Paths.ogg('${songPath}Vocals-Main'))))
+            mainVocals = FlxG.sound.load(AssetCache.getMusic('${songPath}Vocals-Main'));
         else
         {
-            if (FileSystem.exists(Paths.ogg('assets/music/game/levels/${level}/Vocals-Opponent')))
-                opponentVocals = FlxG.sound.load(Assets.getSound(Paths.ogg('assets/music/game/levels/${level}/Vocals-Opponent')));
+            if (Paths.exists(Paths.music(Paths.ogg('${songPath}Vocals-Opponent'))))
+                opponentVocals = FlxG.sound.load(AssetCache.getMusic('${songPath}Vocals-Opponent'));
 
-            if (FileSystem.exists(Paths.ogg('assets/music/game/levels/${level}/Vocals-Player')))
-                playerVocals = FlxG.sound.load(Assets.getSound(Paths.ogg ('assets/music/game/levels/${level}/Vocals-Player')));
+            if (Paths.exists(Paths.music(Paths.ogg('${songPath}Vocals-Player'))))
+                playerVocals = FlxG.sound.load(AssetCache.getMusic('${songPath}Vocals-Player'));
         }
     }
 
@@ -363,28 +544,139 @@ class PlayState extends MusicSubState
         opponentVocals?.play();
 
         playerVocals?.play();
+
+        startingSong = false;
     }
 
     public function endSong():Void
     {
-        FlxG.resetState();
-    }
-
-    public function gameOver():Void
-    {
-        persistentDraw = false;
-
-        openSubState(new GameOverScreen(this));
-
-        instrumental.stop();
-
         mainVocals?.stop();
 
         opponentVocals?.stop();
 
         playerVocals?.stop();
 
-        playField.strumlines.forEach((strumline:Strumline) -> strumline.registerInputs = false);
+        var nextState:NextState = params?.nextState;
+        
+        var playStats:PlayStats = playField.playStats;
+
+        var score:Int = playStats.score;
+
+        var misses:Int = playStats.misses;
+
+        var accuracy:Float = playStats.accuracy;
+
+        if (isWeek)
+        {
+            if (HighScore.isLevelHighScore(level.name, level.difficulty, score))
+            {
+                HighScore.setLevelScore(level.name, level.difficulty, {score: score, misses: misses, accuracy: accuracy});
+
+                SaveManager.saveHighScores();
+            }
+
+            weekStats[level.name] = playField.playStats.copy();
+
+            week.levels.shift();
+
+            if (week.levels.length == 0.0)
+            {
+                var totalStats:PlayStats = PlayStats.empty();
+
+                for (k => v in weekStats)
+                    totalStats.concat(v);
+
+                score = totalStats.score;
+
+                misses = totalStats.misses;
+
+                accuracy = totalStats.accuracy;
+
+                if (HighScore.isWeekHighScore(week.name, level.difficulty, score))
+                {
+                    HighScore.setWeekScore(week.name, level.difficulty, {score: score, misses: misses, accuracy: accuracy});
+
+                    SaveManager.saveHighScores();
+                }
+            }
+        }
+        else
+        {
+            if (HighScore.isLevelHighScore(level.name, level.difficulty, score))
+            {
+                HighScore.setLevelScore(level.name, level.difficulty, {score: score, misses: misses, accuracy: accuracy});
+
+                SaveManager.saveHighScores();
+            }
+        }
+
+        FlxG.resetState();
+    }
+
+    // To avoid closures where possible.
+    public function getSongTime():Float
+    {
+        return instrumental.time;
+    }
+
+    // To avoid closures where possible.
+    public function getSongLength():Float
+    {
+        return instrumental.length;
+    }
+
+    public function changeTime(newTime:Float):Void
+    {
+        if (startingSong)
+            return;
+
+        if (conductor.time == newTime)
+            return;
+
+        if (conductor.time > newTime)
+        {
+            pauseMusic();
+
+            setMusicTime(newTime);
+
+            conductor.time = newTime;
+            
+            playField.noteSpawner.setNoteIndexAt(newTime);
+
+            setEventIndexAt(newTime);
+
+            resumeMusic();
+        }
+        else
+        {
+            pauseMusic();
+
+            setMusicTime(newTime);
+
+            playField.noteSpawner.setNoteIndexAt(newTime);
+
+            while (conductor.time < newTime)
+            {
+                @:privateAccess
+                FlxG.game.step();
+            }
+
+            resumeMusic();
+        }
+    }
+
+    public function setEventIndexAt(time:Float):Void
+    {
+        eventIndex = 0;
+        
+        var event:EventData = chart.events[eventIndex];
+
+        while (eventIndex < chart.events.length && event.time <= time)
+        {
+            eventIndex++;
+            
+            event = chart.events[eventIndex];
+        }
     }
 
     public function getSpectator(name:String):Character
@@ -401,4 +693,161 @@ class PlayState extends MusicSubState
     {
         return players.group.getFirst((player:Character) -> player.config.name == name);
     }
+
+    public function updateHealthBar(charType:String):Void
+    {
+        var character:Character = Reflect.getProperty(this, charType);
+
+        var healthBar:HealthBar = playField.healthBar;
+
+        if (charType == "spectator" || charType == "opponent")
+            healthBar.opponentIcon.updateGraphic(character.config.healthIcon);
+        else
+            healthBar.playerIcon.updateGraphic(character.config.healthIcon);
+    }
+
+    public function getStartingCamFocusEvent():EventData
+    {
+        return chart.events.first((e:EventData) -> e.name == "SetCamFocus");
+    }
+
+    public function setCamStartPos():Void
+    {
+        var ev:EventData = getStartingCamFocusEvent();
+
+        SetCamFocusEvent.dispatch(this, ev.value.x, ev.value.y, ev.value.charType, 0.0, "linear");
+
+        gameCamera.snapToTarget();
+    }
+
+    public function getCameraTarget(timeToCheck:Float):String
+    {
+        var ev:EventData = chart.events.last((e:EventData) -> e.name == "SetCamFocus" && e.time <= timeToCheck);
+
+        if (ev == null)
+            ev = getStartingCamFocusEvent();
+
+        if (ev.value.charType == null)
+            return "POINT";
+        else
+            return ev.value.charType.toUpperCase();
+    }
+
+    public function updateCameraTarget(timeToCheck:Float):Void
+    {
+        var target:String = getCameraTarget(timeToCheck);
+
+        if (target == "POINT")
+            cameraTarget = target;
+        else
+        {
+            cameraTarget = "CHARACTER";
+
+            cameraCharTarget = target;
+        }
+    }
+
+    public function noteSpawn(note:Note):Void {}
+
+    public function updateScore(playStats:PlayStats):Void
+    {
+
+    }
+
+    public function resume():Void
+    {
+        gameCamera.active = true;
+        
+        resumeMusic();
+    }
+
+    public function gameOver():Void
+    {
+        persistentDraw = false;
+
+        openSubState(new GameOverScreen(this));
+
+        cameraPoint.centerTo();
+
+        pauseMusic();
+    }
+
+    public function pauseMusic():Void
+    {
+        instrumental.pause();
+
+        mainVocals?.pause();
+
+        opponentVocals?.pause();
+
+        playerVocals?.pause();
+    }
+
+    public function resumeMusic():Void
+    {
+        instrumental.resume();
+
+        mainVocals?.resume();
+
+        opponentVocals?.resume();
+
+        playerVocals?.resume();
+    }
+
+    public function setMusicTime(time:Float):Void
+    {
+        instrumental.time = time;
+
+        if (mainVocals != null)
+            mainVocals.time = time;
+
+        if (opponentVocals != null)
+            opponentVocals.time = time;
+
+        if (playerVocals != null)
+            playerVocals.time = time;
+    }
+
+    public function resyncVocals():Void
+    {
+        if (mainVocals != null)
+            mainVocals.time = instrumental.time;
+
+        if (opponentVocals != null)
+            opponentVocals.time = instrumental.time;
+
+        if (playerVocals != null)
+            playerVocals.time = instrumental.time;
+    }
 }
+
+enum CameraLockMode
+{
+    /**
+     * No camera events are restricted.
+     */
+    DEFAULT;
+
+    /**
+     * Camera movement is limited to the use of `SetCamFocus` events with `charType != null`.
+     */
+    FOCUS_CAM_CHAR;
+
+    /**
+     * Camera movement is limited to the use of `SetCamFocus` events with `charType == null`.
+     */
+    FOCUS_CAM_POINT;
+
+    /**
+     * All camera events are restricted.
+     */
+    NONE;
+}
+
+typedef PlayStateParams =
+{
+    /**
+     * Where should we go after this level is finished?
+     */
+    var ?nextState:NextState;
+} 

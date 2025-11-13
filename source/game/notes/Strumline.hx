@@ -1,7 +1,5 @@
 package game.notes;
 
-import openfl.events.KeyboardEvent;
-
 import flixel.FlxG;
 
 import flixel.group.FlxGroup;
@@ -13,28 +11,27 @@ import flixel.sound.FlxSound;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal.FlxTypedSignal;
 
-import core.Assets;
+import core.AssetCache;
 import core.Options;
-import core.Paths;
 
 import game.notes.events.GhostTapEvent;
 import game.notes.events.NoteHitEvent;
+import game.notes.events.SustainHoldEvent;
 
 import music.Conductor;
 
 using StringTools;
 
 using util.ArrayUtil;
+using util.MathUtil;
 
 class Strumline extends FlxGroup
 {
     public var conductor:Conductor;
 
-    public var keys:Map<Int, Int>;
+    public var keysToCheck:Map<Int, Int>;
 
     public var keysHeld:Array<Bool>;
-
-    public var registerInputs:Bool;
 
     public var strums:FlxTypedSpriteGroup<Strum>;
 
@@ -67,7 +64,11 @@ class Strumline extends FlxGroup
 
     public var onNoteMiss:FlxTypedSignal<(note:Note)->Void>;
 
-    public var notePops:FlxTypedGroup<NotePop>;
+    public var noteSplashes:FlxTypedGroup<NoteSplash>;
+
+    public var onSustainHold:FlxTypedSignal<(event:SustainHoldEvent)->Void>;
+
+    public var sustainHoldEvent:SustainHoldEvent;
 
     public var onGhostTap:FlxTypedSignal<(event:GhostTapEvent)->Void>;
 
@@ -75,27 +76,38 @@ class Strumline extends FlxGroup
 
     public var scrollSpeed:Float;
 
-    public var downscroll:Bool;
+    public var downscroll(default, set):Bool;
 
-    public var automated:Bool;
+    @:noCompletion
+    function set_downscroll(down:Bool):Bool
+    {
+        downscroll = down;
+
+        for (i in 0 ... strums.members.length)
+            strums.members[i].downscroll = downscroll;
+
+        return downscroll;
+    }
+
+    public var botplay:Bool;
 
     public var characters:FlxTypedSpriteGroup<Character>;
+
+    public var spectators:FlxTypedSpriteGroup<Character>;
 
     public var vocals:FlxSound;
 
     public var lastStep:Int;
 
-    public function new(_conductor:Conductor):Void
+    public function new(beatDispatcher:IBeatDispatcher):Void
     {
         super();
 
-        conductor = _conductor;
+        conductor = beatDispatcher.conductor;
 
-        addKeyboardListeners();
+        getKeysToCheck();
 
         keysHeld = [for (i in 0 ... 4) false];
-
-        registerInputs = true;
 
         strums = new FlxTypedSpriteGroup<Strum>();
 
@@ -103,7 +115,7 @@ class Strumline extends FlxGroup
 
         for (i in 0 ... 4)
         {
-            var strum:Strum = new Strum(conductor);
+            var strum:Strum = new Strum(beatDispatcher);
 
             strum.strumline = this;
 
@@ -122,15 +134,21 @@ class Strumline extends FlxGroup
 
         notes = new FlxTypedGroup<Note>();
 
+        notes.active = false;
+
         add(notes);
 
         notesPendingRemoval = new Array<Note>();
 
         sustains = new FlxTypedGroup<Sustain>();
 
+        sustains.active = false;
+
         insert(members.indexOf(notes), sustains);
 
         trails = new FlxTypedGroup<SustainTrail>();
+
+        trails.active = false;
 
         insert(members.indexOf(sustains), trails);
 
@@ -142,9 +160,13 @@ class Strumline extends FlxGroup
 
         onNoteMiss = new FlxTypedSignal<(note:Note)->Void>();
 
-        notePops = new FlxTypedGroup<NotePop>();
+        onSustainHold = new FlxTypedSignal<(event:SustainHoldEvent)->Void>();
 
-        add(notePops);
+        sustainHoldEvent = new SustainHoldEvent();
+
+        noteSplashes = new FlxTypedGroup<NoteSplash>();
+
+        add(noteSplashes);
 
         onGhostTap = new FlxTypedSignal<(event:GhostTapEvent)->Void>();
 
@@ -154,7 +176,7 @@ class Strumline extends FlxGroup
 
         downscroll = Options.downscroll;
 
-        automated = false;
+        botplay = false;
 
         lastStep = 0;
     }
@@ -163,19 +185,49 @@ class Strumline extends FlxGroup
     {
         super.update(elapsed);
 
-        while (notesPendingRemoval.length > 0.0)
+        if (botplay)
         {
-            var note:Note = notesPendingRemoval.pop();
-
-            notes.members.remove(note);
-
-            note.kill();
-
-            if (note.length > 0.0)
+            for (i in 0 ... notes.members.length)
             {
-                sustains.members.remove(note.sustain);
+                var note:Note = notes.members[i];
 
-                trails.members.remove(note.sustain.trail);
+                if (note.isHittable())
+                    noteHit(note);
+            }
+        }
+        else
+        {
+            for (k => v in keysToCheck)
+            {
+                var keyCode:Int = k;
+
+                var direc:Int = v;
+
+                if (FlxG.keys.checkStatus(keyCode, JUST_PRESSED))
+                {
+                    var strum:Strum = strums.members[direc];
+
+                    strum.animation.play(Note.DIRECTIONS[direc].toLowerCase() + "Press");
+
+                    var note:Note = notes.getFirst((_note:Note) -> _note.isHittable() && _note.direction == direc);
+
+                    if (note == null)
+                        ghostTap(strum.direction);
+                    else
+                        noteHit(note);
+                }
+
+                if (FlxG.keys.checkStatus(keyCode, PRESSED))
+                    keysHeld[direc] = true;
+
+                if (FlxG.keys.checkStatus(keyCode, JUST_RELEASED))
+                {
+                    keysHeld[direc] = false;
+
+                    var strum:Strum = strums.members[direc];
+
+                    strum.animation.play(Note.DIRECTIONS[direc].toLowerCase() + "Static");
+                }
             }
         }
 
@@ -183,43 +235,56 @@ class Strumline extends FlxGroup
         {
             var note:Note = notes.members[i];
 
-            if (automated && note.isHittable())
-                noteHit(note);
+            var hasMissed:Bool = conductor.time > note.time + note.latestTiming;
 
-            var isLate:Bool = conductor.time > note.time + 166.0;
+            if ((note.status == IDLING || note.status == FAILING) && hasMissed)
+                noteMiss(note);
 
-            if (!automated && note.status == IDLING && isLate)
-                noteMiss(note, false);
+            var hasExpired:Bool = conductor.time > note.time + note.length + note.latestTiming;
 
-            var isExpired:Bool = conductor.time > note.time + note.length + 166.0;
-
-            if (isLate && isExpired)
+            if (hasMissed && hasExpired)
                 notesPendingRemoval.push(note);
 
-            if (note.length > 0.0 && note.status != IDLING && !note.finishedHold)
+            if (note.length == 0.0)
+                continue;
+
+            if (isHoldingNote(note))
+                holdSustainNote(note, note.sustain, elapsed);
+            else
             {
-                if (isHolding(note))
+                if (note.status == HIT)
                 {
-                    holdSustainNote(note);
-
-                    if (note.unholdTime > 0.0)
-                        note.unholdTime = Math.max(0.0, note.unholdTime - elapsed * 1000.0);
-                }
-                else
-                {
-                    if (note.status != MISSED)
+                    if (note.status != FAILING)
                     {
-                        note.unholdTime += elapsed * 1000.0;
+                        resizeSustainNote(note);
 
-                        if (note.unholdTime > 166.0)
-                            noteMiss(note, true);
+                        note.status = FAILING;
                     }
                 }
-    
-                if (conductor.time >= note.time + note.length)
-                    finishSustainNote(note);
+
+                if (note.status == FAILING)
+                {
+                    setStrumActive(note.direction, true);
+
+                    note.unholdTime += 1000.0 * elapsed;
+
+                    if (note.unholdTime >= note.latestTiming * 2.0)
+                        noteMiss(note);
+                }
             }
+
+            if (conductor.time >= note.time + note.length)
+                finishSustainNote(note);
         }
+
+        while (notesPendingRemoval.length > 0.0)
+            removeNote(notesPendingRemoval.pop());
+
+        notes.update(elapsed);
+
+        sustains.update(elapsed);
+
+        trails.update(elapsed);
 
         lastStep = conductor.step;
     }
@@ -228,7 +293,7 @@ class Strumline extends FlxGroup
     {
         super.destroy();
 
-        removeKeyboardListeners();
+        keysToCheck = null;
 
         keysHeld = null;
 
@@ -241,60 +306,35 @@ class Strumline extends FlxGroup
         onGhostTap = cast FlxDestroyUtil.destroy(onGhostTap);
     }
 
-    public function addKeyboardListeners():Void
+    public function getKeysToCheck():Map<Int, Int>
     {
-        if (keys != null)
-            return;
-
-        FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown);
-
-        FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
-
-        keys = [Options.controls["NOTE:LEFT"] => 0, Options.controls["NOTE:DOWN"] => 1, Options.controls["NOTE:UP"] => 2, Options.controls["NOTE:RIGHT"] => 3];
+        return keysToCheck =
+        [
+            for (i in 0 ... Note.DIRECTIONS.length)
+                for (j in 0 ... Options.controls['NOTE:${Note.DIRECTIONS[i]}'].length)
+                    Options.controls['NOTE:${Note.DIRECTIONS[i]}'][j] => i
+        ];
     }
 
-    public function removeKeyboardListeners():Void
+    public function resetStrums():Void
     {
-        if (keys == null)
-            return;
-
-        FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
-
-        FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
-
-        keys = null;
+        strums.forEach((strum:Strum) -> strum.animation.play(Note.DIRECTIONS[strum.direction].toLowerCase() + "Static", true));
     }
 
-    public function keyDown(ev:KeyboardEvent):Void
+    public function resetKeysHeld():Void
     {
-        var dir:Int = keys[ev.keyCode] ?? -1;
-
-        if (keysHeld[dir] || !registerInputs || dir == -1)
-            return;
-
-        keysHeld[dir] = true;
-
-        var strum:Strum = strums.members[dir];
-
-        strum.animation.play(Note.DIRECTIONS[dir].toLowerCase() + "Press");
-
-        var note:Note = notes.getFirst((_note:Note) -> strum.direction == _note.direction && _note.isHittable());
-
-        note == null ? ghostTap(strum.direction) : noteHit(note);
+        for (i in 0 ... keysHeld.length)
+            keysHeld[i] = false;
     }
 
-    public function keyUp(ev:KeyboardEvent):Void
+    public function setStrumActive(direc:Int, active:Bool):Void
     {
-        var dir:Int = keys[ev.keyCode] ?? -1;
+        var strum:Strum = strums.members[direc];
 
-        if (dir == -1)
-            return;
+        strum.active = active;
 
-        keysHeld[dir] = false;
-
-        var strum:Strum = strums.members[dir];
-
-        strum.animation.play(Note.DIRECTIONS[dir].toLowerCase() + "Static");
+        if (!active)
+            strum.animation.finish();
     }
 
     public function noteHit(note:Note):Void
@@ -303,133 +343,98 @@ class Strumline extends FlxGroup
 
         onNoteHit.dispatch(noteHitEvent);
 
-        if (note.length > 0.0)
-            resizeSustainNote(note);
-
         note.status = HIT;
 
-        note.showPop = noteHitEvent.showPop;
+        note.playSplash = noteHitEvent.playSplash;
+
+        var strum:Strum = note.strum;
+
+        strum.holdTimer = 0.0;
+        
+        strum.animation.play(Note.DIRECTIONS[note.direction].toLowerCase() + "Confirm", true);
 
         if (note.length > 0.0)
-            note.visible = false;
+            resizeSustainNote(note);
         else
         {
             notesPendingRemoval.push(note);
 
-            if (note.showPop)
-                showPop(note);
+            if (note.playSplash)
+                playSplash(note);
         }
-
-        var strum:Strum = note.strum;
-
-        strum.confirmTimer = 0.0;
         
-        strum.animation.play(Note.DIRECTIONS[note.direction].toLowerCase() + "Confirm", true);
+        setStrumActive(note.direction, note.length == 0.0);
 
-        singCharacters(note, note.direction, false);
+        playCharSingAnims(note, note.direction, false);
+
+        setCharAnimsActive(note, note.length == 0.0);
 
         if (vocals != null)
             vocals.volume = 1.0;
     }
 
-    public function noteMiss(note:Note, resize:Bool):Void
+    public function noteMiss(note:Note):Void
     {
         onNoteMiss.dispatch(note);
 
-        if (resize)
-            resizeSustainNote(note);
-
         note.status = MISSED;
 
-        missCharacters(note, note.direction);
+        playCharMissAnims(note, note.direction);
+
+        setCharAnimsActive(note, true);
 
         if (vocals != null)
             vocals.volume = 0.0;
 
-        var _noteMiss:FlxSound = FlxG.sound.play(Assets.getSound(Paths.ogg('assets/sounds/game/GameState/noteMiss${FlxG.random.int(0, 2)}'), false), 0.15);
-
-        _noteMiss.onComplete = _noteMiss.kill;
+        FlxG.sound.play(AssetCache.getSound('game/GameState/noteMiss${FlxG.random.int(0, 2)}'), 0.15);
     }
 
-    public function ghostTap(direction:Int):Void
+    public function playSplash(note:Note):Void
     {
-        ghostTapEvent.reset(direction);
+        var splash:NoteSplash = noteSplashes.recycle(NoteSplash, () -> new NoteSplash());
 
-        onGhostTap.dispatch(ghostTapEvent);
+        splash.play(note.strum.direction, note.length > 0.0);
 
-        if (ghostTapEvent.penalize)
+        splash.centerTo(note.strum);
+    }
+
+    public function isHoldingNote(note:Note):Bool
+    {
+        if (note.length == 0.0 || (note.status != HIT && note.status != FAILING))
+            return false;
+
+        if (botplay)
+            return true;
+
+        return keysHeld[note.direction];
+    }
+
+    public function holdSustainNote(note:Note, sustain:Sustain, elapsed:Float):Void
+    {
+        sustainHoldEvent.reset(note, sustain, elapsed);
+
+        onSustainHold.dispatch(sustainHoldEvent);
+
+        if (lastStep != conductor.step || note.status != HIT)
         {
-            var _noteMiss:FlxSound = FlxG.sound.play(Assets.getSound(Paths.ogg('assets/sounds/game/GameState/noteMiss${FlxG.random.int(0, 2)}'), false), 0.15);
+            note.status = HIT;
 
-            _noteMiss.onComplete = _noteMiss.kill;
-
-            missCharacters(null, direction);
-
-            if (vocals != null)
-                vocals.volume = 0.0;
-        }
-    }
-
-    public function singCharacters(note:Note, direction:Int, hold:Bool):Void
-    {
-        if (characters == null)
-            return;
-
-        for (i in 0 ... characters.members.length)
-        {
-            var character:Character = characters.members[i];
-
-            if (character.skipSing)
-                continue;
-
-            character.singTimer = 0.0;
-
-            if (hold && character.animation.name == 'Sing${Note.DIRECTIONS[note.direction]}')
-                continue;
-
-            if (character.animation.exists('Sing${Note.DIRECTIONS[direction]}'))
-                character.animation.play('Sing${Note.DIRECTIONS[direction]}', true);
-        }
-    }
-
-    public function missCharacters(note:Note, direction:Int):Void
-    {
-        if (characters == null)
-            return;
-
-        for (i in 0 ... characters.members.length)
-        {
-            var character:Character = characters.members[i];
-
-            if (character.skipSing)
-                continue;
-
-            character.singTimer = 0.0;
-
-            if (character.animation.exists('Sing${Note.DIRECTIONS[direction]}MISS'))
-                character.animation.play('Sing${Note.DIRECTIONS[direction]}MISS', true);
-        }
-    }
-
-    public function isHolding(note:Note):Bool
-    {
-        return note.status != MISSED && (automated || keysHeld[note.direction] || (note.status == HIT && conductor.time >= note.time + note.length));
-    }
-
-    public function holdSustainNote(note:Note):Void
-    {
-        if (lastStep != conductor.step)
-        {
+            note.unholdTime = 0.0;
+            
             var strum:Strum = note.strum;
 
-            strum.confirmTimer = 0.0;
+            strum.holdTimer = 0.0;
 
             strum.animation.play(Note.DIRECTIONS[strum.direction].toLowerCase() + "Confirm", true);
+            
+            setStrumActive(note.direction, false);
             
             if (vocals != null)
                 vocals.volume = 1.0;
 
-            singCharacters(note, note.direction, true);
+            playCharSingAnims(note, note.direction, true);
+
+            setCharAnimsActive(note, false);
         }
     }
 
@@ -438,38 +443,191 @@ class Strumline extends FlxGroup
         note.length += note.time - conductor.time;
 
         note.time = conductor.time;
+
+        if (note.length == 0.0)
+            finishSustainNote(note);
     }
 
     public function finishSustainNote(note:Note):Void
     {
+        setStrumActive(note.direction, true);
+
+        setCharAnimsActive(note, true);
+
         if (note.status == HIT)
             notesPendingRemoval.push(note);
 
-        if (!automated)
+        if (note.unholdTime == 0.0)
         {
-            if (note.status == HIT)
-            {
-                if (note.showPop)
-                    showPop(note);
-            }
-
-            if (!keysHeld[note.direction])
-            {
-                var anim:String = Note.DIRECTIONS[note.strum.direction].toLowerCase() + "Static";
-
-                note.strum.animation.play(anim, true);
-            }
+            if (note.playSplash)
+                playSplash(note);
         }
+        else
+        {
+            var anim:String = Note.DIRECTIONS[note.strum.direction].toLowerCase() + "Static";
 
-        note.finishedHold = true;
+            note.strum.animation.play(anim, true);
+        }
     }
 
-    public function showPop(note:Note):Void
+    public function ghostTap(direction:Int):Void
     {
-        var pop:NotePop = notePops.recycle(NotePop, () -> new NotePop());
+        ghostTapEvent.reset(direction);
 
-        pop.pop(note.strum.direction, note.length > 0.0);
+        onGhostTap.dispatch(ghostTapEvent);
 
-        pop.setPosition(note.strum.getMidpoint().x - pop.width * 0.5, note.strum.getMidpoint().y - pop.height * 0.5);
+        if (!ghostTapEvent.ghostTapping)
+        {
+            FlxG.sound.play(AssetCache.getSound('game/GameState/noteMiss${FlxG.random.int(0, 2)}'), 0.15);
+
+            playCharMissAnims(null, direction);
+
+            setCharAnimsActive(null, true);
+
+            if (vocals != null)
+                vocals.volume = 0.0;
+        }
+    }
+
+    public function playCharSingAnims(note:Note, direction:Int, hold:Bool):Void
+    {
+        var charGroup:FlxTypedSpriteGroup<Character> = characters;
+
+        if (note.kind.specSing)
+            charGroup = spectators;
+
+        for (i in 0 ... charGroup.members.length)
+        {
+            var character:Character = charGroup.members[i];
+
+            if (note.kind.noAnimation)
+                continue;
+
+            var charIds:Array<Int> = note.kind.charIds;
+
+            if (charIds != null && !charIds.contains(-1) && !charIds.contains(i))
+                continue;
+
+            if (character.skipSing)
+                continue;
+
+            character.holdTimer = 0.0;
+
+            var animSuffix:String = "";
+
+            if (note.kind.altAnimation)
+                animSuffix = "-alt";
+
+            var directionStr:String = Note.DIRECTIONS[note.direction];
+
+            if (hold && character.animation.name.contains(directionStr))
+                continue;
+
+            var animToPlay:String = 'Sing${directionStr}${animSuffix}';
+
+            if (character.animation.exists(animToPlay))
+                character.animation.play(animToPlay, true);
+            else
+            {
+                animToPlay = 'Sing${directionStr}';
+
+                if (character.animation.exists(animToPlay))
+                    character.animation.play(animToPlay, true);
+            }
+        }
+    }
+
+    public function playCharMissAnims(note:Note, direction:Int):Void
+    {
+        var charGroup:FlxTypedSpriteGroup<Character> = characters;
+
+        if (note?.kind?.specSing)
+            charGroup = spectators;
+
+        for (i in 0 ... charGroup.members.length)
+        {
+            var character:Character = charGroup.members[i];
+
+            if (note != null)
+            {
+                if (note.kind.noAnimation)
+                    continue;
+
+                var charIds:Array<Int> = note.kind.charIds;
+
+                if (charIds != null && !charIds.contains(-1) && !charIds.contains(i))
+                    continue;
+            }
+
+            if (character.skipSing)
+                continue;
+
+            character.holdTimer = 0.0;
+
+            var animSuffix:String = "";
+
+            if (note?.kind?.altAnimation)
+                animSuffix = "-alt";
+
+            var directionStr:String = Note.DIRECTIONS[direction];
+
+            var animToPlay:String = 'Sing${directionStr}MISS${animSuffix}';
+
+            if (character.animation.exists(animToPlay))
+                character.animation.play(animToPlay, true);
+            else
+            {
+                animToPlay = 'Sing${directionStr}MISS';
+
+                if (character.animation.exists(animToPlay))
+                    character.animation.play(animToPlay, true);
+            }
+        }
+    }
+
+    public function setCharAnimsActive(note:Note, active:Bool):Void
+    {
+        var charGroup:FlxTypedSpriteGroup<Character> = characters;
+
+        if (note?.kind?.specSing)
+            charGroup = spectators;
+
+        for (i in 0 ... charGroup.members.length)
+        {
+            var character:Character = charGroup.members[i];
+
+            if (note != null)
+            {
+                if (note.kind.noAnimation)
+                    continue;
+
+                var charIds:Array<Int> = note.kind.charIds;
+
+                if (charIds != null && !charIds.contains(-1) && !charIds.contains(i))
+                    continue;
+            }
+
+            if (character.skipSing)
+                continue;
+
+            if (active)
+                character.animation.resume();
+            else
+                character.animation.pause();
+        }
+    }
+
+    public function removeNote(note:Note):Void
+    {
+        notes.members.remove(note);
+
+        note.kill();
+
+        if (note.sustain != null)
+        {
+            sustains.members.remove(note.sustain);
+
+            trails.members.remove(note.sustain.trail);
+        }
     }
 }

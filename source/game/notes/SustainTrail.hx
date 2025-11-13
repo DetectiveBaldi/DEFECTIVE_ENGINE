@@ -4,7 +4,7 @@ import flixel.FlxSprite;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 
-import core.Assets;
+import core.AssetCache;
 import core.Paths;
 
 class SustainTrail extends FlxSprite
@@ -15,17 +15,14 @@ class SustainTrail extends FlxSprite
     {
         super(x, y);
 
-        frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png("assets/images/game/notes/Note/default")), Paths.xml("assets/images/game/notes/Note/default"));
-
+        frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("game/notes/Note/default"),
+            Paths.image(Paths.xml("game/notes/Note/default")));
+        
         for (i in 0 ... Note.DIRECTIONS.length)
         {
-            animation.addByPrefix(Note.DIRECTIONS[i].toLowerCase(), Note.DIRECTIONS[i].toLowerCase() + "0", 24.0, false);
+            var direction:String = Note.DIRECTIONS[i].toLowerCase();
 
-            animation.addByPrefix(Note.DIRECTIONS[i].toLowerCase() + "HoldPiece", Note.DIRECTIONS[i].toLowerCase() + "HoldPiece0", 24.0, false);
-            
-            animation.addByPrefix(Note.DIRECTIONS[i].toLowerCase() + "HoldTail", Note.DIRECTIONS[i].toLowerCase() + "HoldTail0", 24.0, false);
+            animation.addByPrefix('${direction}HoldTail', '${direction}HoldTail0', 24.0, false);
         }
-
-        antialiasing = true;
     }
 }

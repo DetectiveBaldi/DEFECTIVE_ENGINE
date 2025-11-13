@@ -1,16 +1,12 @@
 package game.notes;
 
-import haxe.Json;
-
 import flixel.FlxSprite;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 
-import core.Assets;
+import core.AssetCache;
+import core.Options;
 import core.Paths;
-
-import data.StrumSkin;
-import data.StrumSkin.RawStrumSkin;
 
 import music.Conductor;
 
@@ -21,73 +17,58 @@ class Strum extends FlxSprite
     public var conductor:Conductor;
 
     public var strumline:Strumline;
-    
-    public var skin(default, set):RawStrumSkin;
-
-    @:noCompletion
-    function set_skin(_skin:RawStrumSkin):RawStrumSkin
-    {
-        skin = _skin;
-
-        switch (skin.format ?? "".toLowerCase():String)
-        {
-            case "sparrow":
-                frames = FlxAtlasFrames.fromSparrow(Assets.getGraphic(Paths.png(skin.png)), Paths.xml(skin.xml));
-            
-            case "texturepackerxml":
-                frames = FlxAtlasFrames.fromTexturePackerXml(Assets.getGraphic(Paths.png(skin.png)), Paths.xml(skin.xml));
-        }
-
-        for (i in 0 ... Note.DIRECTIONS.length)
-        {
-            animation.addByPrefix(Note.DIRECTIONS[i].toLowerCase() + "Static", Note.DIRECTIONS[i].toLowerCase() + "Static0", 24.0, false);
-
-            animation.addByPrefix(Note.DIRECTIONS[i].toLowerCase() + "Press", Note.DIRECTIONS[i].toLowerCase() + "Press0", 24.0, false);
-            
-            animation.addByPrefix(Note.DIRECTIONS[i].toLowerCase() + "Confirm", Note.DIRECTIONS[i].toLowerCase() + "Confirm0", 24.0, false);
-        }
-
-        antialiasing = skin.antialiasing ?? true;
-
-        return skin;
-    }
 
     public var direction:Int;
 
-    public var confirmTimer:Float;
+    public var downscroll:Bool;
 
-    public function new(_conductor:Conductor, x:Float = 0.0, y:Float = 0.0):Void
+    public var holdTimer:Float;
+
+    public function new(x:Float = 0.0, y:Float = 0.0, beatDispatcher:IBeatDispatcher):Void
     {
         super(x, y);
 
-        conductor = _conductor;
+        conductor = beatDispatcher.conductor;
+
+        antialiasing = true;
+
+        frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("game/notes/Strum/default"),
+            Paths.image(Paths.xml("game/notes/Strum/default")));
         
-        skin = StrumSkin.get("default");
+        for (i in 0 ... Note.DIRECTIONS.length)
+        {
+            var direction:String = Note.DIRECTIONS[i].toLowerCase();
+
+            animation.addByPrefix('${direction}Static', '${direction}Static0', 24.0, false);
+
+            animation.addByPrefix('${direction}Press', '${direction}Press0', 24.0, false);
+            
+            animation.addByPrefix('${direction}Confirm', '${direction}Confirm0', 24.0, false);
+        }
 
         direction = 0;
 
-        confirmTimer = 0.0;
+        downscroll = Options.downscroll;
+
+        holdTimer = 0.0;
     }
 
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
 
-        if (conductor == null)
-            return;
-
         if ((animation.name ?? "").endsWith("Confirm"))
         {
-            confirmTimer += elapsed;
+            holdTimer += elapsed;
 
-            if (confirmTimer >= conductor.stepLength * 0.001)
+            if (holdTimer >= conductor.beatLength * 0.25 * 0.001)
             {
-                confirmTimer = 0.0;
+                holdTimer = 0.0;
 
-                animation.play(Note.DIRECTIONS[direction].toLowerCase() + (strumline.automated ? "Static" : "Press"));
+                animation.play(Note.DIRECTIONS[direction].toLowerCase() + (strumline.botplay ? "Static" : "Press"));
             }
         }
         else
-            confirmTimer = 0.0;
+            holdTimer = 0.0;
     }
 }

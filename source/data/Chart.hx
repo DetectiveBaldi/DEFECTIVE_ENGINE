@@ -1,49 +1,51 @@
 package data;
 
-import haxe.Json;
+import util.TimingUtil;
 
-import core.Assets;
-import core.Paths;
-
-import util.TimedObjectUtil.TimedObject;
+using StringTools;
 
 class Chart
 {
-    public static function build(path:String):Chart
+    public static function decodeData(v:ChartData):Chart
     {
-        var output:Chart = new Chart();
+        var chart:Chart = new Chart();
 
-        var raw:RawChart = Json.parse(Assets.getText(Paths.json(path)));
+        chart.name = v.name;
 
-        output.name = raw.name;
+        chart.scrollSpeed = v.scrollSpeed;
 
-        output.tempo = raw.tempo;
+        chart.notes = v.notes;
 
-        output.scrollSpeed = raw.scrollSpeed;
+        chart.events = v.events;
 
-        output.notes = raw.notes;
+        chart.timingPoints = v.timingPoints;
 
-        output.events = raw.events;
+        chart.spectator = v.spectator;
 
-        output.timeChanges = raw.timeChanges;
+        chart.opponent = v.opponent;
 
-        return output;
+        chart.player = v.player;
+        
+        return chart;
     }
 
-    /**
-     * A unique `String` identifier for `this` `Chart`. Used in several areas of the application.
-     */
     public var name:String;
 
     public var tempo:Float;
 
     public var scrollSpeed:Float;
 
-    public var notes:Array<RawNote>;
+    public var notes:Array<NoteData>;
 
-    public var events:Array<RawEvent>;
+    public var events:Array<EventData>;
 
-    public var timeChanges:Array<RawTimeChange>;
+    public var timingPoints:Array<TimingPointData>;
+    
+    public var spectator:String;
+
+    public var opponent:String;
+
+    public var player:String;
 
     public function new():Void
     {
@@ -53,15 +55,21 @@ class Chart
 
         scrollSpeed = 1.6;
 
-        notes = new Array<RawNote>();
+        notes = new Array<NoteData>();
 
-        events = new Array<RawEvent>();
+        events = new Array<EventData>();
 
-        timeChanges = new Array<RawTimeChange>();
+        timingPoints = new Array<TimingPointData>();
+
+        spectator = "";
+
+        opponent = "baldi-face-front";
+
+        player = "bf-face-left";
     }
 }
 
-typedef RawChart =
+typedef ChartData =
 {
     var name:String;
 
@@ -69,32 +77,54 @@ typedef RawChart =
 
     var scrollSpeed:Float;
 
-    var notes:Array<RawNote>;
+    var notes:Array<NoteData>;
 
-    var events:Array<RawEvent>;
+    var events:Array<EventData>;
 
-    var timeChanges:Array<RawTimeChange>;
+    var timingPoints:Array<TimingPointData>;
+
+    var spectator:String;
+
+    var opponent:String;
+
+    var player:String;
 }
 
-typedef RawEvent = TimedObject &
+typedef EventData = TimedObject &
 {
     var name:String;
 
     var value:Dynamic;
 }
 
-typedef RawNote = TimedObject &
+typedef NoteData = TimedObject &
 {
     var direction:Int;
 
+    var length:Float;
+
     var lane:Int;
 
-    var length:Float;
+    var kind:NoteKindData;
 }
 
-typedef RawTimeChange = TimedObject &
+typedef TimingPointData = TimedObject &
 {
     var tempo:Float;
 
-    var step:Float;
+    var beatsPerMeasure:Int;
+}
+
+@:structInit
+class NoteKindData
+{
+    public var type:String;
+    
+    public var altAnimation:Bool;
+
+    public var noAnimation:Bool;
+
+    public var specSing:Bool;
+
+    public var charIds:Array<Int>;
 }

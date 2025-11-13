@@ -1,11 +1,11 @@
 package game.notes;
 
 import flixel.FlxBasic;
+import flixel.FlxG;
 
 import flixel.group.FlxGroup.FlxTypedGroup;
 
 import data.Chart;
-import data.Chart.RawNote;
 
 import music.Conductor;
 
@@ -17,7 +17,7 @@ class NoteSpawner extends FlxBasic
 {
     public var conductor:Conductor;
 
-    public var chart:Chart;
+    public var noteParams:Array<NoteData>;
 
     public var strumlines:FlxTypedGroup<Strumline>;
 
@@ -29,17 +29,17 @@ class NoteSpawner extends FlxBasic
 
     public var noteIndex:Int;
 
-    public function new(_conductor:Conductor, _chart:Chart, _strumlines:FlxTypedGroup<Strumline>):Void
+    public function new(beatDispatcher:IBeatDispatcher, noteParams:Array<NoteData>, strumlines:FlxTypedGroup<Strumline>):Void
     {
         super();
 
         visible = false;
 
-        conductor = _conductor;
+        this.conductor = beatDispatcher.conductor;
         
-        chart = _chart;
+        this.noteParams = noteParams;
 
-        strumlines = _strumlines;
+        this.strumlines = strumlines;
 
         notes = new FlxTypedGroup<Note>();
 
@@ -54,92 +54,86 @@ class NoteSpawner extends FlxBasic
     {
         super.update(elapsed);
 
-        while (noteIndex < chart.notes.length)
+        while (noteIndex < noteParams.length)
         {
-            var note:RawNote = chart.notes[noteIndex];
+            var noteData:NoteData = noteParams[noteIndex];
 
-            var strumline:Strumline = strumlines.members[note.lane];
+            var strumline:Strumline = strumlines.members[noteData.lane];
 
-            if (note.time - conductor.time > 1500.0 / strumline.scrollSpeed)
+            if (noteData.time > conductor.time + getSpawnDistance(noteData.lane))
                 break;
 
-            var _note:Note = notes.recycle(Note, noteConstructor);
+            var note:Note = notes.recycle(Note, noteFactory);
 
-            _note.visible = true;
+            note.visible = true;
         
-            _note.time = note.time;
+            note.time = noteData.time;
 
-            _note.direction = note.direction;
+            note.direction = noteData.direction;
 
-            _note.length = note.length;
+            note.length = noteData.length;
 
-            _note.lane = note.lane;
+            note.lane = noteData.lane;
+
+            note.kind = noteData.kind;
             
-            _note.status = IDLING;
+            note.status = IDLING;
 
-            _note.showPop = false;
+            note.playSplash = false;
 
-            _note.finishedHold = false;
+            note.unholdTime = 0.0;
 
-            _note.unholdTime = 0.0;
+            note.sustain = null;
 
-            _note.sustain = null;
+            note.strumline = strumline;
 
-            _note.strumline = strumline;
+            note.strum = strumline.strums.members[note.direction];
 
-            _note.strum = strumline.strums.members[_note.direction];
+            note.animation.play(Note.DIRECTIONS[note.direction].toLowerCase());
 
-            _note.animation.play(Note.DIRECTIONS[_note.direction].toLowerCase());
+            note.flipY = false;
 
-            _note.flipY = false;
+            note.scale.set(0.7, 0.7);
 
-            _note.scale.set(0.7, 0.7);
+            note.updateHitbox();
 
-            _note.updateHitbox();
+            notes.add(note);
 
-            _note.setPosition(camera.viewMarginRight, 0.0);
+            strumline.notes.add(note);
 
-            notes.add(_note);
+            strumline.onNoteSpawn.dispatch(note);
 
-            strumline.notes.add(_note);
-
-            strumline.onNoteSpawn.dispatch(_note);
-
-            if (note.length > 0.0)
+            if (noteData.length > 0.0)
             {
-                var sustain:Sustain = sustains.recycle(Sustain, sustainConstructor);
+                var sustain:Sustain = sustains.recycle(Sustain, sustainFactory);
 
-                sustain.note = _note;
+                sustain.note = note;
 
-                sustain.animation.play(Note.DIRECTIONS[_note.direction].toLowerCase() + "HoldPiece");
+                sustain.animation.play(Note.DIRECTIONS[note.direction].toLowerCase() + "HoldPiece");
 
-                sustain.flipY = strumline.downscroll;
+                sustain.flipY = note.strum.downscroll;
 
-                sustain.setGraphicSize(sustain.frameWidth * 0.7, _note.length * strumline.scrollSpeed * 0.45);
+                sustain.setGraphicSize(sustain.frameWidth * 0.7, note.length * strumline.scrollSpeed * 0.45);
 
                 sustain.updateHitbox();
-
-                sustain.setPosition(camera.viewMarginRight, 0.0);
 
                 sustains.add(sustain);
 
                 strumline.sustains.add(sustain);
 
-                _note.sustain = sustain;
+                note.sustain = sustain;
 
-                var trail:SustainTrail = trails.recycle(SustainTrail, trailConstructor);
+                var trail:SustainTrail = trails.recycle(SustainTrail, trailFactory);
 
                 trail.sustain = sustain;
 
-                trail.animation.play(Note.DIRECTIONS[_note.direction].toLowerCase() + "HoldTail");
+                trail.animation.play(Note.DIRECTIONS[note.direction].toLowerCase() + "HoldTail");
 
-                trail.flipY = strumline.downscroll;
+                trail.flipY = note.strum.downscroll;
 
                 trail.scale.set(0.7, 0.7);
 
                 trail.updateHitbox();
-
-                trail.setPosition(camera.viewMarginRight, 0.0);
 
                 trails.add(trail);
 
@@ -152,18 +146,44 @@ class NoteSpawner extends FlxBasic
         }
     }
 
-    public function noteConstructor():Note
+    public function noteFactory():Note
     {
         return new Note();
     }
 
-    public function sustainConstructor():Sustain
+    public function sustainFactory():Sustain
     {
         return new Sustain();
     }
 
-    public function trailConstructor():SustainTrail
+    public function trailFactory():SustainTrail
     {
         return new SustainTrail();
+    }
+
+    public function getStrumline(lane:Int):Strumline
+    {
+        return strumlines.members[lane];
+    }
+
+    public function getSpawnDistance(lane:Int):Float
+    {
+        var strumline:Strumline = getStrumline(lane);
+
+        return FlxG.height / 0.45 / Math.max(strumline.scrollSpeed, 1.0);
+    }
+
+    public function setNoteIndexAt(time:Float):Void
+    {
+        noteIndex = 0;
+        
+        var noteData:NoteData = noteParams[noteIndex];
+
+        while (noteIndex < noteParams.length && noteData.time <= time)
+        {
+            noteIndex++;
+            
+            noteData = noteParams[noteIndex];
+        }
     }
 }
