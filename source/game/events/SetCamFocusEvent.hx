@@ -5,10 +5,10 @@ import flixel.tweens.FlxTween;
 
 class SetCamFocusEvent
 {
-    public static function dispatch(game:PlayState, x:Float = 0.0, y:Float = 0.0, charType:String, duration:Float,
+    public static function dispatch(game:PlayState, x:Float = 0.0, y:Float = 0.0, charType:String = "", duration:Float,
         ease:String = "linear", skipCameraLock:Bool = false):Void
     {
-        if (charType == null)
+        if (charType == "")
         {
             if ((game.cameraLock == FOCUS_CAM_CHAR || game.cameraLock == NONE) && !skipCameraLock)
                 return;
@@ -31,7 +31,7 @@ class SetCamFocusEvent
 
             game.cameraPoint.setPosition(x, y);
 
-            game.tweens.tween(game.gameCamera.scroll, {x: game.cameraPoint.x - game.gameCamera.width * 0.5, y: game.cameraPoint.y - game.gameCamera.height * 0.5}, duration,
+            game.tweens.tween(game.gameCamera.scroll, {x: game.cameraPoint.x - game.gameCamera.width * 0.5, y: game.cameraPoint.y - game.gameCamera.height * 0.5}, game.conductor.stepLength * duration * 0.001,
             {
                 ease: Reflect.getProperty(FlxEase, ease),
 
@@ -39,6 +39,11 @@ class SetCamFocusEvent
             });
         }
         else
+        {
             game.cameraPoint.setPosition(x, y);
+
+            if (duration == 0.0)
+                game.gameCamera.snapToTarget();
+        }
     }
 }

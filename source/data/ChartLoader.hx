@@ -17,10 +17,16 @@ class ChartLoader
 {
     public static function readPath(path:String):Chart
     {
-        var metaFilePath:String = '${path}/meta.json';
+        var metadataFilePath:String = '${path}/metadata.json';
 
-        if (Paths.exists(metaFilePath))
-            return FunkinConverter.run('${path}/chart.json', metaFilePath, "normal");
+        if (Paths.exists(metadataFilePath))
+        {
+            var chartFilePath:String = Assets.list().first((p:String) -> p.startsWith('${path}/chart'));
+
+            var difficulty:String = chartFilePath.split("-").last().replace(".json", "");
+            
+            return FunkinConverter.run(chartFilePath, metadataFilePath, difficulty);
+        }
         else
         {
             var chartFilePath:String = '${path}/chart.json';

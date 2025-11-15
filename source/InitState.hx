@@ -112,9 +112,7 @@ class InitState extends FlxState
         if (definedLevel != null)
             definedLevel = definedLevel.split("=")[0];
 
-        if (definedWeek == null && definedLevel == null)
-            throw "Invalid launch parameters!";
-        else
+        if (definedWeek != null || definedLevel != null)
         {
             if (definedWeek == null)
                 PlayState.loadLevel(LevelData.list.first((level:LevelData) -> level.name == definedLevel));

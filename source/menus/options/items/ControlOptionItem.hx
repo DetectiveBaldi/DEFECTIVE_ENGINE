@@ -44,6 +44,8 @@ class ControlOptionItem extends VariableOptionItem<Array<Int>>
     {
         super(_x, _y, _title, _description, _option);
 
+        trace("?");
+
         titleText.size = 36;
 
         titleText.setPosition(background.getMidpoint().x - titleText.width * 0.5, background.getMidpoint().y - titleText.height * 0.5);

@@ -39,10 +39,6 @@
 
 	<haxelib name="haxeui-core" />
 
-	<!-- <define name="FEATURE_DISCORD_HANDLER" if="cpp" unless="debug" /> -->
-
-	<!-- <haxelib name="hxdiscord_rpc" if="FEATURE_DISCORD_HANDLER" /> -->
-
 	<define name="FEATURE_GPU_CACHING" unless="html5" />
 
 	<define name="FEATURE_SOUND_STREAMING" unless="html5" />

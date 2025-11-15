@@ -17,20 +17,60 @@ using util.MathUtil;
 
 class FunkinConverter
 {
-    public static function run(chartPath:String, metaPath:String, difficulty:String):Chart
+    public static function run(chartPath:String, metadataPath:String, difficulty:String):Chart
     {
         var output:Chart = new Chart();
 
-        var rawChart:Dynamic = Json.parse(Assets.getText(chartPath));
-
-        var notes:Array<FunkinNote> = Reflect.field(rawChart.notes, difficulty);
-
-        var rawMeta:Dynamic = Json.parse(Assets.getText(metaPath));
+        var rawMeta:Dynamic = Json.parse(Assets.getText(metadataPath));
 
         output.name = rawMeta.songName;
 
+        var rawChart:Dynamic = Json.parse(Assets.getText(chartPath));
+
         output.scrollSpeed = Reflect.field(rawChart.scrollSpeed, difficulty);
 
+        var events:Array<FunkinEvent> = rawChart.events;
+
+        for (i in 0 ... events.length)
+        {
+            var ev:FunkinEvent = events[i];
+
+            if (ev.e == "FocusCamera")
+            {
+                var charType:String = "";
+
+                var charTypeInt:Int = ev.v.char ?? -1;
+
+                if (charTypeInt == 0.0)
+                    charType == "player";
+
+                if (charTypeInt == 1.0)
+                    charType == "opponent";
+
+                if (charTypeInt == 2.0)
+                    charType == "spectator";
+
+                var x:Float = ev.v.x ?? 0.0;
+
+                var y:Float = ev.v.y ?? 0.0;
+
+                var duration:Float = ev.v.duration ?? 4.0;
+
+                var ease:String = ev.v.ease ?? "classic";
+
+                if (ease == "INSTANT")
+                    duration = 0.0;
+
+                if (ease == "classic")
+                    duration = -1.0;
+
+                output.events.push({time: ev.t, name: "SetCamFocus", value: {x: x, y: y, charType: charType, duration: duration,
+                    ease: ease}});
+            }
+        }
+
+        var notes:Array<FunkinNote> = Reflect.field(rawChart.notes, difficulty);
+        
         for (i in 0 ... notes.length)
         {
             var note:FunkinNote = notes[i];
@@ -41,7 +81,7 @@ class FunkinConverter
                 kind: kind});
         }
 
-        var timingPoints:Array<FunkinTimingPoint> = rawMeta.timingPoints;
+        var timingPoints:Array<FunkinTimingPoint> = rawMeta.timeChanges;
 
         for (i in 0 ... timingPoints.length)
         {
@@ -121,7 +161,7 @@ class PsychConverter
                 character = "spectator";
             
             output.events.push({time: time, name: "SetCamFocus", value: {x: 0.0, y: 0.0, charType: character,
-                duration: 0.0, ease: "linear"}});
+                duration: -1.0, ease: "linear"}});
 
             var beatLength:Float = (60.0 / tempo * 1000.0);
 

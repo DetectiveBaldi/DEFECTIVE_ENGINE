@@ -323,9 +323,11 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         playField.getSongLength = getSongLength;
 
+        #if FLX_DEBUG
         var healthBar:HealthBar = playField.healthBar;
 
         healthBar.onEmptied.add(gameOver);
+        #end
 
         oppStrumline.onNoteSpawn.add(noteSpawn);
         
@@ -727,7 +729,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         if (ev == null)
             ev = getStartingCamFocusEvent();
 
-        if (ev.value.charType == null)
+        if (ev.value.charType == "")
             return "POINT";
         else
             return ev.value.charType.toUpperCase();
@@ -829,12 +831,12 @@ enum CameraLockMode
     DEFAULT;
 
     /**
-     * Camera movement is limited to the use of `SetCamFocus` events with `charType != null`.
+     * Camera movement is limited to the use of `SetCamFocus` events with `charType != ""`.
      */
     FOCUS_CAM_CHAR;
 
     /**
-     * Camera movement is limited to the use of `SetCamFocus` events with `charType == null`.
+     * Camera movement is limited to the use of `SetCamFocus` events with `charType == ""`.
      */
     FOCUS_CAM_POINT;
 
