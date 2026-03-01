@@ -193,7 +193,7 @@ class PsychConverter
                 if (_section.gfSection || type == "GF Sing")
                     kind.specSing = true;
 
-                if (type.startsWith("mamacitas-char-id"))
+                if (type.startsWith("defective-char-id"))
                 {
                     var charIds:Array<Int> = new Array<Int>();
 

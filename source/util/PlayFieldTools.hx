@@ -10,23 +10,20 @@ class PlayFieldTools
 {
     public static function setVisible(playField:PlayField, v:Bool):Void
     {
-        playField.scoreClip.visible = playField.scoreText.visible = playField.healthBar.visible = playField.timerClock.visible =
-            playField.timerNeedle.visible = v;
+        playField.scoreText.visible = playField.healthBar.visible = playField.timeGauge.visible = playField.timeText.visible = v;
     }
 
     public static function tweenAlpha(playField:PlayField, v:Float, duration:Float = 1.0, ?options:TweenOptions):Void
     {
         var tweens:FlxTweenManager = playField.tweens;
 
-        tweens.tween(playField.scoreClip, {alpha: v}, duration, options);
-
         tweens.tween(playField.scoreText, {alpha: v}, duration, options);
 
         tweens.tween(playField.healthBar, {alpha: v}, duration, options);
 
-        tweens.tween(playField.timerClock, {alpha: v}, duration, options);
+        tweens.tween(playField.timeGauge, {alpha: v}, duration, options);
 
-        tweens.tween(playField.timerNeedle, {alpha: v}, duration, options);
+        tweens.tween(playField.timeText, {alpha: v}, duration, options);
     }
 
     public static function tweenStrumlinesAlpha(playField:PlayField, v:Float, duration:Float = 1.0, ?options:TweenOptions):Void

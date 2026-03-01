@@ -202,15 +202,15 @@ class OptionsMenu extends FlxState
 
         addHeaderOption("Asset Management");
 
-        addBoolOption("GPU Caching", "If checked, bitmap pixel data is disposed from RAM\nwhere applicable (requires restarting the application).", "gpuCaching");
+        addBoolOption("GPU Caching", "If checked, bitmap pixel data is disposed\nfrom RAM where possible.", "gpuCaching");
 
-        addBoolOption("Sound Streaming", "If checked, audio is loaded progressively\nwhere applicable (requires restarting the application).", "soundStreaming");
+        addBoolOption("Sound Streaming", "If checked, audio is loaded progressively\nwhere suitable.", "soundStreaming");
         
         addHeaderOption("Accessibility");
 
-        addBoolOption("Flashing", "If unchecked, screen effects such as flashing are limited.", "flashing");
+        addBoolOption("Flashing Lights", "If unchecked, limits the use of screen flashing effects.", "flashingLights");
 
-        addBoolOption("Shaders", "If unchecked, screen effects such as shaders are limited.", "shaders");
+        addBoolOption("Shaders", "If unchecked, shaders and screen filters are disabled.", "shaders");
 
         addHeaderOption("Controls");
 
@@ -222,13 +222,13 @@ class OptionsMenu extends FlxState
 
         addControlOption("Right Note", "Controls for the fourth note in the strumline.", "NOTE:RIGHT");
 
-        addControlOption("Pause", "Controls associated with opening the pause menu.", "UI:PAUSE");
+        addControlOption("Pause", "Controls for opening the pause menu.", "UI:PAUSE");
 
         addHeaderOption("Gameplay");
 
         addBoolOption("Downscroll", "If checked, flips the strumlines' vertical position.", "downscroll");
 
-        addBoolOption("Ghost Tapping", "If unchecked, pressing an input with no notes\navailable will count as a miss.", "ghostTapping");
+        addBoolOption("Ghost Tapping", "If unchecked, pressing an input with\nno notes on screen will cause damage.", "ghostTapping");
 
         addBoolOption("Botplay", "If checked, inputs will be processed automatically.", "botplay");
 

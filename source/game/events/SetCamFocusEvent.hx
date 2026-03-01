@@ -35,7 +35,7 @@ class SetCamFocusEvent
             {
                 ease: Reflect.getProperty(FlxEase, ease),
 
-                onComplete: (_tween:FlxTween) -> game.gameCamera.follow(game.cameraPoint, LOCKON, 0.05)
+                onComplete: (_) -> game.gameCamera.follow(game.cameraPoint, LOCKON, 0.05)
             });
         }
         else

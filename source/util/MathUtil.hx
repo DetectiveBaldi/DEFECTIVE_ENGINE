@@ -10,23 +10,10 @@ import flixel.util.FlxAxes;
 
 class MathUtil
 {
-    public static final BASE_10:Map<String, Int> = ["zero" => 0, "one" => 1, "two" => 2, "three" => 3, "four" => 4, "five" => 5,
-        "six" => 6, "seven" => 7, "eight" => 8, "nine" => 9];
-
-    /**
-     * Returns 1 if the value is `true`, and -1 if the value is `false`.
-     * @param v Bool value to test.
-     * @return Int
-     */
-    public static function boolToInt(v:Bool):Int
-    {
-        return v ? 1 : -1;
-    }
-
     @:inheritDoc(Math.abs)
     public static function absInt(val:Float):Int
     {
-        return Math.floor(Math.abs(val));
+        return Std.int(Math.abs(val));
     }
 
     @:inheritDoc(Math.min)
@@ -64,7 +51,7 @@ class MathUtil
     @:inheritDoc(flixel.math.FlxMath.bound)
     public static function boundInt(val:Float, ?min:Float, ?max:Float):Int
     {
-        return Math.floor(FlxMath.bound(val, min, max));
+        return Std.int(FlxMath.bound(val, min, max));
     }
 
     /**

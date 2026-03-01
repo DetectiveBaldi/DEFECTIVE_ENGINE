@@ -47,14 +47,6 @@ class StringUtil
             }
         }
     }
-
-    public static function parseInt(v:String):Null<Int>
-    {
-        if (MathUtil.BASE_10.exists(v))
-            return MathUtil.BASE_10[v];
-
-        return Std.parseInt(v);
-    }
 }
 
 enum StringCase

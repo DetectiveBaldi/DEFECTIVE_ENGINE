@@ -90,6 +90,8 @@ class InitState extends FlxState
         FlxG.console.registerClass(SaveManager);
 
         FlxG.console.registerClass(HighScore);
+
+        FlxG.console.registerClass(util.PlayFieldTools);
         #end
 
         FlxG.plugins.drawOnTop = true;

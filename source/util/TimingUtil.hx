@@ -2,8 +2,6 @@ package util;
 
 import haxe.ds.ArraySort;
 
-import music.Conductor;
-
 class TimingUtil
 {
     public static function sortTimed<T:TimedObject>(v:Array<T>):Void

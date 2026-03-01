@@ -41,7 +41,7 @@ import music.Conductor;
 using util.MathUtil;
 using util.StringUtil;
 
-class PlayField extends FlxGroup implements ISequenceHandler
+class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDispatcher
 {
     public var tweens:FlxTweenManager;
 
@@ -75,7 +75,7 @@ class PlayField extends FlxGroup implements ISequenceHandler
 
     public var onUpdateScore:FlxTypedSignal<(playStats:PlayStats)->Void>;
 
-    public function new(beatDispatcher:IBeatDispatcher, sequenceHandler:ISequenceHandler, chart:Chart):Void
+    public function new(sequenceHandler:ISequenceHandler, beatDispatcher:IBeatDispatcher, chart:Chart):Void
     {
         super();
 
@@ -162,7 +162,7 @@ class PlayField extends FlxGroup implements ISequenceHandler
 
         noteSpawner.strumlines = strumlines;
 
-        opponentStrumline = new Strumline(beatDispatcher);
+        opponentStrumline = new Strumline(this, this);
 
         opponentStrumline.scrollSpeed = scrollSpeed;
 
@@ -173,7 +173,7 @@ class PlayField extends FlxGroup implements ISequenceHandler
 
         strumlines.add(opponentStrumline);
 
-        playerStrumline = new Strumline(beatDispatcher);
+        playerStrumline = new Strumline(this, this);
 
         playerStrumline.onNoteHit.add(noteHit);
 
@@ -209,6 +209,21 @@ class PlayField extends FlxGroup implements ISequenceHandler
         super.destroy();
 
         onUpdateScore = cast FlxDestroyUtil.destroy(onUpdateScore);
+    }
+
+    public function stepHit(step:Int):Void
+    {
+
+    }
+
+    public function beatHit(beat:Int):Void
+    {
+
+    }
+
+    public function measureHit(measure:Int):Void
+    {
+        
     }
 
     public function updateScoreText():Void

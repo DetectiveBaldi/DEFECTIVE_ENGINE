@@ -21,5 +21,21 @@ class Playlist
         level = {week: null, name: "Unbeatable"}
 
         LevelData.list.push(level);
+
+        level = {week: null, name: "Contentment1"}
+
+        LevelData.list.push(level);
+
+        level = {week: null, name: "Contentment2"}
+
+        LevelData.list.push(level);
+
+        level = {week: null, name: "Contentment3"}
+
+        LevelData.list.push(level);
+
+        level = {week: null, name: "Contentment4"}
+
+        LevelData.list.push(level);
     }
 }

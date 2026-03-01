@@ -8,8 +8,11 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 import flixel.sound.FlxSound;
 
+import flixel.tweens.FlxTween;
+
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal.FlxTypedSignal;
+import flixel.util.FlxTimer;
 
 import core.AssetCache;
 import core.Options;
@@ -18,6 +21,8 @@ import game.notes.events.GhostTapEvent;
 import game.notes.events.NoteHitEvent;
 import game.notes.events.SustainHoldEvent;
 
+import interfaces.ISequenceHandler;
+
 import music.Conductor;
 
 using StringTools;
@@ -25,8 +30,12 @@ using StringTools;
 using util.ArrayUtil;
 using util.MathUtil;
 
-class Strumline extends FlxGroup
+class Strumline extends FlxGroup implements ISequenceHandler
 {
+    public var tweens:FlxTweenManager;
+
+    public var timers:FlxTimerManager;
+
     public var conductor:Conductor;
 
     public var keysToCheck:Map<Int, Int>;
@@ -99,9 +108,13 @@ class Strumline extends FlxGroup
 
     public var lastStep:Int;
 
-    public function new(beatDispatcher:IBeatDispatcher):Void
+    public function new(sequenceHandler:ISequenceHandler, beatDispatcher:IBeatDispatcher):Void
     {
         super();
+
+        tweens = sequenceHandler.tweens;
+
+        timers = sequenceHandler.timers;
 
         conductor = beatDispatcher.conductor;
 

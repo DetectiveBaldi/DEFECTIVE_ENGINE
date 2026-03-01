@@ -222,6 +222,10 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
     {
         super.create();
 
+        #if FLX_DEBUG
+        FlxG.console.registerObject("game", this);
+        #end
+
         gameCamera.filters = new Array<BitmapFilter>();
         
         hudCamera = new FlxCamera();
@@ -285,11 +289,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         stage.add(spectators);
 
         if (chart.spectator != "")
-        {
             spectator = new Character(this, 0.0, 0.0, Character.getConfig(chart.spectator));
-
-            spectator.skipSing = true;
-        }
 
         opponents = new FlxTypedSpriteGroup<Character>();
 
@@ -457,6 +457,15 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
             FlxG.resetState();
     }
 
+    override function destroy():Void
+    {
+        super.destroy();
+
+        #if FLX_DEBUG
+        FlxG.console.removeByAlias("game");
+        #end
+    }
+
     public function stepHit(step:Int):Void
     {
         
@@ -510,7 +519,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         switch (ev.name:String)
         {
             case "CameraZoom":
-                CameraZoomEvent.dispatch(this, val.zoom, val.duration, val.ease);
+                CameraZoomEvent.dispatch(this, Reflect.getProperty(this, val.camera), val.zoom, val.duration, val.ease);
 
             case "SetCamFocus":
                 SetCamFocusEvent.dispatch(this, val.x, val.y, val.charType, val.duration, val.ease);
