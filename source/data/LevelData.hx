@@ -1,11 +1,5 @@
 package data;
 
-import flixel.util.typeLimit.NextState;
-
-import game.PlayState;
-
-using util.StringUtil;
-
 using StringTools;
 
 @:structInit

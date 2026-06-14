@@ -3,15 +3,20 @@ package util;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 
+using StringTools;
+
 class MacroUtil
 {
-    /**
-     * Gets a macro value as a string.
-     * @param key Value to parse.
-     * @return `Expr`
-     */
-    public static macro function getDefine(key:String):Expr
+    public static macro function getDefine(k:String):Expr
     {
-        return macro $v{Context.definedValue(key)};
+        return macro $v{Context.definedValue(k)};
+    }
+
+    public static function sanitizeDefine(v:String):String
+    {
+        if (v == null)
+            return "";
+
+        return v.split("=")[0];
     }
 }

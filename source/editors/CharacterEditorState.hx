@@ -60,7 +60,7 @@ import ui.ProgressBar;
 using StringTools;
 
 using util.ArrayUtil;
-using util.MathUtil;
+using tools.ObjectHelpers;
 
 class CharacterEditorState extends FlxState
 {
@@ -210,7 +210,7 @@ class CharacterEditorState extends FlxState
 
             progBar.emptiedSide.color = progBar.filledSide.color = FlxColor.fromString(character.config.healthColor);
 
-            healthIcon.updateGraphic(character.config.healthIcon);
+            healthIcon.setIcon(character.config.healthIcon);
 
             animationIndex = 0;
 
@@ -338,7 +338,7 @@ class CharacterEditorState extends FlxState
         {
             character.config.healthIcon = ui.findComponent("____textfield", TextField).text;
 
-            healthIcon.updateGraphic(character.config.healthIcon);
+            healthIcon.setIcon(character.config.healthIcon);
 
             character.config.healthColor = ui.findComponent("_____textfield", TextField).text;
 

@@ -6,7 +6,7 @@ using StringTools;
 
 class Chart
 {
-    public static function decodeData(v:ChartData):Chart
+    public static function build(v:ChartData):Chart
     {
         var chart:Chart = new Chart();
 
@@ -115,8 +115,7 @@ typedef TimingPointData = TimedObject &
     var beatsPerMeasure:Int;
 }
 
-@:structInit
-class NoteKindData
+typedef NoteKindData =
 {
     public var type:String;
     

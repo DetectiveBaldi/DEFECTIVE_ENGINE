@@ -28,7 +28,7 @@ import music.Conductor;
 using StringTools;
 
 using util.ArrayUtil;
-using util.MathUtil;
+using tools.ObjectHelpers;
 
 class Strumline extends FlxGroup implements ISequenceHandler
 {
@@ -248,12 +248,12 @@ class Strumline extends FlxGroup implements ISequenceHandler
         {
             var note:Note = notes.members[i];
 
-            var hasMissed:Bool = conductor.time > note.time + note.latestTiming;
+            var hasMissed:Bool = conductor.time > note.time + Rating.latestTiming;
 
             if ((note.status == IDLING || note.status == FAILING) && hasMissed)
                 noteMiss(note);
 
-            var hasExpired:Bool = conductor.time > note.time + note.length + note.latestTiming;
+            var hasExpired:Bool = conductor.time > note.time + note.length + Rating.latestTiming;
 
             if (hasMissed && hasExpired)
                 notesPendingRemoval.push(note);
@@ -281,7 +281,7 @@ class Strumline extends FlxGroup implements ISequenceHandler
 
                     note.unholdTime += 1000.0 * elapsed;
 
-                    if (note.unholdTime >= note.latestTiming * 2.0)
+                    if (note.unholdTime >= Rating.latestTiming * 2.0)
                         noteMiss(note);
                 }
             }

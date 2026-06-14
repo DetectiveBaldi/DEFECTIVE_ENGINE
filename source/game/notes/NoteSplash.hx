@@ -30,21 +30,25 @@ class NoteSplash extends FlxSprite
 
         for (i in 0 ... Note.DIRECTIONS.length)
         {
-            var direction:String = Note.DIRECTIONS[i].toLowerCase();
+            var d:String = Note.DIRECTIONS[i].toLowerCase();
 
             for (j in 0 ... 2)
-                animation.addByPrefix('${direction}${j}', 'note impact ${j} ${direction}', 24.0, false);
+                animation.addByPrefix('${d}${j}', 'note impact ${j} ${d}', 24.0, false);
         }
 
         animation.onFinish.add((_:String) -> kill());
 
-        scale.set(0.7, 0.7);
+        scale.set(0.5, 0.5);
 
         updateHitbox();
     }
 
     public function play(direction:Int, reversed:Bool):Void
     {
-        animation.play(Note.DIRECTIONS[direction].toLowerCase() + FlxG.random.int(0, 1), false, reversed);
+        var d:String = Note.DIRECTIONS[direction].toLowerCase();
+
+        var i:Int = FlxG.random.int(0, 1);
+
+        animation.play('${d}${i}', false, reversed);
     }
 }

@@ -15,6 +15,32 @@ class Rating
 
         {name: "Shit", timing: 166.6, bonus: 0.0, health: -1.0},
     ];
+
+    public static var earliestTiming(get, never):Float;
+
+    @:noCompletion
+    static function get_earliestTiming():Float
+    {
+        static var v:Float = 0.0;
+
+        if (v == 0.0)
+            v = list[0].timing;
+
+        return v;
+    }
+
+    public static var latestTiming(get, never):Float;
+
+    @:noCompletion
+    static function get_latestTiming():Float
+    {
+        static var v:Float = 0.0;
+
+        if (v == 0.0)
+            v = list.last().timing;
+
+        return v;
+    }
     
     public var name:String;
 

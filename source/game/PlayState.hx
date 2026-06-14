@@ -16,6 +16,7 @@ import flixel.math.FlxPoint;
 
 import flixel.tweens.FlxTween;
 
+import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.util.typeLimit.NextState;
 
@@ -29,7 +30,7 @@ import core.SaveManager;
 import data.CharacterData;
 import data.Chart;
 import data.Chart.EventData;
-import data.ChartLoader;
+import data.ChartBuilder;
 import data.Difficulty;
 import data.LevelData;
 import data.WeekData;
@@ -42,8 +43,10 @@ import game.notes.Strumline;
 import game.notes.events.GhostTapEvent;
 import game.notes.events.NoteHitEvent;
 
-import game.events.CameraZoomEvent;
 import game.events.SetCamFocusEvent;
+import game.events.SetCamZoomEvent;
+
+import game.stages.Stage;
 
 import interfaces.ISequenceHandler;
 
@@ -53,10 +56,12 @@ import music.Conductor;
 
 import ui.Countdown;
 
+import util.MacroUtil;
+
 using StringTools;
 
 using util.ArrayUtil;
-using util.MathUtil;
+using tools.ObjectHelpers;
 using util.TimingUtil;
 
 class PlayState extends FlxState implements IBeatDispatcher implements ISequenceHandler
@@ -122,6 +127,8 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
     public var timers:FlxTimerManager;
 
+    public var stage:Stage;
+
     /**
      * Characters and stages are drawn on this camera.
      */
@@ -174,8 +181,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
     public var opponentVocals:FlxSound;
 
     public var playerVocals:FlxSound;
-
-    public var stage:FlxGroup;
 
     public var spectators:FlxTypedSpriteGroup<Character>;
 
@@ -258,6 +263,10 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         add(timers);
 
+        add(stage);
+
+        gameCamera.zoom = stage.zoom;
+
         cameraPoint = new FlxObject();
 
         add(cameraPoint);
@@ -279,8 +288,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         loadChart();
 
         loadSong();
-
-        stage ??= new FlxGroup();
 
         add(stage);
 
@@ -358,9 +365,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         players.add(player);
 
-        updateHealthBar("opponent");
-
-        updateHealthBar("player");
+        updateHealthBar();
 
         updateScore(playField.playStats);
 
@@ -437,15 +442,18 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
                     endSong();
             }
         }
-        
+
         gameCamera.zoom = FlxMath.lerp(gameCamera.zoom, gameCameraZoom, FlxMath.getElapsedLerp(0.15, elapsed));
 
+        #if NO_HUD_CAMERA_ZOOM
+        #else
         hudCamera.zoom = FlxMath.lerp(hudCamera.zoom, 1.0, FlxMath.getElapsedLerp(0.15, elapsed));
+        #end
 
         if (FlxG.keys.justPressed.SEVEN)
             FlxG.switchState(() -> new OptionsMenu(() -> getClassFromLevel()));
 
-        #if debug
+        #if FLX_DEBUG
         if (FlxG.keys.justPressed.EIGHT)
             FlxG.switchState(() -> new editors.CharacterEditorState(() -> PlayState.getClassFromLevel(params), player.config.name));
         #end
@@ -480,14 +488,40 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
     {
         gameCamera.zoom += gameCamBopStrength;
 
+        #if NO_HUD_CAMERA_ZOOM
+        #else
         hudCamera.zoom += hudCamBopStrength;
+        #end
     }
 
     public function loadChart():Void
     {
-        chart = ChartLoader.readPath(Paths.data(level.getClassPath()));
+        chart = ChartBuilder.buildFromFolder(Paths.data(level.getClassPath()));
 
         chart.notes.sortTimed();
+
+        #if NOTE_SHUFFLE
+        #if NOTE_SHUFFLE_FAST
+        for (i in 0 ... chart.notes.length)
+        {
+            var note:NoteData = chart.notes[i];
+
+            note.direction = FlxG.random.int(0, 3);
+        }
+        #else
+        var directions:Array<Int> = new Array<Int>();
+
+        for (i in 0 ... 4)
+            directions.push(FlxG.random.int(0, 3, directions));
+
+        for (i in 0 ... chart.notes.length)
+        {
+            var note:NoteData = chart.notes[i];
+
+            note.direction = directions[note.direction];
+        }
+        #end
+        #end
 
         chart.events.sortTimed();
 
@@ -518,11 +552,11 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         switch (ev.name:String)
         {
-            case "CameraZoom":
-                CameraZoomEvent.dispatch(this, Reflect.getProperty(this, val.camera), val.zoom, val.duration, val.ease);
-
             case "SetCamFocus":
                 SetCamFocusEvent.dispatch(this, val.x, val.y, val.charType, val.duration, val.ease);
+
+            case "SetCamZoom":
+                SetCamZoomEvent.dispatch(this, val.zoom, val.duration, val.mode, val.ease);
         }
 
         eventIndex++;
@@ -705,16 +739,36 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         return players.group.getFirst((player:Character) -> player.config.name == name);
     }
 
-    public function updateHealthBar(charType:String):Void
+    public function updateHealthBar():Void
     {
-        var character:Character = Reflect.getProperty(this, charType);
+        var playAsWho:Int = Std.parseInt(MacroUtil.sanitizeDefine(MacroUtil.getDefine("PLAY_AS_WHO")));
+
+        var playAsOpponent:Bool = playAsWho == 0;
 
         var healthBar:HealthBar = playField.healthBar;
 
-        if (charType == "spectator" || charType == "opponent")
-            healthBar.opponentIcon.updateGraphic(character.config.healthIcon);
+        healthBar.fillDirection = playAsOpponent ? LEFT_TO_RIGHT : RIGHT_TO_LEFT;
+
+        var oppColor:FlxColor = FlxColor.fromString(opponent.config.healthColor);
+
+        var plrColor:FlxColor = FlxColor.fromString(player.config.healthColor);
+
+        healthBar.emptiedSide.color = playAsOpponent ? plrColor : oppColor;
+
+        healthBar.filledSide.color = playAsOpponent ? oppColor : plrColor;
+
+        if (playAsOpponent)
+        {
+            healthBar.opponentIcon.setIcon(player.config.healthIcon);
+
+            healthBar.playerIcon.setIcon(opponent.config.healthIcon);
+        }
         else
-            healthBar.playerIcon.updateGraphic(character.config.healthIcon);
+        {
+            healthBar.opponentIcon.setIcon(opponent.config.healthIcon);
+
+            healthBar.playerIcon.setIcon(player.config.healthIcon);
+        }
     }
 
     public function getStartingCamFocusEvent():EventData
@@ -765,18 +819,13 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
     }
 
-    public function resume():Void
-    {
-        gameCamera.active = true;
-        
-        resumeMusic();
-    }
-
     public function gameOver():Void
     {
         persistentDraw = false;
 
         openSubState(new GameOverScreen(this));
+
+        tweens.cancelTweensOf(gameCamera, ["scroll"]);
 
         cameraPoint.centerTo();
 

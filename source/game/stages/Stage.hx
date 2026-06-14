@@ -17,23 +17,47 @@ using StringTools;
 
 class Stage extends FlxGroup
 {
+    public var params:StageParams;
+
+    public var zoom(get, set):Float;
+
+    @:noCompletion
+    function get_zoom():Float
+    {
+        return params.zoom;
+    }
+
+    function set_zoom(v:Float):Float
+    {
+        params.zoom = v;
+
+        return v;
+    }
+
+    public function new(param:StageParams)
+    {
+        super();
+
+        params = param;
+    }
+
     public function getPathPrepend(useSharedPath:Bool = false, useCustomPath:Bool = false):String
     {
-        var strResult:String = "";
+        var result:String = "";
 
         if (useSharedPath)
         {
-            strResult = "game/stages/shared/";
+            result = "game/stages/shared/";
 
-            return strResult;
+            return result;
         }
 
         if (useCustomPath)
             return "";
         
-        strResult = '${Type.getClassName(Type.getClass(this)).replace(".", "/")}/';
+        result = '${Type.getClassName(Type.getClass(this)).replace(".", "/")}/';
 
-        return strResult;
+        return result;
     }
 
     public function getSprite(file:String, useSharedPath:Bool = false, useCustomPath:Bool = false,
@@ -103,4 +127,9 @@ class Stage extends FlxGroup
 
         return newBackdrop;
     }
+}
+
+typedef StageParams =
+{
+    var zoom:Float;
 }

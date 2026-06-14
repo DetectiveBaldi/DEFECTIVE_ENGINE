@@ -2,9 +2,10 @@ package game.levels;
 
 import data.Chart;
 
+import game.notes.Note;
 import game.stages.StageS;
 
-using util.MathUtil;
+using tools.ObjectHelpers;
 
 class LevelL extends PlayState
 {
@@ -17,8 +18,6 @@ class LevelL extends PlayState
         stageS = cast (stage, StageS);
 
         super.create();
-
-        gameCameraZoom = 0.8;
 
         cameraPoint.centerTo(stageS.background);
 
@@ -37,18 +36,5 @@ class LevelL extends PlayState
         players.x = stageS.background.x + stageS.background.width - players.width - 650.0;
 
         players.y = stageS.background.getMidpoint().y + players.height * 0.35;
-    }
-
-    override function measureHit(section:Int):Void
-    {
-        super.measureHit(section);
-
-        if (section < 0.0)
-            return;
-        
-        if (cameraCharTarget == "OPPONENT")
-            gameCameraZoom = 0.9;
-        else
-            gameCameraZoom = 0.7;
     }
 }

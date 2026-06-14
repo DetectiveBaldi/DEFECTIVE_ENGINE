@@ -14,7 +14,7 @@ import data.CharacterData;
 
 import music.Conductor;
 
-using util.MathUtil;
+using tools.ObjectHelpers;
 
 class GameOverScreen extends FlxSubState implements IBeatDispatcher
 {

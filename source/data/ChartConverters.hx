@@ -13,11 +13,10 @@ import util.TimingUtil;
 using StringTools;
 
 using util.ArrayUtil;
-using util.MathUtil;
 
 class FunkinConverter
 {
-    public static function run(chartPath:String, metadataPath:String, difficulty:String):Chart
+    public static function buildFromFiles(chartPath:String, metadataPath:String, difficulty:String):Chart
     {
         var output:Chart = new Chart();
 
@@ -41,14 +40,14 @@ class FunkinConverter
 
                 var charTypeInt:Int = ev.v.char ?? -1;
 
-                if (charTypeInt == 0.0)
-                    charType == "player";
+                if (charTypeInt == 0)
+                    charType = "player";
 
-                if (charTypeInt == 1.0)
-                    charType == "opponent";
+                if (charTypeInt == 1)
+                    charType = "opponent";
 
-                if (charTypeInt == 2.0)
-                    charType == "spectator";
+                if (charTypeInt == 2)
+                    charType = "spectator";
 
                 var x:Float = ev.v.x ?? 0.0;
 
@@ -56,16 +55,37 @@ class FunkinConverter
 
                 var duration:Float = ev.v.duration ?? 4.0;
 
-                var ease:String = ev.v.ease ?? "classic";
+                var ease:String = ev.v.ease ?? "CLASSIC";
+
+                ease = concatenateEase(ease, ev.v.easeDir);
 
                 if (ease == "INSTANT")
                     duration = 0.0;
 
-                if (ease == "classic")
+                if (ease == "CLASSIC")
                     duration = -1.0;
 
                 output.events.push({time: ev.t, name: "SetCamFocus", value: {x: x, y: y, charType: charType, duration: duration,
                     ease: ease}});
+            }
+
+            if (ev.e == "ZoomCamera")
+            {
+                var zoom:Float = ev.v.zoom ?? 1.0;
+
+                var duration:Float = ev.v.duration ?? 4.0;
+
+                var mode:String = ev.v.mode ?? "direct";
+
+                var ease:String = concatenateEase(ev.v.ease, ev.v.easeDir);
+
+                if (ease == "INSTANT")
+                    duration = 0.0;
+
+                // I'm going to be honest, the way Funkin' does this event is really stupid so there's several components of
+                    // this event that just aren't parsed.
+
+                output.events.push({time: ev.t, name: "SetCamZoom", value: {zoom: zoom, duration: duration, mode: mode, ease: ease}});
             }
         }
 
@@ -100,11 +120,29 @@ class FunkinConverter
 
         return output;
     }
+
+    public static function concatenateEase(ease:String, easeDir:String):String
+    {
+        ease ??= "linear";
+
+        if (ease == "linear" || ease.contains("In") || ease.contains("Out") || ease.contains("InOut"))
+        {
+            // Ignore easeDir
+        }
+        else
+        {
+            easeDir ??= "In";
+
+            ease += easeDir;
+        }
+
+        return ease;
+    }
 }
 
 class PsychConverter
 {
-    public static function run(chartPath:String):Chart
+    public static function buildFromFiles(chartPath:String):Chart
     {
         var output:Chart = new Chart();
 
@@ -163,13 +201,13 @@ class PsychConverter
             output.events.push({time: time, name: "SetCamFocus", value: {x: 0.0, y: 0.0, charType: character,
                 duration: -1.0, ease: "linear"}});
 
-            var beatLength:Float = (60.0 / tempo * 1000.0);
+            var beatLength:Float = 60.0 / tempo * 1000.0;
 
             if (_section.changeBPM)
             {
                 tempo = _section.bpm;
 
-                beatLength = (60.0 / tempo * 1000.0);
+                beatLength = 60.0 / tempo * 1000.0;
 
                 output.timingPoints.push({time: time, tempo: tempo, beatsPerMeasure: Math.round(_section.sectionBeats)});
             }
@@ -182,30 +220,16 @@ class PsychConverter
 
                 var type:String = note.type ?? "";
 
-                var kind:NoteKindData = {type: "", altAnimation: false, noAnimation: false, specSing: false, charIds: null}
+                var kind:NoteKindData = {type: note.type, altAnimation: false, noAnimation: false, specSing: false, charIds: null}
 
                 if (type == "Alt Animation")
                     kind.altAnimation = true;
 
-                if (_section.altAnim || type == "No Animation")
+                if (type == "No Animation")
                     kind.noAnimation = true;
 
                 if (_section.gfSection || type == "GF Sing")
                     kind.specSing = true;
-
-                if (type.startsWith("defective-char-id"))
-                {
-                    var charIds:Array<Int> = new Array<Int>();
-
-                    var commas:String = type.split("-").last();
-
-                    var ids:Array<Int> = FlxStringUtil.toIntArray(commas);
-
-                    for (i in 0 ... ids.length)
-                        charIds.push(ids[i]);
-
-                    kind.charIds = charIds;
-                }
 
                 output.notes.push({time: note.time, direction: note.direction % 4, lane: 1 - Math.floor(note.direction * 0.25),
                     length: Math.max(note.length - beatLength * 0.25, 0.0), kind: kind});

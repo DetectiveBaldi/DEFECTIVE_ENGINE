@@ -12,7 +12,7 @@ class StageS extends Stage
 
     public function new():Void
     {
-        super();
+        super({zoom : 1.1});
 
         background = getSprite("background", false, false, 1.0, 1.0);
 

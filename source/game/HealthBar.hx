@@ -36,11 +36,15 @@ class HealthBar extends ProgressBar
     {
         super(x, y, 600, 25, 5, RIGHT_TO_LEFT);
 
+        emptiedSide.color = FlxColor.GRAY;
+
+        filledSide.color = FlxColor.GRAY;
+
         conductor = beatDispatcher.conductor;
 
         conductor.onBeatHit.add(beatHit);
 
-        opponentIcon = new HealthIcon("bf-pixel");
+        opponentIcon = new HealthIcon("face");
 
         opponentIcon.flipX = fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM;
 
@@ -48,7 +52,7 @@ class HealthBar extends ProgressBar
 
         add(opponentIcon);
 
-        playerIcon = new HealthIcon("bf");
+        playerIcon = new HealthIcon("face");
 
         playerIcon.flipX = !(fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM);
 

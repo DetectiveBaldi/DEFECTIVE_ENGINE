@@ -9,8 +9,6 @@ import core.Paths;
 
 import data.Chart.NoteKindData;
 
-using util.ArrayUtil;
-
 class Note extends FlxSprite
 {
     public static final DIRECTIONS:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
@@ -38,8 +36,6 @@ class Note extends FlxSprite
     public var playSplash:Bool;
 
     public var unholdTime:Float;
-
-    public var latestTiming:Float;
 
     public var sustain:Sustain;
 
@@ -74,8 +70,6 @@ class Note extends FlxSprite
         playSplash = false;
 
         unholdTime = 0.0;
-
-        latestTiming = Rating.list.last().timing;
     }
 
     override function update(elapsed:Float):Void
@@ -111,7 +105,7 @@ class Note extends FlxSprite
         if (botplay)
             return time <= strumline.conductor.time;
 
-        return Math.abs(time - strumline.conductor.time) <= latestTiming;
+        return Math.abs(time - strumline.conductor.time) <= Rating.latestTiming;
     }
 }
 

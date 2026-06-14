@@ -8,27 +8,22 @@ class ArrayUtil
             arr.push(v[i]);
     }
 
-    public static function first<T>(arr:Array<T>, func:(T)->Bool = null):T
+    public static function first<T>(arr:Array<T>, func:(T)->Bool):T
     {
         var result:T = null;
 
         if (arr.length == 0.0)
             return result;
-
-        if (func == null)
-            result = arr[0];
-        else
+        
+        for (i in 0 ... arr.length)
         {
-            for (i in 0 ... arr.length)
+            var value:T = arr[i];
+
+            if (func(value))
             {
-                var value:T = arr[i];
+                result = value;
 
-                if (func(value))
-                {
-                    result = value;
-
-                    break;
-                }
+                break;
             }
         }
 

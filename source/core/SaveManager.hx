@@ -36,15 +36,6 @@ class SaveManager
 
             var data:Dynamic = options.data;
 
-            if (Reflect.hasField(data, "frameRate"))
-            {
-                var newVal:Int = Reflect.field(data, "frameRate");
-
-                newVal = Math.round(newVal / 30.0) * 30;
-
-                Reflect.setField(data, "frameRate", FlxMath.bound(newVal, 30, 240));
-            }
-
             if (Reflect.hasField(data, "persistentCache"))
                 Reflect.deleteField(data, "persistentCache");
 

@@ -1,9 +1,7 @@
 package;
 
 import haxe.ui.Toolkit;
-
 import haxe.ui.focus.FocusManager;
-
 import haxe.ui.themes.Theme;
 
 import flixel.FlxG;
@@ -26,6 +24,8 @@ import game.PlayState;
 import plugins.FullscreenPlugin;
 
 import util.MacroUtil;
+
+using StringTools;
 
 using util.ArrayUtil;
 
@@ -90,8 +90,6 @@ class InitState extends FlxState
         FlxG.console.registerClass(SaveManager);
 
         FlxG.console.registerClass(HighScore);
-
-        FlxG.console.registerClass(util.PlayFieldTools);
         #end
 
         FlxG.plugins.drawOnTop = true;
@@ -104,22 +102,21 @@ class InitState extends FlxState
 
         FlxG.plugins.addPlugin(fullscreenPlugin);
 
-        var definedWeek:String = MacroUtil.getDefine("WEEK");
+        var definedWeek:String = MacroUtil.sanitizeDefine(MacroUtil.getDefine("WEEK"));
 
-        if (definedWeek != null)
-            definedWeek = definedWeek.split("=")[0];
+        var definedLevel:String = MacroUtil.sanitizeDefine(MacroUtil.getDefine("LEVEL"));
 
-        var definedLevel:String = MacroUtil.getDefine("LEVEL");
-
-        if (definedLevel != null)
-            definedLevel = definedLevel.split("=")[0];
-
-        if (definedWeek != null || definedLevel != null)
+        definedWeek = definedWeek.split("_").join(" ");
+        
+        if (definedWeek != "")
         {
-            if (definedWeek == null)
-                PlayState.loadLevel(LevelData.list.first((level:LevelData) -> level.name == definedLevel));
-            else
-                PlayState.loadWeek(WeekData.list.first((week:WeekData) -> week.name == definedWeek));
+            PlayState.loadWeek(WeekData.list.first((week:WeekData) -> week.name == definedWeek));
+
+            return;
         }
+
+        definedLevel = definedLevel.split("_").join(" ");
+
+        PlayState.loadLevel(LevelData.list.first((level:LevelData) -> level.name == definedLevel));
     }
 }

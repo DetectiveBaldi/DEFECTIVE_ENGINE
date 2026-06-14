@@ -5,8 +5,8 @@ import flixel.tweens.FlxTween;
 
 class SetCamFocusEvent
 {
-    public static function dispatch(game:PlayState, x:Float = 0.0, y:Float = 0.0, charType:String = "", duration:Float,
-        ease:String = "linear", skipCameraLock:Bool = false):Void
+    public static function dispatch(game:PlayState, x:Float = 0.0, y:Float = 0.0, charType:String, duration:Float,
+        ease:String, skipCameraLock:Bool = false):Void
     {
         if (charType == "")
         {
@@ -24,6 +24,8 @@ class SetCamFocusEvent
 
             y = char.getMidpoint().y + char.config.cameraPoint.y;
         }
+
+        game.tweens.cancelTweensOf(game.gameCamera, ["scroll"]);
 
         if (duration > 0.0)
         {

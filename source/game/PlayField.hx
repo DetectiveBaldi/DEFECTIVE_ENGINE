@@ -38,8 +38,9 @@ import interfaces.ISequenceHandler;
 
 import music.Conductor;
 
-using util.MathUtil;
-using util.StringUtil;
+import util.MacroUtil;
+
+using tools.ObjectHelpers;
 
 class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDispatcher
 {
@@ -166,8 +167,6 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         opponentStrumline.scrollSpeed = scrollSpeed;
 
-        opponentStrumline.botplay = true;
-
         opponentStrumline.strums.setPosition(45.0, opponentStrumline.downscroll ?
             FlxG.height - opponentStrumline.strums.height - 15.0 : 15.0);
 
@@ -175,22 +174,36 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         playerStrumline = new Strumline(this, this);
 
-        playerStrumline.onNoteHit.add(noteHit);
-
-        playerStrumline.onNoteMiss.add(noteMiss);
-
-        playerStrumline.onSustainHold.add(sustainHold);
-
-        playerStrumline.onGhostTap.add(ghostTap);
-
         playerStrumline.scrollSpeed = scrollSpeed;
-
-        playerStrumline.botplay = Options.botplay;
 
         playerStrumline.strums.setPosition(FlxG.width - playerStrumline.strums.width - 45.0, playerStrumline.downscroll ?
             FlxG.height - playerStrumline.strums.height - 15.0 : 15.0);
 
         strumlines.add(playerStrumline);
+
+        for (i in 0 ... strumlines.members.length)
+        {
+            var strumline:Strumline = strumlines.members[i];
+
+            strumline.botplay = true;
+        }
+
+        if (!Options.botplay)
+        {
+            var playAsWho:Int = Std.parseInt(MacroUtil.sanitizeDefine(MacroUtil.getDefine("PLAY_AS_WHO")));
+
+            var strumline:Strumline = strumlines.members[playAsWho];
+
+            strumline.botplay = false;
+            
+            strumline.onNoteHit.add(noteHit);
+
+            strumline.onNoteMiss.add(noteMiss);
+
+            strumline.onSustainHold.add(sustainHold);
+
+            strumline.onGhostTap.add(ghostTap);
+        }
 
         onUpdateScore = new FlxTypedSignal<(playStats:PlayStats)->Void>();
     }
