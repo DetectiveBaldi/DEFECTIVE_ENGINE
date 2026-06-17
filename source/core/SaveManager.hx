@@ -1,5 +1,7 @@
 package core;
 
+import haxe.ds.StringMap;
+
 import flixel.FlxG;
 
 import flixel.math.FlxMath;
@@ -34,29 +36,38 @@ class SaveManager
         {
             options.mergeData(FlxG.save.data.options);
 
-            var data:Dynamic = options.data;
-
-            if (Reflect.hasField(data, "persistentCache"))
-                Reflect.deleteField(data, "persistentCache");
-
-            if (Reflect.hasField(data, "flashing"))
-            {
-                Reflect.setField(data, "flashingLights", Reflect.field(data, "flashing"));
-
-                Reflect.deleteField(data, "flashing");
-            }
-
-            if (Reflect.hasField(data, "middlescroll"))
-                Reflect.deleteField(data, "middlescroll");
-
-            if (Reflect.hasField(data, "automatedInputs"))
-            {
-                Reflect.setField(data, "botplay", Reflect.field(data, "automatedInputs"));
-                
-                Reflect.deleteField(data, "automatedInputs");
-            }
-
             Reflect.deleteField(FlxG.save.data, "options");
+        }
+
+        var data:Dynamic = options.data;
+
+        if (Reflect.hasField(data, "persistentCache"))
+            Reflect.deleteField(data, "persistentCache");
+
+        if (Reflect.hasField(data, "flashing"))
+        {
+            Reflect.setField(data, "flashingLights", Reflect.field(data, "flashing"));
+
+            Reflect.deleteField(data, "flashing");
+        }
+
+        if (Reflect.hasField(data, "middlescroll"))
+            Reflect.deleteField(data, "middlescroll");
+
+        if (Reflect.hasField(data, "automatedInputs"))
+        {
+            Reflect.setField(data, "botplay", Reflect.field(data, "automatedInputs"));
+            
+            Reflect.deleteField(data, "automatedInputs");
+        }
+
+        if (Reflect.hasField(data, "controls"))
+        {
+            var v:Dynamic = Reflect.field(data, "controls");
+
+            // Not porting these.
+            if (Std.isOfType(v, StringMap))
+                Reflect.deleteField(data, "controls");
         }
 
         if (Reflect.hasField(FlxG.save.data, "highScores"))

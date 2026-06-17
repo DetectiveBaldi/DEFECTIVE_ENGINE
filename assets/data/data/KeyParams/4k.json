@@ -1,0 +1,9 @@
+{
+    "controls": [[65, 37], [83, 40], [87, 38], [68, 39]],
+
+    "mapping": ["LEFT", "DOWN", "UP", "RIGHT"],
+
+    "noteScale": 0.7,
+
+    "noteSpacing": 116
+}

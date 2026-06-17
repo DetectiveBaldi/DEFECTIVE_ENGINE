@@ -28,7 +28,6 @@ import core.SaveManager;
 
 import menus.options.items.BaseOptionItem;
 import menus.options.items.BoolOptionItem;
-import menus.options.items.ControlOptionItem;
 import menus.options.items.HeaderOptionItem;
 import menus.options.items.NumericOptionItem.IntOptionItem;
 
@@ -71,9 +70,6 @@ class OptionsMenu extends FlxState
 
             if (_option is BoolOptionItem)
                 cast (_option, BoolOptionItem).selectable = selectable;
-
-            if (_option is ControlOptionItem)
-                cast (_option, ControlOptionItem).selectable = selectable;
 
             if (_option is IntOptionItem)
                 cast(_option, IntOptionItem).selectable = selectable;
@@ -213,16 +209,6 @@ class OptionsMenu extends FlxState
         addBoolOption("Shaders", "If unchecked, shaders and screen filters are disabled.", "shaders");
 
         addHeaderOption("Controls");
-
-        addControlOption("Left Note", "Controls for the first note in the strumline.", "NOTE:LEFT");
-
-        addControlOption("Down Note", "Controls for the second note in the strumline.", "NOTE:DOWN");
-
-        addControlOption("Up Note", "Controls for the third note in the strumline.", "NOTE:UP");
-
-        addControlOption("Right Note", "Controls for the fourth note in the strumline.", "NOTE:RIGHT");
-
-        addControlOption("Pause", "Controls for opening the pause menu.", "UI:PAUSE");
 
         addHeaderOption("Gameplay");
 
@@ -402,19 +388,6 @@ class OptionsMenu extends FlxState
         options.add(bool);
 
         return bool;
-    }
-
-    public function addControlOption(title:String, description:String, option:String):ControlOptionItem
-    {
-        var newest:BaseOptionItem = options.members.last();
-
-        var control:ControlOptionItem = new ControlOptionItem(0.0, 0.0, title, description, option);
-
-        control.setPosition(FlxG.width - control.width + 100.0, newest == null ? 50.0 : newest.y + newest.height);
-
-        options.add(control);
-
-        return control;
     }
 
     public function addHeaderOption(title:String):HeaderOptionItem

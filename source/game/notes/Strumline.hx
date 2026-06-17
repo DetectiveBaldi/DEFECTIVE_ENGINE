@@ -1,5 +1,9 @@
 package game.notes;
 
+import haxe.Json;
+
+import openfl.utils.Assets;
+
 import flixel.FlxG;
 
 import flixel.group.FlxGroup;
@@ -16,6 +20,10 @@ import flixel.util.FlxTimer;
 
 import core.AssetCache;
 import core.Options;
+import core.Paths;
+
+import data.Chart;
+import data.KeyParams;
 
 import game.notes.events.GhostTapEvent;
 import game.notes.events.NoteHitEvent;
@@ -38,7 +46,13 @@ class Strumline extends FlxGroup implements ISequenceHandler
 
     public var conductor:Conductor;
 
-    public var keysToCheck:Map<Int, Int>;
+    public var chart:Chart;
+
+    public var keyCount:Int;
+
+    public var keyParams:KeyParams;
+
+    public var keysToCheck:Map<Int, Array<Int>>;
 
     public var keysHeld:Array<Bool>;
 
@@ -108,7 +122,7 @@ class Strumline extends FlxGroup implements ISequenceHandler
 
     public var lastStep:Int;
 
-    public function new(sequenceHandler:ISequenceHandler, beatDispatcher:IBeatDispatcher):Void
+    public function new(sequenceHandler:ISequenceHandler, beatDispatcher:IBeatDispatcher, chart:Chart):Void
     {
         super();
 
@@ -118,15 +132,21 @@ class Strumline extends FlxGroup implements ISequenceHandler
 
         conductor = beatDispatcher.conductor;
 
+        this.chart = chart;
+
+        keyCount = chart.keyCount;
+
+        keyParams = KeyParams.build(Json.parse(Assets.getText(Paths.json(Paths.data('data/KeyParams/${keyCount}k')))));
+
         getKeysToCheck();
 
-        keysHeld = [for (i in 0 ... 4) false];
+        keysHeld = [for (i in 0 ... keyCount) false];
 
         strums = new FlxTypedSpriteGroup<Strum>();
 
         add(strums);
 
-        for (i in 0 ... 4)
+        for (i in 0 ... keyCount)
         {
             var strum:Strum = new Strum(beatDispatcher);
 
@@ -134,16 +154,16 @@ class Strumline extends FlxGroup implements ISequenceHandler
 
             strum.direction = i;
 
-            strum.animation.play(Note.DIRECTIONS[strum.direction].toLowerCase() + "Static");
+            strum.animation.play(keyParams.mapping[strum.direction].toLowerCase() + "Static");
 
-            strum.scale.set(0.7, 0.7);
+            strum.scale.set(keyParams.noteScale, keyParams.noteScale);
 
             strum.updateHitbox();
             
             strums.add(strum);
         }
 
-        spacing = 116.0;
+        spacing = keyParams.noteSpacing;
 
         notes = new FlxTypedGroup<Note>();
 
@@ -212,17 +232,18 @@ class Strumline extends FlxGroup implements ISequenceHandler
         {
             for (k => v in keysToCheck)
             {
-                var keyCode:Int = k;
+                var direction:Int = k;
 
-                var direc:Int = v;
+                var keys:Array<Int> = v;
 
-                if (FlxG.keys.checkStatus(keyCode, JUST_PRESSED))
+                @:privateAccess
+                if (FlxG.keys.checkKeyArrayState(keys, JUST_PRESSED))
                 {
-                    var strum:Strum = strums.members[direc];
+                    var strum:Strum = strums.members[direction];
 
-                    strum.animation.play(Note.DIRECTIONS[direc].toLowerCase() + "Press");
+                    strum.animation.play(keyParams.mapping[strum.direction].toLowerCase() + "Press");
 
-                    var note:Note = notes.getFirst((_note:Note) -> _note.isHittable() && _note.direction == direc);
+                    var note:Note = notes.getFirst((_note:Note) -> _note.isHittable() && _note.direction == direction);
 
                     if (note == null)
                         ghostTap(strum.direction);
@@ -230,16 +251,18 @@ class Strumline extends FlxGroup implements ISequenceHandler
                         noteHit(note);
                 }
 
-                if (FlxG.keys.checkStatus(keyCode, PRESSED))
-                    keysHeld[direc] = true;
+                @:privateAccess
+                if (FlxG.keys.checkKeyArrayState(keys, PRESSED))
+                    keysHeld[direction] = true;
 
-                if (FlxG.keys.checkStatus(keyCode, JUST_RELEASED))
+                @:privateAccess
+                if (FlxG.keys.checkKeyArrayState(keys, JUST_RELEASED))
                 {
-                    keysHeld[direc] = false;
+                    keysHeld[direction] = false;
 
-                    var strum:Strum = strums.members[direc];
+                    var strum:Strum = strums.members[direction];
 
-                    strum.animation.play(Note.DIRECTIONS[direc].toLowerCase() + "Static");
+                    strum.animation.play(keyParams.mapping[strum.direction].toLowerCase() + "Static");
                 }
             }
         }
@@ -319,14 +342,21 @@ class Strumline extends FlxGroup implements ISequenceHandler
         onGhostTap = cast FlxDestroyUtil.destroy(onGhostTap);
     }
 
-    public function getKeysToCheck():Map<Int, Int>
+    public function getKeysToCheck():Map<Int, Array<Int>>
     {
-        return keysToCheck =
-        [
-            for (i in 0 ... Note.DIRECTIONS.length)
-                for (j in 0 ... Options.controls['NOTE:${Note.DIRECTIONS[i]}'].length)
-                    Options.controls['NOTE:${Note.DIRECTIONS[i]}'][j] => i
-        ];
+        if (keysToCheck == null)
+            keysToCheck = new Map<Int, Array<Int>>();
+        else
+            keysToCheck.clear();
+
+        for (i in 0 ... keyParams.controls.length)
+        {
+            var v:Array<Int> = keyParams.controls[i];
+
+            keysToCheck[i] = v;
+        }
+
+        return keysToCheck;
     }
 
     public function setStrumActive(direc:Int, active:Bool):Void
@@ -353,7 +383,7 @@ class Strumline extends FlxGroup implements ISequenceHandler
 
         strum.holdTimer = 0.0;
         
-        strum.animation.play(Note.DIRECTIONS[note.direction].toLowerCase() + "Confirm", true);
+        strum.animation.play(keyParams.mapping[note.direction].toLowerCase() + "Confirm", true);
 
         if (note.length > 0.0)
             resizeSustainNote(note);
@@ -395,7 +425,11 @@ class Strumline extends FlxGroup implements ISequenceHandler
     {
         var splash:NoteSplash = noteSplashes.recycle(NoteSplash, () -> new NoteSplash());
 
-        splash.play(note.strum.direction, note.length > 0.0);
+        splash.scale.set(keyParams.noteScale, keyParams.noteScale);
+
+        splash.updateHitbox();
+
+        splash.play(Note.DIRECTIONS.indexOf(keyParams.mapping[note.strum.direction]), note.length > 0.0);
 
         splash.centerTo(note.strum);
     }
@@ -427,7 +461,7 @@ class Strumline extends FlxGroup implements ISequenceHandler
 
             strum.holdTimer = 0.0;
 
-            strum.animation.play(Note.DIRECTIONS[strum.direction].toLowerCase() + "Confirm", true);
+            strum.animation.play(keyParams.mapping[strum.direction].toLowerCase() + "Confirm", true);
             
             setStrumActive(note.direction, false);
             
@@ -466,7 +500,7 @@ class Strumline extends FlxGroup implements ISequenceHandler
         }
         else
         {
-            var anim:String = Note.DIRECTIONS[note.strum.direction].toLowerCase() + "Static";
+            var anim:String = keyParams.mapping[note.direction].toLowerCase() + "Static";
 
             note.strum.animation.play(anim, true);
         }
@@ -520,7 +554,7 @@ class Strumline extends FlxGroup implements ISequenceHandler
             if (note.kind.altAnimation)
                 animSuffix = "-alt";
 
-            var directionStr:String = Note.DIRECTIONS[note.direction];
+            var directionStr:String = Note.DIRECTIONS[Note.DIRECTIONS.indexOf(keyParams.mapping[note.strum.direction])];
 
             if (hold && character.animation.name.contains(directionStr))
                 continue;
@@ -571,7 +605,7 @@ class Strumline extends FlxGroup implements ISequenceHandler
             if (note?.kind?.altAnimation)
                 animSuffix = "-alt";
 
-            var directionStr:String = Note.DIRECTIONS[direction];
+            var directionStr:String = Note.DIRECTIONS[Note.DIRECTIONS.indexOf(keyParams.mapping[note.strum.direction])];
 
             var animToPlay:String = 'Sing${directionStr}MISS${animSuffix}';
 

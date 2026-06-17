@@ -60,6 +60,8 @@ class NoteSpawner extends FlxBasic
 
             var strumline:Strumline = strumlines.members[noteData.lane];
 
+            var scale:Float = strumline.keyParams.noteScale;
+
             if (noteData.time > conductor.time + getSpawnDistance(noteData.lane))
                 break;
 
@@ -89,11 +91,11 @@ class NoteSpawner extends FlxBasic
 
             note.strum = strumline.strums.members[note.direction];
 
-            note.animation.play(Note.DIRECTIONS[note.direction].toLowerCase());
+            note.animation.play(strumline.keyParams.mapping[note.direction].toLowerCase());
 
             note.flipY = false;
 
-            note.scale.set(0.7, 0.7);
+            note.scale.set(scale, scale);
 
             note.updateHitbox();
 
@@ -109,11 +111,11 @@ class NoteSpawner extends FlxBasic
 
                 sustain.note = note;
 
-                sustain.animation.play(Note.DIRECTIONS[note.direction].toLowerCase() + "HoldPiece");
+                sustain.animation.play(strumline.keyParams.mapping[note.direction].toLowerCase() + "HoldPiece");
 
                 sustain.flipY = note.strum.downscroll;
 
-                sustain.setGraphicSize(sustain.frameWidth * 0.7, note.length * strumline.scrollSpeed * 0.45);
+                sustain.setGraphicSize(sustain.frameWidth * scale, note.length * strumline.scrollSpeed * 0.45);
 
                 sustain.updateHitbox();
 
@@ -127,11 +129,11 @@ class NoteSpawner extends FlxBasic
 
                 trail.sustain = sustain;
 
-                trail.animation.play(Note.DIRECTIONS[note.direction].toLowerCase() + "HoldTail");
+                trail.animation.play(strumline.keyParams.mapping[note.direction].toLowerCase() + "HoldTail");
 
                 trail.flipY = note.strum.downscroll;
 
-                trail.scale.set(0.7, 0.7);
+                trail.scale.set(scale, scale);
 
                 trail.updateHitbox();
 

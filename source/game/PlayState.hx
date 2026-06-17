@@ -509,18 +509,20 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         chart.notes.sortTimed();
 
         #if NOTE_SHUFFLE
+        var keyCount:Int = chart.keyCount;
+
         #if NOTE_SHUFFLE_FAST
         for (i in 0 ... chart.notes.length)
         {
             var note:NoteData = chart.notes[i];
 
-            note.direction = FlxG.random.int(0, 3);
+            note.direction = FlxG.random.int(0, keyCount - 1);
         }
         #else
         var ds:Array<Int> = new Array<Int>();
 
-        for (i in 0 ... 4)
-            ds.push(FlxG.random.int(0, 3, ds));
+        for (i in 0 ... chart.keyCount)
+            ds.push(FlxG.random.int(0, keyCount - 1, ds));
 
         for (i in 0 ... chart.notes.length)
         {

@@ -12,6 +12,8 @@ class Chart
 
         chart.name = v.name;
 
+        chart.keyCount = v.keyCount;
+
         chart.scrollSpeed = v.scrollSpeed;
 
         chart.notes = v.notes;
@@ -31,7 +33,7 @@ class Chart
 
     public var name:String;
 
-    public var tempo:Float;
+    public var keyCount:Int;
 
     public var scrollSpeed:Float;
 
@@ -51,8 +53,6 @@ class Chart
     {
         name = "Test";
 
-        tempo = 150.0;
-
         scrollSpeed = 1.6;
 
         notes = new Array<NoteData>();
@@ -61,11 +61,13 @@ class Chart
 
         timingPoints = new Array<TimingPointData>();
 
-        spectator = "";
+        spectator = "gf";
 
-        opponent = "baldi-face-front";
+        opponent = "bf-pixel-opponent";
 
-        player = "bf-face-left";
+        player = "bf";
+
+        keyCount = 4;
     }
 }
 
@@ -73,7 +75,7 @@ typedef ChartData =
 {
     var name:String;
 
-    var tempo:Float;
+    var keyCount:Int;
 
     var scrollSpeed:Float;
 

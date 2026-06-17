@@ -140,6 +140,122 @@ class FunkinConverter
     }
 }
 
+class LegacyPsychConverter
+{
+    public static function buildFromFiles(chartPath:String):Chart
+    {
+        var output:Chart = new Chart();
+
+        var raw:Dynamic = Json.parse(Assets.getText(chartPath));
+
+        // Less typing;
+        raw = raw.song;
+
+        var section:Dynamic = raw.notes[0];
+
+        output.name = raw.song;
+        
+        var time:Float = 0.0;
+
+        var tempo:Float = raw.bpm;
+
+        var beatsPerMeasure:Int = section.sectionBeats ?? 4;
+
+        output.timingPoints.push({time: 0.0, tempo: tempo, beatsPerMeasure: beatsPerMeasure});
+
+        var mania:Int = raw.mania;
+
+        var keyCount:Int = 4;
+
+        if (mania == 1)
+            keyCount = 6;
+
+        if (mania == 2)
+            keyCount = 7;
+
+        if (mania == 3)
+            keyCount = 9;
+
+        output.keyCount = keyCount;
+
+        output.scrollSpeed = raw.speed;
+
+        var character:String = "";
+
+        for (i in 0 ... raw.notes.length)
+        {
+            section = raw.notes[i];
+
+            var _section:LegacyPsychSection =
+            {
+                sectionNotes:
+                [
+                    for (j in 0 ... section.sectionNotes.length)
+                    {
+                        var note:Array<Dynamic> = section.sectionNotes[j];
+
+                        {time: note[0], direction: note[1], length: note[2], type: ""}
+                    }
+                ],
+
+                lengthInSteps: section.lengthInSteps,
+
+                mustHitSection: section.mustHitSection,
+
+                bpm: section.bpm,
+
+                changeBPM: section.changeBPM,
+
+                altAnim: section.altAnim
+            };
+
+            character = _section.mustHitSection ? "player" : "opponent";
+
+            output.events.push({time: time, name: "SetCamFocus", value: {x: 0.0, y: 0.0, charType: character,
+                duration: -1.0, ease: "linear"}});
+
+            var beatLength:Float = 60.0 / tempo * 1000.0;
+
+            if (_section.changeBPM)
+            {
+                tempo = _section.bpm;
+
+                beatLength = 60.0 / tempo * 1000.0;
+
+                output.timingPoints.push({time: time, tempo: tempo, beatsPerMeasure: Math.round(_section.lengthInSteps * 0.25)});
+            }
+
+            time += beatLength * (_section.lengthInSteps * 0.25);
+
+            for (j in 0 ... _section.sectionNotes.length)
+            {
+                var note:PsychNote = _section.sectionNotes[j];
+
+                var type:String = note.type ?? "";
+
+                var kind:NoteKindData = {type: note.type, altAnimation: false, noAnimation: false, specSing: false, charIds: null}
+
+                if (_section.altAnim || type == "Alt Animation")
+                    kind.altAnimation = true;
+
+                if (type == "No Animation")
+                    kind.noAnimation = true;
+
+                output.notes.push({time: note.time, direction: note.direction % keyCount,  lane: ((note.direction > keyCount - 1)
+                    ? !_section.mustHitSection : _section.mustHitSection) ? 1 : 0, length: Math.max(note.length - beatLength * 0.25, 0.0), kind: kind});
+            }
+        }
+
+        output.spectator = raw.player3;
+
+        output.opponent = raw.player2;
+
+        output.player = raw.player1;
+
+        return output;
+    }
+}
+
 class PsychConverter
 {
     public static function buildFromFiles(chartPath:String):Chart
@@ -188,16 +304,13 @@ class PsychConverter
 
                 gfSection: section.gfSection,
 
-                changeBPM: section.changeBPM,
+                bpm: section.bpm,
 
-                bpm: section.bpm
+                changeBPM: section.changeBPM,
             };
 
             character = _section.mustHitSection ? "player" : "opponent";
 
-            if (_section.gfSection)
-                character = "spectator";
-            
             output.events.push({time: time, name: "SetCamFocus", value: {x: 0.0, y: 0.0, charType: character,
                 duration: -1.0, ease: "linear"}});
 
@@ -222,7 +335,7 @@ class PsychConverter
 
                 var kind:NoteKindData = {type: note.type, altAnimation: false, noAnimation: false, specSing: false, charIds: null}
 
-                if (type == "Alt Animation")
+                if (_section.altAnim && type == "Alt Animation")
                     kind.altAnimation = true;
 
                 if (type == "No Animation")
@@ -280,6 +393,21 @@ typedef FunkinTimingPoint = FunkinTimedObject &
     var bt:Array<Int>;
 };
 
+typedef LegacyPsychSection =
+{
+    var sectionNotes:Array<PsychNote>;
+
+    var lengthInSteps:Float;
+
+    var mustHitSection:Bool;
+
+    var changeBPM:Bool;
+
+    var bpm:Float;
+
+    var altAnim:Bool;
+};
+
 typedef PsychSection =
 {
     var sectionNotes:Array<PsychNote>;
@@ -292,9 +420,9 @@ typedef PsychSection =
 
     var gfSection:Bool;
 
-    var changeBPM:Bool;
-
     var bpm:Float;
+
+    var changeBPM:Bool;
 };
 
 typedef PsychEvent = TimedObject &

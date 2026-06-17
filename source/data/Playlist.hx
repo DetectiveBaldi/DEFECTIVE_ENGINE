@@ -26,6 +26,10 @@ class Playlist
 
         LevelData.list.push(level);
 
+        level = {week: null, name: "Disassembler"}
+
+        LevelData.list.push(level);
+
         level = {week: null, name: "High"}
 
         LevelData.list.push(level);
@@ -34,7 +38,15 @@ class Playlist
 
         LevelData.list.push(level);
 
+        level = {week: null, name: "Super Saiyan"}
+
+        LevelData.list.push(level);
+
         level = {week: null, name: "Taimuresu"}
+
+        LevelData.list.push(level);
+
+        level = {week: null, name: "Talladega"}
 
         LevelData.list.push(level);
 

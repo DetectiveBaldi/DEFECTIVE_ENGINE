@@ -43,7 +43,7 @@ class Sustain extends FlxSprite
 
         var sustainHeight:Float = Math.max(length * 0.45 * note.strumline.scrollSpeed, 0.0);
 
-        setGraphicSize(frameWidth * 0.7, sustainHeight);
+        setGraphicSize(frameWidth * note.scale.x, sustainHeight);
 
         updateHitbox();
 

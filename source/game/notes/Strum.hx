@@ -65,7 +65,7 @@ class Strum extends FlxSprite
             {
                 holdTimer = 0.0;
 
-                animation.play(Note.DIRECTIONS[direction].toLowerCase() + (strumline.botplay ? "Static" : "Press"));
+                animation.play(strumline.keyParams.mapping[direction].toLowerCase() + (strumline.botplay ? "Static" : "Press"));
             }
         }
         else

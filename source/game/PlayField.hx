@@ -163,7 +163,7 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         noteSpawner.strumlines = strumlines;
 
-        opponentStrumline = new Strumline(this, this);
+        opponentStrumline = new Strumline(this, this, chart);
 
         opponentStrumline.scrollSpeed = scrollSpeed;
 
@@ -172,7 +172,7 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         strumlines.add(opponentStrumline);
 
-        playerStrumline = new Strumline(this, this);
+        playerStrumline = new Strumline(this, this, chart);
 
         playerStrumline.scrollSpeed = scrollSpeed;
 

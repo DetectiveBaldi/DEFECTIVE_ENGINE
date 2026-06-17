@@ -69,25 +69,16 @@ class Options
         return shaders;
     }
 
-    public static var controls(get, set):Map<String, Array<Int>>;
+    public static var controls(get, set):Map<Int, Array<Array<Int>>>;
 
     @:noCompletion
-    static function get_controls():Map<String, Array<Int>>
+    static function get_controls():Map<Int, Array<Array<Int>>>
     {
-        return SaveManager.options.data.controls ??= 
-        [
-            "NOTE:LEFT" => [65, 37],
-
-            "NOTE:DOWN" => [83, 40],
-            
-            "NOTE:UP" => [87, 38],
-            
-            "NOTE:RIGHT" => [68, 39]
-        ];
+        return [];
     }
 
     @:noCompletion
-    static function set_controls(_controls:Map<String, Array<Int>>):Map<String, Array<Int>>
+    static function set_controls(_controls:Map<Int, Array<Array<Int>>>):Map<Int, Array<Array<Int>>>
     {
         SaveManager.options.data.controls = _controls;
 

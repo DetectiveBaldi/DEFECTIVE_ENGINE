@@ -37,10 +37,6 @@ class NoteSplash extends FlxSprite
         }
 
         animation.onFinish.add((_:String) -> kill());
-
-        scale.set(0.5, 0.5);
-
-        updateHitbox();
     }
 
     public function play(direction:Int, reversed:Bool):Void

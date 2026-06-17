@@ -29,12 +29,17 @@ class ChartBuilder
         }
         else
         {
-            var chartFilePath:String = '${path}/chart.json';
+            var chartFilePath:String = '${path}/chart.json${MacroUtil.sanitizeDefine(MacroUtil.getDefine("DIFFICULTY")).toLowerCase()}';
 
             var data:Dynamic = Json.parse(Assets.getText(chartFilePath));
 
             if (Reflect.hasField(data, "song"))
-                return PsychConverter.buildFromFiles(chartFilePath);
+            {
+                if (Reflect.hasField(data.song, "song"))
+                    return LegacyPsychConverter.buildFromFiles(chartFilePath);
+                else
+                    return PsychConverter.buildFromFiles(chartFilePath);
+            }
             else
                 return Chart.build(data);
         }
