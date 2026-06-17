@@ -6,19 +6,15 @@ class SustainHoldEvent
 
     public var sustain:Sustain;
 
-    public var elapsed:Float;
-
     public function new():Void
     {
 
     }
 
-    public function reset(note:Note, sustain:Sustain, elapsed:Float):Void
+    public function reset(note:Note, sustain:Sustain):Void
     {
         this.note = note;
         
         this.sustain = sustain;
-
-        this.elapsed = elapsed;
     }
 }

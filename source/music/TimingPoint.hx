@@ -5,6 +5,11 @@ import data.Chart.TimingPointData;
 @:structInit
 class TimingPoint
 {
+    public static function build(v:TimingPointData):TimingPoint
+    {
+        return {time: v.time, tempo: v.tempo, beatsPerMeasure: v.beatsPerMeasure}
+    }
+    
     public var time:Float;
 
     public var tempo:Float;
@@ -50,10 +55,5 @@ class TimingPoint
         beatOffset = 0.0;
 
         measureOffset = 0.0;
-    }
-
-    public static function decodeData(v:TimingPointData):TimingPoint
-    {
-        return {time: v.time, tempo: v.tempo, beatsPerMeasure: v.beatsPerMeasure}
     }
 }

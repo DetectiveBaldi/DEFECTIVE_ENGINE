@@ -262,7 +262,7 @@ class Strumline extends FlxGroup implements ISequenceHandler
                 continue;
 
             if (isHoldingNote(note))
-                holdSustainNote(note, note.sustain, elapsed);
+                holdSustainNote(note, note.sustain);
             else
             {
                 if (note.status == HIT)
@@ -327,17 +327,6 @@ class Strumline extends FlxGroup implements ISequenceHandler
                 for (j in 0 ... Options.controls['NOTE:${Note.DIRECTIONS[i]}'].length)
                     Options.controls['NOTE:${Note.DIRECTIONS[i]}'][j] => i
         ];
-    }
-
-    public function resetStrums():Void
-    {
-        strums.forEach((strum:Strum) -> strum.animation.play(Note.DIRECTIONS[strum.direction].toLowerCase() + "Static", true));
-    }
-
-    public function resetKeysHeld():Void
-    {
-        for (i in 0 ... keysHeld.length)
-            keysHeld[i] = false;
     }
 
     public function setStrumActive(direc:Int, active:Bool):Void
@@ -422,9 +411,9 @@ class Strumline extends FlxGroup implements ISequenceHandler
         return keysHeld[note.direction];
     }
 
-    public function holdSustainNote(note:Note, sustain:Sustain, elapsed:Float):Void
+    public function holdSustainNote(note:Note, sustain:Sustain):Void
     {
-        sustainHoldEvent.reset(note, sustain, elapsed);
+        sustainHoldEvent.reset(note, sustain);
 
         onSustainHold.dispatch(sustainHoldEvent);
 

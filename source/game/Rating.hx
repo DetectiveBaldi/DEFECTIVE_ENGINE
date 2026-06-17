@@ -21,9 +21,9 @@ class Rating
     @:noCompletion
     static function get_earliestTiming():Float
     {
-        static var v:Float = 0.0;
+        static var v:Float = -1.;
 
-        if (v == 0.0)
+        if (v == -1.)
             v = list[0].timing;
 
         return v;
@@ -34,9 +34,9 @@ class Rating
     @:noCompletion
     static function get_latestTiming():Float
     {
-        static var v:Float = 0.0;
+        static var v:Float = -1.;
 
-        if (v == 0.0)
+        if (v == -1.)
             v = list.last().timing;
 
         return v;

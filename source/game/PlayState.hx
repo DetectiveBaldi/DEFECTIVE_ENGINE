@@ -37,6 +37,8 @@ import data.WeekData;
 
 import data.PlayStats;
 
+import game.levels.LevelL;
+
 import game.notes.Note;
 import game.notes.Strumline;
 
@@ -84,7 +86,13 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
     {
         level ??= PlayState.level;
 
-        return Type.createInstance(Type.resolveClass(level.getClassPath(".")), [params]);
+        var c:Class<Dynamic> = Type.resolveClass(level.getClassPath("."));
+
+        // So we don't have to create a bunch of useless classes when testing fun things!
+        if (c == null)
+            return new LevelL(params);
+
+        return Type.createInstance(c, [params]);
     }
 
     public static function loadWeek(week:WeekData):Void
@@ -496,7 +504,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
     public function loadChart():Void
     {
-        chart = ChartBuilder.buildFromFolder(Paths.data(level.getClassPath()));
+        chart = ChartBuilder.buildFromFolder(Paths.data('game/levels/${level.name}'));
 
         chart.notes.sortTimed();
 
@@ -509,16 +517,16 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
             note.direction = FlxG.random.int(0, 3);
         }
         #else
-        var directions:Array<Int> = new Array<Int>();
+        var ds:Array<Int> = new Array<Int>();
 
         for (i in 0 ... 4)
-            directions.push(FlxG.random.int(0, 3, directions));
+            ds.push(FlxG.random.int(0, 3, ds));
 
         for (i in 0 ... chart.notes.length)
         {
             var note:NoteData = chart.notes[i];
 
-            note.direction = directions[note.direction];
+            note.direction = ds[note.direction];
         }
         #end
         #end
@@ -526,10 +534,8 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         chart.events.sortTimed();
 
         chart.timingPoints.sortTimed();
-        
-        conductor.writeTimingPointData(chart.timingPoints);
 
-        conductor.calibrateTimingPoints();
+        conductor.calibrateTimingPoints(chart.timingPoints);
 
         conductor.update(-conductor.beatLength * 5.0);
 
@@ -564,7 +570,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
     public function loadSong():Void
     {
-        var songPath:String = '${level.getClassPath()}/';
+        var songPath:String = 'game/levels/${level.name}/';
 
         instrumental = FlxG.sound.load(AssetCache.getMusic('${songPath}Instrumental'));
 
@@ -741,7 +747,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
     public function updateHealthBar():Void
     {
-        var playAsWho:Int = Std.parseInt(MacroUtil.sanitizeDefine(MacroUtil.getDefine("PLAY_AS_WHO")));
+        var playAsWho:Int = Std.parseInt(MacroUtil.sanitizeDefine(MacroUtil.getDefine("PLAY_AS_WHO"))) ?? 1;
 
         var playAsOpponent:Bool = playAsWho == 0;
 

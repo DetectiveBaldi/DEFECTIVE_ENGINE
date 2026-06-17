@@ -190,7 +190,7 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         if (!Options.botplay)
         {
-            var playAsWho:Int = Std.parseInt(MacroUtil.sanitizeDefine(MacroUtil.getDefine("PLAY_AS_WHO")));
+            var playAsWho:Int = Std.parseInt(MacroUtil.sanitizeDefine(MacroUtil.getDefine("PLAY_AS_WHO"))) ?? 1;
 
             var strumline:Strumline = strumlines.members[playAsWho];
 
@@ -297,14 +297,14 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
     {
         if (!ev.note.strumline.botplay)
         {
-            playStats.score += Math.floor(250.0 * ev.elapsed);
+            playStats.score += Math.floor(250.0 * FlxG.elapsed);
 
             onUpdateScore.dispatch(playStats);
 
             updateScoreText();
         }
 
-        healthBar.value += 10.0 * ev.elapsed;
+        healthBar.value += 10.0 * FlxG.elapsed;
     }
 
     public function ghostTap(ev:GhostTapEvent):Void

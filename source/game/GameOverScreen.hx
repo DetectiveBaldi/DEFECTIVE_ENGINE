@@ -11,6 +11,7 @@ import core.AssetCache;
 import core.Paths;
 
 import data.CharacterData;
+import data.Chart;
 
 import music.Conductor;
 
@@ -49,9 +50,11 @@ class GameOverScreen extends FlxSubState implements IBeatDispatcher
 
         conductor.onMeasureHit.add(measureHit);
 
-        conductor.timingPoints.push({time: 0.0, tempo: 100.0, beatsPerMeasure: 4});
+        var timingPoints:Array<TimingPointData> = new Array<TimingPointData>();
 
-        conductor.calibrateTimingPoints();
+        timingPoints.push({time: 0.0, tempo: 100.0, beatsPerMeasure: 4});
+
+        conductor.calibrateTimingPoints(timingPoints);
 
         conductor.update(-conductor.beatLength * 5.0);
 

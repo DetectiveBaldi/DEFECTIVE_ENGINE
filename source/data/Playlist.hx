@@ -34,6 +34,10 @@ class Playlist
 
         LevelData.list.push(level);
 
+        level = {week: null, name: "Taimuresu"}
+
+        LevelData.list.push(level);
+
         level = {week: null, name: "Thorns"}
 
         LevelData.list.push(level);

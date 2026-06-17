@@ -1,5 +1,7 @@
 package music;
 
+import haxe.Rest;
+
 import flixel.FlxBasic;
 
 import flixel.util.FlxDestroyUtil;
@@ -181,36 +183,36 @@ class Conductor
     
     public function getTimingPointAtTime(time:Float):TimingPoint
     {
-        var res:TimingPoint = timingPoints[0];
+        var t:TimingPoint = timingPoints[0];
 
         for (i in 1 ... timingPoints.length)
         {
-            var timingPoint:TimingPoint = timingPoints[i];
+            var tt:TimingPoint = timingPoints[i];
 
-            if (time < timingPoint.time)
+            if (time < tt.time)
                 break;
 
-            res = timingPoint;
+            t = tt;
         }
 
-        return res;
+        return t;
     }
 
     public function getTimingPointAtBeat(beat:Float):TimingPoint
     {
-        var output:TimingPoint = timingPoints[0];
+        var t:TimingPoint = timingPoints[0];
 
         for (i in 1 ... timingPoints.length)
         {
-            var point:TimingPoint = timingPoints[i];
+            var tt:TimingPoint = timingPoints[i];
 
-            if (beat < point.beatOffset)
+            if (beat < tt.beatOffset)
                 break;
 
-            output = point;
+            t = tt;
         }
 
-        return output;
+        return t;
     }
 
     public function getStepAt(time:Float):Float
@@ -220,16 +222,16 @@ class Conductor
 
     public function getBeatAt(time:Float):Float
     {
-        var point:TimingPoint = timingPoint;
+        var t:TimingPoint = timingPoint;
 
-        return point.beatOffset + (time - point.time) / beatLength;
+        return t.beatOffset + (time - t.time) / beatLength;
     }
 
     public function getMeasureAt(time:Float):Float
     {
-        var point:TimingPoint = timingPoint;
+        var t:TimingPoint = timingPoint;
 
-        return point.measureOffset + (time - point.time) / measureLength;
+        return t.measureOffset + (time - t.time) / measureLength;
     }
 
     public function stepToTime(step:Float):Float
@@ -239,26 +241,27 @@ class Conductor
 
     public function beatToTime(beat:Float):Float
     {
-        var point:TimingPoint = getTimingPointAtBeat(beat);
+        var t:TimingPoint = timingPoint;
 
-        return point.time + beatLength * (beat - point.beatOffset);
+        return t.time + beatLength * (beat - t.beatOffset);
     }
 
     public function measureToTime(measure:Float):Float
     {
-        var point:TimingPoint = timingPoint;
+        var t:TimingPoint = timingPoint;
 
-        return point.time + measureLength * (measure - point.measureOffset);
+        return t.time + measureLength * (measure - t.measureOffset);
     }
 
-    public function writeTimingPointData(list:Array<TimingPointData>):Void
+    public function calibrateTimingPoints(v:Array<TimingPointData>):Void
     {
-        for (i in 0 ... list.length)
-            timingPoints.push(TimingPoint.decodeData(list[i]));
-    }
+        for (i in 0 ... v.length)
+        {
+            var t:TimingPointData = v[i];
 
-    public function calibrateTimingPoints():Void
-    {
+            timingPoints.push(TimingPoint.build(t));
+        }
+
         var timeOffset:Float = 0.0;
 
         var beatOffset:Float = 0.0;
