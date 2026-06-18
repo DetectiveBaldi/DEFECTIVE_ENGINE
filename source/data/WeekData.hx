@@ -32,15 +32,6 @@ class WeekData
         scoreRequirements = new Map<String, Array<String>>();
     }
 
-    public function encodeName():String
-    {
-        return '${name.split(" ").join("").toLowerCase()}w';
-    }
-
-    /**
-     * Returns a surface-level copy of this `WeekData`. Level data is not recreated!
-     * @return `WeekData`
-     */
     public function copy():WeekData
     {
         var data:WeekData = {name: name, nameSuffix: nameSuffix, description: description}
@@ -85,5 +76,15 @@ class WeekData
         }
 
         return true;
+    }
+
+    /**
+     * Returns a translated week name that we can use when evaluating class paths. For example, the name
+     * "The Week with Multiple Words" would translate to "theweekwithmultiplewordsw".
+     * @return String
+     */
+    public function toString():String
+    {
+        return '${name.split(" ").join("").toLowerCase()}w';
     }
 }

@@ -22,39 +22,41 @@ class LevelData
         this.difficulty = difficulty;
     }
 
-    public function encodeName():String
+    /**
+     * Creates a path that links to a properly translated level class.
+     * @return String
+     */
+    public function getClassPath():String
     {
-        var split:Array<String> = name.split(" ");
-
-        for (i in 1 ... split.length)
-        {
-            var s:String = split[i];
-
-            split[i] = s.charAt(0).toUpperCase();
-        }
-
-        return '${split.join("")}L';
-    }
-
-    public function copy():LevelData
-    {
-        var level:LevelData = {week: week, name: name, difficulty: difficulty}
-
-        return level;
-    }
-
-    public function getClassPath(sep:String = "/"):String
-    {
-        var path:String = "game/levels";
+        var path:String = "game.levels";
 
         if (week != null)
-            path += '/${week.encodeName()}';
+            path += '.${week.toString()}';
 
         if (difficulty != "Normal")
-            path += '/diff_${difficulty.toLowerCase()}';
+            path += '.diff_${difficulty.toLowerCase()}';
 
-        path += '/${encodeName()}';
+        path += '.${toString()}';
 
-        return path.replace("/", sep);
+        return path;
+    }
+
+    /**
+     * Returns a translated level name we can can use when evaluating class paths. For example, the name
+     * "The Level with Multiple Words" would translate to "TheLWMWL".
+     * @return String
+     */
+    public function toString():String
+    {
+        var s:Array<String> = name.split(" ");
+
+        for (i in 1 ... s.length)
+        {
+            var ss:String = s[i];
+
+            s[i] = ss.charAt(0).toUpperCase();
+        }
+
+        return '${s.join("")}L';
     }
 }

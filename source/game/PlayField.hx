@@ -163,7 +163,7 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         opponentStrumline.scrollSpeed = scrollSpeed;
 
-        opponentStrumline.strums.setPosition(45.0, opponentStrumline.downscroll ?
+        opponentStrumline.strums.setPosition(180.0 / keyCount, opponentStrumline.downscroll ?
             FlxG.height - opponentStrumline.strums.height - 15.0 : 15.0);
 
         strumlines.add(opponentStrumline);
@@ -172,7 +172,7 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         playerStrumline.scrollSpeed = scrollSpeed;
 
-        playerStrumline.strums.setPosition(FlxG.width - playerStrumline.strums.width - 45.0, playerStrumline.downscroll ?
+        playerStrumline.strums.setPosition(FlxG.width - playerStrumline.strums.width - 180.0 / keyCount, playerStrumline.downscroll ?
             FlxG.height - playerStrumline.strums.height - 15.0 : 15.0);
 
         strumlines.add(playerStrumline);
@@ -284,7 +284,7 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         onUpdateScore.dispatch(playStats);
 
-        healthBar.value -= 2.5;
+        healthBar.value -= 5.0;
 
         updateScoreText();
     }
@@ -313,7 +313,7 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
             onUpdateScore.dispatch(playStats);
 
-            healthBar.value -= 2.5;
+            healthBar.value -= 5.0;
 
             updateScoreText();
         }

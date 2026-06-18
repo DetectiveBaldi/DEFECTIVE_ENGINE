@@ -13,7 +13,7 @@ Organized source code with many powerful tools:
 Several optimizations:
 - Notes, sustains, sustain tails, and note splashes are all recycled, which avoids creating tons of new instances
 - Sustains are now rendered as 2 sprites (the "piece" and the "tail") instead of dozens of separated sprites
-- Week and level lists are now prepared at compile time (instead of runtime)
+- Levels, weeks, and stages are now prepared at compile time (instead of runtime)
 
 Other:
 - Character editor
@@ -44,5 +44,5 @@ Follow these steps to build the game:
 
 ## Notice
 Defective Engine is still in early development. The engine is already very capable, although, if you plan to develop a mod, there are a couple of things to take into consideration:
-- I use many placeholder songs to test development features, which you would want to remove if you make a mod. All of the current placeholders will be replaced with a coherent modding example once the engine nears a full release.
+- I use many placeholder levels to test development features, which you would want to remove if you make a mod. All of the current placeholders will be replaced with a coherent modding example once the engine nears a full release.
 - The engine is not super beginner friendly! There isn't a ton of documentation right now and you can cause a LOT of confusing crashes if you don't know what you are doing! Error handling and documentation will be significantly improved in the near future.

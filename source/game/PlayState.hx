@@ -82,17 +82,25 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
     public static var weekStats:Map<String, PlayStats> = new Map<String, PlayStats>();
     
-    public static function getClassFromLevel(level:LevelData = null, params:PlayStateParams = null):PlayState
+    public static function getClassFromLevel(level:LevelData = null):PlayState
     {
         level ??= PlayState.level;
+        
+        if (level == null)
+            throw "`level` is `null` for `getClassFromLevel`. Make sure you added your level to `data.Playlist`!";
 
-        var c:Class<Dynamic> = Type.resolveClass(level.getClassPath("."));
+        var c:Class<Dynamic> = Type.resolveClass(level.getClassPath());
 
-        // So we don't have to create a bunch of useless classes when testing fun things!
         if (c == null)
-            return new LevelL(params);
+        {
+            trace('Couldn\'t generate level class, make sure you named it correctly (${level.getClassPath()}).');
 
-        return Type.createInstance(c, [params]);
+            trace("Falling back to `game.levels.LevelL`!");
+
+            return new LevelL();
+        }
+
+        return Type.createInstance(c, []);
     }
 
     public static function loadWeek(week:WeekData):Void
@@ -106,7 +114,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         FlxG.switchState(() -> getClassFromLevel());
     }
 
-    public static function loadLevel(level:LevelData, params:PlayStateParams = null):Void
+    public static function loadLevel(level:LevelData):Void
     {
         week = null;
 
@@ -114,20 +122,8 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         weekStats.clear();
 
-        FlxG.switchState(() -> getClassFromLevel(params));
+        FlxG.switchState(() -> getClassFromLevel());
     }
-    
-    public function getClassFromNextState():Class<FlxState>
-    {
-        var nextState:NextState = params?.nextState;
-
-        if (nextState == null)
-            return null;
-        
-        return Type.getClass(nextState.createInstance());
-    }
-
-    public var params:PlayStateParams;
 
     public var conductor:Conductor;
 
@@ -223,13 +219,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
     public var countdown:Countdown;
 
     public var startingSong:Bool;
-
-    public function new(params:PlayStateParams):Void
-    {
-        super();
-
-        this.params = params;
-    }
 
     override function create():Void
     {
@@ -463,7 +452,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         #if FLX_DEBUG
         if (FlxG.keys.justPressed.EIGHT)
-            FlxG.switchState(() -> new editors.CharacterEditorState(() -> PlayState.getClassFromLevel(params), player.config.name));
+            FlxG.switchState(() -> new editors.CharacterEditorState(() -> PlayState.getClassFromLevel(), player.config.name));
         #end
 
         if (FlxG.keys.justPressed.ESCAPE)
@@ -605,8 +594,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         opponentVocals?.stop();
 
         playerVocals?.stop();
-
-        var nextState:NextState = params?.nextState;
         
         var playStats:PlayStats = playField.playStats;
 
@@ -659,7 +646,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
                 SaveManager.saveHighScores();
             }
         }
-
+        
         FlxG.resetState();
     }
 
@@ -834,6 +821,8 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         cameraPoint.centerTo();
 
+        gameCamera.snapToTarget();
+
         pauseMusic();
     }
 
@@ -908,11 +897,3 @@ enum CameraLockMode
      */
     NONE;
 }
-
-typedef PlayStateParams =
-{
-    /**
-     * Where should we go after this level is finished?
-     */
-    var ?nextState:NextState;
-} 

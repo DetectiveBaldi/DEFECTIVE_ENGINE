@@ -1,9 +1,9 @@
 {
-    "controls": [[83, 83], [68, 68], [70, 70], [74, 74], [75, 75], [76, 76]],
+    "controls": [[65, 65], [83, 83], [68, 68], [74, 74], [75, 75], [76, 76]],
 
-    "mapping": ["LEFT", "UP", "RIGHT", "LEFT", "DOWN", "RIGHT"],
+    "keys": ["LEFT", "UP", "RIGHT", "LEFT", "DOWN", "RIGHT"],
 
-    "strumScale": 0.6,
+    "strumScale": 0.64,
 
-    "strumSpacing": 84
+    "strumSpacing": 88.0
 }

@@ -4,7 +4,7 @@ typedef KeyParamsData =
 {
     public var controls:Array<Array<Int>>;
 
-    public var mapping:Array<String>;
+    public var keys:Array<String>;
 
     public var strumScale:Float;
 
@@ -16,14 +16,14 @@ class KeyParams
 {
     public static function build(v:KeyParamsData):KeyParams
     {
-        var keyParams:KeyParams = {controls: v.controls, mapping: v.mapping, strumScale: v.strumScale, strumSpacing: v.strumSpacing}
+        var keyParams:KeyParams = {controls: v.controls, keys: v.keys, strumScale: v.strumScale, strumSpacing: v.strumSpacing}
 
         return keyParams;
     };
 
     public var controls:Array<Array<Int>>;
 
-    public var mapping:Array<String>;
+    public var keys:Array<String>;
 
     public var strumScale:Float;
 

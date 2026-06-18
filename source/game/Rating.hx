@@ -7,13 +7,13 @@ class Rating
 {
     public static var list:Array<Rating> =
     [
-        {name: "Sick!", timing: 45.0, bonus: 1.0, health: 1.0},
+        {name: "Sick!", timing: 45.0, bonus: 1.0, health: 5.0},
 
-        {name: "Good", timing: 90.0, bonus: 0.65, health: 0.5},
+        {name: "Good", timing: 90.0, bonus: 0.65, health: 0.8},
 
-        {name: "Bad", timing: 135.0, bonus: 0.35, health: 0.0},
+        {name: "Bad", timing: 135.0, bonus: 0.35, health: -3.0},
 
-        {name: "Shit", timing: 166.6, bonus: 0.0, health: -1.0},
+        {name: "Shit", timing: 166.6, bonus: 0.0, health: -10.0},
     ];
 
     public static var earliestTiming(get, never):Float;

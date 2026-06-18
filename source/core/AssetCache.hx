@@ -44,7 +44,8 @@ class AssetCache
 
     public static overload inline extern function getGraphic(path:String, gpuCaching:Bool = true):FlxGraphic
     {
-        path = Paths.image(Paths.png(path));
+        if (!path.startsWith("assets/"))
+            path = Paths.image(Paths.png(path));
 
         if (graphics.exists(path))
             return graphics[path];

@@ -117,6 +117,8 @@ class InitState extends FlxState
 
         definedLevel = definedLevel.split("_").join(" ");
 
+        trace(LevelData.list.first((level:LevelData) -> level.name == definedLevel), definedLevel);
+
         PlayState.loadLevel(LevelData.list.first((level:LevelData) -> level.name == definedLevel));
     }
 }

@@ -131,7 +131,10 @@ class Strumline extends FlxGroup
 
         getKeysToCheck();
 
-        keysHeld = [for (i in 0 ... keyCount) false];
+        keysHeld = new Array<Bool>();
+
+        for (i in 0 ... keyCount)
+            keysHeld.push(false);
 
         strums = new FlxTypedSpriteGroup<Strum>();
 
@@ -341,12 +344,12 @@ class Strumline extends FlxGroup
 
     public function convertDirectionToAnimation(direction:Int):String
     {
-        return keyParams.mapping[direction];
+        return keyParams.keys[direction];
     }
 
     public function convertDirectionToAnimationIndex(direction:Int):Int
     {
-        return Note.DIRECTIONS.indexOf(keyParams.mapping[direction]);
+        return Note.DIRECTIONS.indexOf(keyParams.keys[direction]);
     }
 
     public function getKeysToCheck():Map<Int, Array<Int>>
