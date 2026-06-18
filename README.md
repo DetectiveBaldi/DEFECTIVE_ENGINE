@@ -13,9 +13,10 @@ Organized source code with many powerful tools:
 Several optimizations:
 - Notes, sustains, sustain tails, and note splashes are all recycled, which avoids creating tons of new instances
 - Sustains are now rendered as 2 sprites (the "piece" and the "tail") instead of dozens of separated sprites
-- Levels, weeks, and stages are now prepared at compile time (instead of runtime)
+- Many components like level lists, week lists, stages, and more are now prepared at compile time (instead of runtime)
 
 Other:
+- Key counts > and < than 4
 - Character editor
 - Options menu
 - Compilation support for several targets (cpp, hl, html5)
