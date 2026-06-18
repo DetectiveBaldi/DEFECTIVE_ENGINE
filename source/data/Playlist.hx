@@ -6,7 +6,11 @@ class Playlist
 {
     public static function init():Void
     {
-        var level:LevelData = {week: null, name: "Contentment1"}
+        var level:LevelData = {week: null, name: "Adagio"}
+
+        LevelData.list.push(level);
+
+        level = {week: null, name: "Contentment1"}
 
         LevelData.list.push(level);
 
@@ -34,6 +38,10 @@ class Playlist
 
         LevelData.list.push(level);
 
+        level = {week: null, name: "Multicolor Demise"}
+
+        LevelData.list.push(level);
+
         level = {week: null, name: "Senpai"}
 
         LevelData.list.push(level);
@@ -55,6 +63,10 @@ class Playlist
         LevelData.list.push(level);
 
         level = {week: null, name: "Unbeatable"}
+
+        LevelData.list.push(level);
+
+        level = {week: null, name: "Voiid Chronicles Final Destination God"}
 
         LevelData.list.push(level);
     }

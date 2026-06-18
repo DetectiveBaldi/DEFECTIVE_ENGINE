@@ -466,9 +466,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
             FlxG.switchState(() -> new editors.CharacterEditorState(() -> PlayState.getClassFromLevel(params), player.config.name));
         #end
 
-        if (FlxG.keys.justPressed.R)
-            gameOver();
-
         if (FlxG.keys.justPressed.ESCAPE)
             FlxG.resetState();
     }

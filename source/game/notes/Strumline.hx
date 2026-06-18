@@ -10,6 +10,9 @@ import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
+import flixel.input.FlxInput;
+import flixel.input.keyboard.FlxKey;
+
 import flixel.sound.FlxSound;
 
 import flixel.tweens.FlxTween;
@@ -29,8 +32,6 @@ import game.notes.events.GhostTapEvent;
 import game.notes.events.NoteHitEvent;
 import game.notes.events.SustainHoldEvent;
 
-import interfaces.ISequenceHandler;
-
 import music.Conductor;
 
 using StringTools;
@@ -38,12 +39,8 @@ using StringTools;
 using util.ArrayUtil;
 using tools.ObjectHelpers;
 
-class Strumline extends FlxGroup implements ISequenceHandler
+class Strumline extends FlxGroup
 {
-    public var tweens:FlxTweenManager;
-
-    public var timers:FlxTimerManager;
-
     public var conductor:Conductor;
 
     public var chart:Chart;
@@ -58,17 +55,17 @@ class Strumline extends FlxGroup implements ISequenceHandler
 
     public var strums:FlxTypedSpriteGroup<Strum>;
 
-    public var spacing(default, set):Float;
+    public var strumSpacing(default, set):Float;
 
     @:noCompletion
-    function set_spacing(_spacing:Float):Float
+    function set_strumSpacing(sstrumSpacing:Float):Float
     {   
-        spacing = _spacing;
+        strumSpacing = sstrumSpacing;
 
         for (i in 0 ... strums.members.length)
-            strums.members[i].x = strums.x + spacing * i;
+            strums.members[i].x = strums.x + strumSpacing * i;
 
-        return spacing;
+        return strumSpacing;
     }
 
     public var notes:FlxTypedGroup<Note>;
@@ -122,19 +119,13 @@ class Strumline extends FlxGroup implements ISequenceHandler
 
     public var lastStep:Int;
 
-    public function new(sequenceHandler:ISequenceHandler, beatDispatcher:IBeatDispatcher, chart:Chart):Void
+    public function new(beatDispatcher:IBeatDispatcher, keyCount:Int):Void
     {
         super();
 
-        tweens = sequenceHandler.tweens;
-
-        timers = sequenceHandler.timers;
-
         conductor = beatDispatcher.conductor;
 
-        this.chart = chart;
-
-        keyCount = chart.keyCount;
+        this.keyCount = keyCount;
 
         keyParams = KeyParams.build(Json.parse(Assets.getText(Paths.json(Paths.data('data/KeyParams/${keyCount}k')))));
 
@@ -146,6 +137,8 @@ class Strumline extends FlxGroup implements ISequenceHandler
 
         add(strums);
 
+        var strumScale:Float = keyParams.strumScale;
+
         for (i in 0 ... keyCount)
         {
             var strum:Strum = new Strum(beatDispatcher);
@@ -154,16 +147,16 @@ class Strumline extends FlxGroup implements ISequenceHandler
 
             strum.direction = i;
 
-            strum.animation.play(keyParams.mapping[strum.direction].toLowerCase() + "Static");
+            strum.animation.play('${convertDirectionToAnimation(strum.direction).toLowerCase()}Static');
 
-            strum.scale.set(keyParams.noteScale, keyParams.noteScale);
+            strum.scale.set(strumScale, strumScale);
 
             strum.updateHitbox();
             
             strums.add(strum);
         }
 
-        spacing = keyParams.noteSpacing;
+        strumSpacing = keyParams.strumSpacing;
 
         notes = new FlxTypedGroup<Note>();
 
@@ -237,11 +230,11 @@ class Strumline extends FlxGroup implements ISequenceHandler
                 var keys:Array<Int> = v;
 
                 @:privateAccess
-                if (FlxG.keys.checkKeyArrayState(keys, JUST_PRESSED))
+                if (checkArrayState(keys, JUST_PRESSED))
                 {
                     var strum:Strum = strums.members[direction];
 
-                    strum.animation.play(keyParams.mapping[strum.direction].toLowerCase() + "Press");
+                    strum.animation.play('${convertDirectionToAnimation(direction).toLowerCase()}Press');
 
                     var note:Note = notes.getFirst((_note:Note) -> _note.isHittable() && _note.direction == direction);
 
@@ -251,18 +244,16 @@ class Strumline extends FlxGroup implements ISequenceHandler
                         noteHit(note);
                 }
 
-                @:privateAccess
-                if (FlxG.keys.checkKeyArrayState(keys, PRESSED))
+                if (checkArrayState(keys, PRESSED))
                     keysHeld[direction] = true;
 
-                @:privateAccess
-                if (FlxG.keys.checkKeyArrayState(keys, JUST_RELEASED))
+                if (checkArrayState(keys, JUST_RELEASED))
                 {
                     keysHeld[direction] = false;
 
                     var strum:Strum = strums.members[direction];
 
-                    strum.animation.play(keyParams.mapping[strum.direction].toLowerCase() + "Static");
+                    strum.animation.play('${convertDirectionToAnimation(direction).toLowerCase()}Static');
                 }
             }
         }
@@ -342,6 +333,22 @@ class Strumline extends FlxGroup implements ISequenceHandler
         onGhostTap = cast FlxDestroyUtil.destroy(onGhostTap);
     }
 
+    public function checkArrayState(keys:Array<FlxKey>, state:FlxInputState):Bool
+    {
+        @:privateAccess
+        return FlxG.keys.checkKeyArrayState(keys, state);
+    }
+
+    public function convertDirectionToAnimation(direction:Int):String
+    {
+        return keyParams.mapping[direction];
+    }
+
+    public function convertDirectionToAnimationIndex(direction:Int):Int
+    {
+        return Note.DIRECTIONS.indexOf(keyParams.mapping[direction]);
+    }
+
     public function getKeysToCheck():Map<Int, Array<Int>>
     {
         if (keysToCheck == null)
@@ -383,7 +390,7 @@ class Strumline extends FlxGroup implements ISequenceHandler
 
         strum.holdTimer = 0.0;
         
-        strum.animation.play(keyParams.mapping[note.direction].toLowerCase() + "Confirm", true);
+        strum.animation.play('${convertDirectionToAnimation(note.direction).toLowerCase()}Confirm', true);
 
         if (note.length > 0.0)
             resizeSustainNote(note);
@@ -425,11 +432,13 @@ class Strumline extends FlxGroup implements ISequenceHandler
     {
         var splash:NoteSplash = noteSplashes.recycle(NoteSplash, () -> new NoteSplash());
 
-        splash.scale.set(keyParams.noteScale, keyParams.noteScale);
+        var strumScale:Float = keyParams.strumScale;
+
+        splash.scale.set(strumScale, strumScale);
 
         splash.updateHitbox();
 
-        splash.play(Note.DIRECTIONS.indexOf(keyParams.mapping[note.strum.direction]), note.length > 0.0);
+        splash.play(convertDirectionToAnimationIndex(note.direction), note.length > 0.0);
 
         splash.centerTo(note.strum);
     }
@@ -461,7 +470,7 @@ class Strumline extends FlxGroup implements ISequenceHandler
 
             strum.holdTimer = 0.0;
 
-            strum.animation.play(keyParams.mapping[strum.direction].toLowerCase() + "Confirm", true);
+            strum.animation.play('${convertDirectionToAnimation(note.direction).toLowerCase()}Confirm', true);
             
             setStrumActive(note.direction, false);
             
@@ -500,7 +509,7 @@ class Strumline extends FlxGroup implements ISequenceHandler
         }
         else
         {
-            var anim:String = keyParams.mapping[note.direction].toLowerCase() + "Static";
+            var anim:String = '${convertDirectionToAnimation(note.direction).toLowerCase()}Static';
 
             note.strum.animation.play(anim, true);
         }
@@ -554,7 +563,7 @@ class Strumline extends FlxGroup implements ISequenceHandler
             if (note.kind.altAnimation)
                 animSuffix = "-alt";
 
-            var directionStr:String = Note.DIRECTIONS[Note.DIRECTIONS.indexOf(keyParams.mapping[note.strum.direction])];
+            var directionStr:String = convertDirectionToAnimation(direction);
 
             if (hold && character.animation.name.contains(directionStr))
                 continue;
@@ -605,7 +614,7 @@ class Strumline extends FlxGroup implements ISequenceHandler
             if (note?.kind?.altAnimation)
                 animSuffix = "-alt";
 
-            var directionStr:String = Note.DIRECTIONS[Note.DIRECTIONS.indexOf(keyParams.mapping[note.strum.direction])];
+            var directionStr:String = convertDirectionToAnimation(direction);
 
             var animToPlay:String = 'Sing${directionStr}MISS${animSuffix}';
 

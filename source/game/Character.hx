@@ -108,7 +108,7 @@ class Character extends FlxSprite
             if ((animation.name ?? "").endsWith("MISS"))
                 singTimeSec *= 2.0;
 
-            if (holdTimer >= singTimeSec)
+            if (holdTimer >= singTimeSec && !strumline.keysHeld.contains(true))
             {
                 holdTimer = 0.0;
                 

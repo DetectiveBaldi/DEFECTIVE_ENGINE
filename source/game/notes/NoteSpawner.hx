@@ -60,10 +60,10 @@ class NoteSpawner extends FlxBasic
 
             var strumline:Strumline = strumlines.members[noteData.lane];
 
-            var scale:Float = strumline.keyParams.noteScale;
-
             if (noteData.time > conductor.time + getSpawnDistance(noteData.lane))
                 break;
+
+            var strumScale:Float = strumline.keyParams.strumScale;
 
             var note:Note = notes.recycle(Note, noteFactory);
 
@@ -91,11 +91,11 @@ class NoteSpawner extends FlxBasic
 
             note.strum = strumline.strums.members[note.direction];
 
-            note.animation.play(strumline.keyParams.mapping[note.direction].toLowerCase());
+            note.animation.play(strumline.convertDirectionToAnimation(note.direction).toLowerCase());
 
             note.flipY = false;
 
-            note.scale.set(scale, scale);
+            note.scale.set(strumScale, strumScale);
 
             note.updateHitbox();
 
@@ -111,11 +111,11 @@ class NoteSpawner extends FlxBasic
 
                 sustain.note = note;
 
-                sustain.animation.play(strumline.keyParams.mapping[note.direction].toLowerCase() + "HoldPiece");
+                sustain.animation.play('${note.animation.name}HoldPiece');
 
                 sustain.flipY = note.strum.downscroll;
 
-                sustain.setGraphicSize(sustain.frameWidth * scale, note.length * strumline.scrollSpeed * 0.45);
+                sustain.setGraphicSize(sustain.frameWidth * note.scale.x, note.length * strumline.scrollSpeed * 0.45);
 
                 sustain.updateHitbox();
 
@@ -129,11 +129,11 @@ class NoteSpawner extends FlxBasic
 
                 trail.sustain = sustain;
 
-                trail.animation.play(strumline.keyParams.mapping[note.direction].toLowerCase() + "HoldTail");
+                trail.animation.play('${note.animation.name}HoldTail');
 
                 trail.flipY = note.strum.downscroll;
 
-                trail.scale.set(scale, scale);
+                trail.scale.set(strumScale, strumScale);
 
                 trail.updateHitbox();
 

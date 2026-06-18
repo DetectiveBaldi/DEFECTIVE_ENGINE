@@ -6,9 +6,9 @@ typedef KeyParamsData =
 
     public var mapping:Array<String>;
 
-    public var noteScale:Float;
+    public var strumScale:Float;
 
-    public var noteSpacing:Float;
+    public var strumSpacing:Float;
 }
 
 @:structInit
@@ -16,7 +16,7 @@ class KeyParams
 {
     public static function build(v:KeyParamsData):KeyParams
     {
-        var keyParams:KeyParams = {controls: v.controls, mapping: v.mapping, noteScale: v.noteScale, noteSpacing: v.noteSpacing};
+        var keyParams:KeyParams = {controls: v.controls, mapping: v.mapping, strumScale: v.strumScale, strumSpacing: v.strumSpacing}
 
         return keyParams;
     };
@@ -25,7 +25,7 @@ class KeyParams
 
     public var mapping:Array<String>;
 
-    public var noteScale:Float;
+    public var strumScale:Float;
 
-    public var noteSpacing:Float;
+    public var strumSpacing:Float;
 }

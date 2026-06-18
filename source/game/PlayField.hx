@@ -131,9 +131,6 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         add(timeGauge);
 
-        if (Options.botplay)
-            timeGauge.kill();
-
         timeText = new FlxText(0.0, 0.0, FlxG.width, "-:--", 36);
 
         timeText.antialiasing = true;
@@ -148,9 +145,6 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         add(timeText);
 
-        if (Options.botplay)
-            timeText.kill();
-
         noteSpawner = new NoteSpawner(beatDispatcher, chart.notes, null);
 
         add(noteSpawner);
@@ -163,7 +157,9 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         noteSpawner.strumlines = strumlines;
 
-        opponentStrumline = new Strumline(this, this, chart);
+        var keyCount:Int = chart.keyCount;
+
+        opponentStrumline = new Strumline(this, keyCount);
 
         opponentStrumline.scrollSpeed = scrollSpeed;
 
@@ -172,7 +168,7 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         strumlines.add(opponentStrumline);
 
-        playerStrumline = new Strumline(this, this, chart);
+        playerStrumline = new Strumline(this, keyCount);
 
         playerStrumline.scrollSpeed = scrollSpeed;
 

@@ -3,7 +3,7 @@
 
     "mapping": ["LEFT", "UP", "RIGHT", "UP", "LEFT", "DOWN", "RIGHT"],
 
-    "noteScale": 0.55,
+    "strumScale": 0.55,
 
-    "noteSpacing": 72
+    "strumSpacing": 72
 }
