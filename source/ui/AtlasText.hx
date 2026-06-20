@@ -5,53 +5,99 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxInputText;
+import flixel.util.FlxDestroyUtil;
 
 import core.AssetCache;
 import core.Paths;
 
 using StringTools;
 
+// This class uses images to render a sequence of characters, rather than a .ttf or .otf file.
+// If you need to change the font, assign `font` and then call `setFont` and `setText`.
+// If you need to change the text, assign `text` and call `setText`.
 class AtlasText extends FlxSpriteGroup
 {
-    public static var fonts:Map<String, AtlasTextFont> = new Map<String, AtlasTextFont>();
+    public static var fonts:Map<String, AtlasTextFontData> = new Map<String, AtlasTextFontData>();
 
-    public var font:AtlasTextFont;
+    public var font:String;
+
+    public var fontData(get, never):AtlasTextFontData;
+
+    @:noCompletion
+    function get_fontData():AtlasTextFontData
+    {
+        return fonts[font];
+    }
 
     public var maxHeight(get, never):Float;
 
     @:noCompletion
     function get_maxHeight():Float
     {
-        return font.maxHeight;
+        return fontData.maxHeight;
     }
 
-    public var text(default, set):String;
+    public var text:String;
 
-    @:noCompletion
-    function set_text(v:String):String
+    public function new(x:Float = 0.0, y:Float = 0.0, text:String):Void
     {
-        text = v;
+        super(x, y);
 
-        if (font.forceCase != ALL_CASES)
+        this.text = text;
+
+        font = "default";
+
+        setFont();
+
+        setText();
+    }
+
+    override function update(elapsed:Float):Void
+    {
+        super.update(elapsed);
+
+        for (i in 0 ... members.length)
         {
-            if (font.forceCase == UPPER_CASE)
-                text = text.toUpperCase();
+            var char:FlxSprite = members[i];
+
+            char.active = char.isOnScreen();
+        }
+    }
+
+    // Adds the new font if necessary
+    public function setFont():Void
+    {
+        fonts[font] ??= new AtlasTextFontData(font);
+    }
+
+    public function setText():Void
+    {
+        // No font, we can't render anything.
+        if (fontData == null)
+            return;
+
+        var textToRender:String = text;
+
+        if (fontData.forceCase != ALL_CASES)
+        {
+            if (fontData.forceCase == UPPER_CASE)
+                textToRender = text.toUpperCase();
             else
-                text = text.toLowerCase();
+                textToRender = text.toLowerCase();
         }
 
         for (i in 0 ... members.length)
         {
-            var sprite:FlxSprite = members[i];
+            var char:FlxSprite = members[i];
 
-            sprite.kill();
+            char.kill();
         }
 
-        var xx:Float = 0.0;
+        var xx:Float = x;
 
-        var yy:Float = 0.0;
+        var yy:Float = y;
 
-        var splitText:Array<String> = text.split("");
+        var splitText:Array<String> = textToRender.split("");
 
         for (i in 0 ... splitText.length)
         {
@@ -73,10 +119,9 @@ class AtlasText extends FlxSpriteGroup
                 {
                     var sprite:FlxSprite = recycle(FlxSprite, () -> new FlxSprite());
 
-                    if (sprite.frames != font.atlas)
-                        sprite.frames = font.atlas;
+                    sprite.frames = fontData.atlas;
 
-                    sprite.animation.addByPrefix(char, AtlasTextFont.getAnimationPrefix(char), 24.0, true);
+                    sprite.animation.addByPrefix(char, AtlasTextFontData.getAnimationPrefix(char), 24.0, true);
 
                     sprite.animation.play(char);
 
@@ -88,24 +133,10 @@ class AtlasText extends FlxSpriteGroup
                 }
             }
         }
-
-        return text;
-    }
-
-    public function new(x:Float = 0.0, y:Float = 0.0, ffont:String, ttext:String):Void
-    {
-        super(x, y);
-
-        if (!fonts.exists(ffont))
-            fonts[ffont] = new AtlasTextFont(ffont);
-
-        font = fonts[ffont];
-
-        text = ttext;
     }
 }
 
-class AtlasTextFont
+class AtlasTextFontData
 {
     public static var upperCaseChars:EReg = ~/^[A-Z]\d+$/;
 
@@ -202,5 +233,10 @@ class AtlasTextFont
             else
                 forceCase = LOWER_CASE;
         }
+    }
+
+    public function destroy():Void
+    {
+        atlas = FlxDestroyUtil.destroy(atlas);
     }
 }

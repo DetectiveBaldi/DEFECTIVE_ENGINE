@@ -6,68 +6,32 @@ class Playlist
 {
     public static function init():Void
     {
-        var level:LevelData = {week: null, name: "Adagio"}
+        LevelData.list.push({week: null, name: "Adagio"});
+        
+        LevelData.list.push({week: null, name: "Divine Paradox"});
 
-        LevelData.list.push(level);
+        LevelData.list.push({week: null, name: "Crossed Out"});
 
-        level = {week: null, name: "Contentment1"}
+        LevelData.list.push({week: null, name: "Disassembler"});
 
-        LevelData.list.push(level);
+        LevelData.list.push({week: null, name: "Enormous Dimension Collapse"});
 
-        level = {week: null, name: "Contentment2"}
+        LevelData.list.push({week: null, name: "Hesperia"});
 
-        LevelData.list.push(level);
+        LevelData.list.push({week: null, name: "High"});
 
-        level = {week: null, name: "Contentment3"}
+        LevelData.list.push({week: null, name: "Multicolor Demise"});
 
-        LevelData.list.push(level);
+        LevelData.list.push({week: null, name: "Senpai"});
 
-        level = {week: null, name: "Contentment4"}
+        LevelData.list.push({week: null, name: "Super Saiyan"});
 
-        LevelData.list.push(level);
+        LevelData.list.push({week: null, name: "Taimuresu"});
 
-        level = {week: null, name: "Crossed Out"}
+        LevelData.list.push({week: null, name: "Talladega"});
 
-        LevelData.list.push(level);
+        LevelData.list.push({week: null, name: "Thorns"});
 
-        level = {week: null, name: "Disassembler"}
-
-        LevelData.list.push(level);
-
-        level = {week: null, name: "High"}
-
-        LevelData.list.push(level);
-
-        level = {week: null, name: "Multicolor Demise"}
-
-        LevelData.list.push(level);
-
-        level = {week: null, name: "Senpai"}
-
-        LevelData.list.push(level);
-
-        level = {week: null, name: "Super Saiyan"}
-
-        LevelData.list.push(level);
-
-        level = {week: null, name: "Taimuresu"}
-
-        LevelData.list.push(level);
-
-        level = {week: null, name: "Talladega"}
-
-        LevelData.list.push(level);
-
-        level = {week: null, name: "Thorns"}
-
-        LevelData.list.push(level);
-
-        level = {week: null, name: "Unbeatable"}
-
-        LevelData.list.push(level);
-
-        level = {week: null, name: "Voiid Chronicles Final Destination God"}
-
-        LevelData.list.push(level);
+        LevelData.list.push({week: null, name: "Unbeatable"});
     }
 }

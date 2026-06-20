@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<TextureAtlas imagePath="cornerCutout.png" width="1095" height="370">
-	<SubTexture name="cornerCutout0000" x="5" y="5" width="540" height="360" frameX="-0" frameY="-0" frameWidth="540" frameHeight="360"/>
-	<SubTexture name="cornerCutout0002" x="550" y="5" width="540" height="360" frameX="-0" frameY="-0" frameWidth="540" frameHeight="360"/>
-</TextureAtlas>

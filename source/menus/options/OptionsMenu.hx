@@ -3,95 +3,40 @@ package menus.options;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
-
-import flixel.graphics.frames.FlxAtlasFrames;
-
-import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-
+import flixel.FlxSubState;
+import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
-
 import flixel.sound.FlxSound;
-
-import flixel.text.FlxText;
-
-import flixel.tweens.FlxTween;
-
-import flixel.util.FlxColor;
-
 import flixel.util.typeLimit.NextState;
 
 import flixel.addons.display.FlxBackdrop;
 
 import core.AssetCache;
 import core.Paths;
-import core.SaveManager;
-
 import menus.options.items.BaseOptionItem;
 import menus.options.items.BoolOptionItem;
-import menus.options.items.HeaderOptionItem;
-import menus.options.items.NumericOptionItem.IntOptionItem;
-
-using util.ArrayUtil;
+import menus.options.items.NumberOptionItem;
+import ui.AtlasText;
 
 class OptionsMenu extends FlxState
 {
+    public static var selectedIndex:Int = 0;
+
     public var nextState:NextState;
 
     public var background:FlxSprite;
 
-    public var backdrop:FlxBackdrop;
+    public var bgOverlay:FlxBackdrop;
 
-    public var gradient:FlxSprite;
-
-    public var cornerCutout:FlxSprite;
-
-    public var gear:FlxSprite;
-
-    public var options:FlxTypedSpriteGroup<BaseOptionItem>;
-
-    public var descriptor:FlxSprite;
-
-    public var descText:FlxText;
-
-    public var option(default, set):Int;
-
-    @:noCompletion
-    function set_option(_option:Int):Int
-    {
-        option = _option;
-
-        for (i in 0 ... options.members.length)
-        {
-            var _option:BaseOptionItem = options.members[i];
-
-            _option.alpha = option == i ? 1.0 : 0.5;
-
-            var selectable:Bool = option == i;
-
-            if (_option is BoolOptionItem)
-                cast (_option, BoolOptionItem).selectable = selectable;
-
-            if (_option is IntOptionItem)
-                cast(_option, IntOptionItem).selectable = selectable;
-        }
-
-        FlxTween.cancelTweensOf(descriptor);
-
-        if (options.members[option] is HeaderOptionItem)
-            FlxTween.tween(descriptor, {alpha: 0.5}, 0.5);
-        else
-            FlxTween.tween(descriptor, {alpha: 1.0}, 0.5);
-
-        return option;
-    }
+    public var optionItems:FlxTypedSpriteGroup<BaseOptionItem>;
 
     public var tune:FlxSound;
 
-    public function new(_nextState:NextState):Void
+    public function new(nextState:NextState):Void
     {
         super();
 
-        nextState = _nextState;
+        this.nextState = nextState;
     }
 
     override function create():Void
@@ -100,87 +45,46 @@ class OptionsMenu extends FlxState
 
         FlxG.mouse.visible = true;
 
-        background = new FlxSprite(0.0, 0.0, AssetCache.getGraphic("menus/options/OptionsMenu/background"));
+        background = new FlxSprite(0.0, 0.0, AssetCache.getGraphic(Paths.image(Paths.png("menus/options/OptionsMenu/background"))));
 
-        background.active = false;
-
-        background.antialiasing = true;
-
-        background.color = background.color.getDarkened(0.25);
+        background.screenCenter();
 
         add(background);
 
-        backdrop = new FlxBackdrop(AssetCache.getGraphic("menus/options/OptionsMenu/backdrop"));
+        bgOverlay = new FlxBackdrop(AssetCache.getGraphic(Paths.image(Paths.png("menus/options/OptionsMenu/bg-overlay"))));
 
-        backdrop.antialiasing = true;
+        bgOverlay.velocity.set(10.0, 10.0);
 
-        backdrop.alpha = 0.35;
+        bgOverlay.alpha = 0.35;
 
-        backdrop.color = backdrop.color.getDarkened(0.25);
+        bgOverlay.screenCenter();
 
-        backdrop.velocity.set(15.0, 15.0);
+        add(bgOverlay);
 
-        add(backdrop);
+        optionItems = new FlxTypedSpriteGroup<BaseOptionItem>();
 
-        gradient = new FlxSprite(AssetCache.getGraphic("menus/options/OptionsMenu/gradient"));
+        add(optionItems);
 
-        gradient.active = false;
+        var item:BaseOptionItem = new BaseOptionItem(0.0, 0.0, "Open Keybinds...", "");
 
-        gradient.antialiasing = true;
+        item.onToggle.add( () -> openSubState(new KeybindsMenu()) );
 
-        gradient.color = gradient.color.getDarkened(0.25);
+        addOptionItem(item);
 
-        add(gradient);
+        var item:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Auto Pause", "If checked, the game will freeze when window focus is lost.", "autoPause");
 
-        cornerCutout = new FlxSprite();
-
-        cornerCutout.antialiasing = true;
-
-        cornerCutout.frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("menus/options/OptionsMenu/cornerCutout"), 
-            Paths.image(Paths.xml("menus/options/OptionsMenu/cornerCutout")));
-
-        cornerCutout.animation.addByPrefix("cornerCutout", "cornerCutout", 12.0);
-
-        cornerCutout.animation.play("cornerCutout");
-
-        cornerCutout.scale.set(0.85, 0.85);
-
-        cornerCutout.updateHitbox();
-
-        cornerCutout.setPosition(-125.0, -65.0);
-
-        add(cornerCutout);
-
-        gear = new FlxSprite(AssetCache.getGraphic("menus/options/OptionsMenu/gear"));
-
-        gear.active = false;
-
-        gear.antialiasing = true;
-
-        gear.setPosition(-gear.width * 0.45, -gear.height * 0.45);
-
-        add(gear);
-
-        FlxTween.angle(gear, 0.0, 360.0, 10.0, {type: LOOPING});
-
-        options = new FlxTypedSpriteGroup<BaseOptionItem>();
-
-        add(options);
-
-        addHeaderOption("Window");
-
-        var bool:BoolOptionItem = addBoolOption("Auto Pause", "If checked, the game will freeze when window focus is lost.", "autoPause");
-
-        bool.onUpdate.add((value:Bool) -> 
+        item.onUpdate.add((value:Bool) -> 
         {
             FlxG.autoPause = value;
 
-            FlxG.console.autoPause = value;
+            FlxG.console.autoPause = FlxG.autoPause;
         });
 
-        var int:IntOptionItem = addIntOption("Frame Rate", "How often the game ticks each second.", "frameRate", 60, 244, 1);
+        addOptionItem(item);
 
-        int.onUpdate.add((value:Int) ->
+        var item:IntOptionItem = new IntOptionItem(0.0, 0.0, "Frame Rate", "How often the game ticks each second.", "frameRate", 60, 240, 1);
+
+        item.onUpdate.add((value:Int) ->
         {
             if (value > FlxG.updateFramerate)
             {
@@ -196,62 +100,35 @@ class OptionsMenu extends FlxState
             }
         });
 
-        addHeaderOption("Asset Management");
+        addOptionItem(item);
 
-        addBoolOption("GPU Caching", "If checked, bitmap pixel data is disposed\nfrom RAM where possible.", "gpuCaching");
+        var item:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "GPU Caching", "If checked, bitmap pixel data is disposed\nfrom RAM where possible.", "gpuCaching");
 
-        addBoolOption("Sound Streaming", "If checked, audio is loaded progressively\nwhere suitable.", "soundStreaming");
-        
-        addHeaderOption("Accessibility");
+        addOptionItem(item);
 
-        addBoolOption("Flashing Lights", "If unchecked, limits the use of screen flashing effects.", "flashingLights");
+        var item:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Sound Streaming", "If checked, audio is loaded progressively\nwhere suitable.", "soundStreaming");
 
-        addBoolOption("Shaders", "If unchecked, shaders and screen filters are disabled.", "shaders");
+        addOptionItem(item);
 
-        addHeaderOption("Controls");
+        var item:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Flashing Lights", "If unchecked, limits the use of screen flashing effects.", "flashingLights");
 
-        addHeaderOption("Gameplay");
+        addOptionItem(item);
 
-        addBoolOption("Downscroll", "If checked, flips the strumlines' vertical position.", "downscroll");
+        var item:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Shaders", "If unchecked, shaders and screen filters are disabled.", "shaders");
 
-        addBoolOption("Ghost Tapping", "If unchecked, pressing an input with\nno notes on screen will cause damage.", "ghostTapping");
+        addOptionItem(item);
 
-        addBoolOption("Botplay", "If checked, inputs will be processed automatically.", "botplay");
+        var item:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Downscroll", "If checked, flips the strumlines' vertical position.", "downscroll");
 
-        descriptor = new FlxSprite();
+        addOptionItem(item);
 
-        descriptor.antialiasing = true;
+        var item:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Ghost Tapping", "If unchecked, pressing an input with\nno notes on screen will cause damage.", "ghostTapping");
 
-        descriptor.color = descriptor.color.getDarkened(0.15);
+        addOptionItem(item);
 
-        descriptor.frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("menus/options/OptionsMenu/descriptor"), 
-            Paths.image(Paths.xml("menus/options/OptionsMenu/descriptor")));
+        var item:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Botplay", "If checked, inputs will be processed automatically.", "botplay");
 
-        descriptor.animation.addByPrefix("descriptor", "descriptor", 12.0);
-
-        descriptor.animation.play("descriptor");
-
-        descriptor.scale.set(0.85, 0.85);
-
-        descriptor.setPosition(-150.0, 550.0);
-
-        add(descriptor);
-
-        descText = new FlxText(0.0, 0.0, descriptor.width, options.members[option].description, 28);
-
-        descText.antialiasing = true;
-
-        descText.color = FlxColor.BLACK;
-
-        descText.font = Paths.font(Paths.ttf("Ubuntu Regular"));
-
-        descText.alignment = CENTER;
-
-        descText.setPosition(descriptor.getMidpoint().x - descText.width * 0.5, descriptor.getMidpoint().y - descText.height * 0.5 - 25.0);
-
-        add(descText);
-
-        option = 0;
+        addOptionItem(item);
 
         tune = FlxG.sound.load(AssetCache.getMusic("menus/options/OptionsMenu/tune"), 0.0, true);
 
@@ -264,110 +141,71 @@ class OptionsMenu extends FlxState
     {
         super.update(elapsed);
 
-        if (FlxG.keys.justPressed.DOWN)
+        if (FlxG.mouse.wheel == -1 || FlxG.keys.justPressed.DOWN)
         {
-            option = FlxMath.wrap(option + 1, 0, options.members.length - 1);
+            selectedIndex++;
 
-            var scroll:FlxSound = FlxG.sound.play(AssetCache.getSound("menus/options/OptionsMenu/scroll"), 0.35);
-
-            scroll.onComplete = scroll.kill;
+            playScrollSound();
         }
 
-        if (FlxG.keys.justPressed.UP)
+        if (FlxG.mouse.wheel == 1 || FlxG.keys.justPressed.UP)
         {
-            option = FlxMath.wrap(option - 1, 0, options.members.length - 1);
+            selectedIndex--;
 
-            var scroll:FlxSound = FlxG.sound.play(AssetCache.getSound("menus/options/OptionsMenu/scroll"), 0.35);
-
-            scroll.onComplete = scroll.kill;
+            playScrollSound();
         }
 
-        if (FlxG.keys.justPressed.PAGEDOWN)
-        {
-            var _option:HeaderOptionItem = cast options.group.getFirst((__option:BaseOptionItem) -> Std.isOfType(__option, HeaderOptionItem) && options.members.indexOf(__option) > option);
+        selectedIndex = FlxMath.wrap(selectedIndex, 0, optionItems.members.length - 1);
 
-            if (_option != null)
+        var y:Float = 0.0;
+
+        for (i in 0 ... selectedIndex)
+        {
+            if (i < 4.0)
+                continue;
+            
+            y -= 85.0;
+        }
+
+        optionItems.y = FlxMath.lerp(optionItems.y, y, FlxMath.getElapsedLerp(0.15, elapsed));
+
+        for (i in 0 ... optionItems.members.length)
+        {
+            var isSelected:Bool = selectedIndex == i;
+
+            var item:BaseOptionItem = optionItems.members[i];
+
+            item.busy = !isSelected;
+
+            item.x = FlxMath.lerp(item.x, isSelected ? 100.0 : 50.0, FlxMath.getElapsedLerp(0.15, elapsed));
+        }
+
+        if (FlxG.keys.justPressed.SPACE)
+        {
+            for (i in 0 ... optionItems.members.length)
             {
-                option = options.members.indexOf(_option);
+                var item:BaseOptionItem = optionItems.members[i];
 
-                var scroll:FlxSound = FlxG.sound.play(AssetCache.getSound("menus/options/OptionsMenu/scroll"), 0.35);
-
-                scroll.onComplete = scroll.kill;
+                item.titleText.text = Std.string(FlxG.random.int(1000000, 10000000));
             }
         }
-
-        if (FlxG.keys.justPressed.PAGEUP)
-        {
-            var _option:HeaderOptionItem = cast options.group.getLast((__option:BaseOptionItem) -> Std.isOfType(__option, HeaderOptionItem) && options.members.indexOf(__option) < option);
-
-            if (_option != null)
-            {
-                option = options.members.indexOf(_option);
-
-                var scroll:FlxSound = FlxG.sound.play(AssetCache.getSound("menus/options/OptionsMenu/scroll"), 0.35);
-
-                scroll.onComplete = scroll.kill;
-            }
-        }
-
-        if (FlxG.keys.justPressed.END)
-        {
-            if (option != options.members.length - 1.0)
-            {
-                option = options.members.length - 1;
-
-                var scroll:FlxSound = FlxG.sound.play(AssetCache.getSound("menus/options/OptionsMenu/scroll"), 0.35);
-
-                scroll.onComplete = scroll.kill;
-            }
-        }
-
-        if (FlxG.keys.justPressed.HOME)
-        {
-            if (option != 0.0)
-            {
-                option = 0;
-
-                var scroll:FlxSound = FlxG.sound.play(AssetCache.getSound("menus/options/OptionsMenu/scroll"), 0.35);
-
-                scroll.onComplete = scroll.kill;
-            }
-        }
-
-        if (FlxG.mouse.wheel == -1.0)
-        {
-            option = FlxMath.wrap(option + 1, 0, options.members.length - 1);
-
-            var scroll:FlxSound = FlxG.sound.play(AssetCache.getSound("menus/options/OptionsMenu/scroll"), 0.35);
-
-            scroll.onComplete = scroll.kill;
-        }
-
-        if (FlxG.mouse.wheel == 1.0)
-        {
-            option = FlxMath.wrap(option - 1, 0, options.members.length - 1);
-
-            var scroll:FlxSound = FlxG.sound.play(AssetCache.getSound("menus/options/OptionsMenu/scroll"), 0.35);
-
-            scroll.onComplete = scroll.kill;
-        }
-
-        if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.UP || FlxG.keys.justPressed.PAGEDOWN || FlxG.keys.justPressed.PAGEUP || FlxG.keys.justPressed.END || FlxG.keys.justPressed.HOME || FlxG.mouse.wheel != 0.0)
-            descText.text = options.members[option].description;
 
         if (FlxG.keys.justPressed.ESCAPE)
-        {
-            SaveManager.saveOptions();
-
             FlxG.switchState(nextState);
-        }
+    }
 
-        var targetY:Float = 0.0;
+    override function openSubState(subState:FlxSubState):Void
+    {
+        super.openSubState(subState);
 
-        for (i in 0 ... option)
-            targetY -= (i < options.members.length - 2.0 ? options.members[i].height : 0.0);
+        tune.pause();
+    }
 
-        options.y = FlxMath.lerp(options.y, targetY, FlxMath.getElapsedLerp(0.15, elapsed));
+    override function closeSubState():Void
+    {
+        super.closeSubState();
+
+        tune.resume();
     }
 
     override function destroy():Void
@@ -377,42 +215,17 @@ class OptionsMenu extends FlxState
         FlxG.mouse.visible = false;
     }
 
-    public function addBoolOption(title:String, description:String, option:String):BoolOptionItem
+    public function addOptionItem(item:BaseOptionItem):Void
     {
-        var newest:BaseOptionItem = options.members.last();
+        item.y = 25.0 + (85.0 * optionItems.members.length);
 
-        var bool:BoolOptionItem = new BoolOptionItem(0.0, 0.0, title, description, option);
-
-        bool.setPosition(FlxG.width - bool.width + 75.0, newest == null ? 50.0 : newest.y + newest.height);
-
-        options.add(bool);
-
-        return bool;
+        optionItems.add(item);
     }
 
-    public function addHeaderOption(title:String):HeaderOptionItem
+    public function playScrollSound():Void
     {
-        var newest:BaseOptionItem = options.members.last();
+        var scrollSound:FlxSound = FlxG.sound.play(AssetCache.getSound("menus/scroll"));
 
-        var header:HeaderOptionItem = new HeaderOptionItem(0.0, 0.0, title, "");
-
-        header.setPosition(FlxG.width - header.width + 165.0, newest == null ? 50.0 : newest.y + newest.height);
-
-        options.add(header);
-
-        return header;
-    }
-
-    public function addIntOption(title:String, description:String, option:String, min:Int, max:Int, step:Int):IntOptionItem
-    {
-        var newest:BaseOptionItem = options.members.last();
-
-        var int:IntOptionItem = new IntOptionItem(0.0, 0.0, title, description, option, min, max, step);
-
-        int.setPosition(FlxG.width - int.width + 125.0, newest == null ? 50.0 : newest.y + newest.height);
-
-        options.add(int);
-
-        return int;
+        scrollSound.onComplete = scrollSound.kill;
     }
 }

@@ -223,10 +223,8 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
     override function create():Void
     {
         super.create();
-
-        #if FLX_DEBUG
+        
         FlxG.console.registerObject("game", this);
-        #end
 
         gameCamera.filters = new Array<BitmapFilter>();
         
@@ -315,13 +313,11 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         add(playField);
 
-        #if FLX_DEBUG
         FlxG.watch.add(playField.playStats, "score", "Score");
 
         FlxG.watch.add(playField.playStats, "misses", "Misses");
 
         FlxG.watch.add(playField.playStats, "accuracy", "Accuracy (%)");
-        #end
 
         playField.getSongTime = getSongTime;
 
@@ -463,9 +459,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
     {
         super.destroy();
 
-        #if FLX_DEBUG
         FlxG.console.removeByAlias("game");
-        #end
     }
 
     public function stepHit(step:Int):Void
@@ -527,7 +521,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         conductor.update(-conductor.beatLength * 5.0);
 
-        #if FLX_DEBUG
         FlxG.watch.add(conductor, "time", "Time");
 
         FlxG.watch.add(conductor, "step", "Step");
@@ -535,7 +528,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         FlxG.watch.add(conductor, "beat", "Beat");
 
         FlxG.watch.add(conductor, "measure", "Measure");
-        #end
 
         eventIndex = 0;
     }

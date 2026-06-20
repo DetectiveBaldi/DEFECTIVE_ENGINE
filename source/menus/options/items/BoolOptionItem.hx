@@ -1,53 +1,65 @@
 package menus.options.items;
 
-import flixel.FlxG;
-
 import flixel.FlxSprite;
-
 import flixel.graphics.frames.FlxAtlasFrames;
 
 import core.AssetCache;
 import core.Paths;
 
-class BoolOptionItem extends VariableOptionItem<Bool>
-{
-    public var selectable:Bool;
+using tools.ObjectHelpers;
 
+class BoolOptionItem extends VarOptionItem<Bool>
+{
     public var checkbox:FlxSprite;
 
-    public function new(_x:Float = 0.0, _y:Float = 0.0, _title:String, _description:String, _option:String):Void
+    public function new(x:Float = 0.0, y:Float = 0.0, title:String, description:String, option:String):Void
     {
-        super(_x, _y, _title, _description, _option);
+        super(x, y, title, description, option);
 
-        selectable = false;
+        checkbox = new FlxSprite(0.0, 0.0);
 
-        checkbox = new FlxSprite();
-
-        checkbox.antialiasing = true;
-
-        checkbox.frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("menus/options/items/BoolOptionItem/checkbox"), 
+        checkbox.frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic(Paths.image(Paths.png("menus/options/items/BoolOptionItem/checkbox"))),
             Paths.image(Paths.xml("menus/options/items/BoolOptionItem/checkbox")));
 
-        checkbox.animation.addByIndices("check", "checkbox", [0, 1, 2, 3, 4, 5, 6], "", 24.0, false);
+        checkbox.scale.set(0.65, 0.65);
 
-        checkbox.animation.addByIndices("uncheck", "checkbox", [6, 5, 4, 3, 2, 1, 0], "", 24.0, false);
+        checkbox.updateHitbox();
 
-        checkbox.animation.play(value ? "check" : "uncheck");
+        checkbox.animation.onFinish.add((name:String) ->
+        {
+            if (name == "uncheck")
+                checkbox.animation.play("idle");
+        });
 
-        checkbox.setPosition(-125.0, background.height - checkbox.height - 10.0);
+        checkbox.animation.addByPrefix("idle", "Check Box unselected", 24.0, false);
+
+        checkbox.animation.addByPrefix("check", "Check Box selecting animation", 24.0, false);
+
+        checkbox.animation.addByPrefix("uncheck", "Check Box selecting animation", 28.0, false);
+
+        checkbox.animation.play(value ? "check" : "idle");
+
+        checkbox.animation.finish();
+
+        checkbox.setPosition(titleText.x + titleText.width + 10.0, -30.0);
 
         add(checkbox);
+
+        onToggle.add(() ->
+        {
+            setValue(!value);
+            
+            checkbox.animation.play(value ? "check" : "uncheck", true, !value);
+        });
     }
 
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
-        
-        if ((FlxG.keys.justPressed.ENTER || FlxG.mouse.justPressed) && selectable)
-        {
-            value = !value;
 
-            checkbox.animation.play(value ? "check" : "uncheck");
-        }
+        if (checkbox.animation.name == "idle")
+            checkbox.offset.set(0.0, 5.0);
+        else
+            checkbox.offset.set(17.0, 70.0);
     }
 }

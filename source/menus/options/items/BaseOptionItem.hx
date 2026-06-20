@@ -1,72 +1,56 @@
 package menus.options.items;
 
-import flixel.FlxSprite;
-
-import flixel.graphics.frames.FlxAtlasFrames;
-
+import flixel.FlxG;
 import flixel.group.FlxSpriteGroup;
+import flixel.util.FlxDestroyUtil;
+import flixel.util.FlxSignal;
 
-import flixel.text.FlxText;
-
-import flixel.util.FlxColor;
-
-import core.AssetCache;
-import core.Paths;
+import ui.AtlasText;
 
 class BaseOptionItem extends FlxSpriteGroup
 {
-    public var title(default, set):String;
+    public var busy:Bool;
 
-    @:noCompletion
-    function set_title(_title:String):String
-    {
-        title = _title;
-
-        titleText.text = title;
-
-        return title;
-    }
+    public var title:String;
 
     public var description:String;
 
-    public var background:FlxSprite;
+    public var titleText:AtlasText;
 
-    public var titleText:FlxText;
+    public var onToggle:FlxSignal;
 
-    public function new(x:Float = 0.0, y:Float = 0.0, _title:String, _description:String):Void
+    public function new(x:Float = 0.0, y:Float = 0.0, title:String, description:String):Void
     {
         super(x, y);
 
-        @:bypassAccessor
-        title = _title;
+        busy = false;
 
-        description = _description;
+        this.title = title;
 
-        background = new FlxSprite();
+        this.description = description;
 
-        background.antialiasing = true;
-
-        background.frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("menus/options/items/BaseOptionItem/background"), 
-            Paths.image(Paths.xml("menus/options/items/BaseOptionItem/background")));
-
-        background.animation.addByPrefix("background", "background", 12.0);
-
-        background.animation.play("background");
-
-        add(background);
-
-        titleText = new FlxText(0.0, 0.0, background.width, title, 48);
-
-        titleText.antialiasing = true;
-
-        titleText.color = FlxColor.BLACK;
-
-        titleText.font = Paths.font(Paths.ttf("Ubuntu Regular"));
-
-        titleText.alignment = CENTER;
-
-        titleText.setPosition(background.getMidpoint().x - titleText.width * 0.5, background.getMidpoint().y - titleText.height * 0.5);
+        titleText = new AtlasText(0.0, 0.0, title);
 
         add(titleText);
+
+        onToggle = new FlxSignal();
+    }
+
+    override function update(elapsed:Float):Void
+    {
+        super.update(elapsed);
+
+        if (busy)
+            return;
+
+        if (FlxG.mouse.justReleased || FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE)
+            onToggle.dispatch();
+    }
+
+    override function destroy():Void
+    {
+        super.destroy();
+        
+        onToggle = cast FlxDestroyUtil.destroy(onToggle);
     }
 }

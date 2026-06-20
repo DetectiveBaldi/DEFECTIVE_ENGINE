@@ -37,9 +37,7 @@ class InitState extends FlxState
     {
         FlxG.autoPause = autoPause;
 
-        #if FLX_DEBUG
-        FlxG.console.autoPause = autoPause;
-        #end
+        FlxG.console.autoPause = FlxG.autoPause;
     }
 
     public static function setFrameRateCap(frameRate:Int):Void
@@ -82,7 +80,6 @@ class InitState extends FlxState
 
         FlxG.mouse.visible = false;
 
-        #if FLX_DEBUG
         FlxG.console.registerClass(InitState);
         
         FlxG.console.registerClass(Options);
@@ -90,7 +87,6 @@ class InitState extends FlxState
         FlxG.console.registerClass(SaveManager);
 
         FlxG.console.registerClass(HighScore);
-        #end
 
         FlxG.plugins.drawOnTop = true;
 
@@ -116,8 +112,6 @@ class InitState extends FlxState
         }
 
         definedLevel = definedLevel.split("_").join(" ");
-
-        trace(LevelData.list.first((level:LevelData) -> level.name == definedLevel), definedLevel);
 
         PlayState.loadLevel(LevelData.list.first((level:LevelData) -> level.name == definedLevel));
     }
