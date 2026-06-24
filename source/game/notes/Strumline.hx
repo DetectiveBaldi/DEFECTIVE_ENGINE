@@ -489,27 +489,24 @@ class Strumline extends FlxGroup
 
         onSustainHold.dispatch(sustainHoldEvent);
 
-        if (note.status != HIT)
-        {
-            note.status = HIT;
+        var strum:Strum = note.strum;
 
-            note.unholdTime = 0.0;
+        strum.holdTimer = 0.0;
+
+        strum.animation.play('${convertDirectionToAnimation(note.direction).toLowerCase()}Confirm', true);
             
-            var strum:Strum = note.strum;
+        setStrumActive(note.direction, false);
+        
+        note.status = HIT;
 
-            strum.holdTimer = 0.0;
+        note.unholdTime = 0.0;
 
-            strum.animation.play('${convertDirectionToAnimation(note.direction).toLowerCase()}Confirm', true);
-            
-            setStrumActive(note.direction, false);
-            
-            if (vocals != null)
-                vocals.volume = 1.0;
+        playCharSingAnims(note, note.direction, true);
 
-            playCharSingAnims(note, note.direction, true);
+        setCharAnimsActive(note, false);
 
-            setCharAnimsActive(note, false);
-        }
+        if (vocals != null)
+            vocals.volume = 1.0;
     }
 
     public function resizeSustainNote(note:Note):Void
