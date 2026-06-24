@@ -254,17 +254,30 @@ class KeybindsEditorSubState extends FlxSubState implements ISequenceHandler
                 {
                     if (holdTime >= 3.0)
                     {
-                        var oldKey:Int = keybinds[strumIndex][keyIndex];
+                        var newKey:Int = strumline.keyParams.controls[strumIndex][keyIndex];
 
-                        keybinds[strumIndex][keyIndex] = strumline.keyParams.controls[strumIndex][keyIndex];
-
-                        setKeybinds();
+                        var flatten:Array<Int> = keybinds.flatten2DArray();
 
                         holdTime = 0.0;
 
-                        setTip('Reset bind to default, from "${FlxKey.toStringMap[oldKey]}" to "${FlxKey.toStringMap[keybinds[strumIndex][keyIndex]]}"');
+                        if (newKey != -1.0 && flatten.contains(newKey))
+                        {
+                            setTip("Operation canceled. Resetting this bind would result\nin a double bind.");
 
-                        playCancelSound();
+                            playCancelSound();
+                        }
+                        else
+                        {
+                            var oldKey:Int = keybinds[strumIndex][keyIndex];
+
+                            keybinds[strumIndex][keyIndex] = newKey;
+
+                            setKeybinds();
+
+                            setTip('Reset bind to default, from "${FlxKey.toStringMap[oldKey]}" to "${FlxKey.toStringMap[keybinds[strumIndex][keyIndex]]}".');
+
+                            playCancelSound();
+                        }
 
                         setState(SELECTING_STRUM, true);
                     }
@@ -328,8 +341,6 @@ class KeybindsEditorSubState extends FlxSubState implements ISequenceHandler
                         setTip("Operation canceled. This key is already in use\nsomewhere else!");
 
                         playCancelSound();
-
-                        setState(SELECTING_STRUM, true);
                     }
                     else
                     {
@@ -347,9 +358,9 @@ class KeybindsEditorSubState extends FlxSubState implements ISequenceHandler
                         setTip(tip);
 
                         playScrollSound();
-
-                        setState(SELECTING_STRUM, true);
                     }
+
+                    setState(SELECTING_STRUM, true);
                 }
             }
         }

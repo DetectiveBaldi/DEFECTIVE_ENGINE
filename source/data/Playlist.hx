@@ -32,6 +32,8 @@ class Playlist
 
         LevelData.list.push({week: null, name: "Thorns"});
 
+        LevelData.list.push({week: null, name: "Thunderstorm"});
+
         LevelData.list.push({week: null, name: "Unbeatable"});
     }
 }
