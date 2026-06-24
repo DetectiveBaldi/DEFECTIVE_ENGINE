@@ -33,6 +33,8 @@ import ui.EventButton;
 
 using StringTools;
 
+using flixel.util.FlxArrayUtil;
+
 using tools.ObjectHelpers;
 using util.ArrayUtil;
 
@@ -241,7 +243,7 @@ class KeybindsEditorSubState extends FlxSubState implements ISequenceHandler
                 {
                     holdTime = 0.0;
 
-                    setTip("Operation suspended. Don't hold more than 1 key!");
+                    setTip("Operation canceled. Don't hold more than 1 key!");
 
                     playCancelSound();
 
@@ -317,24 +319,37 @@ class KeybindsEditorSubState extends FlxSubState implements ISequenceHandler
 
                 if (key != -1.0)
                 {
-                    var oldKey:Int = keybinds[strumIndex][keyIndex];
-
-                    keybinds[strumIndex][keyIndex] = key;
-
-                    setKeybinds();
+                    var flatten:Array<Int> = keybinds.flatten2DArray();
 
                     holdTime = 0.0;
 
-                    var tip:String = 'Changed bind from "${FlxKey.toStringMap[oldKey]}" to "${FlxKey.toStringMap[key]}".';
+                    if (flatten.contains(key))
+                    {
+                        setTip("Operation canceled. This key is already in use\nsomewhere else!");
 
-                    if (oldKey == -1.0)
-                        tip = 'Set new bind "${FlxKey.toStringMap[key]}".';
+                        playCancelSound();
 
-                    setTip(tip);
+                        setState(SELECTING_STRUM, true);
+                    }
+                    else
+                    {
+                        var oldKey:Int = keybinds[strumIndex][keyIndex];
 
-                    playScrollSound();
+                        keybinds[strumIndex][keyIndex] = key;
 
-                    setState(SELECTING_STRUM, true);
+                        setKeybinds();
+
+                        var tip:String = 'Changed bind from "${FlxKey.toStringMap[oldKey]}" to "${FlxKey.toStringMap[key]}".';
+
+                        if (oldKey == -1.0)
+                            tip = 'Set new bind "${FlxKey.toStringMap[key]}".';
+
+                        setTip(tip);
+
+                        playScrollSound();
+
+                        setState(SELECTING_STRUM, true);
+                    }
                 }
             }
         }
