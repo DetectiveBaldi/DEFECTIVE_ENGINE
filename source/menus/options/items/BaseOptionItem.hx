@@ -9,7 +9,7 @@ import ui.AtlasText;
 
 class BaseOptionItem extends FlxSpriteGroup
 {
-    public var busy:Bool;
+    public var enabled:Bool;
 
     public var title:String;
 
@@ -23,7 +23,7 @@ class BaseOptionItem extends FlxSpriteGroup
     {
         super(x, y);
 
-        busy = false;
+        enabled = false;
 
         this.title = title;
 
@@ -40,10 +40,10 @@ class BaseOptionItem extends FlxSpriteGroup
     {
         super.update(elapsed);
 
-        if (busy)
+        if (!enabled)
             return;
 
-        if (FlxG.mouse.justReleased || FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE)
+        if ((FlxG.mouse.justPressed && FlxG.mouse.overlaps(this, camera)) || FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE)
             onToggle.dispatch();
     }
 

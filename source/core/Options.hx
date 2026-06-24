@@ -74,7 +74,7 @@ class Options
     @:noCompletion
     static function get_controls():Map<Int, Array<Array<Int>>>
     {
-        return [];
+        return SaveManager.options.data.controls ??= new Map<Int, Array<Array<Int>>>();
     }
 
     @:noCompletion

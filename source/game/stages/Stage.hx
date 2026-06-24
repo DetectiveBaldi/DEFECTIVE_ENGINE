@@ -34,7 +34,7 @@ class Stage extends FlxGroup
         return v;
     }
 
-    public function new(param:StageParams)
+    public function new(param:StageParams):Void
     {
         super();
 

@@ -41,9 +41,9 @@ class ArrayUtil
             result = arr[arr.length - 1];
         else
         {
-            var i:Int = arr.length - 1;
+            var i:Int = arr.length;
 
-            while (i >= 0.0)
+            while (i-- > 0.0)
             {
                 var value:T = arr[i];
 
@@ -53,8 +53,6 @@ class ArrayUtil
 
                     break;
                 }
-
-                i--;
             }
         }
 

@@ -1,6 +1,7 @@
 package menus.options.items;
 
 import flixel.FlxG;
+import flixel.math.FlxMath;
 
 import ui.AtlasText;
 
@@ -10,22 +11,18 @@ class IntOptionItem extends VarOptionItem<Int>
 
     public var max:Int;
 
-    public var step:Int;
-
     public var holdTime:Float;
 
     public var valueText:AtlasText;
 
     public function new(x:Float = 0.0, y:Float = 0.0, title:String, description:String, option:String,
-        min:Int, max:Int, step:Int):Void
+        min:Int, max:Int):Void
     {
         super(x, y, title, description, option);
 
         this.min = min;
 
         this.max = max;
-
-        this.step = step;
 
         holdTime = 0.0;
 
@@ -47,16 +44,18 @@ class IntOptionItem extends VarOptionItem<Int>
     {
         super.update(elapsed);
 
-        if (busy)
+        if (!enabled)
             return;
 
-        var pressLeft:Bool = FlxG.keys.justPressed.A || FlxG.keys.justPressed.LEFT;
+        var overlap:Bool = FlxG.mouse.overlaps(this, camera);
 
-        var holdLeft:Bool = FlxG.keys.pressed.A || FlxG.keys.pressed.LEFT;
+        var pressLeft:Bool = (FlxG.mouse.justPressed && overlap) || FlxG.keys.justPressed.A || FlxG.keys.justPressed.LEFT;
 
-        var pressRight:Bool = FlxG.keys.justPressed.D || FlxG.keys.justPressed.RIGHT;
+        var holdLeft:Bool = (FlxG.mouse.pressed && overlap) || FlxG.keys.pressed.A || FlxG.keys.pressed.LEFT;
 
-        var holdRight:Bool = FlxG.keys.pressed.D || FlxG.keys.pressed.RIGHT;
+        var pressRight:Bool = (FlxG.mouse.justPressedRight && overlap) || FlxG.keys.justPressed.D || FlxG.keys.justPressed.RIGHT;
+
+        var holdRight:Bool = (FlxG.mouse.pressedRight && overlap) || FlxG.keys.pressed.D || FlxG.keys.pressed.RIGHT;
 
         if (holdLeft && holdRight)
             holdTime = 0.0;
@@ -81,6 +80,13 @@ class IntOptionItem extends VarOptionItem<Int>
                 holdTime -= (FlxG.keys.pressed.SHIFT ? 0.01 : 0.1);
             }
         }
+    }
+
+    override function setValue(value:Int):Void
+    {
+        value = Std.int(FlxMath.bound(value, min, max));
+
+        super.setValue(value);
     }
 }
 

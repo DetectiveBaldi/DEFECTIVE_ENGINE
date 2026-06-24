@@ -3,10 +3,12 @@ package tools;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
-
+import flixel.FlxSprite;
 import flixel.math.FlxMath;
-
+import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
 import flixel.util.FlxAxes;
+import flixel.util.FlxColor;
 
 class ObjectHelpers
 {

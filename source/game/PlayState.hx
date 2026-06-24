@@ -448,7 +448,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         #if FLX_DEBUG
         if (FlxG.keys.justPressed.EIGHT)
-            FlxG.switchState(() -> new editors.CharacterEditorState(() -> PlayState.getClassFromLevel(), player.config.name));
+            FlxG.switchState(() -> new editors.CharacterEditorState(() -> PlayState.getClassFromLevel()));
         #end
 
         if (FlxG.keys.justPressed.ESCAPE)
@@ -641,14 +641,12 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         
         FlxG.resetState();
     }
-
-    // To avoid closures where possible.
+    
     public function getSongTime():Float
     {
         return instrumental.time;
     }
 
-    // To avoid closures where possible.
     public function getSongLength():Float
     {
         return instrumental.length;

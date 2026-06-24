@@ -16,9 +16,11 @@ class BoolOptionItem extends VarOptionItem<Bool>
     {
         super(x, y, title, description, option);
 
-        checkbox = new FlxSprite(0.0, 0.0);
+        checkbox = new FlxSprite();
 
-        checkbox.frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic(Paths.image(Paths.png("menus/options/items/BoolOptionItem/checkbox"))),
+        checkbox.antialiasing = true;
+
+        checkbox.frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("menus/options/items/BoolOptionItem/checkbox"),
             Paths.image(Paths.xml("menus/options/items/BoolOptionItem/checkbox")));
 
         checkbox.scale.set(0.65, 0.65);

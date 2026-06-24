@@ -3,7 +3,6 @@ package editors;
 import haxe.Json;
 
 import openfl.desktop.Clipboard;
-
 import openfl.net.FileReference;
 
 import flixel.FlxCamera;
@@ -66,17 +65,9 @@ class CharacterEditorState extends FlxState
 {
     public var nextState:NextState;
 
-    public var configName:String;
-
-    public var gameCamera(get, never):FlxCamera;
-    
-    @:noCompletion
-    function get_gameCamera():FlxCamera
-    {
-        return FlxG.camera;
-    }
-
     public var hudCamera:FlxCamera;
+
+    public var fileRef:FileReference;
 
     public var ghost:FlxSprite;
 
@@ -92,28 +83,28 @@ class CharacterEditorState extends FlxState
 
     public var ui:Box;
 
-    public function new(nextState:NextState, configName:String = "bf"):Void
+    public function new(nextState:NextState):Void
     {
         super();
 
         this.nextState = nextState;
-
-        this.configName = configName;
     }
 
     override function create():Void
     {
-        hudCamera = new FlxCamera();
-
-        hudCamera.bgColor.alpha = 0;
-
-        FlxG.cameras.add(hudCamera, false);
-
         super.create();
+        
+        FlxG.camera.zoom = 0.75;
 
         FlxG.mouse.visible = true;
 
-        gameCamera.zoom = 0.75;
+        hudCamera = new FlxCamera();
+
+        hudCamera.bgColor = FlxColor.TRANSPARENT;
+
+        FlxG.cameras.add(hudCamera, false);
+
+        fileRef = new FileReference();
 
         var background:FlxBackdrop = new FlxBackdrop(FlxGridOverlay.createGrid(32, 32, 64, 64, true, 0xFFE7E6E6, 0xFFD9D5D5));
 
@@ -125,7 +116,7 @@ class CharacterEditorState extends FlxState
 
         add(ghost);
 
-        character = new Character(null, 0.0, 0.0, Character.getConfig(configName));
+        character = new Character(null, 0.0, 0.0, Character.getConfig("bf"));
 
         character.screenCenter();
 
@@ -179,17 +170,7 @@ class CharacterEditorState extends FlxState
 
         ui.findComponent("button", Button).onClick = (ev:MouseEvent) ->
         {
-            var path:String = "";
-
-            #if sys
-            path += Sys.getCwd().replace("/", "\\");
-
-            path += Paths.data(Paths.json('game\\Character\\${character.config.name}')).replace("/", "\\");
-            #end
-
-            var fileRef:FileReference = new FileReference();
-
-            fileRef.save(Json.stringify(character.config), path);
+            fileRef.save(Json.stringify(character.config));
         }
 
         ui.findComponent("_button", Button).onClick = (ev:MouseEvent) ->

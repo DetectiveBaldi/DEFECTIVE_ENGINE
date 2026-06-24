@@ -3,7 +3,7 @@
 
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<meta title="Defective Engine" package="com.detectivebaldi.defectiveengine" version="0.0.1" company="Detective Baldi" />
+	<meta title="Defective Engine" package="com.detectivebaldi.defectiveengine" version="0.0.1" company="Detective-Baldi" />
 
 	<app main="Main" file="DEFECTIVE" />
 

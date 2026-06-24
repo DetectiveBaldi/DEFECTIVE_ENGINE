@@ -14,7 +14,15 @@ using StringTools;
 
 class Strum extends FlxSprite
 {
-    public var conductor:Conductor;
+    public var beatDispatcher:IBeatDispatcher;
+
+    public var conductor(get, never):Conductor;
+
+    @:noCompletion
+    function get_conductor():Conductor
+    {
+        return beatDispatcher?.conductor;
+    }
 
     public var strumline:Strumline;
 
@@ -28,11 +36,11 @@ class Strum extends FlxSprite
     {
         super(x, y);
 
-        conductor = beatDispatcher.conductor;
+        this.beatDispatcher = beatDispatcher;
 
         antialiasing = true;
 
-        frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("game/notes/Strum/default"),
+        frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("game/notes/Strum/default", false),
             Paths.image(Paths.xml("game/notes/Strum/default")));
         
         for (i in 0 ... Note.DIRECTIONS.length)
@@ -57,6 +65,9 @@ class Strum extends FlxSprite
     {
         super.update(elapsed);
 
+        if (conductor == null)
+            return;
+
         if ((animation.name ?? "").endsWith("Confirm"))
         {
             holdTimer += elapsed;
@@ -65,7 +76,8 @@ class Strum extends FlxSprite
             {
                 holdTimer = 0.0;
 
-                animation.play(strumline.keyParams.keys[direction].toLowerCase() + (strumline.botplay ? "Static" : "Press"));
+                if (!strumline.botplay)
+                    animation.play('${strumline.keyParams.keys[direction].toLowerCase()}Press');
             }
         }
         else

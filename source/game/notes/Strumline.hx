@@ -5,18 +5,13 @@ import haxe.Json;
 import openfl.utils.Assets;
 
 import flixel.FlxG;
-
 import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-
 import flixel.input.FlxInput;
 import flixel.input.keyboard.FlxKey;
-
 import flixel.sound.FlxSound;
-
 import flixel.tweens.FlxTween;
-
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.util.FlxTimer;
@@ -24,14 +19,10 @@ import flixel.util.FlxTimer;
 import core.AssetCache;
 import core.Options;
 import core.Paths;
-
-import data.Chart;
 import data.KeyParams;
-
 import game.notes.events.GhostTapEvent;
 import game.notes.events.NoteHitEvent;
 import game.notes.events.SustainHoldEvent;
-
 import music.Conductor;
 
 using StringTools;
@@ -41,9 +32,15 @@ using tools.ObjectHelpers;
 
 class Strumline extends FlxGroup
 {
-    public var conductor:Conductor;
+    public var beatDispatcher:IBeatDispatcher;
 
-    public var chart:Chart;
+    public var conductor(get, never):Conductor;
+
+    @:noCompletion
+    function get_conductor():Conductor
+    {
+        return beatDispatcher?.conductor;
+    }
 
     public var keyCount:Int;
 
@@ -58,12 +55,16 @@ class Strumline extends FlxGroup
     public var strumSpacing(default, set):Float;
 
     @:noCompletion
-    function set_strumSpacing(sstrumSpacing:Float):Float
+    function set_strumSpacing(v:Float):Float
     {   
-        strumSpacing = sstrumSpacing;
+        strumSpacing = v;
 
         for (i in 0 ... strums.members.length)
-            strums.members[i].x = strums.x + strumSpacing * i;
+        {
+            var strum:Strum = strums.members[i];
+
+            strum.x = strums.x + strumSpacing * i;
+        }
 
         return strumSpacing;
     }
@@ -117,17 +118,15 @@ class Strumline extends FlxGroup
 
     public var vocals:FlxSound;
 
-    public var lastStep:Int;
-
     public function new(beatDispatcher:IBeatDispatcher, keyCount:Int):Void
     {
         super();
 
-        conductor = beatDispatcher.conductor;
+        this.beatDispatcher = beatDispatcher;
 
-        this.keyCount = keyCount;
+        setKeyCount(keyCount);
 
-        keyParams = KeyParams.build(Json.parse(Assets.getText(Paths.json(Paths.data('data/KeyParams/${keyCount}k')))));
+        keysToCheck = new Map<Int, Array<Int>>();
 
         getKeysToCheck();
 
@@ -140,26 +139,7 @@ class Strumline extends FlxGroup
 
         add(strums);
 
-        var strumScale:Float = keyParams.strumScale;
-
-        for (i in 0 ... keyCount)
-        {
-            var strum:Strum = new Strum(beatDispatcher);
-
-            strum.strumline = this;
-
-            strum.direction = i;
-
-            strum.animation.play('${convertDirectionToAnimation(strum.direction).toLowerCase()}Static');
-
-            strum.scale.set(strumScale, strumScale);
-
-            strum.updateHitbox();
-            
-            strums.add(strum);
-        }
-
-        strumSpacing = keyParams.strumSpacing;
+        buildStrums();
 
         notes = new FlxTypedGroup<Note>();
 
@@ -206,8 +186,6 @@ class Strumline extends FlxGroup
         downscroll = Options.downscroll;
 
         botplay = false;
-
-        lastStep = 0;
     }
 
     override function update(elapsed:Float):Void
@@ -315,8 +293,6 @@ class Strumline extends FlxGroup
         sustains.update(elapsed);
 
         trails.update(elapsed);
-
-        lastStep = conductor.step;
     }
 
     override function destroy():Void
@@ -342,6 +318,73 @@ class Strumline extends FlxGroup
         return FlxG.keys.checkKeyArrayState(keys, state);
     }
 
+    public function setKeyCount(v:Int):Void
+    {
+        keyCount = v;
+
+        keyParams = KeyParams.build(Json.parse(Assets.getText(Paths.json(Paths.data('data/KeyParams/${keyCount}k')))));
+    }
+
+    public function getKeysToCheck():Map<Int, Array<Int>>
+    {
+        keysToCheck.clear();
+
+        var controls:Array<Array<Int>> = Options.controls.exists(keyCount) ? Options.controls[keyCount] : keyParams.controls;
+
+        for (i in 0 ... controls.length)
+        {
+            var control:Array<Int> = controls[i];
+
+            var copy:Array<Int> = control.copy();
+
+            copy.remove(-1);
+
+            keysToCheck[i] = copy;
+        }
+
+        return keysToCheck;
+    }
+
+    public function buildStrums():Void
+    {
+        // TODO: Maybe use recycling here.
+        for (i in 0 ... strums.members.length)
+        {
+            var strum:Strum = strums.members[i];
+
+            strum.destroy();
+        }
+
+        strums.members.resize(0);
+        
+        var strumScale:Float = keyParams.strumScale;
+
+        for (i in 0 ... keyCount)
+        {
+            var strum:Strum = new Strum(beatDispatcher);
+
+            strum.strumline = this;
+
+            strum.direction = i;
+
+            strum.animation.play('${convertDirectionToAnimation(strum.direction).toLowerCase()}Static');
+
+            strum.scale.set(strumScale, strumScale);
+
+            var hitboxScale:Float = 160.0 * strumScale;
+
+            strum.setSize(hitboxScale, hitboxScale);
+
+            strum.centerOffsets();
+
+            strum.setPosition();
+            
+            strums.add(strum);
+        }
+
+        strumSpacing = keyParams.strumSpacing;
+    }
+
     public function convertDirectionToAnimation(direction:Int):String
     {
         return keyParams.keys[direction];
@@ -350,23 +393,6 @@ class Strumline extends FlxGroup
     public function convertDirectionToAnimationIndex(direction:Int):Int
     {
         return Note.DIRECTIONS.indexOf(keyParams.keys[direction]);
-    }
-
-    public function getKeysToCheck():Map<Int, Array<Int>>
-    {
-        if (keysToCheck == null)
-            keysToCheck = new Map<Int, Array<Int>>();
-        else
-            keysToCheck.clear();
-
-        for (i in 0 ... keyParams.controls.length)
-        {
-            var v:Array<Int> = keyParams.controls[i];
-
-            keysToCheck[i] = v;
-        }
-
-        return keysToCheck;
     }
 
     public function setStrumActive(direc:Int, active:Bool):Void
@@ -463,7 +489,7 @@ class Strumline extends FlxGroup
 
         onSustainHold.dispatch(sustainHoldEvent);
 
-        if (lastStep != conductor.step || note.status != HIT)
+        if (note.status != HIT)
         {
             note.status = HIT;
 

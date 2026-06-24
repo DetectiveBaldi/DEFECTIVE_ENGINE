@@ -43,9 +43,9 @@ class AtlasText extends FlxSpriteGroup
     {
         super(x, y);
 
-        this.text = text;
-
         font = "default";
+
+        this.text = text;
 
         setFont();
 
@@ -118,6 +118,8 @@ class AtlasText extends FlxSpriteGroup
                 default:
                 {
                     var sprite:FlxSprite = recycle(FlxSprite, () -> new FlxSprite());
+
+                    sprite.antialiasing = true;
 
                     sprite.frames = fontData.atlas;
 

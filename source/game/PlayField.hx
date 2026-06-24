@@ -131,7 +131,7 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         add(timeGauge);
 
-        timeText = new FlxText(0.0, 0.0, FlxG.width, "-:--", 36);
+        timeText = new FlxText(0.0, 0.0, timeGauge.width, "-:--", 36);
 
         timeText.antialiasing = true;
 
@@ -163,8 +163,8 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         opponentStrumline.scrollSpeed = scrollSpeed;
 
-        opponentStrumline.strums.setPosition(180.0 / keyCount, opponentStrumline.downscroll ?
-            FlxG.height - opponentStrumline.strums.height - 15.0 : 15.0);
+        opponentStrumline.strums.setPosition(160.0 / keyCount, opponentStrumline.downscroll ?
+            FlxG.height - opponentStrumline.strums.height - 40.0 : 40.0);
 
         strumlines.add(opponentStrumline);
 
@@ -172,8 +172,8 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         playerStrumline.scrollSpeed = scrollSpeed;
 
-        playerStrumline.strums.setPosition(FlxG.width - playerStrumline.strums.width - 180.0 / keyCount, playerStrumline.downscroll ?
-            FlxG.height - playerStrumline.strums.height - 15.0 : 15.0);
+        playerStrumline.strums.setPosition(FlxG.width - playerStrumline.strums.width - 160.0 / keyCount, playerStrumline.downscroll ?
+            FlxG.height - playerStrumline.strums.height - 40.0 : 40.0);
 
         strumlines.add(playerStrumline);
 

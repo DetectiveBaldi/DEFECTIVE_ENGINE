@@ -97,7 +97,11 @@ class NoteSpawner extends FlxBasic
 
             note.scale.set(strumScale, strumScale);
 
-            note.updateHitbox();
+            var hitboxScale:Float = 160.0 * strumScale;
+
+            note.setSize(hitboxScale, hitboxScale);
+
+            note.centerOffsets();
 
             notes.add(note);
 
@@ -115,9 +119,13 @@ class NoteSpawner extends FlxBasic
 
                 sustain.flipY = note.strum.downscroll;
 
-                sustain.setGraphicSize(sustain.frameWidth * note.scale.x, note.length * strumline.scrollSpeed * 0.45);
+                sustain.setGraphicSize(sustain.frameWidth * strumScale, note.length * strumline.scrollSpeed * 0.45);
 
-                sustain.updateHitbox();
+                var hitboxScale:Float = 160.0 * strumScale;
+
+                sustain.setSize(hitboxScale, sustain.height);
+
+                sustain.centerOffsets();
 
                 sustains.add(sustain);
 

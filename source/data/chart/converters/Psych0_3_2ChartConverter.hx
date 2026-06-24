@@ -29,7 +29,7 @@ class Psych0_3_2ChartConverter
         if (Paths.exists(eventsPath))
             rawEvents = Json.parse(Assets.getText(eventsPath));
 
-        // Less typing;
+        // Less typing
         raw = raw.song;
 
         var section:Dynamic = raw.notes[0];

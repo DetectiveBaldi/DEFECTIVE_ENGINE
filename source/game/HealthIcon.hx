@@ -2,10 +2,6 @@ package game;
 
 import flixel.FlxSprite;
 
-import flixel.graphics.FlxGraphic;
-
-import flixel.system.FlxAssets.FlxGraphicAsset;
-
 import core.AssetCache;
 
 using StringTools;

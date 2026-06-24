@@ -44,7 +44,7 @@ class AssetCache
 
     public static overload inline extern function getGraphic(path:String, gpuCaching:Bool = true):FlxGraphic
     {
-        if (!path.startsWith("assets/"))
+        if (!Paths.exists(path))
             path = Paths.image(Paths.png(path));
 
         if (graphics.exists(path))
@@ -64,6 +64,9 @@ class AssetCache
 
     public static function removeGraphic(path:String):Void
     {
+        if (!Paths.exists(path))
+            path = Paths.image(Paths.png(path));
+
         if (!graphics.exists(path))
             return;
 
@@ -79,7 +82,8 @@ class AssetCache
 
     public static function getSound(path:String):Sound
     {
-        path = Paths.sound(Paths.ogg(path));
+        if (!Paths.exists(path))
+            path = Paths.sound(Paths.ogg(path));
 
         if (sounds.exists(path))
             return sounds[path];
@@ -91,7 +95,8 @@ class AssetCache
 
     public static function getMusic(path:String):Sound
     {
-        path = Paths.music(Paths.ogg(path));
+        if (!Paths.exists(path))
+            path = Paths.music(Paths.ogg(path));
 
         if (music.exists(path))
             return music[path];
@@ -122,8 +127,11 @@ class AssetCache
         return null;
     }
 
-    public static function removeSound(path:String):Void
+    public static function removeSound(path:String, usePathPrepend:Bool = true):Void
     {
+        if (usePathPrepend)
+            path = Paths.sound(Paths.ogg(path));
+
         if (!sounds.exists(path))
             return;
 
@@ -139,8 +147,11 @@ class AssetCache
         sounds.remove(path);
     }
 
-    public static function removeMusic(path:String):Void
+    public static function removeMusic(path:String, usePathPrepend:Bool = true):Void
     {
+        if (usePathPrepend)
+            path = Paths.music(Paths.ogg(path));
+        
         if (!music.exists(path))
             return;
 
