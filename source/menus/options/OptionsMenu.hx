@@ -122,7 +122,7 @@ class OptionsMenu extends FlxState
 
         addOptionItem(item);
 
-        var item:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Sound Streaming", "If checked, audio is loaded progressively where\napplicable.", "soundStreaming");
+        var item:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Sound Streaming", "If checked, audio is loaded progressively where applicable.", "soundStreaming");
 
         addOptionItem(item);
 

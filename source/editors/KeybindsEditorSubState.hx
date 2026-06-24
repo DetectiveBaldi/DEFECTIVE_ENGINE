@@ -461,6 +461,8 @@ class KeybindsEditorSubState extends FlxSubState implements ISequenceHandler
         var path:Path = new Path(name);
 
         setKeyCount(Std.parseInt(path.file.replace("k", "")));
+
+        playScrollSound();
     }
 
     public function setKeyCount(keyCount:Int):Void
