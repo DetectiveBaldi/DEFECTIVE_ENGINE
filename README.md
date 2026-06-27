@@ -20,7 +20,7 @@ Other:
 - More (and less) than 4 keys
 - Character editor
 - Options menu
-- Compilation support for several targets (cpp, hl, html5)
+- Support for several targets (cpp, hl, html5)
 
 ## Mods using Defective Engine
 - <img width="24" height="24" alt="image" src="https://github.com/user-attachments/assets/bac1e2da-2a89-40ab-8ced-8a9efe44ae80" /> [FNF: Baldi's Basics Madness (V2!)](https://gamebanana.com/mods/623189)
