@@ -109,7 +109,20 @@ class LeatherChartConverter
 
                 var type:String = note.type ?? "";
 
-                var kind:NoteKindData = {type: type, altAnimation: false, noAnimation: false, specSing: false, charIds: null}
+                var kind:NoteKindData = {type: "", altAnimation: false, noAnimation: false, specSing: false, charIds: null}
+
+                if (type == "caution" || type == "death" || type == "hurt")
+                    kind.type = type;
+
+                if (note.charIds != null)
+                {
+                    kind.charIds = new Array<Int>();
+                    
+                    if (note.charIds is Int)
+                        kind.charIds.push(note.charIds);
+                    else
+                        kind.charIds = note.charIds;
+                }
 
                 if (_section.altAnim)
                     kind.altAnimation = true;

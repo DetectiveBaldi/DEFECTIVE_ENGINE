@@ -36,10 +36,23 @@ class Character extends FlxSprite
 {
     public static function getConfig(file:String):CharacterData
     {
-        return Json.parse(Assets.getText(Paths.data(Paths.json('game/Character/${file}'))));
+        var path:String = Paths.data(Paths.json('game/Character/${file}'));
+
+        if (!Paths.exists(path))
+            throw 'Couldn\'t find the requested character config at "${path}"!';
+
+        return Json.parse(Assets.getText(path));
     }
+
+    public var beatDispatcher:IBeatDispatcher;
     
-    public var conductor:Conductor;
+    public var conductor(get, never):Conductor;
+
+    @:noCompletion
+    function get_conductor():Conductor
+    {
+        return beatDispatcher?.conductor;
+    }
 
     public var strumline:Strumline;
 
@@ -67,7 +80,7 @@ class Character extends FlxSprite
     {
         super(x, y);
 
-        conductor = beatDispatcher?.conductor;
+        this.beatDispatcher = beatDispatcher;
 
         conductor?.onBeatHit?.add(beatHit);
 

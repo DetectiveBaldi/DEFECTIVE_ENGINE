@@ -273,7 +273,7 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
             updateScoreText();
         }
 
-        healthBar.value += rating.health;
+        healthBar.value += event.note.hitHealth;
     }
 
     public function noteMiss(note:Note):Void
@@ -284,7 +284,7 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         onUpdateScore.dispatch(playStats);
 
-        healthBar.value -= 5.0;
+        healthBar.value -= note.missHealth;
 
         updateScoreText();
     }
@@ -300,7 +300,7 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
             updateScoreText();
         }
 
-        healthBar.value += 10.0 * FlxG.elapsed;
+        healthBar.value += ev.note.hitHealth * 10.0 * FlxG.elapsed;
     }
 
     public function ghostTap(ev:GhostTapEvent):Void
@@ -313,7 +313,7 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
             onUpdateScore.dispatch(playStats);
 
-            healthBar.value -= 5.0;
+            healthBar.value -= 2.0;
 
             updateScoreText();
         }

@@ -84,7 +84,7 @@ class IntOptionItem extends VarOptionItem<Int>
 
     override function setValue(value:Int):Void
     {
-        value = Std.int(FlxMath.bound(value, min, max));
+        value = Math.floor(FlxMath.bound(value, min, max));
 
         super.setValue(value);
     }

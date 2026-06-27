@@ -14,10 +14,10 @@ class SustainTrail extends FlxSprite
     public function new(x:Float = 0.0, y:Float = 0.0):Void
     {
         super(x, y);
+    }
 
-        frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("game/notes/Note/default"),
-            Paths.image(Paths.xml("game/notes/Note/default")));
-        
+    public function addAnimations():Void
+    {
         for (i in 0 ... Note.DIRECTIONS.length)
         {
             var direction:String = Note.DIRECTIONS[i].toLowerCase();

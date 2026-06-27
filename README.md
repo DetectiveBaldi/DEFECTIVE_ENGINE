@@ -15,7 +15,9 @@ Several optimizations:
 - Sustains are now rendered as 2 sprites (the "piece" and the "tail") instead of dozens of separated sprites
 
 Other:
-- Key counts > and < than 4
+- Multiple opponents, players, and spectators
+- More than 2 strumlines
+- More (and less) than 4 keys
 - Character editor
 - Options menu
 - Compilation support for several targets (cpp, hl, html5)
@@ -27,19 +29,20 @@ Other:
 Follow these steps to build the game:
 1. Install [Haxe](https://haxe.org/).
 2. Install the required libraries by running the following commands:
+   - `hxcpp`: `haxelib git hxcpp https://github.com/HaxeFoundation/hxcpp`
    - `lime`: `haxelib install lime`
    - `openfl`: `haxelib install openfl`
    - `flixel`: `haxelib install flixel`
    - `flixel-addons`: `haxelib install flixel-addons`
    - `haxeui-core`: `haxelib git haxeui-core https://github.com/haxeui/haxeui-core`
-   - `haxeui-flixel`: `haxelib git haxeui-flixel https://github.com/haxeui/haxeui-flixels`
+   - `haxeui-flixel`: `haxelib git haxeui-flixel https://github.com/haxeui/haxeui-flixel`
 3. Build the game by running the following command in a command prompt (replace :target: with a specific target, like cpp, hl, or html5): `haxelib run lime build :target:`
 
-## Credits & Special Thanks
+## Credits
 - [Detective Baldi](https://x.com/DetectiveBaldi): Programming
 - [KayipKux](https://x.com/KayipKux): Artist and composer
-- [Berry](https://x.com/berryreal_): Concept designer
-- [Sword352](https://github.com/Sword352): Helped optimize a ton of engine functionality
+- [Berry](https://x.com/berryreal_): Artist and composer
+- [Sword352](https://github.com/Sword352): Tons of optimizations
 - [The Funkin' Crew Inc.](https://github.com/FunkinCrew): Created the original game
 
 ## Notice

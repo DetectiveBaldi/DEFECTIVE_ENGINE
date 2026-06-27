@@ -3,13 +3,9 @@ package ui;
 import openfl.geom.Rectangle;
 
 import flixel.FlxSprite;
-
 import flixel.math.FlxMath;
-
 import flixel.group.FlxSpriteGroup;
-
 import flixel.math.FlxRect;
-
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
@@ -104,9 +100,9 @@ class ProgressBar extends FlxSpriteGroup
         
         emptiedSide = new ProgressBarSideSprite();
 
-        emptiedSide.clipRect = FlxRect.get();
-
         emptiedSide.color = FlxColor.RED;
+
+        emptiedSide.clipRect = FlxRect.get();
 
         add(emptiedSide);
 

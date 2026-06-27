@@ -1,5 +1,5 @@
 {
-    "keys": ["LEFT", "DOWN", "UP", "RIGHT"],
+    "keys": ["left", "down", "up", "right"],
 
     "strumScale": 0.7,
 

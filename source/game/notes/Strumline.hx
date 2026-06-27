@@ -11,9 +11,11 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.input.FlxInput;
 import flixel.input.keyboard.FlxKey;
 import flixel.sound.FlxSound;
+import flixel.sound.FlxSoundGroup;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal.FlxTypedSignal;
+import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
 
 import core.AssetCache;
@@ -85,8 +87,6 @@ class Strumline extends FlxGroup
 
     public var onNoteMiss:FlxTypedSignal<(note:Note)->Void>;
 
-    public var noteSplashes:FlxTypedGroup<NoteSplash>;
-
     public var onSustainHold:FlxTypedSignal<(event:SustainHoldEvent)->Void>;
 
     public var sustainHoldEvent:SustainHoldEvent;
@@ -94,6 +94,8 @@ class Strumline extends FlxGroup
     public var onGhostTap:FlxTypedSignal<(event:GhostTapEvent)->Void>;
 
     public var ghostTapEvent:GhostTapEvent;
+
+    public var noteSplashes:FlxTypedGroup<NoteSplash>;
 
     public var scrollSpeed:Float;
 
@@ -112,11 +114,13 @@ class Strumline extends FlxGroup
 
     public var botplay:Bool;
 
-    public var characters:FlxTypedSpriteGroup<Character>;
+    public var charGroup:FlxTypedSpriteGroup<Character>;
 
     public var spectators:FlxTypedSpriteGroup<Character>;
 
-    public var vocals:FlxSound;
+    public var charList:Array<Character>;
+
+    public var vocals:Array<FlxSound>;
 
     public function new(beatDispatcher:IBeatDispatcher, keyCount:Int):Void
     {
@@ -159,7 +163,7 @@ class Strumline extends FlxGroup
 
         trails.active = false;
 
-        insert(members.indexOf(sustains), trails);
+        insert(members.indexOf(notes), trails);
 
         onNoteSpawn = new FlxTypedSignal<(note:Note)->Void>();
 
@@ -173,19 +177,23 @@ class Strumline extends FlxGroup
 
         sustainHoldEvent = new SustainHoldEvent();
 
+        onGhostTap = new FlxTypedSignal<(event:GhostTapEvent)->Void>();
+
+        ghostTapEvent = new GhostTapEvent();
+
         noteSplashes = new FlxTypedGroup<NoteSplash>();
 
         add(noteSplashes);
 
-        onGhostTap = new FlxTypedSignal<(event:GhostTapEvent)->Void>();
-
-        ghostTapEvent = new GhostTapEvent();
+        charList = new Array<Character>();
 
         scrollSpeed = 1.0;
 
         downscroll = Options.downscroll;
 
         botplay = false;
+
+        vocals = new Array<FlxSound>();
     }
 
     override function update(elapsed:Float):Void
@@ -198,7 +206,7 @@ class Strumline extends FlxGroup
             {
                 var note:Note = notes.members[i];
 
-                if (note.isHittable())
+                if (!note.skipHit && note.isHittable())
                     noteHit(note);
             }
         }
@@ -211,30 +219,45 @@ class Strumline extends FlxGroup
                 var keys:Array<Int> = v;
 
                 @:privateAccess
-                if (checkArrayState(keys, JUST_PRESSED))
                 {
-                    var strum:Strum = strums.members[direction];
+                    if (FlxG.keys.checkKeyArrayState(keys, JUST_PRESSED))
+                    {
+                        var strum:Strum = strums.members[direction];
 
-                    strum.animation.play('${convertDirectionToAnimation(direction).toLowerCase()}Press');
+                        strum.animation.play('${convertDirectionToAnim(direction).toLowerCase()}Press');
 
-                    var note:Note = notes.getFirst((_note:Note) -> _note.isHittable() && _note.direction == direction);
+                        var notes:Array<Note> = notes.members.filter((note:Note) -> note.direction == direction && note.isHittable());
 
-                    if (note == null)
-                        ghostTap(strum.direction);
-                    else
-                        noteHit(note);
-                }
+                        notes.sort(sortNotes);
 
-                if (checkArrayState(keys, PRESSED))
-                    keysHeld[direction] = true;
+                        var note:Note = notes[0];
 
-                if (checkArrayState(keys, JUST_RELEASED))
-                {
-                    keysHeld[direction] = false;
+                        notes = notes.filter((newNote:Note) -> newNote.time == note.time);
 
-                    var strum:Strum = strums.members[direction];
+                        if (notes.length == 0.0)
+                            ghostTap(strum.direction);
+                        else
+                        {
+                            for (i in 0 ... notes.length)
+                            {
+                                var note:Note = notes[i];
 
-                    strum.animation.play('${convertDirectionToAnimation(direction).toLowerCase()}Static');
+                                noteHit(note);
+                            }
+                        }
+                    }
+
+                    if (FlxG.keys.checkKeyArrayState(keys, PRESSED))
+                        keysHeld[direction] = true;
+
+                    if (FlxG.keys.checkKeyArrayState(keys, JUST_RELEASED))
+                    {
+                        keysHeld[direction] = false;
+
+                        var strum:Strum = strums.members[direction];
+
+                        strum.animation.play('${convertDirectionToAnim(direction).toLowerCase()}Static');
+                    }
                 }
             }
         }
@@ -245,7 +268,7 @@ class Strumline extends FlxGroup
 
             var hasMissed:Bool = conductor.time > note.time + Rating.latestTiming;
 
-            if ((note.status == IDLING || note.status == FAILING) && hasMissed)
+            if ((note.status == IDLING || note.status == FAILING) && !note.skipHit && hasMissed)
                 noteMiss(note);
 
             var hasExpired:Bool = conductor.time > note.time + note.length + Rating.latestTiming;
@@ -253,7 +276,7 @@ class Strumline extends FlxGroup
             if (hasMissed && hasExpired)
                 notesPendingRemoval.push(note);
 
-            if (note.length == 0.0)
+            if (!note.isSustain)
                 continue;
 
             if (isHoldingNote(note))
@@ -310,12 +333,8 @@ class Strumline extends FlxGroup
         onNoteSpawn = cast FlxDestroyUtil.destroy(onNoteSpawn);
 
         onGhostTap = cast FlxDestroyUtil.destroy(onGhostTap);
-    }
 
-    public function checkArrayState(keys:Array<FlxKey>, state:FlxInputState):Bool
-    {
-        @:privateAccess
-        return FlxG.keys.checkKeyArrayState(keys, state);
+        vocals = null;
     }
 
     public function setKeyCount(v:Int):Void
@@ -323,6 +342,21 @@ class Strumline extends FlxGroup
         keyCount = v;
 
         keyParams = KeyParams.build(Json.parse(Assets.getText(Paths.json(Paths.data('data/KeyParams/${keyCount}k')))));
+    }
+
+    public function convertDirectionToAnimIndex(direction:Int, base4:Bool = false):Int
+    {
+        var i:Int = Note.DIRECTIONS.indexOf(keyParams.keys[direction]);
+
+        if (base4)
+            return Note.DIRECTIONS_BASE_4[i];
+
+        return i;
+    }
+
+    public function convertDirectionToAnim(direction:Int, base4:Bool = false):String
+    {
+       return Note.DIRECTIONS[convertDirectionToAnimIndex(direction, base4)];
     }
 
     public function getKeysToCheck():Map<Int, Array<Int>>
@@ -367,7 +401,7 @@ class Strumline extends FlxGroup
 
             strum.direction = i;
 
-            strum.animation.play('${convertDirectionToAnimation(strum.direction).toLowerCase()}Static');
+            strum.animation.play('${convertDirectionToAnim(strum.direction).toLowerCase()}Static');
 
             strum.scale.set(strumScale, strumScale);
 
@@ -385,16 +419,6 @@ class Strumline extends FlxGroup
         strumSpacing = keyParams.strumSpacing;
     }
 
-    public function convertDirectionToAnimation(direction:Int):String
-    {
-        return keyParams.keys[direction];
-    }
-
-    public function convertDirectionToAnimationIndex(direction:Int):Int
-    {
-        return Note.DIRECTIONS.indexOf(keyParams.keys[direction]);
-    }
-
     public function setStrumActive(direc:Int, active:Bool):Void
     {
         var strum:Strum = strums.members[direc];
@@ -403,6 +427,17 @@ class Strumline extends FlxGroup
 
         if (!active)
             strum.animation.finish();
+    }
+
+    public function sortNotes(a:Note, b:Note):Int
+    {
+        if (a.skipHit && !b.skipHit)
+			return 1;
+
+		if (!a.skipHit && b.skipHit)
+			return -1;
+
+        return FlxSort.byValues(FlxSort.ASCENDING, a.time, b.time);
     }
 
     public function noteHit(note:Note):Void
@@ -419,9 +454,9 @@ class Strumline extends FlxGroup
 
         strum.holdTimer = 0.0;
         
-        strum.animation.play('${convertDirectionToAnimation(note.direction).toLowerCase()}Confirm', true);
+        strum.animation.play('${convertDirectionToAnim(note.direction).toLowerCase()}Confirm', true);
 
-        if (note.length > 0.0)
+        if (note.isSustain)
             resizeSustainNote(note);
         else
         {
@@ -431,14 +466,13 @@ class Strumline extends FlxGroup
                 playSplash(note);
         }
         
-        setStrumActive(note.direction, note.length == 0.0);
+        setStrumActive(note.direction, !note.isSustain);
 
-        playCharSingAnims(note, note.direction, false);
+        playCharSingAnims(note, note.direction, false, false);
 
-        setCharAnimsActive(note, note.length == 0.0);
+        setCharAnimsActive(note, !note.isSustain);
 
-        if (vocals != null)
-            vocals.volume = 1.0;
+        setVocalsVolume(1.0);
     }
 
     public function noteMiss(note:Note):Void
@@ -447,34 +481,42 @@ class Strumline extends FlxGroup
 
         note.status = MISSED;
 
-        playCharMissAnims(note, note.direction);
+        playCharSingAnims(note, note.direction, true, false);
 
         setCharAnimsActive(note, true);
 
-        if (vocals != null)
-            vocals.volume = 0.0;
+        setVocalsVolume(0.0);
 
         FlxG.sound.play(AssetCache.getSound('game/GameState/noteMiss${FlxG.random.int(0, 2)}'), 0.15);
     }
 
-    public function playSplash(note:Note):Void
+    public function removeNote(note:Note):Void
     {
-        var splash:NoteSplash = noteSplashes.recycle(NoteSplash, () -> new NoteSplash());
+        notes.members.remove(note);
 
-        var strumScale:Float = keyParams.strumScale;
+        note.kill();
 
-        splash.scale.set(strumScale, strumScale);
+        if (note.sustain != null)
+        {
+            sustains.members.remove(note.sustain);
 
-        splash.updateHitbox();
+            trails.members.remove(note.sustain.trail);
+        }
+    }
 
-        splash.play(convertDirectionToAnimationIndex(note.direction), note.length > 0.0);
+    public function resizeSustainNote(note:Note):Void
+    {
+        note.length += note.time - conductor.time;
 
-        splash.centerTo(note.strum);
+        note.time = conductor.time;
+
+        if (!note.isSustain)
+            finishSustainNote(note);
     }
 
     public function isHoldingNote(note:Note):Bool
     {
-        if (note.length == 0.0 || (note.status != HIT && note.status != FAILING))
+        if (!note.isSustain || (note.status != HIT && note.status != FAILING))
             return false;
 
         if (botplay)
@@ -493,7 +535,7 @@ class Strumline extends FlxGroup
 
         strum.holdTimer = 0.0;
 
-        strum.animation.play('${convertDirectionToAnimation(note.direction).toLowerCase()}Confirm', true);
+        strum.animation.play('${convertDirectionToAnim(note.direction).toLowerCase()}Confirm', true);
             
         setStrumActive(note.direction, false);
         
@@ -501,22 +543,11 @@ class Strumline extends FlxGroup
 
         note.unholdTime = 0.0;
 
-        playCharSingAnims(note, note.direction, true);
+        playCharSingAnims(note, note.direction, false, true);
 
         setCharAnimsActive(note, false);
 
-        if (vocals != null)
-            vocals.volume = 1.0;
-    }
-
-    public function resizeSustainNote(note:Note):Void
-    {
-        note.length += note.time - conductor.time;
-
-        note.time = conductor.time;
-
-        if (note.length == 0.0)
-            finishSustainNote(note);
+        setVocalsVolume(1.0);
     }
 
     public function finishSustainNote(note:Note):Void
@@ -535,7 +566,7 @@ class Strumline extends FlxGroup
         }
         else
         {
-            var anim:String = '${convertDirectionToAnimation(note.direction).toLowerCase()}Static';
+            var anim:String = '${convertDirectionToAnim(note.direction).toLowerCase()}Static';
 
             note.strum.animation.play(anim, true);
         }
@@ -551,84 +582,39 @@ class Strumline extends FlxGroup
         {
             FlxG.sound.play(AssetCache.getSound('game/GameState/noteMiss${FlxG.random.int(0, 2)}'), 0.15);
 
-            playCharMissAnims(null, direction);
+            playCharSingAnims(null, direction, true, false);
 
             setCharAnimsActive(null, true);
 
-            if (vocals != null)
-                vocals.volume = 0.0;
+            setVocalsVolume(0.0);
         }
     }
 
-    public function playCharSingAnims(note:Note, direction:Int, hold:Bool):Void
+    public function playSplash(note:Note):Void
     {
-        var charGroup:FlxTypedSpriteGroup<Character> = characters;
+        var splash:NoteSplash = noteSplashes.recycle(NoteSplash, () -> new NoteSplash());
 
-        if (note.kind.specSing)
-            charGroup = spectators;
+        var strumScale:Float = keyParams.strumScale;
 
-        for (i in 0 ... charGroup.members.length)
-        {
-            var character:Character = charGroup.members[i];
+        splash.scale.set(strumScale, strumScale);
 
-            if (note.kind.noAnimation)
-                continue;
+        splash.play(convertDirectionToAnimIndex(note.direction), note.isSustain);
 
-            var charIds:Array<Int> = note.kind.charIds;
+        splash.updateHitbox();
 
-            if (charIds != null && !charIds.contains(-1) && !charIds.contains(i))
-                continue;
-
-            if (character.skipSing)
-                continue;
-
-            character.holdTimer = 0.0;
-
-            var animSuffix:String = "";
-
-            if (note.kind.altAnimation)
-                animSuffix = "-alt";
-
-            var directionStr:String = convertDirectionToAnimation(direction);
-
-            if (hold && character.animation.name.contains(directionStr))
-                continue;
-
-            var animToPlay:String = 'Sing${directionStr}${animSuffix}';
-
-            if (character.animation.exists(animToPlay))
-                character.animation.play(animToPlay, true);
-            else
-            {
-                animToPlay = 'Sing${directionStr}';
-
-                if (character.animation.exists(animToPlay))
-                    character.animation.play(animToPlay, true);
-            }
-        }
+        splash.centerTo(note.strum);
     }
 
-    public function playCharMissAnims(note:Note, direction:Int):Void
+    public function playCharSingAnims(note:Note, direction:Int, miss:Bool, hold:Bool):Void
     {
-        var charGroup:FlxTypedSpriteGroup<Character> = characters;
+        getCharList(note);
 
-        if (note?.kind?.specSing)
-            charGroup = spectators;
-
-        for (i in 0 ... charGroup.members.length)
+        for (i in 0 ... charList.length)
         {
-            var character:Character = charGroup.members[i];
+            if (note?.kind?.noAnimation)
+                continue;
 
-            if (note != null)
-            {
-                if (note.kind.noAnimation)
-                    continue;
-
-                var charIds:Array<Int> = note.kind.charIds;
-
-                if (charIds != null && !charIds.contains(-1) && !charIds.contains(i))
-                    continue;
-            }
+            var character:Character = charList[i];
 
             if (character.skipSing)
                 continue;
@@ -638,18 +624,24 @@ class Strumline extends FlxGroup
             var animSuffix:String = "";
 
             if (note?.kind?.altAnimation)
-                animSuffix = "-alt";
+                animSuffix += "-alt";
 
-            var directionStr:String = convertDirectionToAnimation(direction);
+            var dir:String = convertDirectionToAnim(direction, true);
 
-            var animToPlay:String = 'Sing${directionStr}MISS${animSuffix}';
+            if (hold && character.animation.name.contains(dir))
+                continue;
 
-            if (character.animation.exists(animToPlay))
-                character.animation.play(animToPlay, true);
+            var animToPlay:String = 'Sing${dir.toUpperCase()}';
+
+            if (miss)
+                animToPlay += "MISS";
+
+            var animWithSuffix:String = animToPlay + animSuffix;
+
+            if (character.animation.exists(animWithSuffix))
+                character.animation.play(animWithSuffix, true);
             else
             {
-                animToPlay = 'Sing${directionStr}MISS';
-
                 if (character.animation.exists(animToPlay))
                     character.animation.play(animToPlay, true);
             }
@@ -658,25 +650,14 @@ class Strumline extends FlxGroup
 
     public function setCharAnimsActive(note:Note, active:Bool):Void
     {
-        var charGroup:FlxTypedSpriteGroup<Character> = characters;
+        getCharList(note);
 
-        if (note?.kind?.specSing)
-            charGroup = spectators;
-
-        for (i in 0 ... charGroup.members.length)
+        for (i in 0 ... charList.length)
         {
-            var character:Character = charGroup.members[i];
+            if (note?.kind?.noAnimation)
+                continue;
 
-            if (note != null)
-            {
-                if (note.kind.noAnimation)
-                    continue;
-
-                var charIds:Array<Int> = note.kind.charIds;
-
-                if (charIds != null && !charIds.contains(-1) && !charIds.contains(i))
-                    continue;
-            }
+            var character:Character = charList[i];
 
             if (character.skipSing)
                 continue;
@@ -688,17 +669,51 @@ class Strumline extends FlxGroup
         }
     }
 
-    public function removeNote(note:Note):Void
+    public function getCharList(note:Note):Array<Character>
     {
-        notes.members.remove(note);
+        if (note?.kind?.specSing)
+            charGroup = spectators;
 
-        note.kill();
+        charList.resize(0);
 
-        if (note.sustain != null)
+        if (note?.kind?.charIds != null)
         {
-            sustains.members.remove(note.sustain);
+            charList.resize(0);
+            
+            for (i in 0 ... note.kind.charIds.length)
+            {
+                var id:Int = note.kind.charIds[i];
 
-            trails.members.remove(note.sustain.trail);
+                if (id > charGroup.members.length - 1.0)
+                {
+                    var firstChar:Character = charGroup.members[0];
+
+                    if (!charList.contains(firstChar))
+                        charList.push(firstChar);
+
+                    continue;
+                }
+
+                charList.push(charGroup.members[id]);
+            }
+        }
+        else
+        {
+            for (i in 0 ... charGroup.members.length)
+                charList.push(charGroup.members[i]);
+        }
+
+        return charList;
+    }
+
+    public function setVocalsVolume(volume:Float):Void
+    {
+        for (i in 0 ... vocals.length)
+        {
+            var sound:FlxSound = vocals[i];
+
+            if (sound != null)
+                sound.volume = volume;
         }
     }
 }

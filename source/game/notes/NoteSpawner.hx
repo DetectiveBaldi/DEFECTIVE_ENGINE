@@ -2,11 +2,12 @@ package game.notes;
 
 import flixel.FlxBasic;
 import flixel.FlxG;
-
+import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
 
+import core.AssetCache;
+import core.Paths;
 import data.Chart;
-
 import music.Conductor;
 
 using StringTools;
@@ -15,7 +16,15 @@ using util.ArrayUtil;
 
 class NoteSpawner extends FlxBasic
 {
-    public var conductor:Conductor;
+    public var beatDispatcher:IBeatDispatcher;
+
+    public var conductor(get, never):Conductor;
+
+    @:noCompletion
+    function get_conductor():Conductor
+    {
+        return beatDispatcher?.conductor;
+    }
 
     public var noteParams:Array<NoteData>;
 
@@ -35,7 +44,7 @@ class NoteSpawner extends FlxBasic
 
         visible = false;
 
-        this.conductor = beatDispatcher.conductor;
+        this.beatDispatcher = beatDispatcher;
         
         this.noteParams = noteParams;
 
@@ -60,12 +69,21 @@ class NoteSpawner extends FlxBasic
 
             var strumline:Strumline = strumlines.members[noteData.lane];
 
-            if (noteData.time > conductor.time + getSpawnDistance(noteData.lane))
+            if (noteData.time > conductor.time + getSpawnDistance(strumline))
                 break;
 
-            var strumScale:Float = strumline.keyParams.strumScale;
+            var note:Note = notes.members.first((note:Note) -> !note.exists && noteData.kind.type == note.kind.type);
 
-            var note:Note = notes.recycle(Note, noteFactory);
+            var needNewType:Bool = false;
+
+            if (note == null)
+            {
+                note = notes.recycle(null, noteFactory, false, false);
+
+                needNewType = true;
+            }
+
+            note.reset(FlxG.width, FlxG.height);
 
             note.visible = true;
         
@@ -78,22 +96,19 @@ class NoteSpawner extends FlxBasic
             note.lane = noteData.lane;
 
             note.kind = noteData.kind;
-            
-            note.status = IDLING;
 
-            note.playSplash = false;
+            var strumScale:Float = strumline.keyParams.strumScale;
 
-            note.unholdTime = 0.0;
+            if (needNewType)
+            {
+                note.frames = getNoteFrames(note);
 
-            note.sustain = null;
+                note.addAnimations();
 
-            note.strumline = strumline;
+                note.scale.set(strumScale, strumScale);
+            }
 
-            note.strum = strumline.strums.members[note.direction];
-
-            note.animation.play(strumline.convertDirectionToAnimation(note.direction).toLowerCase());
-
-            note.flipY = false;
+            note.animation.play(strumline.convertDirectionToAnim(note.direction).toLowerCase());
 
             note.scale.set(strumScale, strumScale);
 
@@ -103,47 +118,85 @@ class NoteSpawner extends FlxBasic
 
             note.centerOffsets();
 
+            note.strumline = strumline;
+
+            note.strum = strumline.strums.members[note.direction];
+
             notes.add(note);
 
             strumline.notes.add(note);
 
             strumline.onNoteSpawn.dispatch(note);
 
-            if (noteData.length > 0.0)
+            if (note.length > 0.0)
             {
-                var sustain:Sustain = sustains.recycle(Sustain, sustainFactory);
+                needNewType = false;
 
-                sustain.note = note;
+                var sustain:Sustain = sustains.members.first((sustain:Sustain) -> !sustain.exists && note.frames.parent == sustain.frames.parent);
 
-                sustain.animation.play('${note.animation.name}HoldPiece');
+                if (sustain == null)
+                {
+                    sustain = sustains.recycle(null, sustainFactory, false, false);
+
+                    needNewType = true;
+                }
+
+                sustain.reset(FlxG.width, FlxG.height);
+
+                if (needNewType)
+                {
+                    sustain.frames = note.frames;
+
+                    sustain.addAnimations();
+                }
 
                 sustain.flipY = note.strum.downscroll;
 
+                sustain.animation.play('${note.animation.name}HoldPiece');
+
                 sustain.setGraphicSize(sustain.frameWidth * strumScale, note.length * strumline.scrollSpeed * 0.45);
 
-                var hitboxScale:Float = 160.0 * strumScale;
+                sustain.updateHitbox();
 
-                sustain.setSize(hitboxScale, sustain.height);
-
-                sustain.centerOffsets();
+                sustain.note = note;
 
                 sustains.add(sustain);
 
                 strumline.sustains.add(sustain);
 
                 note.sustain = sustain;
+                
+                needNewType = false;
 
-                var trail:SustainTrail = trails.recycle(SustainTrail, trailFactory);
+                var trail:SustainTrail = trails.members.first((trail:SustainTrail) -> !trail.exists && sustain.frames.parent == trail.frames.parent);
 
-                trail.sustain = sustain;
+                if (trail == null)
+                {
+                    trail = trails.recycle(null, trailFactory, false, false);
+
+                    needNewType = true;
+                }
+
+                trail.reset(FlxG.width, FlxG.height);
+
+                if (needNewType)
+                {
+                    trail.frames = sustain.frames;
+
+                    trail.addAnimations();
+
+                    trail.scale.set(strumScale, strumScale);
+                }
 
                 trail.animation.play('${note.animation.name}HoldTail');
-
-                trail.flipY = note.strum.downscroll;
-
+                
                 trail.scale.set(strumScale, strumScale);
 
                 trail.updateHitbox();
+
+                trail.flipY = note.strum.downscroll;
+
+                trail.sustain = sustain;
 
                 trails.add(trail);
 
@@ -152,8 +205,15 @@ class NoteSpawner extends FlxBasic
                 sustain.trail = trail;
             }
 
+            setNoteType(note);
+
             noteIndex++;
         }
+    }
+
+    public function getSpawnDistance(strumline:Strumline):Float
+    {
+        return FlxG.height / 0.45 / Math.max(1.0, strumline.scrollSpeed);
     }
 
     public function noteFactory():Note
@@ -171,29 +231,43 @@ class NoteSpawner extends FlxBasic
         return new SustainTrail();
     }
 
-    public function getStrumline(lane:Int):Strumline
+    public function getNoteFrames(note:Note):FlxAtlasFrames
     {
-        return strumlines.members[lane];
+        var suffix:String = note.kind.type;
+
+        if (suffix == "")
+            suffix = "default";
+
+        var path:String = 'game/notes/Note/${suffix}';
+
+        return FlxAtlasFrames.fromSparrow(AssetCache.getGraphic(path), Paths.image(Paths.xml(path)));
     }
 
-    public function getSpawnDistance(lane:Int):Float
+    public function setNoteType(note:Note):Void
     {
-        var strumline:Strumline = getStrumline(lane);
-
-        return FlxG.height / 0.45 / Math.max(strumline.scrollSpeed, 1.0);
-    }
-
-    public function setNoteIndexAt(time:Float):Void
-    {
-        noteIndex = 0;
-        
-        var noteData:NoteData = noteParams[noteIndex];
-
-        while (noteIndex < noteParams.length && noteData.time <= time)
+        switch (note.kind.type:String)
         {
-            noteIndex++;
-            
-            noteData = noteParams[noteIndex];
+            case "caution":
+                note.missHealth = 100.0;
+
+            case "death":
+            {
+                note.hitHealth = -100.0;
+
+                note.skipHit = true;
+            }
+
+            case "hurt":
+            {
+                note.hitHealth = -50.0;
+
+                note.skipHit = true;
+            }
+
+            default:
+            {
+                
+            }
         }
     }
 }

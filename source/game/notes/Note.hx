@@ -2,16 +2,13 @@ package game.notes;
 
 import flixel.FlxSprite;
 
-import flixel.graphics.frames.FlxAtlasFrames;
-
-import core.AssetCache;
-import core.Paths;
-
 import data.Chart.NoteKindData;
 
 class Note extends FlxSprite
 {
-    public static final DIRECTIONS:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
+    public static var DIRECTIONS:Array<String> = ["left", "down", "up", "right", "circle"];
+
+    public static var DIRECTIONS_BASE_4:Map<Int, Int> = [0 => 0, 1 => 1, 2 => 2, 3 => 3, 4 => 2];
 
     public var time:Float;
 
@@ -20,11 +17,21 @@ class Note extends FlxSprite
     public var length(default, set):Float;
 
     @:noCompletion
-    function set_length(_length:Float):Float
+    function set_length(length:Float):Float
     {
-        length = Math.max(_length, 0.0);
+        length = Math.max(0.0, length);
+
+        this.length = length;
 
         return length;
+    }
+
+    public var isSustain(get, never):Bool;
+
+    @:noCompletion
+    function get_isSustain():Bool
+    {
+        return length != 0.0;
     }
 
     public var lane:Int;
@@ -43,33 +50,27 @@ class Note extends FlxSprite
 
     public var strum:Strum;
 
+    public var hitHealth:Float;
+
+    public var missHealth:Float;
+
+    public var skipHit:Bool;
+
+    public var hitWindow(get, never):Float;
+
+    @:noCompletion
+    function get_hitWindow():Float
+    {
+        return Rating.list[skipHit ? 1 : 0].timing;
+    }
+
     public function new(x:Float = 0.0, y:Float = 0.0):Void
     {
         super(x, y);
 
         antialiasing = true;
 
-        frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("game/notes/Note/default"),
-            Paths.image(Paths.xml("game/notes/Note/default")));
-
-        for (i in 0 ... DIRECTIONS.length)
-            animation.addByPrefix(DIRECTIONS[i].toLowerCase(), DIRECTIONS[i].toLowerCase() + "0", 24.0, false);
-
-        time = 0.0;
-
-        direction = 0;
-
-        length = 0.0;
-
-        lane = 0;
-
-        kind = {type: "", altAnimation: false, noAnimation: false, specSing: false, charIds: null}
-
-        status = IDLING;
-
-        playSplash = false;
-
-        unholdTime = 0.0;
+        reset(x, y);
     }
 
     override function update(elapsed:Float):Void
@@ -95,6 +96,45 @@ class Note extends FlxSprite
         sustain?.trail.kill();
     }
 
+    override function reset(x:Float, y:Float):Void
+    {
+        super.reset(x, y);
+
+        time = 0.0;
+
+        direction = 0;
+
+        length = 0.0;
+
+        lane = 0;
+
+        kind = null;
+
+        status = IDLING;
+
+        playSplash = false;
+
+        unholdTime = 0.0;
+
+        sustain = null;
+
+        strumline = null;
+
+        strum = null;
+
+        hitHealth = 1.0;
+
+        missHealth = 5.0;
+
+        skipHit = false;
+    }
+
+    public function addAnimations():Void
+    {
+        for (i in 0 ... DIRECTIONS.length)
+            animation.addByPrefix(DIRECTIONS[i].toLowerCase(), DIRECTIONS[i].toLowerCase() + "0", 24.0, false);
+    }
+
     public function isHittable():Bool
     {
         if (status != IDLING)
@@ -105,7 +145,7 @@ class Note extends FlxSprite
         if (botplay)
             return time <= strumline.conductor.time;
 
-        return Math.abs(time - strumline.conductor.time) <= Rating.latestTiming;
+        return Math.abs(time - strumline.conductor.time) <= hitWindow;
     }
 }
 

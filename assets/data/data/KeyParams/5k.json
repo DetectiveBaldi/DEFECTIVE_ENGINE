@@ -1,7 +1,7 @@
 {
-    "keys": ["LEFT", "DOWN", "UP", "UP", "RIGHT"],
+    "keys": ["left", "down", "circle", "up", "right"],
 
-    "strumScale": 0.66,
+    "strumScale": 0.64,
 
     "strumSpacing": 100.0,
 

@@ -1,9 +1,9 @@
 {
-    "keys": ["LEFT", "DOWN", "UP", "RIGHT", "UP", "LEFT", "DOWN", "UP", "RIGHT"],
+    "keys": ["left", "down", "up", "right", "circle", "left", "down", "up", "right"],
 
-    "strumScale": 0.5,
+    "strumScale": 0.48,
 
-    "strumSpacing": 62,
+    "strumSpacing": 64.0,
 
     "controls": [[65, -1], [83, -1], [68, -1], [70, -1], [32, -1], [72, -1], [74, -1], [75, -1], [76, -1]]
 }

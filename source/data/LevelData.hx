@@ -11,52 +11,61 @@ class LevelData
 
     public var name:String;
 
-    public var difficulty:String;
+    var _difficulty:String;
 
-    public function new(week:WeekData, name:String, difficulty:String = "Normal"):Void
+    public var difficulty(get, set):String;
+
+    @:noCompletion
+    function get_difficulty():String
+    {
+        return week?.difficulty ?? _difficulty ?? "Normal";
+    }
+
+    @:noCompletion
+    function set_difficulty(difficulty:String):String
+    {
+        _difficulty = difficulty;
+
+        return difficulty;
+    }
+
+    public function new(week:WeekData, name:String):Void
     {
         this.week = week;
 
         this.name = name;
-
-        this.difficulty = difficulty;
     }
 
     /**
-     * Creates a path that links to a properly translated level class.
+     * Returns a translated level path that links to a real class. For example, the name
+     * "The Level with Multiple Words" would translate to "game.levels.TheLWMWL".
      * @return String
      */
-    public function getClassPath():String
+    public function toString():String
     {
         var path:String = "game.levels";
 
         if (week != null)
             path += '.${week.toString()}';
 
-        if (difficulty != "Normal")
-            path += '.diff_${difficulty.toLowerCase()}';
+        var nameSplit:Array<String> = name.split(" ");
 
-        path += '.${toString()}';
-
-        return path;
-    }
-
-    /**
-     * Returns a translated level name we can can use when evaluating class paths. For example, the name
-     * "The Level with Multiple Words" would translate to "TheLWMWL".
-     * @return String
-     */
-    public function toString():String
-    {
-        var s:Array<String> = name.split(" ");
-
-        for (i in 1 ... s.length)
+        for (i in 1 ... nameSplit.length)
         {
-            var ss:String = s[i];
+            var word:String = nameSplit[i];
 
-            s[i] = ss.charAt(0).toUpperCase();
+            nameSplit[i] = word.charAt(0).toUpperCase();
         }
 
-        return '${s.join("")}L';
+        path += '.${nameSplit.join("")}';
+
+        var difficulty:String = difficulty.split(" ").join("");
+
+        if (difficulty != "Normal")
+            path += '_${difficulty.toUpperCase()}';
+
+        path += "L";
+
+        return path;
     }
 }

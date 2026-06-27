@@ -1,15 +1,8 @@
 package game.notes;
 
-import flixel.FlxCamera;
 import flixel.FlxSprite;
 
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.graphics.frames.FlxFrame;
-
-import flixel.util.FlxColor;
-
-import core.AssetCache;
-import core.Paths;
+using tools.ObjectHelpers;
 
 class Sustain extends FlxSprite
 {
@@ -20,16 +13,6 @@ class Sustain extends FlxSprite
     public function new(x:Float = 0.0, y:Float = 0.0):Void
     {
         super(x, y);
-
-        frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("game/notes/Note/default"),
-            Paths.image(Paths.xml("game/notes/Note/default")));
-
-        for (i in 0 ... Note.DIRECTIONS.length)
-        {
-            var direction:String = Note.DIRECTIONS[i].toLowerCase();
-
-            animation.addByPrefix('${direction}HoldPiece', '${direction}HoldPiece0', 24.0, false);
-        }
     }
 
     override function update(elapsed:Float):Void
@@ -41,18 +24,18 @@ class Sustain extends FlxSprite
         if (note.status == HIT)
             length -= note.strumline.conductor.time - note.time;
 
-        var sustainHeight:Float = Math.max(length * 0.45 * note.strumline.scrollSpeed, 0.0);
+        var sustainHeight:Float = Math.max(0.0, length * 0.45 * note.strumline.scrollSpeed);
 
         setGraphicSize(frameWidth * note.scale.x, sustainHeight);
 
         updateHitbox();
 
-        setPosition(note.getMidpoint().x - width * 0.5, note.y + note.height * 0.5);
+        setPosition(this.getCenterX(note), note.y + note.height * 0.5);
 
         if (note.strum.downscroll)
             y -= sustainHeight;
 
-        trail.setPosition(getMidpoint().x - trail.width * 0.5, y + sustainHeight);
+        trail.setPosition(trail.getCenterX(this), y + sustainHeight);
 
         if (note.strum.downscroll)
             trail.y -= sustainHeight + trail.height;
@@ -62,5 +45,15 @@ class Sustain extends FlxSprite
         alpha = note.alpha;
 
         trail.alpha = alpha;
+    }
+
+    public function addAnimations():Void
+    {
+        for (i in 0 ... Note.DIRECTIONS.length)
+        {
+            var direction:String = Note.DIRECTIONS[i].toLowerCase();
+
+            animation.addByPrefix('${direction}HoldPiece', '${direction}HoldPiece0', 24.0, false);
+        }
     }
 }

@@ -79,7 +79,7 @@ class HealthBar extends ProgressBar
 
     public function beatHit(beat:Int):Void
     {
-        opponentIcon.scale *= 1.35 + -0.35 * (value / max);
+        opponentIcon.scale *= 1.35 - 0.35 * (value / max);
 
         opponentIcon.updateHitbox();
 

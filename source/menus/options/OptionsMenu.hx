@@ -134,13 +134,17 @@ class OptionsMenu extends FlxState
 
         addOptionItem(item);
 
-        var item:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Botplay", "If checked, inputs will be processed automatically.", "botplay");
+        var item:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Botplay", "If checked, note inputs will be processed automatically.", "botplay");
 
         addOptionItem(item);
 
-        descBox = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
+        descBox = new FlxSprite();
+
+        descBox.frame = FlxG.bitmap.whitePixel;
 
         descBox.alpha = 0.5;
+
+        descBox.color = FlxColor.BLACK;
 
         add(descBox);
 
@@ -202,15 +206,15 @@ class OptionsMenu extends FlxState
 
         var item:BaseOptionItem = optionItems.members[selectedIndex];
 
-        descBox.visible = item.description != "";
-
-        descText.visible = item.description != "";
-
         descText.text = item.description;
+
+        descBox.visible = descText.text != "";
+
+        descText.visible = descBox.visible;
 
         descText.setPosition(descText.getCenterX(), FlxG.height - 96.0);
 
-        descBox.scale.set(descText.width + 25.0, descText.height + 25.0);
+        descBox.setGraphicSize(descText.width + 25.0, descText.height + 25.0);
 
         descBox.updateHitbox();
 

@@ -11,9 +11,9 @@ class NoteHitEvent
 
     }
 
-    public function reset(_note:Note):Void
+    public function reset(note:Note):Void
     {
-        note = _note;
+        this.note = note;
 
         playSplash = !note.strumline.botplay;
     }

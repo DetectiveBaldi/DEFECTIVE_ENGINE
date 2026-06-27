@@ -23,6 +23,14 @@
 
 	<!-- ______________________________ Defines, Haxedefs, and Libraries _____________________________ -->
 
+	<haxedef name="HXCPP_TELEMETRY" if="cpp debug" />
+
+	<haxedef name="HXCPP_TRACY" if="cpp debug" />
+
+	<haxedef name="HXCPP_TRACY_MEMORY" if="cpp debug" />
+
+	<haxedef name="HXCPP_TRACY_ON_DEMAND" if="cpp debug" />
+
 	<haxelib name="flixel" />
 
 	<haxedef name="FLX_NO_DEBUG" unless="debug" />

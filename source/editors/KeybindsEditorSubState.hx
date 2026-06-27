@@ -141,9 +141,13 @@ class KeybindsEditorSubState extends FlxSubState implements ISequenceHandler
 
         holdTime = 0.0;
 
-        tipBox = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
+        tipBox = new FlxSprite();
+
+        tipBox.frame = FlxG.bitmap.whitePixel;
 
         tipBox.alpha = 0.5;
+
+        tipBox.color = FlxColor.BLACK;
 
         add(tipBox);
 
@@ -182,7 +186,7 @@ class KeybindsEditorSubState extends FlxSubState implements ISequenceHandler
 
                     var isSelected:Bool = hoverStrum == strum;
 
-                    var animToPlay:String =  strumline.convertDirectionToAnimation(strum.direction).toLowerCase();
+                    var animToPlay:String =  strumline.convertDirectionToAnim(strum.direction).toLowerCase();
 
                     if (isSelected)
                         animToPlay += "Press";
@@ -415,7 +419,7 @@ class KeybindsEditorSubState extends FlxSubState implements ISequenceHandler
             
                 button.enabled = true;
 
-                hoverStrum?.animation.play('${strumline.convertDirectionToAnimation(hoverStrum.direction).toLowerCase()}Static');
+                hoverStrum?.animation.play('${strumline.convertDirectionToAnim(hoverStrum.direction).toLowerCase()}Static');
 
                 if (!runResetTimer)
                     setTip(resetTip);
@@ -429,7 +433,7 @@ class KeybindsEditorSubState extends FlxSubState implements ISequenceHandler
 
                 button.enabled = false;
 
-                hoverStrum.animation.play('${strumline.convertDirectionToAnimation(hoverStrum.direction).toLowerCase()}Confirm');
+                hoverStrum.animation.play('${strumline.convertDirectionToAnim(hoverStrum.direction).toLowerCase()}Confirm');
 
                 keyIndex = 0;
 
@@ -527,7 +531,7 @@ class KeybindsEditorSubState extends FlxSubState implements ISequenceHandler
 
         tipText.setPosition(tipText.getCenterX(), FlxG.height - 96.0);
 
-        tipBox.scale.set(tipText.width + 25.0, tipText.height + 25.0);
+        tipBox.setGraphicSize(tipText.width + 25.0, tipText.height + 25.0);
 
         tipBox.updateHitbox();
 

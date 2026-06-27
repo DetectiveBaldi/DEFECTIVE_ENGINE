@@ -13,9 +13,9 @@ import flixel.util.FlxColor;
 class ObjectHelpers
 {
     /**
-     * Gets the aligned x axis on an object-to-object level.
+     * Gets a centered object x position.
      * @param object The object to position.
-     * @param base The anchor object.
+     * @param base The object to position to.
      * @return `Float`
      */
     public static overload inline extern function getCenterX(object:FlxObject, base:FlxObject):Float
@@ -24,9 +24,9 @@ class ObjectHelpers
     }
 
     /**
-     * Gets the aligned x axis on an object-to-camera level.
+     * Gets a centered camera x position.
      * @param object The object to position.
-     * @param base The anchor camera.
+     * @param base The camera to position to.
      * @return `Float`
      */
     public static overload inline extern function getCenterX(object:FlxObject, base:FlxCamera):Float
@@ -35,7 +35,7 @@ class ObjectHelpers
     }
 
     /**
-     * Gets the aligned x axis on an object-to-screen level.
+     * Gets the centered screen x position.
      * @param object The object to position.
      * @return `Float`
      */
@@ -45,9 +45,9 @@ class ObjectHelpers
     }
 
     /**
-     * Gets the aligned y axis on an object-to-object level.
+     * Gets a centered object y position.
      * @param object The object to position.
-     * @param base The anchor object.
+     * @param base The object to position to.
      * @return `Float`
      */
     public static overload inline extern function getCenterY(object:FlxObject, base:FlxObject):Float
@@ -56,9 +56,9 @@ class ObjectHelpers
     }
 
     /**
-     * Gets the aligned y axis on an object-to-camera level.
+     * Gets a centered camera y position.
      * @param object The object to position.
-     * @param base The anchor camera.
+     * @param base The camera to position to.
      * @return `Float`
      */
     public static overload inline extern function getCenterY(object:FlxObject, base:FlxCamera):Float
@@ -67,7 +67,7 @@ class ObjectHelpers
     }
 
     /**
-     * Gets the aligned y axis on an object-to-screen level.
+     * Gets the centered screen y position.
      * @param object The object to position.
      * @return `Float`
      */
@@ -77,10 +77,10 @@ class ObjectHelpers
     }
 
     /**
-     * Centers an object on an object-to-object level.
+     * Centers an object on another object.
      * @param object The object to position.
-     * @param base The anchor object.
-     * @param axes Do you want to center on the x axis, the y axis, or both?
+     * @param base The object to position to.
+     * @param axes On what axes to center the object.
      * @return `FlxObject`
      */
     public static overload inline extern function centerTo(object:FlxObject, base:FlxObject, axes:FlxAxes = XY):FlxObject
@@ -95,10 +95,10 @@ class ObjectHelpers
     }
 
     /**
-     * Centers an object on an object-to-camera level.
+     * Centers an object on a camera.
      * @param object The object to position.
-     * @param base The anchor camera.
-     * @param axes Do you want to center on the x axis, the y axis, or both?
+     * @param base The camera to position to.
+     * @param axes On what axes to center the object.
      * @return `FlxObject`
      */
     public static overload inline extern function centerTo(object:FlxObject, base:FlxCamera, axes:FlxAxes = XY):FlxObject
@@ -113,9 +113,9 @@ class ObjectHelpers
     }
 
     /**
-     * Centers an object on an object-to-screen level.
+     * Centers an object on the screen.
      * @param object The object to position.
-     * @param axes Do you want to center on the x axis, the y axis, or both?
+     * @param axes On what axes to center the object.
      * @return `FlxObject`
      */
     public static overload inline extern function centerTo(object:FlxObject, axes:FlxAxes = XY):FlxObject

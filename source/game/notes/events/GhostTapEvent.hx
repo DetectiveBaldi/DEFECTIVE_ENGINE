@@ -13,8 +13,8 @@ class GhostTapEvent
         ghostTapping = Options.ghostTapping;
     }
 
-    public function reset(d:Int):Void
+    public function reset(direction:Int):Void
     {
-        direction = d;
+        this.direction = direction;
     }
 }

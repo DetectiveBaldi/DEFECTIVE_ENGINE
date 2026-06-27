@@ -6,55 +6,52 @@ import openfl.utils.Assets;
 
 import core.AssetCache;
 import core.Paths;
-
+import data.LevelData;
 import data.chart.converters.FNFChartConverter;
 import data.chart.converters.LeatherChartConverter;
 import data.chart.converters.Psych0_3_2ChartConverter;
 import data.chart.converters.PsychChartConverter;
 
-import util.MacroUtil;
-
 using StringTools;
 
-// Difficulties aren't fully supported. They are available for Funkin' charts, though.
 class ChartBuilder
 {
-    public static function buildFromFolder(path:String):Chart
+    public static function buildFromLevel(level:LevelData):Chart
     {
-        var difficulty:String = MacroUtil.sanitizeDefine(MacroUtil.getDefine("DIFFICULTY")).toLowerCase();
+        var difficulty:String = level.difficulty;
 
-        var metadataFilePath:String = '${path}/metadata.json';
+        var prefix:String = Paths.data('game/levels/${level.name}');
+
+        var suffix:String = "";
+
+        if (difficulty != "Normal")
+            suffix = '-${difficulty}';
+
+        var metadataFilePath:String = '${prefix}/metadata.json';
 
         if (Paths.exists(metadataFilePath))
         {
-            var chartFilePath:String = '${path}/chart.json';
+            var chartFilePath:String = '${prefix}/chart.json';
             
             return FNFChartCoverter.buildFromFiles(chartFilePath, metadataFilePath, difficulty);
         }
         else
         {
-            var chartFilePath:String = '${path}/chart';
-
-            if (difficulty != "")
-                chartFilePath += '-${difficulty}';
-
-            chartFilePath += ".json";
+            var chartFilePath:String = '${prefix}/chart${suffix}.json';
 
             var data:Dynamic = Json.parse(Assets.getText(chartFilePath));
 
             if (Reflect.hasField(data, "song"))
             {
-                var eventsFilePath:String = '${path}/events.json';
+                var eventsFilePath:String = '${prefix}/events${suffix}.json';
+
+                if (!Paths.exists(eventsFilePath))
+                    eventsFilePath = '${prefix}/events${suffix}.json';
 
                 if (Reflect.hasField(data.song, "song"))
                 {
                     if (Reflect.hasField(data.song, "keyCount"))
-                    {
-                        if (difficulty != "")
-                            eventsFilePath = '${eventsFilePath.split(".")[0]}-${difficulty}.json';
-
                         return LeatherChartConverter.buildFromFiles(chartFilePath, eventsFilePath);
-                    }
                     else
                         return Psych0_3_2ChartConverter.buildFromFiles(chartFilePath, eventsFilePath);
                 }

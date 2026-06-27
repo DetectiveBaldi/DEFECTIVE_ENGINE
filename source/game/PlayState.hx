@@ -7,57 +7,40 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxState;
 import flixel.FlxSubState;
-
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-
 import flixel.tweens.FlxTween;
-
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.util.typeLimit.NextState;
-
 import flixel.sound.FlxSound;
+import flixel.sound.FlxSoundGroup;
 
 import core.AssetCache;
 import core.Paths;
 import core.Options;
 import core.SaveManager;
-
 import data.CharacterData;
 import data.Chart;
 import data.Chart.EventData;
 import data.ChartBuilder;
-import data.Difficulty;
 import data.LevelData;
-import data.WeekData;
-
 import data.PlayStats;
-
+import data.WeekData;
 import game.levels.LevelL;
-
 import game.notes.Note;
 import game.notes.Strumline;
-
 import game.notes.events.GhostTapEvent;
 import game.notes.events.NoteHitEvent;
-
 import game.events.SetCamFocusEvent;
 import game.events.SetCamZoomEvent;
-
 import game.stages.Stage;
-
 import interfaces.ISequenceHandler;
-
 import menus.options.OptionsMenu;
-
 import music.Conductor;
-
 import ui.Countdown;
-
 import util.MacroUtil;
 
 using StringTools;
@@ -70,8 +53,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 {
     public static var week:WeekData;
 
-    public static var level:LevelData;
-
     public static var isWeek(get, never):Bool;
 
     @:noCompletion
@@ -80,47 +61,67 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         return week != null;
     }
 
-    public static var weekStats:Map<String, PlayStats> = new Map<String, PlayStats>();
-    
-    public static function getClassFromLevel(level:LevelData = null):PlayState
-    {
-        level ??= PlayState.level;
-        
-        if (level == null)
-            throw "`level` is `null` for `getClassFromLevel`. Make sure you added your level to `data.Playlist`!";
+    public static var levelIndex:Int = 0;
 
-        var c:Class<Dynamic> = Type.resolveClass(level.getClassPath());
+    public static var level:LevelData;
+
+    public static var weekStats:Array<PlayStats> = new Array<PlayStats>();
+    
+    public static function getClassFromLevel():PlayState
+    {
+        if (level == null)
+            throw "`level` is `null`. Make sure you added your level to `data.Playlist`!";
+
+        // Try to find a level class with the desired difficulty.
+        var c:Class<Dynamic> = Type.resolveClass(level.toString());
 
         if (c == null)
         {
-            trace('Couldn\'t generate level class, make sure you named it correctly (${level.getClassPath()}).');
+            // Try to find a level class with no difficulty.
+            var level:LevelData = {week: null, name: level.name}
 
-            trace("Falling back to `game.levels.LevelL`!");
+            c = Type.resolveClass(level.toString());
 
-            return new LevelL();
+            // Give up and fall back to the default `game.levels.LevelL` class.
+            if (c == null)
+            {
+                trace('Couldn\'t generate level class, make sure it is in the correct path (`${PlayState.level.toString()}`)!');
+
+                trace("Falling back to `game.levels.LevelL`!");
+
+                c = LevelL;
+            }
         }
 
         return Type.createInstance(c, []);
     }
 
-    public static function loadWeek(week:WeekData):Void
+    public static function loadWeek(week:WeekData, difficulty:String):Void
     {
-        PlayState.week = week.copy();
+        PlayState.week = week;
+
+        week.difficulty = difficulty;
+
+        levelIndex = 0;
 
         level = week.levels[0];
 
-        weekStats.clear();
+        weekStats.resize(0);
 
         FlxG.switchState(() -> getClassFromLevel());
     }
 
-    public static function loadLevel(level:LevelData):Void
+    public static function loadLevel(level:LevelData, difficulty:String):Void
     {
         week = null;
 
+        levelIndex = 0;
+
         PlayState.level = level;
 
-        weekStats.clear();
+        level.difficulty = difficulty;
+
+        weekStats.resize(0);
 
         FlxG.switchState(() -> getClassFromLevel());
     }
@@ -147,12 +148,12 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
     public var cameraPoint:FlxObject;
 
     /**
-     * Simplistic representation of what the camera is viewing. Values include "POINT" and "CHARACTER".
+     * Simplified representation of what the camera is viewing. Values include "POINT" and "CHARACTER".
      */
     public var cameraTarget:String;
 
     /**
-     * A more specific version `cameraTarget` that explicitly refers to the type of character the camera is viewing.
+     * A more specific version of `cameraTarget` that explicitly refers to the type of character the camera is viewing.
      */
     public var cameraCharTarget:String;
 
@@ -179,6 +180,8 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
     public var eventIndex:Int;
 
     public var instrumental:FlxSound;
+
+    public var vocals:FlxSoundGroup;
 
     public var mainVocals:FlxSound;
 
@@ -309,8 +312,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         playField.camera = hudCamera;
 
-        playField.onUpdateScore.add(updateScore);
-
         add(playField);
 
         FlxG.watch.add(playField.playStats, "score", "Score");
@@ -323,27 +324,23 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         playField.getSongLength = getSongLength;
 
-        #if FLX_DEBUG
+        #if !FLX_DEBUG
         var healthBar:HealthBar = playField.healthBar;
 
         healthBar.onEmptied.add(gameOver);
         #end
 
-        oppStrumline.onNoteSpawn.add(noteSpawn);
-        
-        plrStrumline.onNoteSpawn.add(noteSpawn);
-
-        oppStrumline.characters = opponents;
+        oppStrumline.charGroup = opponents;
 
         oppStrumline.spectators = spectators;
 
-        oppStrumline.vocals = opponentVocals ?? mainVocals;
+        oppStrumline.vocals.pushMany(mainVocals, opponentVocals);
 
-        plrStrumline.characters = players;
+        plrStrumline.charGroup = players;
 
         plrStrumline.spectators = spectators;
 
-        plrStrumline.vocals = playerVocals ?? mainVocals;
+        plrStrumline.vocals.pushMany(mainVocals, playerVocals);
 
         spectators.group.memberAdded.add((spectator:Character) -> spectator.strumline = oppStrumline);
 
@@ -359,8 +356,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         players.add(player);
 
         updateHealthBar();
-
-        updateScore(playField.playStats);
 
         countdown = new Countdown(this, this);
         
@@ -404,36 +399,28 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         }
         else
         {
-            if (instrumental.playing)
-            {
-                var conductorDesync:Float = Math.abs(conductor.time - instrumental.time);
+            var conductorDesync:Float = Math.abs(conductor.time - instrumental.time);
 
-                if (conductorDesync >= 20.0)
-                    conductor.time = instrumental.time;
+            if (conductorDesync >= 20.0)
+                conductor.time = instrumental.time;
 
-                var mainVocalsDesync:Float = 0.0;
+            var mainVocalsDesync:Float = 0.0;
 
-                if (mainVocals != null)
-                    mainVocalsDesync = Math.abs(mainVocals.time - instrumental.time);
+            if (mainVocals != null)
+                mainVocalsDesync = Math.abs(mainVocals.time - instrumental.time);
 
-                var opponentVocalsDesync:Float = 0.0;
+            var opponentVocalsDesync:Float = 0.0;
 
-                if (opponentVocals != null)
-                    opponentVocalsDesync = Math.abs(opponentVocals.time - instrumental.time);
+            if (opponentVocals != null)
+                opponentVocalsDesync = Math.abs(opponentVocals.time - instrumental.time);
 
-                var playerVocalsDesync:Float = 0.0;
+            var playerVocalsDesync:Float = 0.0;
 
-                if (playerVocals != null)
-                    playerVocalsDesync = Math.abs(playerVocals.time - instrumental.time);
+            if (playerVocals != null)
+                playerVocalsDesync = Math.abs(playerVocals.time - instrumental.time);
 
-                if (mainVocalsDesync >= 20.0 || opponentVocalsDesync >= 20.0 || playerVocalsDesync >= 20.0)
-                    resyncVocals();
-            }
-            else
-            {
-                if (conductor.time >= instrumental.length)
-                    endSong();
-            }
+            if (mainVocalsDesync >= 20.0 || opponentVocalsDesync >= 20.0 || playerVocalsDesync >= 20.0)
+                resyncVocals();
         }
 
         gameCamera.zoom = FlxMath.lerp(gameCamera.zoom, gameCameraZoom, FlxMath.getElapsedLerp(0.15, elapsed));
@@ -484,7 +471,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
     public function loadChart():Void
     {
-        chart = ChartBuilder.buildFromFolder(Paths.data('game/levels/${level.name}'));
+        chart = ChartBuilder.buildFromLevel(level);
 
         chart.notes.sortTimed();
 
@@ -550,19 +537,60 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
     public function loadSong():Void
     {
-        var songPath:String = 'game/levels/${level.name}/';
+        var difficulty:String = level.difficulty;
+        
+        var prefix:String = 'game/levels/${level.name}/';
 
-        instrumental = FlxG.sound.load(AssetCache.getMusic('${songPath}Instrumental'));
+        var suffix:String = "";
 
-        if (Paths.exists(Paths.music(Paths.ogg('${songPath}Vocals-Main'))))
-            mainVocals = FlxG.sound.load(AssetCache.getMusic('${songPath}Vocals-Main'));
-        else
+        if (difficulty != "Normal")
+           suffix = '-${difficulty}';
+
+        var instrumentalPath:String = Paths.music(Paths.ogg('${prefix}Instrumental${suffix}'));
+
+        if (!Paths.exists(instrumentalPath))
+            instrumentalPath = Paths.music(Paths.ogg('${prefix}Instrumental'));
+
+        instrumental = FlxG.sound.load(AssetCache.getMusic(instrumentalPath));
+
+        instrumental.onComplete = endSong;
+
+        vocals = new FlxSoundGroup();
+
+        var mainVocalsPath:String = Paths.music(Paths.ogg('${prefix}Vocals-Main${suffix}'));
+
+        if (!Paths.exists(mainVocalsPath))
+            mainVocalsPath = Paths.music(Paths.ogg('${prefix}Vocals-Main'));
+
+        if (Paths.exists(mainVocalsPath))
         {
-            if (Paths.exists(Paths.music(Paths.ogg('${songPath}Vocals-Opponent'))))
-                opponentVocals = FlxG.sound.load(AssetCache.getMusic('${songPath}Vocals-Opponent'));
+            mainVocals = FlxG.sound.load(AssetCache.getMusic(mainVocalsPath));
 
-            if (Paths.exists(Paths.music(Paths.ogg('${songPath}Vocals-Player'))))
-                playerVocals = FlxG.sound.load(AssetCache.getMusic('${songPath}Vocals-Player'));
+            vocals.add(mainVocals);
+        }
+
+        var opponentVocalsPath:String = Paths.music(Paths.ogg('${prefix}Vocals-Opponent${suffix}'));
+
+        if (!Paths.exists(opponentVocalsPath))
+            opponentVocalsPath = Paths.music(Paths.ogg('${prefix}Vocals-Opponent'));
+
+        if (Paths.exists(opponentVocalsPath))
+        {
+            opponentVocals = FlxG.sound.load(AssetCache.getMusic(opponentVocalsPath));
+
+            vocals.add(opponentVocals);
+        }
+
+        var playerVocalsPath:String = Paths.music(Paths.ogg('${prefix}Vocals-Opponent${suffix}'));
+
+        if (!Paths.exists(playerVocalsPath))
+            playerVocalsPath = Paths.music(Paths.ogg('${prefix}Vocals-Player'));
+
+        if (Paths.exists(playerVocalsPath))
+        {
+            playerVocals = FlxG.sound.load(AssetCache.getMusic(playerVocalsPath));
+
+            vocals.add(playerVocals);
         }
     }
 
@@ -604,16 +632,16 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
                 SaveManager.saveHighScores();
             }
 
-            weekStats[level.name] = playField.playStats.copy();
+            weekStats.push(playField.playStats.copy());
 
-            week.levels.shift();
+            levelIndex++;
 
-            if (week.levels.length == 0.0)
+            if (levelIndex > week.levels.length - 1.0)
             {
                 var totalStats:PlayStats = PlayStats.empty();
 
-                for (k => v in weekStats)
-                    totalStats.concat(v);
+                for (key => value in weekStats)
+                    totalStats.concat(value);
 
                 score = totalStats.score;
 
@@ -626,7 +654,17 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
                     HighScore.setWeekScore(week.name, level.difficulty, {score: score, misses: misses, accuracy: accuracy});
 
                     SaveManager.saveHighScores();
+
+                    return;
                 }
+            }
+            else
+            {
+                level = week.levels[levelIndex];
+
+                FlxG.switchState(() -> getClassFromLevel());
+
+                return;
             }
         }
         else
@@ -650,60 +688,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
     public function getSongLength():Float
     {
         return instrumental.length;
-    }
-
-    public function changeTime(newTime:Float):Void
-    {
-        if (startingSong)
-            return;
-
-        if (conductor.time == newTime)
-            return;
-
-        if (conductor.time > newTime)
-        {
-            pauseMusic();
-
-            setMusicTime(newTime);
-
-            conductor.time = newTime;
-            
-            playField.noteSpawner.setNoteIndexAt(newTime);
-
-            setEventIndexAt(newTime);
-
-            resumeMusic();
-        }
-        else
-        {
-            pauseMusic();
-
-            setMusicTime(newTime);
-
-            playField.noteSpawner.setNoteIndexAt(newTime);
-
-            while (conductor.time < newTime)
-            {
-                @:privateAccess
-                FlxG.game.step();
-            }
-
-            resumeMusic();
-        }
-    }
-
-    public function setEventIndexAt(time:Float):Void
-    {
-        eventIndex = 0;
-        
-        var event:EventData = chart.events[eventIndex];
-
-        while (eventIndex < chart.events.length && event.time <= time)
-        {
-            eventIndex++;
-            
-            event = chart.events[eventIndex];
-        }
     }
 
     public function getSpectator(name:String):Character
@@ -794,13 +778,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         }
     }
 
-    public function noteSpawn(note:Note):Void {}
-
-    public function updateScore(playStats:PlayStats):Void
-    {
-
-    }
-
     public function gameOver():Void
     {
         persistentDraw = false;
@@ -827,31 +804,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         playerVocals?.pause();
     }
 
-    public function resumeMusic():Void
-    {
-        instrumental.resume();
-
-        mainVocals?.resume();
-
-        opponentVocals?.resume();
-
-        playerVocals?.resume();
-    }
-
-    public function setMusicTime(time:Float):Void
-    {
-        instrumental.time = time;
-
-        if (mainVocals != null)
-            mainVocals.time = time;
-
-        if (opponentVocals != null)
-            opponentVocals.time = time;
-
-        if (playerVocals != null)
-            playerVocals.time = time;
-    }
-
     public function resyncVocals():Void
     {
         if (mainVocals != null)
@@ -868,7 +820,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 enum CameraLockMode
 {
     /**
-     * No camera events are restricted.
+     * No camera events are locked.
      */
     DEFAULT;
 
@@ -883,7 +835,7 @@ enum CameraLockMode
     FOCUS_CAM_POINT;
 
     /**
-     * All camera events are restricted.
+     * All camera events are locked.
      */
     NONE;
 }
