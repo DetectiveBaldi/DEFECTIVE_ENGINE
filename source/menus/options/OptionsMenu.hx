@@ -15,7 +15,7 @@ import flixel.addons.display.FlxBackdrop;
 
 import core.AssetCache;
 import core.Paths;
-import editors.KeybindsEditorSubState;
+import menus.options.ControlsEditMenu;
 import menus.options.items.BaseOptionItem;
 import menus.options.items.BoolOptionItem;
 import menus.options.items.NumberOptionItem;
@@ -75,7 +75,7 @@ class OptionsMenu extends FlxState
 
         var item:BaseOptionItem = new BaseOptionItem(0.0, 0.0, "Open Keybinds...", "");
 
-        item.onToggle.add( () -> openSubState(new KeybindsEditorSubState()) );
+        item.onToggle.add( () -> openSubState(new ControlsEditMenu()) );
 
         addOptionItem(item);
 

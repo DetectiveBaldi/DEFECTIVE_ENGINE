@@ -10,6 +10,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.input.FlxInput;
 import flixel.input.keyboard.FlxKey;
+import flixel.math.FlxMath;
 import flixel.sound.FlxSound;
 import flixel.sound.FlxSoundGroup;
 import flixel.tweens.FlxTween;
@@ -73,7 +74,7 @@ class Strumline extends FlxGroup
 
     public var notes:FlxTypedGroup<Note>;
 
-    public var notesPendingRemoval:Array<Note>;
+    public var notesToRemove:Array<Note>;
 
     public var sustains:FlxTypedGroup<Sustain>;
 
@@ -151,7 +152,7 @@ class Strumline extends FlxGroup
 
         add(notes);
 
-        notesPendingRemoval = new Array<Note>();
+        notesToRemove = new Array<Note>();
 
         sustains = new FlxTypedGroup<Sustain>();
 
@@ -226,24 +227,18 @@ class Strumline extends FlxGroup
 
                         strum.animation.play('${convertDirectionToAnim(direction).toLowerCase()}Press');
 
-                        var notes:Array<Note> = notes.members.filter((note:Note) -> note.direction == direction && note.isHittable());
+                        var filtered:Array<Note> = notes.members.filter((note:Note) -> note.direction == direction && note.isHittable());
 
-                        notes.sort(sortNotes);
+                        var note:Note = filtered[0];
 
-                        var note:Note = notes[0];
+                        filtered = filtered.filter((loopNote:Note) -> loopNote.time == note.time);
 
-                        notes = notes.filter((newNote:Note) -> newNote.time == note.time);
-
-                        if (notes.length == 0.0)
+                        if (filtered.length == 0)
                             ghostTap(strum.direction);
                         else
                         {
-                            for (i in 0 ... notes.length)
-                            {
-                                var note:Note = notes[i];
-
-                                noteHit(note);
-                            }
+                            for (i in 0...filtered.length)
+                                noteHit(filtered[i]);
                         }
                     }
 
@@ -274,7 +269,11 @@ class Strumline extends FlxGroup
             var hasExpired:Bool = conductor.time > note.time + note.length + Rating.latestTiming;
 
             if (hasMissed && hasExpired)
-                notesPendingRemoval.push(note);
+            {
+                prepareNoteRemoval(note);
+
+                continue;
+            }
 
             if (!note.isSustain)
                 continue;
@@ -283,14 +282,11 @@ class Strumline extends FlxGroup
                 holdSustainNote(note, note.sustain);
             else
             {
-                if (note.status == HIT)
+                if (note.status == HIT && note.status != FAILING)
                 {
-                    if (note.status != FAILING)
-                    {
-                        resizeSustainNote(note);
+                    resizeSustainNote(note);
 
-                        note.status = FAILING;
-                    }
+                    note.status = FAILING;
                 }
 
                 if (note.status == FAILING)
@@ -299,7 +295,7 @@ class Strumline extends FlxGroup
 
                     note.unholdTime += 1000.0 * elapsed;
 
-                    if (note.unholdTime >= Rating.latestTiming * 2.0)
+                    if (note.unholdTime >= Rating.latestTiming)
                         noteMiss(note);
                 }
             }
@@ -308,8 +304,14 @@ class Strumline extends FlxGroup
                 finishSustainNote(note);
         }
 
-        while (notesPendingRemoval.length > 0.0)
-            removeNote(notesPendingRemoval.pop());
+        for (i in 0 ... notesToRemove.length)
+        {
+            var note:Note = notesToRemove[i];
+
+            removeNote(note);
+        }
+
+        notesToRemove.resize(0);
 
         notes.update(elapsed);
 
@@ -429,19 +431,10 @@ class Strumline extends FlxGroup
             strum.animation.finish();
     }
 
-    public function sortNotes(a:Note, b:Note):Int
-    {
-        if (a.skipHit && !b.skipHit)
-			return 1;
-
-		if (!a.skipHit && b.skipHit)
-			return -1;
-
-        return FlxSort.byValues(FlxSort.ASCENDING, a.time, b.time);
-    }
-
     public function noteHit(note:Note):Void
     {
+        addNoteToCharacters(note);
+
         noteHitEvent.reset(note);
 
         onNoteHit.dispatch(noteHitEvent);
@@ -460,7 +453,7 @@ class Strumline extends FlxGroup
             resizeSustainNote(note);
         else
         {
-            notesPendingRemoval.push(note);
+            prepareNoteRemoval(note);
 
             if (note.playSplash)
                 playSplash(note);
@@ -468,9 +461,7 @@ class Strumline extends FlxGroup
         
         setStrumActive(note.direction, !note.isSustain);
 
-        playCharSingAnims(note, note.direction, false, false);
-
-        setCharAnimsActive(note, !note.isSustain);
+        playCharSingAnims(note, note.direction, false, note.isSustain);
 
         setVocalsVolume(1.0);
     }
@@ -483,11 +474,21 @@ class Strumline extends FlxGroup
 
         playCharSingAnims(note, note.direction, true, false);
 
-        setCharAnimsActive(note, true);
-
         setVocalsVolume(0.0);
 
+        playMissSound();
+    }
+
+    public function playMissSound():Void
+    {
         FlxG.sound.play(AssetCache.getSound('game/GameState/noteMiss${FlxG.random.int(0, 2)}'), 0.15);
+    }
+
+    public function prepareNoteRemoval(note:Note):Void
+    {
+        notesToRemove.push(note);
+
+        removeNoteFromCharacters(note);
     }
 
     public function removeNote(note:Note):Void
@@ -496,11 +497,19 @@ class Strumline extends FlxGroup
 
         note.kill();
 
+        var sustain:Sustain = note.sustain;
+
         if (note.sustain != null)
         {
-            sustains.members.remove(note.sustain);
+            sustains.members.remove(sustain);
 
-            trails.members.remove(note.sustain.trail);
+            sustain.kill();
+
+            var trail:SustainTrail = sustain.trail;
+
+            trails.members.remove(trail);
+
+            trail.kill();
         }
     }
 
@@ -545,8 +554,6 @@ class Strumline extends FlxGroup
 
         playCharSingAnims(note, note.direction, false, true);
 
-        setCharAnimsActive(note, false);
-
         setVocalsVolume(1.0);
     }
 
@@ -554,10 +561,8 @@ class Strumline extends FlxGroup
     {
         setStrumActive(note.direction, true);
 
-        setCharAnimsActive(note, true);
-
         if (note.status == HIT)
-            notesPendingRemoval.push(note);
+            prepareNoteRemoval(note);
 
         if (note.unholdTime == 0.0)
         {
@@ -570,6 +575,9 @@ class Strumline extends FlxGroup
 
             note.strum.animation.play(anim, true);
         }
+
+        if (noteIsFree(note))
+            setCharAnimsActive(note, true);
     }
 
     public function ghostTap(direction:Int):Void
@@ -580,11 +588,9 @@ class Strumline extends FlxGroup
 
         if (!ghostTapEvent.ghostTapping)
         {
-            FlxG.sound.play(AssetCache.getSound('game/GameState/noteMiss${FlxG.random.int(0, 2)}'), 0.15);
+            playMissSound();
 
             playCharSingAnims(null, direction, true, false);
-
-            setCharAnimsActive(null, true);
 
             setVocalsVolume(0.0);
         }
@@ -592,34 +598,85 @@ class Strumline extends FlxGroup
 
     public function playSplash(note:Note):Void
     {
-        var splash:NoteSplash = noteSplashes.recycle(NoteSplash, () -> new NoteSplash());
+        var splash:NoteSplash = null;
 
-        var strumScale:Float = keyParams.strumScale;
+        for (i in 0 ... noteSplashes.members.length)
+        {
+            var loopSplash:NoteSplash = noteSplashes.members[i];
 
-        splash.scale.set(strumScale, strumScale);
+            if (!loopSplash.exists)
+            {
+                splash = loopSplash;
 
-        splash.play(convertDirectionToAnimIndex(note.direction), note.isSustain);
+                break;
+            }
+        }
 
-        splash.updateHitbox();
+        var needNewType:Bool = false;
+
+        if (splash == null)
+        {
+            splash = noteSplashes.recycle(null, splashFactory);
+
+            needNewType = true;
+        }
+
+        if (needNewType)
+        {
+            splash.frames = splash.getSplashFrames();
+
+            splash.addAnimations();
+
+            var strumScale:Float = keyParams.strumScale;
+
+            @:bypassAccessor
+            {
+                splash.scale.x = strumScale;
+
+                splash.scale.y = strumScale;
+            }
+
+            splash.updateHitbox();
+        }
+
+        splash.reset(FlxG.width, FlxG.height);
 
         splash.centerTo(note.strum);
+
+        splash.play(convertDirectionToAnimIndex(note.direction), note.isSustain);
+    }
+
+    public function splashFactory():NoteSplash
+    {
+        return new NoteSplash();
     }
 
     public function playCharSingAnims(note:Note, direction:Int, miss:Bool, hold:Bool):Void
     {
         getCharList(note);
 
+        if (note?.kind?.noAnimation)
+            return;
+
         for (i in 0 ... charList.length)
         {
-            if (note?.kind?.noAnimation)
-                continue;
-
             var character:Character = charList[i];
 
             if (character.skipSing)
                 continue;
 
             character.holdTimer = 0.0;
+
+            if (!miss)
+            {
+                var name:String = character.animation.name.toLowerCase();
+
+                if (name.contains("sing") && !name.contains("miss"))
+                {
+                    if (character.animation.paused)
+                        continue;
+                }
+            }
 
             var animSuffix:String = "";
 
@@ -645,6 +702,8 @@ class Strumline extends FlxGroup
                 if (character.animation.exists(animToPlay))
                     character.animation.play(animToPlay, true);
             }
+
+            setCharAnimsActive(note, !hold);
         }
     }
 
@@ -671,10 +730,13 @@ class Strumline extends FlxGroup
 
     public function getCharList(note:Note):Array<Character>
     {
+        charList.resize(0);
+
+        if (note?.kind?.noAnimation)
+            return charList;
+
         if (note?.kind?.specSing)
             charGroup = spectators;
-
-        charList.resize(0);
 
         if (note?.kind?.charIds != null)
         {
@@ -684,17 +746,10 @@ class Strumline extends FlxGroup
             {
                 var id:Int = note.kind.charIds[i];
 
-                if (id > charGroup.members.length - 1.0)
-                {
-                    var firstChar:Character = charGroup.members[0];
+                var char:Character = charGroup.members[id] ?? charGroup.members[0];
 
-                    if (!charList.contains(firstChar))
-                        charList.push(firstChar);
-
-                    continue;
-                }
-
-                charList.push(charGroup.members[id]);
+                if (!charList.contains(char))
+                    charList.push(char);
             }
         }
         else
@@ -704,6 +759,47 @@ class Strumline extends FlxGroup
         }
 
         return charList;
+    }
+
+    public function addNoteToCharacters(note:Note):Void
+    {
+        getCharList(note);
+
+        for (i in 0 ... charList.length)
+        {
+            var character:Character = charList[i];
+
+            character.notes.push(note);
+        }
+    }
+
+    public function removeNoteFromCharacters(note:Note):Void
+    {
+        getCharList(note);
+
+        for (i in 0 ... charList.length)
+        {
+            var character:Character = charList[i];
+
+            character.notes.remove(note);
+        }
+    }
+
+    public function noteIsFree(note:Note):Bool
+    {
+        getCharList(note);
+
+        for (i in 0 ... charList.length)
+        {
+            var character:Character = charList[i];
+
+            if (character.notes.length == 0 || (character.notes.length == 1 && character.notes.contains(note)))
+                continue;
+
+            return false;
+        }
+
+        return true;
     }
 
     public function setVocalsVolume(volume:Float):Void

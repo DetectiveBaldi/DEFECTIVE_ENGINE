@@ -1,21 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
--->
 <TextureAtlas imagePath="death.png" width="728" height="485">
 	<SubTexture name="circle0000" x="1" y="1" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="circleHoldPiece0000" x="542" y="244" width="52" height="1" frameX="-0" frameY="-0" frameWidth="52" frameHeight="1"/>
-	<SubTexture name="circleHoldTail0000" x="487" y="244" width="52" height="64" frameX="-0" frameY="-0" frameWidth="52" frameHeight="64"/>
 	<SubTexture name="down0000" x="244" y="1" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="downHoldPiece0000" x="542" y="244" width="52" height="1" frameX="-0" frameY="-0" frameWidth="52" frameHeight="1"/>
-	<SubTexture name="downHoldTail0000" x="487" y="244" width="52" height="64" frameX="-0" frameY="-0" frameWidth="52" frameHeight="64"/>
 	<SubTexture name="left0000" x="1" y="244" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="leftHoldPiece0000" x="542" y="244" width="52" height="1" frameX="-0" frameY="-0" frameWidth="52" frameHeight="1"/>
-	<SubTexture name="leftHoldTail0000" x="487" y="244" width="52" height="64" frameX="-0" frameY="-0" frameWidth="52" frameHeight="64"/>
 	<SubTexture name="right0000" x="244" y="244" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="rightHoldPiece0000" x="542" y="244" width="52" height="1" frameX="-0" frameY="-0" frameWidth="52" frameHeight="1"/>
-	<SubTexture name="rightHoldTail0000" x="487" y="244" width="52" height="64" frameX="-0" frameY="-0" frameWidth="52" frameHeight="64"/>
 	<SubTexture name="up0000" x="487" y="1" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="upHoldPiece0000" x="542" y="244" width="52" height="1" frameX="-0" frameY="-0" frameWidth="52" frameHeight="1"/>
-	<SubTexture name="upHoldTail0000" x="487" y="244" width="52" height="64" frameX="-0" frameY="-0" frameWidth="52" frameHeight="64"/>
+	<SubTexture name="defaultHoldPiece0000" x="542" y="244" width="52" height="1" frameX="-0" frameY="-0" frameWidth="52" frameHeight="1"/>
+	<SubTexture name="defaultHoldTail0000" x="487" y="244" width="52" height="64" frameX="-0" frameY="-0" frameWidth="52" frameHeight="64"/>
 </TextureAtlas>

@@ -7,16 +7,13 @@ using StringTools;
 
 class MacroUtil
 {
-    public static macro function getDefine(k:String):Expr
+    public static macro function getDefine(key:String):Expr
     {
-        return macro $v{Context.definedValue(k)};
+        return macro $v{Context.definedValue(key)};
     }
 
-    public static function sanitizeDefine(v:String):String
+    public static function sanitizeDefine(value:String):String
     {
-        if (v == null)
-            return "";
-
-        return v.split("=")[0];
+        return value?.split("=")[0] ?? "";
     }
 }

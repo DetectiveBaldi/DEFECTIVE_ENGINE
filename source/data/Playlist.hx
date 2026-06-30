@@ -33,6 +33,10 @@ class Playlist
 
         LevelData.list.push({week: null, name: "Multicolor Demise"});
 
+        LevelData.list.push({week: null, name: "Multiversal Pinnacles"});
+
+        LevelData.list.push({week: null, name: "Pneumonoultramicroscopicsilicovolcanoconiosisphobia"});
+
         LevelData.list.push({week: null, name: "Polyarch"});
 
         LevelData.list.push({week: null, name: "Quadripresent Deitys"});
@@ -54,5 +58,7 @@ class Playlist
         LevelData.list.push({week: null, name: "Twofold Tension"});
 
         LevelData.list.push({week: null, name: "Ultra Instinct"});
+
+        LevelData.list.push({week: null, name: "Voiid Final Destination God"});
     }
 }

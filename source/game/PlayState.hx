@@ -1,5 +1,7 @@
 package game;
 
+import haxe.ds.ArraySort;
+
 import openfl.filters.BitmapFilter;
 
 import flixel.FlxCamera;
@@ -168,8 +170,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
      */
     public var hudCamera:FlxCamera;
 
-    public var hudCamBopStrength:Float;
-
     /**
      * Elements such as the pause menu and other sub states are drawn on this camera.
      */
@@ -281,8 +281,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         gameCameraZoom = gameCamera.zoom;
 
-        hudCamBopStrength = 0.015;
-
         loadChart();
 
         loadSong();
@@ -324,11 +322,9 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         playField.getSongLength = getSongLength;
 
-        #if !FLX_DEBUG
         var healthBar:HealthBar = playField.healthBar;
 
         healthBar.onEmptied.add(gameOver);
-        #end
 
         oppStrumline.charGroup = opponents;
 
@@ -425,21 +421,13 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         gameCamera.zoom = FlxMath.lerp(gameCamera.zoom, gameCameraZoom, FlxMath.getElapsedLerp(0.15, elapsed));
 
-        #if NO_HUD_CAMERA_ZOOM
-        #else
-        hudCamera.zoom = FlxMath.lerp(hudCamera.zoom, 1.0, FlxMath.getElapsedLerp(0.15, elapsed));
-        #end
-
         if (FlxG.keys.justPressed.SEVEN)
             FlxG.switchState(() -> new OptionsMenu(() -> getClassFromLevel()));
 
         #if FLX_DEBUG
         if (FlxG.keys.justPressed.EIGHT)
-            FlxG.switchState(() -> new editors.CharacterEditorState(() -> PlayState.getClassFromLevel()));
+            FlxG.switchState(() -> new menus.CharacterEditMenu(() -> PlayState.getClassFromLevel()));
         #end
-
-        if (FlxG.keys.justPressed.ESCAPE)
-            FlxG.resetState();
     }
 
     override function destroy():Void
@@ -462,18 +450,13 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
     public function measureHit(measure:Int):Void
     {
         gameCamera.zoom += gameCamBopStrength;
-
-        #if NO_HUD_CAMERA_ZOOM
-        #else
-        hudCamera.zoom += hudCamBopStrength;
-        #end
     }
 
     public function loadChart():Void
     {
         chart = ChartBuilder.buildFromLevel(level);
 
-        chart.notes.sortTimed();
+        ArraySort.sort(chart.notes, sortNotes);
 
         #if NOTE_SHUFFLE
         var keyCount:Int = chart.keyCount;
@@ -780,11 +763,15 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
     public function gameOver():Void
     {
+        trace('Died at ${conductor.time}');
+
+        #if debug
+        return;
+        #end
+
         persistentDraw = false;
 
         openSubState(new GameOverScreen(this));
-
-        tweens.cancelTweensOf(gameCamera, ["scroll"]);
 
         cameraPoint.centerTo();
 
@@ -814,6 +801,23 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         if (playerVocals != null)
             playerVocals.time = instrumental.time;
+    }
+
+    public function sortNotes(a:NoteData, b:NoteData):Int
+    {
+        if (a.time < b.time)
+            return -1;
+
+        if (a.time > b.time)
+            return 1;
+
+        if (a.direction < b.direction)
+            return -1;
+
+        if (a.direction > b.direction)
+            return 1;
+
+        return 0;
     }
 }
 

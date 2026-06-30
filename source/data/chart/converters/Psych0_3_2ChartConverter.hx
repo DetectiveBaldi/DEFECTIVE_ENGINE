@@ -4,11 +4,9 @@ import haxe.Json;
 
 import openfl.utils.Assets;
 
-import flixel.util.FlxStringUtil;
-
 import core.Paths;
-
 import data.Chart;
+import data.chart.NoteTypeSwaps;
 
 import util.TimingUtil;
 
@@ -18,6 +16,19 @@ using util.ArrayUtil;
 
 class Psych0_3_2ChartConverter
 {
+    static var _noteTypeSwaps:Map<String, String> = null;
+
+    public static var noteTypeSwaps(get, never):Map<String, String>;
+
+    @:noCompletion
+    static function get_noteTypeSwaps():Map<String, String>
+    {
+        if (_noteTypeSwaps == null)
+            _noteTypeSwaps = NoteTypeSwaps.buildFromFile(Paths.data(Paths.json("data/chart/converters/Psych0_3_2ChartConverter/note-type-noteTypeSwaps")));
+
+        return _noteTypeSwaps;
+    }
+
     public static function buildFromFiles(chartPath:String, eventsPath:String):Chart
     {
         var output:Chart = new Chart();
@@ -114,11 +125,16 @@ class Psych0_3_2ChartConverter
             {
                 var note:Psych0_3_2Note = _section.sectionNotes[j];
 
-                var type:Int = note.type ?? -1;
+                var type:String = Std.string(note.type);
 
-                var kind:NoteKindData = {type: "", altAnimation: false, noAnimation: false, specSing: false, charIds: null}
+                if (noteTypeSwaps.exists(type))
+                    type = noteTypeSwaps[type];
+                else
+                    type = "";
 
-                if (_section.altAnim || type == 1)
+                var kind:NoteKindData = {type: type, altAnimation: false, noAnimation: false, specSing: false, charIds: null}
+
+                if (_section.altAnim || type == "1")
                     kind.altAnimation = true;
 
                 output.notes.push({time: note.time, direction: note.direction % keyCount,  lane: ((note.direction > keyCount - 1)

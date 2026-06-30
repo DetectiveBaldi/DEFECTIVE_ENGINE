@@ -24,7 +24,7 @@ jobs:
         shell: cmd
       - name: Build
         run: |
-          haxelib run lime build hl -debug
+          haxelib run lime build hl
         shell: cmd
       - name: Publish Artifact
         uses: actions/upload-artifact@v4
@@ -53,7 +53,7 @@ jobs:
         shell: cmd
       - name: Build
         run: |
-          haxelib run lime build cpp -debug
+          haxelib run lime build cpp
         shell: cmd
       - name: Publish Artifact
         uses: actions/upload-artifact@v4

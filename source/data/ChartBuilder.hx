@@ -18,11 +18,11 @@ class ChartBuilder
 {
     public static function buildFromLevel(level:LevelData):Chart
     {
-        var difficulty:String = level.difficulty;
-
         var prefix:String = Paths.data('game/levels/${level.name}');
 
         var suffix:String = "";
+
+        var difficulty:String = level.difficulty;
 
         if (difficulty != "Normal")
             suffix = '-${difficulty}';

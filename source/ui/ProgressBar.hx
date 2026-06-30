@@ -34,9 +34,9 @@ class ProgressBar extends FlxSpriteGroup
     public var value(default, set):Float;
 
     @:noCompletion
-    function set_value(_value:Float):Float
+    function set_value(v:Float):Float
     {
-        value = FlxMath.bound(_value, min, max);
+        value = FlxMath.bound(v, min, max);
 
         updateClipping();
 

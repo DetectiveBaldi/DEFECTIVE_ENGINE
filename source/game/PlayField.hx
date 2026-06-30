@@ -114,9 +114,6 @@ class PlayField extends FlxGroup implements ISequenceHandler implements IBeatDis
 
         add(healthBar);
 
-        if (Options.botplay)
-            healthBar.kill();
-
         timeGauge = new FlxRadialGauge(0.0, 0.0);
 
         timeGauge.active = false;

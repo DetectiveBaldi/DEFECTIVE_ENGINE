@@ -4,13 +4,9 @@ import haxe.Json;
 
 import openfl.utils.Assets;
 
-import flixel.util.FlxStringUtil;
-
 import core.Paths;
-
 import data.Chart;
-
-import util.TimingUtil;
+import data.chart.NoteTypeSwaps;
 
 using StringTools;
 
@@ -18,6 +14,19 @@ using util.ArrayUtil;
 
 class FNFChartCoverter
 {
+    static var _noteTypeSwaps:Map<String, String> = null;
+
+    public static var noteTypeSwaps(get, never):Map<String, String>;
+
+    @:noCompletion
+    static function get_noteTypeSwaps():Map<String, String>
+    {
+        if (_noteTypeSwaps == null)
+            _noteTypeSwaps = NoteTypeSwaps.buildFromFile(Paths.data(Paths.json("data/chart/converters/FNFChartConverter/note-type-noteTypeSwaps")));
+
+        return _noteTypeSwaps;
+    }
+
     public static function buildFromFiles(chartPath:String, metadataPath:String, difficulty:String):Chart
     {
         var output:Chart = new Chart();
@@ -97,7 +106,14 @@ class FNFChartCoverter
         {
             var note:FNFNote = notes[i];
 
-            var kind:NoteKindData = {type: note.k, altAnimation: false, noAnimation: false, specSing: false, charIds: null}
+            var type:String = note.k;
+
+            if (noteTypeSwaps.exists(type))
+                type = noteTypeSwaps[type];
+            else
+                type = "";
+
+            var kind:NoteKindData = {type: type, altAnimation: false, noAnimation: false, specSing: false, charIds: null}
 
             output.notes.push({time: note.t, direction: note.d % 4, lane: 1 - Math.floor(note.d * 0.25), length: note.l,
                 kind: kind});

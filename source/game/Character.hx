@@ -56,6 +56,8 @@ class Character extends FlxSprite
 
     public var strumline:Strumline;
 
+    public var notes:Array<Note>;
+
     public var lastScale:FlxPoint;
     
     public var config:CharacterData;
@@ -83,6 +85,8 @@ class Character extends FlxSprite
         this.beatDispatcher = beatDispatcher;
 
         conductor?.onBeatHit?.add(beatHit);
+
+        notes = new Array<Note>();
 
         lastScale = FlxPoint.get();
         
@@ -149,6 +153,8 @@ class Character extends FlxSprite
         super.destroy();
 
         conductor?.onBeatHit?.remove(beatHit);
+
+        notes = null;
 
         lastScale = FlxDestroyUtil.put(lastScale);
 

@@ -4,11 +4,9 @@ import haxe.Json;
 
 import openfl.utils.Assets;
 
-import flixel.util.FlxStringUtil;
-
 import core.Paths;
-
 import data.Chart;
+import data.chart.NoteTypeSwaps;
 
 import util.TimingUtil;
 
@@ -18,6 +16,19 @@ using util.ArrayUtil;
 
 class LeatherChartConverter
 {
+    static var _noteTypeSwaps:Map<String, String> = null;
+
+    public static var noteTypeSwaps(get, never):Map<String, String>;
+
+    @:noCompletion
+    static function get_noteTypeSwaps():Map<String, String>
+    {
+        if (_noteTypeSwaps == null)
+            _noteTypeSwaps = NoteTypeSwaps.buildFromFile(Paths.data(Paths.json("data/chart/converters/LeatherChartConverter/note-type-swaps")));
+
+        return _noteTypeSwaps;
+    }
+
     public static function buildFromFiles(chartPath:String, eventsPath:String):Chart
     {
         var output:Chart = new Chart();
@@ -107,12 +118,21 @@ class LeatherChartConverter
             {
                 var note:LeatherNote = _section.sectionNotes[j];
 
-                var type:String = note.type ?? "";
+                var type:String = note.type;
 
-                var kind:NoteKindData = {type: "", altAnimation: false, noAnimation: false, specSing: false, charIds: null}
+                var typeLower:String = type?.toLowerCase();
 
-                if (type == "caution" || type == "death" || type == "hurt")
-                    kind.type = type;
+                if (typeLower == "caution" || typeLower == "death" || typeLower == "hurt")
+                    type = typeLower;
+                else
+                {
+                    if (noteTypeSwaps.exists(type))
+                        type = noteTypeSwaps[type];
+                    else
+                        type = "";
+                }
+
+                var kind:NoteKindData = {type: type, altAnimation: false, noAnimation: false, specSing: false, charIds: null}
 
                 if (note.charIds != null)
                 {

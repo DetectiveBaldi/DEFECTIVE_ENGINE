@@ -1,7 +1,11 @@
 package game.notes;
 
 import flixel.FlxSprite;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxFrame;
 
+import core.AssetCache;
+import core.Paths;
 import data.Chart.NoteKindData;
 
 class Note extends FlxSprite
@@ -61,7 +65,7 @@ class Note extends FlxSprite
     @:noCompletion
     function get_hitWindow():Float
     {
-        return Rating.list[skipHit ? 1 : 0].timing;
+        return skipHit ? Rating.list[1].timing : Rating.latestTiming;
     }
 
     public function new(x:Float = 0.0, y:Float = 0.0):Void
@@ -85,15 +89,6 @@ class Note extends FlxSprite
             y += (time - strumline.conductor.time) * (strum.downscroll ? -1 : 1) * strumline.scrollSpeed * 0.45;
 
         alpha = strum.alpha;
-    }
-
-    override function kill():Void
-    {
-        super.kill();
-
-        sustain?.kill();
-
-        sustain?.trail.kill();
     }
 
     override function reset(x:Float, y:Float):Void
@@ -122,17 +117,40 @@ class Note extends FlxSprite
 
         strum = null;
 
-        hitHealth = 1.0;
+        hitHealth = 2.0;
 
         missHealth = 5.0;
 
         skipHit = false;
     }
 
+    public function getNoteFrames():FlxAtlasFrames
+    {
+        var suffix:String = kind.type;
+
+        if (suffix == "")
+            suffix = "default";
+
+        var path:String = 'game/notes/Note/${suffix}';
+
+        return FlxAtlasFrames.fromSparrow(AssetCache.getGraphic(path), Paths.image(Paths.xml(path)));
+    }
+
     public function addAnimations():Void
     {
+        var frames:Array<FlxFrame> = new Array<FlxFrame>();
+
+        @:privateAccess
+        animation.findByPrefix(frames, "left");
+
+        var shortPrefix:Bool = frames.length == 0.0;
+
         for (i in 0 ... DIRECTIONS.length)
-            animation.addByPrefix(DIRECTIONS[i].toLowerCase(), DIRECTIONS[i].toLowerCase() + "0", 24.0, false);
+        {
+            var direction:String = DIRECTIONS[i].toLowerCase();
+            
+            animation.addByPrefix(direction, shortPrefix ? "default0" : '${direction}0', 24.0, false);
+        }
     }
 
     public function isHittable():Bool

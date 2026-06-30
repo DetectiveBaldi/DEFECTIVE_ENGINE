@@ -24,27 +24,39 @@ class NoteSplash extends FlxSprite
         super(x, y);
 
         antialiasing = true;
+    }
 
-        frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("game/notes/NoteSplash/default"), Paths.image(Paths.xml
-            ("game/notes/NoteSplash/default")));
+    override function update(elapsed:Float):Void
+    {
+        super.update(elapsed);
 
+        if (animation.finished)
+            kill();
+    }
+
+    public function getSplashFrames():FlxAtlasFrames
+    {
+        return FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("game/notes/NoteSplash/default"), Paths.image(Paths.xml("game/notes/NoteSplash/default")));
+    }
+
+    public function addAnimations():Void
+    {
         for (i in 0 ... Note.DIRECTIONS.length)
         {
-            var d:String = Note.DIRECTIONS[i].toLowerCase();
+            var direction:String = Note.DIRECTIONS[i].toLowerCase();
 
-            for (j in 0 ... 2)
-                animation.addByPrefix('${d}${j}', 'note impact ${j} ${d}', 24.0, false);
+            animation.addByPrefix('${direction} 0', 'note impact 0 ${direction}', 24.0, false);
+
+            animation.addByPrefix('${direction} 1', 'note impact 1 ${direction}', 24.0, false);
         }
-
-        animation.onFinish.add((_:String) -> kill());
     }
 
     public function play(direction:Int, reversed:Bool):Void
     {
-        var d:String = Note.DIRECTIONS[direction].toLowerCase();
+        var directionString:String = Note.DIRECTIONS[direction].toLowerCase();
 
-        var i:Int = FlxG.random.int(0, 1);
+        var index:Int = FlxG.random.int(0, 1);
 
-        animation.play('${d}${i}', false, reversed);
+        animation.play('${directionString} ${index}', false, reversed);
     }
 }

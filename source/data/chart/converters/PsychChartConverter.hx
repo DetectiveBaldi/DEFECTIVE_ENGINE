@@ -4,11 +4,9 @@ import haxe.Json;
 
 import openfl.utils.Assets;
 
-import flixel.util.FlxStringUtil;
-
 import core.Paths;
-
 import data.Chart;
+import data.chart.NoteTypeSwaps;
 
 import util.TimingUtil;
 
@@ -18,6 +16,19 @@ using util.ArrayUtil;
 
 class PsychChartConverter
 {
+    static var _noteTypeSwaps:Map<String, String> = null;
+
+    public static var noteTypeSwaps(get, never):Map<String, String>;
+
+    @:noCompletion
+    static function get_noteTypeSwaps():Map<String, String>
+    {
+        if (_noteTypeSwaps == null)
+            _noteTypeSwaps = NoteTypeSwaps.buildFromFile(Paths.data(Paths.json("data/chart/converters/PsychChartConverter/note-type-noteTypeSwaps")));
+
+        return _noteTypeSwaps;
+    }
+
     public static function buildFromFiles(chartPath:String, eventsPath:String):Chart
     {
         var output:Chart = new Chart();
@@ -96,9 +107,19 @@ class PsychChartConverter
             {
                 var note:PsychNote = _section.sectionNotes[j];
 
-                var type:String = note.type ?? "";
+                var type:String = note.type;
 
-                var kind:NoteKindData = {type: note.type, altAnimation: false, noAnimation: false, specSing: false, charIds: null}
+                if (type == "Hurt Note")
+                    type = "hurt";
+                else
+                {
+                    if (noteTypeSwaps.exists(type))
+                        type = noteTypeSwaps[type];
+                    else
+                        type = "";
+                }
+
+                var kind:NoteKindData = {type: type, altAnimation: false, noAnimation: false, specSing: false, charIds: null}
 
                 if (_section.altAnim || type == "Alt Animation")
                     kind.altAnimation = true;
