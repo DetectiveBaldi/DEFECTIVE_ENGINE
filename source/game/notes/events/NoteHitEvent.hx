@@ -8,7 +8,7 @@ class NoteHitEvent
 
     public function new():Void
     {
-
+        playSplash = false;
     }
 
     public function reset(note:Note):Void

@@ -1,86 +1,51 @@
 package game.notes;
 
 import flixel.FlxSprite;
-
 import flixel.graphics.frames.FlxAtlasFrames;
 
 import core.AssetCache;
 import core.Options;
 import core.Paths;
 
-import music.Conductor;
-
 using StringTools;
 
 class Strum extends FlxSprite
 {
-    public var beatDispatcher:IBeatDispatcher;
-
-    public var conductor(get, never):Conductor;
-
-    @:noCompletion
-    function get_conductor():Conductor
-    {
-        return beatDispatcher?.conductor;
-    }
-
-    public var strumline:Strumline;
-
     public var direction:Int;
 
-    public var downscroll:Bool;
-
-    public var holdTimer:Float;
-
-    public function new(x:Float = 0.0, y:Float = 0.0, beatDispatcher:IBeatDispatcher):Void
+    public function new(x:Float = 0.0, y:Float = 0.0):Void
     {
         super(x, y);
 
-        this.beatDispatcher = beatDispatcher;
-
         antialiasing = true;
 
-        frames = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("game/notes/Strum/default", false),
-            Paths.image(Paths.xml("game/notes/Strum/default")));
-        
-        for (i in 0 ... Note.DIRECTIONS.length)
-        {
-            var direction:String = Note.DIRECTIONS[i].toLowerCase();
-
-            animation.addByPrefix('${direction}Static', '${direction}Static0', 24.0, false);
-
-            animation.addByPrefix('${direction}Press', '${direction}Press0', 24.0, false);
-            
-            animation.addByPrefix('${direction}Confirm', '${direction}Confirm0', 24.0, false);
-        }
-
-        direction = 0;
-
-        downscroll = Options.downscroll;
-
-        holdTimer = 0.0;
+        reset(x, y);
     }
 
-    override function update(elapsed:Float):Void
+    override function reset(x:Float, y:Float):Void
     {
-        super.update(elapsed);
+        super.reset(x, y);
 
-        if (conductor == null)
-            return;
+        direction = -1;
+    }
 
-        if ((animation.name ?? "").endsWith("Confirm"))
+    public function getStrumFrames():FlxAtlasFrames
+    {
+        return FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("game/notes/Strum/default", false),
+            Paths.image(Paths.xml("game/notes/Strum/default")));
+    }
+
+    public function addAnimations():Void
+    {
+        for (i in 0 ... Note.DIRECTIONS.length)
         {
-            holdTimer += elapsed;
+            var directionString:String = Note.DIRECTIONS[i].toLowerCase();
 
-            if (holdTimer >= conductor.beatLength * 0.25 * 0.001)
-            {
-                holdTimer = 0.0;
+            animation.addByPrefix('${directionString}Static', '${directionString}Static0', 24.0, false);
 
-                if (!strumline.botplay)
-                    animation.play('${strumline.keyParams.keys[direction].toLowerCase()}Press');
-            }
+            animation.addByPrefix('${directionString}Press', '${directionString}Press0', 24.0, false);
+            
+            animation.addByPrefix('${directionString}Confirm', '${directionString}Confirm0', 24.0, false);
         }
-        else
-            holdTimer = 0.0;
     }
 }

@@ -24,7 +24,7 @@ class Psych0_3_2ChartConverter
     static function get_noteTypeSwaps():Map<String, String>
     {
         if (_noteTypeSwaps == null)
-            _noteTypeSwaps = NoteTypeSwaps.buildFromFile(Paths.data(Paths.json("data/chart/converters/Psych0_3_2ChartConverter/note-type-noteTypeSwaps")));
+            _noteTypeSwaps = NoteTypeSwaps.buildFromFile(Paths.data(Paths.json("data/chart/converters/Psych0_3_2ChartConverter/note-type-swaps")));
 
         return _noteTypeSwaps;
     }

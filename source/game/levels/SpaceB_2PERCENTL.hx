@@ -2,4 +2,7 @@ package game.levels;
 
 import game.levels.SpaceBL;
 
-typedef SpaceB_2PERCENTL = SpaceBL
+class SpaceB_2PERCENTL extends SpaceBL
+{
+    
+}

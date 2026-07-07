@@ -7,25 +7,20 @@ import openfl.utils.Assets;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
-
 import flixel.graphics.frames.FlxAtlasFrames;
-
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-
 import flixel.util.FlxDestroyUtil;
 
 import core.AssetCache;
 import core.Options;
 import core.Paths;
-
 import data.AnimationData;
 import data.AxisData;
 import data.CharacterData;
-
 import game.notes.Note;
 import game.notes.Strumline;
-
+import interfaces.IBeatDispatcher;
 import music.Conductor;
 
 using StringTools;

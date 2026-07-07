@@ -8,6 +8,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import core.AssetCache;
 import core.Paths;
 import data.Chart;
+import interfaces.IBeatDispatcher;
 import music.Conductor;
 
 using StringTools;
@@ -109,34 +110,17 @@ class NoteSpawner extends FlxBasic
 
             note.kind = noteData.kind;
 
-            var strumScale:Float = strumline.keyParams.strumScale;
-
             if (needNewType)
             {
                 note.frames = note.getNoteFrames();
 
                 note.addAnimations();
-
-                @:bypassAccessor
-                {
-                    note.scale.x = strumScale;
-
-                    note.scale.y = strumScale;
-                }
-
-                var hitboxScale:Float = 160.0 * strumScale;
-
-                note.setSize(hitboxScale, hitboxScale);
-
-                note.centerOffsets();
             }
 
             note.animation.play(strumline.convertDirectionToAnim(note.direction).toLowerCase());
 
             note.strumline = strumline;
-
-            note.strum = strumline.strums.members[note.direction];
-
+            
             notes.add(note);
 
             strumline.notes.add(note);
@@ -177,13 +161,9 @@ class NoteSpawner extends FlxBasic
                     sustain.addAnimations();
                 }
 
-                sustain.flipY = note.strum.downscroll;
+                sustain.flipY = strumline.downscroll;
 
                 sustain.animation.play('${note.animation.name}HoldPiece');
-
-                sustain.setGraphicSize(sustain.frameWidth * strumScale, note.length * strumline.scrollSpeed * 0.45);
-
-                sustain.updateHitbox();
 
                 sustain.note = note;
 
@@ -223,29 +203,19 @@ class NoteSpawner extends FlxBasic
                     trail.frames = sustain.frames;
 
                     trail.addAnimations();
-
-                    @:bypassAccessor
-                    {
-                        trail.scale.x = strumScale;
-
-                        trail.scale.y = strumScale;
-                    }
                 }
 
                 trail.animation.play('${note.animation.name}HoldTail');
 
-                if (needNewType)
-                    trail.updateHitbox();
+                trail.flipY = strumline.downscroll;
 
-                trail.flipY = note.strum.downscroll;
-
-                trail.sustain = sustain;
+                trail.note = note;
 
                 trails.add(trail);
 
                 strumline.trails.add(trail);
 
-                sustain.trail = trail;
+                note.trail = trail;
             }
 
             setNoteType(note);
@@ -261,7 +231,7 @@ class NoteSpawner extends FlxBasic
 
     public function noteFactory():Note
     {
-        return new Note();
+        return new Note(beatDispatcher);
     }
 
     public function sustainFactory():Sustain

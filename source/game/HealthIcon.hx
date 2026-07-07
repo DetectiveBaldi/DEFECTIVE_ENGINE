@@ -8,20 +8,24 @@ using StringTools;
 
 class HealthIcon extends FlxSprite
 {
+    public var characterId:String;
+
     public var isPixel:Bool;
 
-    public function new(name:String):Void
+    public function new(char:String):Void
     {
         super(0.0, 0.0);
 
-        setIcon(name);
+        setCharacter(char);
     }
 
-    public function setIcon(name:String):Void
+    public function setCharacter(char:String):Void
     {
-        isPixel = name.contains("-pixel");
+        characterId = char;
 
-        loadGraphic(AssetCache.getGraphic('game/HealthIcon/${name}'), true, isPixel ? 32 : 150, isPixel ? 32 : 150);
+        isPixel = char.contains("-pixel");
+
+        loadGraphic(AssetCache.getGraphic('game/HealthIcon/${char}'), true, isPixel ? 32 : 150, isPixel ? 32 : 150);
 
         animation.add("idle", [0, 1], 0.0, false);
 

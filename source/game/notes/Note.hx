@@ -7,12 +7,29 @@ import flixel.graphics.frames.FlxFrame;
 import core.AssetCache;
 import core.Paths;
 import data.Chart.NoteKindData;
+import interfaces.IBeatDispatcher;
+import music.Conductor;
 
+using tools.ObjectHelpers;
+
+// TODO: Make this an `flixel.group.FlxSpriteGroup`.
+// Handles animations and basic fields for a `Note` object.
+// To create a custom note type, look at `game.notes.NoteSpawner.setNoteType`.
 class Note extends FlxSprite
 {
     public static var DIRECTIONS:Array<String> = ["left", "down", "up", "right", "circle"];
 
     public static var DIRECTIONS_BASE_4:Map<Int, Int> = [0 => 0, 1 => 1, 2 => 2, 3 => 3, 4 => 2];
+
+    public var beatDispatcher:IBeatDispatcher;
+
+    public var conductor(get, never):Conductor;
+
+    @:noCompletion
+    function get_conductor():Conductor
+    {
+        return beatDispatcher.conductor;
+    }
 
     public var time:Float;
 
@@ -35,7 +52,7 @@ class Note extends FlxSprite
     @:noCompletion
     function get_isSustain():Bool
     {
-        return length != 0.0;
+        return sustain != null;
     }
 
     public var lane:Int;
@@ -50,9 +67,30 @@ class Note extends FlxSprite
 
     public var sustain:Sustain;
 
+    public var trail:SustainTrail;
+
     public var strumline:Strumline;
 
-    public var strum:Strum;
+    public var downscroll(get, never):Bool;
+
+    @:noCompletion
+    function get_downscroll():Bool
+    {
+        return strumline.downscroll;
+    }
+
+    public var strum(get, never):Strum;
+
+    @:noCompletion
+    function get_strum():Strum
+    {
+        var v:Strum = strumline.getStrum(direction);
+
+        if (v == null)
+            v = strumline.getStrum(0);
+
+        return v;
+    }
 
     public var hitHealth:Float;
 
@@ -65,30 +103,42 @@ class Note extends FlxSprite
     @:noCompletion
     function get_hitWindow():Float
     {
-        return skipHit ? Rating.list[1].timing : Rating.latestTiming;
+        return skipHit ? Rating.earliestTiming : Rating.latestTiming;
     }
 
-    public function new(x:Float = 0.0, y:Float = 0.0):Void
+    public function new(beatDispatcher:IBeatDispatcher):Void
     {
-        super(x, y);
+        super();
 
         antialiasing = true;
 
-        reset(x, y);
+        this.beatDispatcher = beatDispatcher;
+
+        reset(0.0, 0.0);
     }
 
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
 
-        x = strum.getMidpoint().x - width * 0.5;
+        var strumScale:Float = strumline.keyParams.strumScale;
+
+        scale.x = strumScale;
+
+        scale.y = strumScale;
+
+        var hitboxScale:Float = 160.0 * strumScale;
+
+        setSize(hitboxScale, hitboxScale);
+
+        centerOffsets();
+
+        x = this.getCenterX(strum);
 
         y = strum.y;
 
         if (status != HIT || length <= 0.0)
-            y += (time - strumline.conductor.time) * (strum.downscroll ? -1 : 1) * strumline.scrollSpeed * 0.45;
-
-        alpha = strum.alpha;
+            y += (time - strumline.conductor.time) * (downscroll ? -1.0 : 1.0) * strumline.scrollSpeed * 0.45;
     }
 
     override function reset(x:Float, y:Float):Void
@@ -105,7 +155,7 @@ class Note extends FlxSprite
 
         kind = null;
 
-        status = IDLING;
+        status = IDLE;
 
         playSplash = false;
 
@@ -113,9 +163,9 @@ class Note extends FlxSprite
 
         sustain = null;
 
-        strumline = null;
+        trail = null;
 
-        strum = null;
+        strumline = null;
 
         hitHealth = 2.0;
 
@@ -149,13 +199,13 @@ class Note extends FlxSprite
         {
             var direction:String = DIRECTIONS[i].toLowerCase();
             
-            animation.addByPrefix(direction, shortPrefix ? "default0" : '${direction}0', 24.0, false);
+            animation.addByPrefix(direction, shortPrefix ? "0" : '${direction}0', 24.0, false);
         }
     }
 
     public function isHittable():Bool
     {
-        if (status != IDLING)
+        if (status != IDLE)
             return false;
 
         var botplay:Bool = strumline.botplay;
@@ -169,11 +219,11 @@ class Note extends FlxSprite
 
 enum NoteStatus
 {
-    IDLING;
+    IDLE;
 
     HIT;
 
-    MISSED;
+    MISS;
 
     FAILING;
 }

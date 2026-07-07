@@ -99,7 +99,7 @@ class ControlsEditMenu extends FlxSubState implements ISequenceHandler
     {
         super.create();
 
-        _bgSprite.alpha = 0.65;
+        _bgSprite.alpha = 0.5;
 
         tweens = new FlxTweenManager();
 
@@ -183,6 +183,9 @@ class ControlsEditMenu extends FlxSubState implements ISequenceHandler
                 for (i in 0 ... strumline.strums.members.length)
                 {
                     var strum:Strum = strumline.strums.members[i];
+
+                    if (strum.direction == -1.0)
+                        continue;
 
                     var isSelected:Bool = hoverStrum == strum;
 
@@ -311,7 +314,7 @@ class ControlsEditMenu extends FlxSubState implements ISequenceHandler
                 {
                     if (holdTime >= 1.0)
                     {
-                        var periods:Int = Math.floor(holdTime * 3000.0 / 1000.0) % 3 + 1;
+                        var periods:Int = 1 + Math.floor(holdTime * 3000.0 / 1000.0) % 3;
 
                         var tip:String = "";
 
@@ -475,7 +478,7 @@ class ControlsEditMenu extends FlxSubState implements ISequenceHandler
 
         strumline.getKeysToCheck();
 
-        strumline.buildStrums();
+        strumline.regenStrums();
 
         strumline.strums.x = strumline.strums.getCenterX();
 

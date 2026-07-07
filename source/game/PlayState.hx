@@ -39,11 +39,13 @@ import game.notes.events.NoteHitEvent;
 import game.events.SetCamFocusEvent;
 import game.events.SetCamZoomEvent;
 import game.stages.Stage;
+import interfaces.IBeatDispatcher;
 import interfaces.ISequenceHandler;
+import menus.PauseMenu;
 import menus.options.OptionsMenu;
 import music.Conductor;
+import tools.CompileTime;
 import ui.Countdown;
-import util.MacroUtil;
 
 using StringTools;
 
@@ -253,6 +255,8 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         conductor.onMeasureHit.add(measureHit);
 
+        add(conductor);
+
         tweens = new FlxTweenManager();
 
         add(tweens);
@@ -322,9 +326,11 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         playField.getSongLength = getSongLength;
 
+        #if !debug
         var healthBar:HealthBar = playField.healthBar;
 
         healthBar.onEmptied.add(gameOver);
+        #end
 
         oppStrumline.charGroup = opponents;
 
@@ -344,8 +350,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         players.group.memberAdded.add((player:Character) -> player.strumline = plrStrumline);
 
-        if (spectator != null)
-            spectators.add(spectator);
+        spectators.add(spectator);
 
         opponents.add(opponent);
 
@@ -353,7 +358,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         updateHealthBar();
 
-        countdown = new Countdown(this, this);
+        countdown = new Countdown(this);
         
         countdown.camera = hudCamera;
 
@@ -366,18 +371,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
     {
         super.update(elapsed);
 
-        // Calculate new time here, we need to update camera target fields before updating the conductor.
-        var timeToUpdateTo:Float = conductor.time + 1000.0 * elapsed;
-
-        if (startingSong)
-            timeToUpdateTo = Math.min(timeToUpdateTo, 0.0);
-
-        // Update the camera target fields.
-        updateCameraTarget(timeToUpdateTo);
-            
-        // Update the conductor now.
-        conductor.update(timeToUpdateTo);
-
         while (eventIndex < chart.events.length)
         {
             var event:EventData = chart.events[eventIndex];
@@ -388,9 +381,13 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
             onEvent(event);
         }
 
+        updateCameraTarget(conductor.time);
+
+        conductor.updateSteps();
+
         if (startingSong)
         {
-            if (conductor.time == 0.0)
+            if (conductor.time >= 0.0)
                 startSong();
         }
         else
@@ -421,6 +418,9 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         gameCamera.zoom = FlxMath.lerp(gameCamera.zoom, gameCameraZoom, FlxMath.getElapsedLerp(0.15, elapsed));
 
+        if (FlxG.keys.justPressed.ESCAPE)
+            pause();
+
         if (FlxG.keys.justPressed.SEVEN)
             FlxG.switchState(() -> new OptionsMenu(() -> getClassFromLevel()));
 
@@ -439,7 +439,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
     public function stepHit(step:Int):Void
     {
-        
+
     }
 
     public function beatHit(beat:Int):Void
@@ -469,16 +469,16 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
             note.direction = FlxG.random.int(0, keyCount - 1);
         }
         #else
-        var ds:Array<Int> = new Array<Int>();
+        var directions:Array<Int> = new Array<Int>();
 
         for (i in 0 ... chart.keyCount)
-            ds.push(FlxG.random.int(0, keyCount - 1, ds));
+            directions.push(FlxG.random.int(0, keyCount - 1, directions));
 
         for (i in 0 ... chart.notes.length)
         {
             var note:NoteData = chart.notes[i];
 
-            note.direction = ds[note.direction];
+            note.direction = directions[note.direction];
         }
         #end
         #end
@@ -487,9 +487,11 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         chart.timingPoints.sortTimed();
 
-        conductor.calibrateTimingPoints(chart.timingPoints);
+        conductor.setTimingPoints(chart.timingPoints);
 
-        conductor.update(-conductor.beatLength * 5.0);
+        conductor.time = -conductor.measureLength * 1.25;
+
+        conductor.updateSteps();
 
         FlxG.watch.add(conductor, "time", "Time");
 
@@ -564,7 +566,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
             vocals.add(opponentVocals);
         }
 
-        var playerVocalsPath:String = Paths.music(Paths.ogg('${prefix}Vocals-Opponent${suffix}'));
+        var playerVocalsPath:String = Paths.music(Paths.ogg('${prefix}Vocals-Player${suffix}'));
 
         if (!Paths.exists(playerVocalsPath))
             playerVocalsPath = Paths.music(Paths.ogg('${prefix}Vocals-Player'));
@@ -690,7 +692,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
     public function updateHealthBar():Void
     {
-        var playAsWho:Int = Std.parseInt(MacroUtil.sanitizeDefine(MacroUtil.getDefine("PLAY_AS_WHO"))) ?? 1;
+        var playAsWho:Int = Std.parseInt(CompileTime.getDefine("PLAY_AS_WHO")) ?? 1;
 
         var playAsOpponent:Bool = playAsWho == 0;
 
@@ -708,15 +710,15 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         if (playAsOpponent)
         {
-            healthBar.opponentIcon.setIcon(player.config.healthIcon);
+            healthBar.opponentIcon.setCharacter(player.config.healthIcon);
 
-            healthBar.playerIcon.setIcon(opponent.config.healthIcon);
+            healthBar.playerIcon.setCharacter(opponent.config.healthIcon);
         }
         else
         {
-            healthBar.opponentIcon.setIcon(opponent.config.healthIcon);
+            healthBar.opponentIcon.setCharacter(opponent.config.healthIcon);
 
-            healthBar.playerIcon.setIcon(player.config.healthIcon);
+            healthBar.playerIcon.setCharacter(player.config.healthIcon);
         }
     }
 
@@ -741,6 +743,9 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         if (ev == null)
             ev = getStartingCamFocusEvent();
 
+        if (ev == null)
+            return "";
+
         if (ev.value.charType == "")
             return "POINT";
         else
@@ -750,6 +755,9 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
     public function updateCameraTarget(timeToCheck:Float):Void
     {
         var target:String = getCameraTarget(timeToCheck);
+
+        if (target == "")
+            return;
 
         if (target == "POINT")
             cameraTarget = target;
@@ -761,21 +769,35 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         }
     }
 
+    public function pause():Void
+    {
+        var pauseMenu:PauseMenu = new PauseMenu(this);
+
+        pauseMenu.camera = hudCamera;
+
+        openSubState(pauseMenu);
+
+        gameCamera.active = false;
+
+        pauseMusic();
+    }
+
+    public function resume():Void
+    {
+        closeSubState();
+
+        gameCamera.active = true;
+
+        resumeMusic();
+
+        resyncVocals();
+    }
+
     public function gameOver():Void
     {
-        trace('Died at ${conductor.time}');
-
-        #if debug
-        return;
-        #end
-
         persistentDraw = false;
 
         openSubState(new GameOverScreen(this));
-
-        cameraPoint.centerTo();
-
-        gameCamera.snapToTarget();
 
         pauseMusic();
     }
@@ -789,6 +811,17 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         opponentVocals?.pause();
 
         playerVocals?.pause();
+    }
+
+    public function resumeMusic():Void
+    {
+        instrumental.resume();
+
+        mainVocals?.resume();
+
+        opponentVocals?.resume();
+
+        playerVocals?.resume();
     }
 
     public function resyncVocals():Void

@@ -18,7 +18,7 @@ import data.WeekData;
 import game.HighScore;
 import game.PlayState;
 import plugins.FullscreenPlugin;
-import util.MacroUtil;
+import tools.CompileTime;
 
 using StringTools;
 
@@ -71,8 +71,6 @@ class InitState extends FlxState
 
         setFrameRateCap(Options.frameRate);
 
-        FlxG.fullscreen = true;
-
         FlxG.mouse.visible = false;
 
         FlxG.console.registerClass(InitState);
@@ -93,20 +91,14 @@ class InitState extends FlxState
 
         FlxG.plugins.addPlugin(fullscreenPlugin);
 
-        var definedWeek:String = MacroUtil.sanitizeDefine(MacroUtil.getDefine("WEEK"));
+        var definedWeek:String = CompileTime.getDefine("WEEK");
 
-        definedWeek = definedWeek.split(":").join(" ");
-
-        var definedLevel:String = MacroUtil.sanitizeDefine(MacroUtil.getDefine("LEVEL"));
-
-        definedLevel = definedLevel.split(":").join(" ");
+        var definedLevel:String = CompileTime.getDefine("LEVEL");
 
         if (definedWeek == "" && definedLevel == "")
             throw "No week or level was configured to launch. Use `-D WEEK=Week:Name` or `-D LEVEL=Level:Name` in the command line to continue.";
 
-        var difficulty:String = MacroUtil.sanitizeDefine(MacroUtil.getDefine("DIFFICULTY"));
-
-        difficulty = difficulty.split(":").join(" ");
+        var difficulty:String = CompileTime.getDefine("DIFFICULTY");
 
         if (difficulty == "")
             difficulty = "Normal";

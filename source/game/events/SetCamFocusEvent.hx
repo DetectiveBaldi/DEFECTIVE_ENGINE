@@ -1,5 +1,7 @@
 package game.events;
 
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 
@@ -18,11 +20,26 @@ class SetCamFocusEvent
             if ((game.cameraLock == FOCUS_CAM_POINT || game.cameraLock == NONE) && !skipCameraLock)
                 return;
 
-            var char:Character = Reflect.getProperty(game, charType);
+            var charGroup:FlxTypedSpriteGroup<Character> = Reflect.getProperty(game, '${charType}s');
 
-            x = char.getMidpoint().x + char.config.cameraPoint.x;
+            if (charGroup.members.length > 1.0)
+            {
+                var middle:FlxPoint = charGroup.getMidpoint();
 
-            y = char.getMidpoint().y + char.config.cameraPoint.y;
+                x = middle.x;
+
+                y = middle.y;
+
+                middle.put();
+            }
+            else
+            {
+                var char:Character = Reflect.getProperty(game, charType);
+
+                x = char.getMidpoint().x + char.config.cameraPoint.x;
+
+                y = char.getMidpoint().y + char.config.cameraPoint.y;
+            }
         }
 
         game.tweens.cancelTweensOf(game.gameCamera, ["scroll"]);

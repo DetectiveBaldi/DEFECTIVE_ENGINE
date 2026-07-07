@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<TextureAtlas imagePath="caution.png" width="297" height="242">
-	<SubTexture name="default0000" x="1" y="1" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="defaultHoldPiece0000" x="244" y="68" width="52" height="1" frameX="-0" frameY="-0" frameWidth="52" frameHeight="1"/>
-	<SubTexture name="defaultHoldTail0000" x="244" y="1" width="52" height="64" frameX="-0" frameY="-0" frameWidth="52" frameHeight="64"/>
+<TextureAtlas imagePath="caution.png" width="248" height="329">
+  <SubTexture name="0000.png" x="4" y="4"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="holdTail0000.png" x="4" y="252"  width="52" height="64" frameX="-0" frameY="-0" frameWidth="52" frameHeight="64"/>
+  <SubTexture name="holdPiece0000.png" x="4" y="324"  width="52" height="1" frameX="-0" frameY="-0" frameWidth="52" frameHeight="1"/>
 </TextureAtlas>

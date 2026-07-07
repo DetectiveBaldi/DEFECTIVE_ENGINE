@@ -1,8 +1,5 @@
 package game.levels;
 
-import data.Chart;
-
-import game.notes.Note;
 import game.stages.StageS;
 
 using tools.ObjectHelpers;

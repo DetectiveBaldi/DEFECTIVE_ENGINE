@@ -35,8 +35,6 @@ class IntOptionItem extends VarOptionItem<Int>
         onUpdate.add((newValue:Int) ->
         {
             valueText.text = Std.string(newValue);
-
-            valueText.setText();
         });
     }
 

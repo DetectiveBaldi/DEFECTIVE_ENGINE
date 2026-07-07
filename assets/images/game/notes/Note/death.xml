@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<TextureAtlas imagePath="death.png" width="728" height="485">
-	<SubTexture name="circle0000" x="1" y="1" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="down0000" x="244" y="1" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="left0000" x="1" y="244" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="right0000" x="244" y="244" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="up0000" x="487" y="1" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="defaultHoldPiece0000" x="542" y="244" width="52" height="1" frameX="-0" frameY="-0" frameWidth="52" frameHeight="1"/>
-	<SubTexture name="defaultHoldTail0000" x="487" y="244" width="52" height="64" frameX="-0" frameY="-0" frameWidth="52" frameHeight="64"/>
+<TextureAtlas imagePath="death.png" width="744" height="505">
+  <SubTexture name="circle0000.png" x="4" y="4"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="down0000.png" x="4" y="252"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="holdPiece0000.png" x="4" y="500"  width="52" height="1" frameX="-0" frameY="-0" frameWidth="52" frameHeight="1"/>
+  <SubTexture name="left0000.png" x="252" y="4"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="right0000.png" x="252" y="252"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="up0000.png" x="500" y="4"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="holdTail0000.png" x="500" y="252"  width="52" height="64" frameX="-0" frameY="-0" frameWidth="52" frameHeight="64"/>
 </TextureAtlas>

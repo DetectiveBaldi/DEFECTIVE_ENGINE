@@ -18,7 +18,7 @@ class LevelData
     @:noCompletion
     function get_difficulty():String
     {
-        return week?.difficulty ?? _difficulty ?? "Normal";
+        return week?.difficulty ?? _difficulty;
     }
 
     @:noCompletion
@@ -34,6 +34,8 @@ class LevelData
         this.week = week;
 
         this.name = name;
+
+        difficulty = "Normal";
     }
 
     /**

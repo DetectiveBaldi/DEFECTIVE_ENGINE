@@ -7,6 +7,8 @@ class Playlist
 {
     public static function init():Void
     {
+        LevelData.list.push({week: null, name: "Above & Beyond"});
+
         LevelData.list.push({week: null, name: "Adagio"});
         
         LevelData.list.push({week: null, name: "Divine Paradox"});
@@ -15,9 +17,13 @@ class Playlist
 
         LevelData.list.push({week: null, name: "Disassembler"});
 
+        LevelData.list.push({week: null, name: "Disturbance"});
+
         LevelData.list.push({week: null, name: "Enormous Dimension Collapse"});
 
         LevelData.list.push({week: null, name: "Final Destination"});
+
+        LevelData.list.push({week: null, name: "Final Destination Mystery Inc Mix"});
 
         LevelData.list.push({week: null, name: "Game Over"});
 
@@ -33,6 +39,8 @@ class Playlist
 
         LevelData.list.push({week: null, name: "Multicolor Demise"});
 
+        LevelData.list.push({week: null, name: "Multiversal"});
+
         LevelData.list.push({week: null, name: "Multiversal Pinnacles"});
 
         LevelData.list.push({week: null, name: "Pneumonoultramicroscopicsilicovolcanoconiosisphobia"});
@@ -40,6 +48,8 @@ class Playlist
         LevelData.list.push({week: null, name: "Polyarch"});
 
         LevelData.list.push({week: null, name: "Quadripresent Deitys"});
+
+        LevelData.list.push({week: null, name: "Reimagined Final Destination"});
 
         LevelData.list.push({week: null, name: "Senpai"});
 
@@ -50,6 +60,8 @@ class Playlist
         LevelData.list.push({week: null, name: "Taimuresu"});
 
         LevelData.list.push({week: null, name: "Talladega"});
+
+        LevelData.list.push({week: null, name: "Test"});
 
         LevelData.list.push({week: null, name: "Thorns"});
 

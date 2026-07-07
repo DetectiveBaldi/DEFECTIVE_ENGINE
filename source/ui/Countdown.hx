@@ -2,34 +2,39 @@ package ui;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-
 import flixel.group.FlxGroup;
-
 import flixel.sound.FlxSound;
-
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxTween.FlxTweenManager;
-
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
 import flixel.util.FlxSignal.FlxTypedSignal;
+import flixel.util.FlxTimer;
 
 import core.AssetCache;
 import core.Paths;
-
+import interfaces.IBeatDispatcher;
 import interfaces.ISequenceHandler;
-
 import music.Conductor;
 
 /**
  * A `flixel.group.FlxGroup` representing the countdown you see in `game.PlayState`.
  */
-class Countdown extends FlxGroup
+class Countdown extends FlxGroup implements ISequenceHandler
 {
     public var tweens:FlxTweenManager;
 
-    public var conductor:Conductor;
+    public var timers:FlxTimerManager;
+
+    public var beatDispatcher:IBeatDispatcher;
+
+    public var conductor(get, never):Conductor;
+
+    private function get_conductor():Conductor
+    {
+        return beatDispatcher.conductor;
+    }
 
     public var tick:Int;
 
@@ -43,13 +48,19 @@ class Countdown extends FlxGroup
 
     public var goSound:FlxSound;
 
-    public function new(sequenceHandler:ISequenceHandler, beatDispatcher:IBeatDispatcher):Void
+    public function new(beatDispatcher:IBeatDispatcher):Void
     {
         super();
 
-        tweens = sequenceHandler.tweens;
+        tweens = new FlxTweenManager();
 
-        conductor = beatDispatcher.conductor;
+        add(tweens);
+
+        timers = new FlxTimerManager();
+
+        add(timers);
+
+        this.beatDispatcher = beatDispatcher;
 
         conductor.onBeatHit.add(beatHit);
 
@@ -67,7 +78,9 @@ class Countdown extends FlxGroup
 
         sprite.alpha = 0.0;
 
-        sprite.scale.set(0.85, 0.85);
+        sprite.scale.x = 0.85;
+
+        sprite.scale.y = 0.85;
 
         sprite.updateHitbox();
 
@@ -137,7 +150,7 @@ class Countdown extends FlxGroup
         tick++;
     }
 
-    public function stopSounds(destroySounds:Bool = true):Void
+    public function stopSounds():Void
     {
         threeSound.stop();
 
@@ -147,26 +160,12 @@ class Countdown extends FlxGroup
 
         goSound.stop();
 
-        if (destroySounds)
-        {
-            threeSound.destroy();
+        threeSound.destroy();
 
-            twoSound.destroy();
+        twoSound.destroy();
 
-            oneSound.destroy();
+        oneSound.destroy();
 
-            goSound.destroy();
-        }
-    }
-
-    public function skip():Void
-    {
-        kill();
-
-        conductor.update(0.0);
-        
-        conductor.onBeatHit.remove(beatHit);
-
-        stopSounds(false);
+        goSound.destroy();
     }
 }

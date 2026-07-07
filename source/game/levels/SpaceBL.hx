@@ -11,7 +11,7 @@ class SpaceBL extends LevelL
 
         var lastOpponent:Character = opponent;
 
-        opponent.x -= opponent.width * 0.5;
+        opponents.x -= opponent.width * 0.5;
 
         var opponent:Character = new Character(this, 0.0, 0.0, Character.getConfig("bf-pixel-opponent"));
 
@@ -33,7 +33,7 @@ class SpaceBL extends LevelL
 
         var lastPlayer:Character = player;
 
-        player.setPosition(player.x - player.width * 0.5, player.y - player.height * 0.5);
+        players.setPosition(player.x - player.width * 0.5, player.y - player.height * 0.5);
 
         var player:Character = new Character(this, 0.0, 0.0, Character.getConfig("bf"));
 

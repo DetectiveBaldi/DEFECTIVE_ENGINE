@@ -12,44 +12,48 @@ import core.Paths;
 
 using StringTools;
 
-// This class uses images to render a sequence of characters, rather than a .ttf or .otf file.
-// If you need to change the font, assign `font` and then call `setFont` and `setText`.
-// If you need to change the text, assign `text` and call `setText`.
+// This class uses `FlxSprite`s to display a sequence of characters, rather than a `flixel.text.FlxText`.
 class AtlasText extends FlxSpriteGroup
 {
-    public static var fonts:Map<String, AtlasTextFontData> = new Map<String, AtlasTextFontData>();
+    var _needsRegen:Bool;
 
-    public var font:String;
-
-    public var fontData(get, never):AtlasTextFontData;
+    public var text(default, set):String;
 
     @:noCompletion
-    function get_fontData():AtlasTextFontData
+    function set_text(v:String):String
     {
-        return fonts[font];
+        var lastText:String = text;
+
+        text = v;
+
+        if (text != lastText)
+            _regenerate();
+
+        return text;
     }
 
-    public var maxHeight(get, never):Float;
+    public var font(default, set):AtlasTextFont;
 
     @:noCompletion
-    function get_maxHeight():Float
+    function set_font(v:AtlasTextFont)
     {
-        return fontData.maxHeight;
-    }
+        var lastFont:AtlasTextFont = font;
 
-    public var text:String;
+        font = v;
+
+        if (font != lastFont)
+            _regenerate();
+
+        return font;
+    }
 
     public function new(x:Float = 0.0, y:Float = 0.0, text:String):Void
     {
         super(x, y);
 
-        font = "default";
+        _needsRegen = false;
 
         this.text = text;
-
-        setFont();
-
-        setText();
     }
 
     override function update(elapsed:Float):Void
@@ -64,17 +68,21 @@ class AtlasText extends FlxSpriteGroup
         }
     }
 
-    // Adds the new font if necessary
-    public function setFont():Void
+    function _regenerate():Void
     {
-        fonts[font] ??= new AtlasTextFontData(font);
-    }
+        var font:AtlasTextFont = font;
 
-    public function setText():Void
-    {
-        // No font, we can't render anything.
-        if (fontData == null)
-            return;
+        if (font == null)
+            font = DEFAULT;
+        
+        var fontData:AtlasTextFontData = switch (font:AtlasTextFont)
+        {
+            case BOLD:
+                AtlasTextFontData.BOLD_FONT;
+            
+            default:
+                AtlasTextFontData.DEFAULT_FONT;
+        }
 
         var textToRender:String = text;
 
@@ -99,6 +107,8 @@ class AtlasText extends FlxSpriteGroup
 
         var splitText:Array<String> = textToRender.split("");
 
+        var maxHeight:Float = fontData.maxHeight;
+
         for (i in 0 ... splitText.length)
         {
             var char:String = splitText[i];
@@ -117,7 +127,7 @@ class AtlasText extends FlxSpriteGroup
 
                 default:
                 {
-                    var sprite:FlxSprite = recycle(FlxSprite, () -> new FlxSprite());
+                    var sprite:FlxSprite = recycle(FlxSprite, spriteFactory);
 
                     sprite.antialiasing = true;
 
@@ -136,10 +146,41 @@ class AtlasText extends FlxSpriteGroup
             }
         }
     }
+
+    public function spriteFactory():FlxSprite
+    {
+        return new FlxSprite();
+    }
 }
 
 class AtlasTextFontData
 {
+    static var _DEFAULT_FONT:AtlasTextFontData;
+
+    public static var DEFAULT_FONT(get, never):AtlasTextFontData;
+
+    @:noCompletion
+    public static function get_DEFAULT_FONT():AtlasTextFontData
+    {
+        if (_DEFAULT_FONT == null)
+            _DEFAULT_FONT = new AtlasTextFontData("default");
+
+        return _DEFAULT_FONT;
+    }
+
+    static var _BOLD_FONT:AtlasTextFontData;
+
+    public static var BOLD_FONT(get, never):AtlasTextFontData;
+
+    @:noCompletion
+    public static function get_BOLD_FONT():AtlasTextFontData
+    {
+        if (_BOLD_FONT == null)
+            _BOLD_FONT = new AtlasTextFontData("bold");
+
+        return _BOLD_FONT;
+    }
+
     public static var upperCaseChars:EReg = ~/^[A-Z]\d+$/;
 
     public static var lowerCaseChars:EReg = ~/^[a-z]\d+$/;
@@ -241,4 +282,11 @@ class AtlasTextFontData
     {
         atlas = FlxDestroyUtil.destroy(atlas);
     }
+}
+
+enum AtlasTextFont
+{
+    DEFAULT;
+
+    BOLD;
 }

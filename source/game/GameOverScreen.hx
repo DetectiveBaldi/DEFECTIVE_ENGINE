@@ -1,29 +1,61 @@
 package game;
 
 import flixel.FlxG;
+import flixel.FlxCamera;
+import flixel.FlxObject;
 import flixel.FlxSubState;
-
+import flixel.math.FlxMath;
 import flixel.sound.FlxSound;
-
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxTween;
 
 import core.AssetCache;
 import core.Paths;
-
 import data.CharacterData;
 import data.Chart;
 
+import interfaces.IBeatDispatcher;
+import interfaces.ISequenceHandler;
 import music.Conductor;
 
 using tools.ObjectHelpers;
 
-class GameOverScreen extends FlxSubState implements IBeatDispatcher
+class GameOverScreen extends FlxSubState implements ISequenceHandler implements IBeatDispatcher
 {
+    public var tweens:FlxTweenManager;
+
+    public var timers:FlxTimerManager;
+
     public var conductor:Conductor;
 
     public var game:PlayState;
 
-    public var player:Character;
+    public var gameCamera(get, never):FlxCamera;
+
+    @:noCompletion
+    function get_gameCamera():FlxCamera
+    {
+        return game.gameCamera;
+    }
+
+    public var cameraPoint(get, never):FlxObject;
+
+    @:noCompletion
+    function get_cameraPoint():FlxObject
+    {
+        return game.cameraPoint;
+    }
+
+    public var player(get, never):Character;
+
+    @:noCompletion
+    function get_player():Character
+    {
+        return game.player;
+    }
+
+    public var deadCharacter:Character;
 
     public var tune:FlxSound;
 
@@ -31,11 +63,11 @@ class GameOverScreen extends FlxSubState implements IBeatDispatcher
 
     public var end:FlxSound;
 
-    public function new(_game:PlayState):Void
+    public function new(game:PlayState):Void
     {
         super();
 
-        game = _game;
+        this.game = game;
     }
 
     override function create():Void
@@ -44,33 +76,33 @@ class GameOverScreen extends FlxSubState implements IBeatDispatcher
 
         conductor = new Conductor();
 
-        conductor.onStepHit.add(stepHit);
-
-        conductor.onBeatHit.add(beatHit);
-
-        conductor.onMeasureHit.add(measureHit);
+        conductor.addListeners(this);
 
         var timingPoints:Array<TimingPointData> = new Array<TimingPointData>();
 
         timingPoints.push({time: 0.0, tempo: 100.0, beatsPerMeasure: 4});
 
-        conductor.calibrateTimingPoints(timingPoints);
+        conductor.setTimingPoints(timingPoints);
 
-        conductor.update(-conductor.beatLength * 5.0);
+        conductor.time = -conductor.measureLength * 1.25;
 
-        game.gameCamera.followLerp = 0.0185;
+        conductor.updateSteps();
 
-        game.players.visible = false;
+        add(conductor);
 
-        player = new Character(this, 0.0, 0.0, Character.getConfig(game.player.deadCharacter));
+        gameCamera.followLerp = 0.02;
 
-        player.skipDance = true;
+        cameraPoint.centerTo(player);
 
-        player.animation.play("start");
+        deadCharacter = new Character(this, 0.0, 0.0, Character.getConfig(player.deadCharacter));
 
-        player.centerTo();
+        deadCharacter.skipDance = true;
 
-        add(player);
+        deadCharacter.animation.play("start");
+
+        deadCharacter.centerTo(player);
+
+        add(deadCharacter);
 
         tune = FlxG.sound.load(AssetCache.getMusic("game/GameOverScreen/tune"), 1.0, true);
 
@@ -85,25 +117,10 @@ class GameOverScreen extends FlxSubState implements IBeatDispatcher
     {
         super.update(elapsed);
 
-        var timeToUpdateTo:Float = conductor.time + 1000.0 * elapsed;
-        
-        conductor.update(timeToUpdateTo);
+        conductor.updateSteps();
 
-        if (player.config.danceSteps.contains(player.animation.name))
-        {
-            if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE)
-            {
-                FlxG.camera.fade(FlxColor.BLACK, conductor.beatLength * 0.001 * 7.5, false, () -> FlxG.resetState());
-
-                player.skipDance = true;
-
-                player.animation.play("end");
-
-                tune.stop();
-
-                end.play();
-            }
-        }
+        if ((FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE) && deadCharacter.animation.name != "end")
+            pressEnter();
     }
 
     public function stepHit(step:Int):Void
@@ -115,7 +132,7 @@ class GameOverScreen extends FlxSubState implements IBeatDispatcher
     {
         if (beat == 0.0)
         {
-            player.skipDance = false;
+            deadCharacter.skipDance = false;
 
             tune.play();
         }
@@ -124,5 +141,20 @@ class GameOverScreen extends FlxSubState implements IBeatDispatcher
     public function measureHit(measure:Int):Void
     {
 
+    }
+
+    public function pressEnter():Void
+    {
+        gameCamera.fade(FlxColor.BLACK, conductor.beatLength * 0.001 * 6.0, false, FlxG.resetState);
+
+        conductor.removeListeners(this);
+
+        deadCharacter.skipDance = true;
+
+        deadCharacter.animation.play("end");
+
+        tune.stop();
+
+        end.play();
     }
 }

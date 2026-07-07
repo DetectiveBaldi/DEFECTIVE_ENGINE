@@ -1,36 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
--->
-<TextureAtlas imagePath="default.png" width="1943" height="971">
-	<SubTexture name="circleConfirm0000" x="1" y="1" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="circleConfirm0001" x="1" y="244" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="circleConfirm0002" x="1" y="487" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="circlePress0000" x="1" y="730" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="circlePress0001" x="244" y="1" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="circleStatic0000" x="244" y="244" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="downConfirm0000" x="244" y="487" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="downConfirm0001" x="244" y="730" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="downConfirm0002" x="487" y="1" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="downPress0000" x="487" y="244" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="downPress0001" x="487" y="487" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="downStatic0000" x="487" y="730" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="leftConfirm0000" x="730" y="1" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="leftConfirm0001" x="730" y="244" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="leftConfirm0002" x="730" y="487" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="leftPress0000" x="730" y="730" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="leftPress0001" x="973" y="1" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="leftStatic0000" x="973" y="244" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="rightConfirm0000" x="973" y="487" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="rightConfirm0001" x="973" y="730" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="rightConfirm0002" x="1216" y="1" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="rightPress0000" x="1459" y="1" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="rightPress0001" x="1702" y="1" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="rightStatic0000" x="1216" y="244" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="upConfirm0000" x="1216" y="487" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="upConfirm0001" x="1216" y="730" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="upConfirm0002" x="1459" y="244" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="upPress0000" x="1702" y="244" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="upPress0001" x="1459" y="487" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
-	<SubTexture name="upStatic0000" x="1459" y="730" width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+<TextureAtlas imagePath="default.png" width="1984" height="992">
+  <SubTexture name="circleConfirm0000.png" x="4" y="4"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="circleConfirm0001.png" x="4" y="252"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="circleConfirm0002.png" x="4" y="500"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="circlePress0000.png" x="4" y="748"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="circlePress0001.png" x="252" y="4"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="circleStatic0000.png" x="252" y="252"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="downConfirm0000.png" x="252" y="500"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="downConfirm0001.png" x="252" y="748"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="downConfirm0002.png" x="500" y="4"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="downPress0000.png" x="500" y="252"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="downPress0001.png" x="500" y="500"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="downStatic0000.png" x="500" y="748"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="leftConfirm0000.png" x="748" y="4"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="leftConfirm0001.png" x="748" y="252"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="leftConfirm0002.png" x="748" y="500"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="leftPress0000.png" x="748" y="748"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="leftPress0001.png" x="996" y="4"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="leftStatic0000.png" x="996" y="252"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="rightConfirm0000.png" x="996" y="500"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="rightConfirm0001.png" x="996" y="748"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="rightConfirm0002.png" x="1244" y="4"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="rightPress0000.png" x="1492" y="4"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="rightPress0001.png" x="1740" y="4"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="rightStatic0000.png" x="1244" y="252"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="upConfirm0000.png" x="1244" y="500"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="upConfirm0001.png" x="1244" y="748"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="upConfirm0002.png" x="1492" y="252"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="upPress0000.png" x="1740" y="252"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="upPress0001.png" x="1492" y="500"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
+  <SubTexture name="upStatic0000.png" x="1492" y="748"  width="240" height="240" frameX="-0" frameY="-0" frameWidth="240" frameHeight="240"/>
 </TextureAtlas>

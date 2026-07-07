@@ -112,7 +112,7 @@ class CharacterEditMenu extends FlxState
 
         ghost = new FlxSprite();
 
-        ghost.alpha = 0.65;
+        ghost.alpha = 0.5;
 
         add(ghost);
 
@@ -191,7 +191,7 @@ class CharacterEditMenu extends FlxState
 
             progBar.emptiedSide.color = progBar.filledSide.color = FlxColor.fromString(character.config.healthColor);
 
-            healthIcon.setIcon(character.config.healthIcon);
+            healthIcon.setCharacter(character.config.healthIcon);
 
             animationIndex = 0;
 
@@ -319,7 +319,7 @@ class CharacterEditMenu extends FlxState
         {
             character.config.healthIcon = ui.findComponent("____textfield", TextField).text;
 
-            healthIcon.setIcon(character.config.healthIcon);
+            healthIcon.setCharacter(character.config.healthIcon);
 
             character.config.healthColor = ui.findComponent("_____textfield", TextField).text;
 

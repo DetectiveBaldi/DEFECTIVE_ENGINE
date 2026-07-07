@@ -24,14 +24,8 @@ class NoteSplash extends FlxSprite
         super(x, y);
 
         antialiasing = true;
-    }
 
-    override function update(elapsed:Float):Void
-    {
-        super.update(elapsed);
-
-        if (animation.finished)
-            kill();
+        animation.onFinish.add(onAnimationFinish);
     }
 
     public function getSplashFrames():FlxAtlasFrames
@@ -53,10 +47,15 @@ class NoteSplash extends FlxSprite
 
     public function play(direction:Int, reversed:Bool):Void
     {
-        var directionString:String = Note.DIRECTIONS[direction].toLowerCase();
+        var dirString:String = Note.DIRECTIONS[direction].toLowerCase();
 
-        var index:Int = FlxG.random.int(0, 1);
+        var i:Int = FlxG.random.int(0, 1);
 
-        animation.play('${directionString} ${index}', false, reversed);
+        animation.play('${dirString} ${i}', false, reversed);
+    }
+
+    public function onAnimationFinish(name:String):Void
+    {
+        kill();
     }
 }

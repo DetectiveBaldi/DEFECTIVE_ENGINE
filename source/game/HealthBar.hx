@@ -1,18 +1,24 @@
 package game;
 
 import flixel.math.FlxMath;
-
 import flixel.util.FlxColor;
 
 import core.AssetCache;
-
+import interfaces.IBeatDispatcher;
 import music.Conductor;
-
 import ui.ProgressBar;
 
 class HealthBar extends ProgressBar
 {
-    public var conductor:Conductor;
+    public var beatDispatcher:IBeatDispatcher;
+
+    public var conductor(get, never):Conductor;
+
+    @:noCompletion
+    function get_conductor():Conductor
+    {
+        return beatDispatcher.conductor;
+    }
 
     @:noCompletion
     override function set_fillDirection(_fillDirection:ProgressBarFillDirection):ProgressBarFillDirection
@@ -40,7 +46,7 @@ class HealthBar extends ProgressBar
 
         filledSide.color = FlxColor.GRAY;
 
-        conductor = beatDispatcher.conductor;
+        this.beatDispatcher = beatDispatcher;
 
         conductor.onBeatHit.add(beatHit);
 
@@ -68,6 +74,8 @@ class HealthBar extends ProgressBar
         updateIconsAnimation();
 
         scaleIcons(elapsed);
+
+        positionIcons();
     }
 
     override function destroy():Void
@@ -110,8 +118,6 @@ class HealthBar extends ProgressBar
         playerIcon.setGraphicSize(scale, scale);
 
         playerIcon.updateHitbox();
-
-        positionIcons();
     }
 
     public function positionIcons():Void

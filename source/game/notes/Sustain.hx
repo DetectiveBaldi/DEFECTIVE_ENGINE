@@ -2,6 +2,10 @@ package game.notes;
 
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFrame;
+import flixel.math.FlxMath;
+
+import game.notes.Note.NoteStatus;
+import music.Conductor;
 
 using tools.ObjectHelpers;
 
@@ -9,11 +13,27 @@ class Sustain extends FlxSprite
 {
     public var note:Note;
 
-    public var trail:SustainTrail;
+    public var conductor(get, never):Conductor;
 
-    public function new(x:Float = 0.0, y:Float = 0.0):Void
+    @:noCompletion
+    function get_conductor():Conductor
     {
-        super(x, y);
+        return note.conductor;
+    }
+
+    public var downscroll(get, never):Bool;
+
+    @:noCompletion
+    function get_downscroll():Bool
+    {
+        return note.downscroll;
+    }
+
+    public function new():Void
+    {
+        super();
+
+        antialiasing = true;
     }
 
     override function update(elapsed:Float):Void
@@ -25,27 +45,38 @@ class Sustain extends FlxSprite
         if (note.status == HIT)
             length -= note.strumline.conductor.time - note.time;
 
-        var sustainHeight:Float = Math.max(0.0, length * 0.45 * note.strumline.scrollSpeed);
+        var newHeight:Float = Math.max(0.0, length * 0.45 * note.strumline.scrollSpeed);
 
-        setGraphicSize(frameWidth * note.scale.x, sustainHeight);
+        setGraphicSize(frameWidth * note.scale.x, newHeight);
 
         updateHitbox();
 
         setPosition(this.getCenterX(note), note.y + note.height * 0.5);
 
-        if (note.strum.downscroll)
-            y -= sustainHeight;
+        if (downscroll)
+            y -= newHeight;
 
-        trail.setPosition(trail.getCenterX(this), y + sustainHeight);
+        var status:NoteStatus = note.status;
 
-        if (note.strum.downscroll)
-            trail.y -= sustainHeight + trail.height;
+        switch (status:NoteStatus)
+        {
+            case IDLE:
+            {
+                alpha = 1.0;
 
-        trail.y -= 2.0 * (note.strum.downscroll ? -1.0 : 1.0);
+                if (!note.skipHit && conductor.time > note.time)
+                    alpha = FlxMath.remapToRange(conductor.time - note.time, 0.0, Rating.latestTiming, 1.0, 0.5);
+            }
 
-        alpha = note.alpha;
+            case HIT:
+                alpha = 1.0;
 
-        trail.alpha = alpha;
+            case FAILING:
+                alpha = FlxMath.remapToRange(note.unholdTime, 0.0, Rating.latestTiming, 1.0, 0.5);
+
+            case MISS:
+                alpha = 0.5;
+        }
     }
 
     public function addAnimations():Void
@@ -61,7 +92,7 @@ class Sustain extends FlxSprite
         {
             var direction:String = Note.DIRECTIONS[i].toLowerCase();
             
-            animation.addByPrefix('${direction}HoldPiece', shortPrefix ? "defaultHoldPiece0" : '${direction}HoldPiece0', 24.0, false);
+            animation.addByPrefix('${direction}HoldPiece', shortPrefix ? "holdPiece0" : '${direction}HoldPiece0', 24.0, false);
         }
     }
 }

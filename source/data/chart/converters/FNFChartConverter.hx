@@ -22,7 +22,7 @@ class FNFChartCoverter
     static function get_noteTypeSwaps():Map<String, String>
     {
         if (_noteTypeSwaps == null)
-            _noteTypeSwaps = NoteTypeSwaps.buildFromFile(Paths.data(Paths.json("data/chart/converters/FNFChartConverter/note-type-noteTypeSwaps")));
+            _noteTypeSwaps = NoteTypeSwaps.buildFromFile(Paths.data(Paths.json("data/chart/converters/FNFChartConverter/note-type-swaps")));
 
         return _noteTypeSwaps;
     }
@@ -125,7 +125,7 @@ class FNFChartCoverter
         {
             var timeChange:FNFTimingPoint = timingPoints[i];
 
-            output.timingPoints.push({time: timeChange.t, tempo: timeChange.bpm, beatsPerMeasure: timeChange.n});
+            output.timingPoints.push({time: timeChange.t, tempo: timeChange.bpm, beatsPerMeasure: timeChange.n ?? 4});
         }
 
         var characters:Dynamic = rawMeta.playData.characters;
@@ -185,9 +185,9 @@ typedef FNFTimingPoint = FNFTimedObject &
 
     var bpm:Float;
 
-    var n:Int;
+    var n:Null<Int>;
 
-    var d:Int;
+    var d:Null<Int>;
 
-    var bt:Array<Int>;
+    var bt:Null<Array<Int>>;
 };

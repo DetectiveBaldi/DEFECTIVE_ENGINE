@@ -7,7 +7,6 @@ import openfl.utils.Assets;
 import core.Paths;
 import data.Chart;
 import data.chart.NoteTypeSwaps;
-
 import util.TimingUtil;
 
 using StringTools;
@@ -24,7 +23,7 @@ class PsychChartConverter
     static function get_noteTypeSwaps():Map<String, String>
     {
         if (_noteTypeSwaps == null)
-            _noteTypeSwaps = NoteTypeSwaps.buildFromFile(Paths.data(Paths.json("data/chart/converters/PsychChartConverter/note-type-noteTypeSwaps")));
+            _noteTypeSwaps = NoteTypeSwaps.buildFromFile(Paths.data(Paths.json("data/chart/converters/PsychChartConverter/note-type-swaps")));
 
         return _noteTypeSwaps;
     }

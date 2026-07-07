@@ -23,13 +23,17 @@
 
 	<!-- ______________________________ Defines, Haxedefs, and Libraries _____________________________ -->
 
-	<haxedef name="HXCPP_TELEMETRY" if="cpp debug" />
+	<section if="cpp debug">
+    <haxedef name="HXCPP_TELEMETRY" />
 
-	<haxedef name="HXCPP_TRACY" if="cpp debug" />
+    <haxedef name="HXCPP_TRACY" />
 
-	<haxedef name="HXCPP_TRACY_MEMORY" if="cpp debug" />
+	<haxedef name="HXCPP_TRACY_INCLUDE_CALLSTACKS" />
 
-	<haxedef name="HXCPP_TRACY_ON_DEMAND" if="cpp debug" />
+    <haxedef name="HXCPP_TRACY_MEMORY" />
+	
+    <haxedef name="HXCPP_TRACY_ON_DEMAND" />
+	</section>
 
 	<haxelib name="flixel" />
 
@@ -47,9 +51,11 @@
 
 	<haxelib name="haxeui-core" />
 
-	<define name="FEATURE_GPU_CACHING" unless="html5" />
+	<section unless="html5">
+	<define name="FEATURE_GPU_CACHING" />
 
-	<define name="FEATURE_SOUND_STREAMING" unless="html5" />
+	<define name="FEATURE_SOUND_STREAMING" />
+	</section>
 
 	<!-- _____________________________ Path Settings ____________________________ -->
 
