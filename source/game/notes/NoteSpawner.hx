@@ -117,8 +117,6 @@ class NoteSpawner extends FlxBasic
                 note.addAnimations();
             }
 
-            note.animation.play(strumline.convertDirectionToAnim(note.direction).toLowerCase());
-
             note.strumline = strumline;
             
             notes.add(note);
@@ -163,8 +161,6 @@ class NoteSpawner extends FlxBasic
 
                 sustain.flipY = strumline.downscroll;
 
-                sustain.animation.play('${note.animation.name}HoldPiece');
-
                 sustain.note = note;
 
                 sustains.add(sustain);
@@ -204,8 +200,6 @@ class NoteSpawner extends FlxBasic
 
                     trail.addAnimations();
                 }
-
-                trail.animation.play('${note.animation.name}HoldTail');
 
                 trail.flipY = strumline.downscroll;
 

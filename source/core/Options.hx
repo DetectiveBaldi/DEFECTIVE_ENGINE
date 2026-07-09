@@ -2,10 +2,88 @@ package core;
 
 import flixel.FlxG;
 
-import flixel.math.FlxMath;
-
 class Options
 {
+    static var _defaultKeybinds:Map<String, Array<Int>>;
+
+    public static var defaultKeybinds(get, never):Map<String, Array<Int>>;
+
+    @:noCompletion
+    static function get_defaultKeybinds():Map<String, Array<Int>>
+    {
+        if (_defaultKeybinds == null)
+        {
+            _defaultKeybinds =
+            [
+                "ui left" => [65, 37],
+
+                "ui right" => [68, 39],
+
+                "ui up" => [87, 38],
+
+                "ui down" => [83, 40],
+
+                "ui back" => [27, -1],
+
+                "ui accept" => [13, 32],
+
+                "volume up" => [187, 107],
+
+                "volume down" => [189, 109],
+
+                "volume mute" => [48, 96],
+
+                "editors character" => [56, -1]
+            ];
+        }
+
+        return _defaultKeybinds;
+    }
+
+    public static var keybinds(get, set):Map<String, Array<Int>>;
+
+    @:noCompletion
+    static function get_keybinds():Map<String, Array<Int>>
+    {
+        var copy:Map<String, Array<Int>> = SaveManager.options.data.keybinds;
+
+        if (copy == null)
+        {
+            copy = new Map<String, Array<Int>>();
+
+            for (k => v in defaultKeybinds)
+                copy[k] = v.copy();
+
+            SaveManager.options.data.keybinds = copy;
+        }
+
+        return copy;
+    }
+
+    @:noCompletion
+    static function set_keybinds(v:Map<String, Array<Int>>):Map<String, Array<Int>>
+    {
+        SaveManager.options.data.keybinds = v;
+
+        return keybinds;
+    }
+
+    public static var noteKeybinds(get, set):Map<Int, Array<Array<Int>>>;
+
+    @:noCompletion
+    static function get_noteKeybinds():Map<Int, Array<Array<Int>>>
+    {
+        return SaveManager.options.data.noteKeybinds ??= new Map<Int, Array<Array<Int>>>();
+    }
+
+    @:noCompletion
+    static function set_noteKeybinds(v:Map<Int, Array<Array<Int>>>):Map<Int, Array<Array<Int>>>
+    {
+        SaveManager.options.data.noteKeybinds = v;
+
+        return noteKeybinds;
+    }
+
     public static var autoPause(get, set):Bool;
 
     @:noCompletion
@@ -15,9 +93,9 @@ class Options
     }
 
     @:noCompletion
-    static function set_autoPause(_autoPause:Bool):Bool
+    static function set_autoPause(v:Bool):Bool
     {
-        SaveManager.options.data.autoPause = _autoPause;
+        SaveManager.options.data.autoPause = v;
 
         return autoPause;
     }
@@ -30,9 +108,9 @@ class Options
         return SaveManager.options.data.frameRate ??= 60;
     }
 
-    static function set_frameRate(_frameRate:Int):Int
+    static function set_frameRate(v:Int):Int
     {
-        SaveManager.options.data.frameRate = _frameRate;
+        SaveManager.options.data.frameRate = v;
 
         return frameRate;
     }
@@ -46,9 +124,9 @@ class Options
     }
 
     @:noCompletion
-    static function set_flashingLights(_flashingLights:Bool):Bool
+    static function set_flashingLights(v:Bool):Bool
     {
-        SaveManager.options.data.flashingLights = _flashingLights;
+        SaveManager.options.data.flashingLights = v;
 
         return flashingLights;
     }
@@ -62,27 +140,43 @@ class Options
     }
 
     @:noCompletion
-    static function set_shaders(_shaders:Bool):Bool
+    static function set_shaders(v:Bool):Bool
     {
-        SaveManager.options.data.shaders = _shaders;
+        SaveManager.options.data.shaders = v;
 
         return shaders;
     }
 
-    public static var controls(get, set):Map<Int, Array<Array<Int>>>;
+    public static var gpuCaching(get, set):Bool;
 
     @:noCompletion
-    static function get_controls():Map<Int, Array<Array<Int>>>
+    static function get_gpuCaching():Bool
     {
-        return SaveManager.options.data.controls ??= new Map<Int, Array<Array<Int>>>();
+        return #if FEATURE_GPU_CACHING SaveManager.options.data.gpuCaching ??= true #else false #end ;
     }
 
     @:noCompletion
-    static function set_controls(_controls:Map<Int, Array<Array<Int>>>):Map<Int, Array<Array<Int>>>
+    static function set_gpuCaching(v:Bool):Bool
     {
-        SaveManager.options.data.controls = _controls;
+        SaveManager.options.data.gpuCaching = v;
 
-        return controls;
+        return gpuCaching;
+    }
+
+    public static var soundStreaming(get, set):Bool;
+
+    @:noCompletion
+    static function get_soundStreaming():Bool
+    {
+        return #if FEATURE_SOUND_STREAMING SaveManager.options.data.soundStreaming ??= true #else false #end ;
+    }
+
+    @:noCompletion
+    static function set_soundStreaming(v:Bool):Bool
+    {
+        SaveManager.options.data.soundStreaming = v;
+
+        return soundStreaming;
     }
 
     public static var downscroll(get, set):Bool;
@@ -94,11 +188,27 @@ class Options
     }
 
     @:noCompletion
-    static function set_downscroll(_downscroll:Bool):Bool
+    static function set_downscroll(v:Bool):Bool
     {
-        SaveManager.options.data.downscroll = _downscroll;
+        SaveManager.options.data.downscroll = v;
 
         return downscroll;
+    }
+
+    public static var middlescroll(get, set):Bool;
+
+    @:noCompletion
+    static function get_middlescroll():Bool
+    {
+        return SaveManager.options.data.middlescroll ??= false;
+    }
+
+    @:noCompletion
+    static function set_middlescroll(v:Bool):Bool
+    {
+        SaveManager.options.data.middlescroll = v;
+
+        return middlescroll;
     }
 
     public static var ghostTapping(get, set):Bool;
@@ -110,9 +220,9 @@ class Options
     }
 
     @:noCompletion
-    static function set_ghostTapping(_ghostTapping:Bool):Bool
+    static function set_ghostTapping(v:Bool):Bool
     {
-        SaveManager.options.data.ghostTapping = _ghostTapping;
+        SaveManager.options.data.ghostTapping = v;
 
         return ghostTapping;
     }
@@ -126,58 +236,40 @@ class Options
     }
 
     @:noCompletion
-    static function set_botplay(_botplay:Bool):Bool
+    static function set_botplay(v:Bool):Bool
     {
-        SaveManager.options.data.botplay = _botplay;
+        SaveManager.options.data.botplay = v;
 
         return botplay;
     }
 
-    public static var discordRPC(get, set):Bool;
-
-    @:noCompletion
-    static function get_discordRPC():Bool
+    public static function keysJustPressed(keybindName:String):Bool
     {
-        return #if (FEATURE_DISCORD_HANDLER) SaveManager.options.data.discordRPC ??= true #else false #end;
+        var keys:Array<Int> = keybinds[keybindName];
+
+        for (i in 0 ... keys.length)
+        {
+            var key:Int = keys[i];
+
+            if (key == -1.0)
+                continue;
+
+            if (FlxG.keys.checkStatus(key, JUST_PRESSED))
+                return true;
+        }
+
+        return false;
     }
 
-    @:noCompletion
-    static function set_discordRPC(_discordRPC:Bool):Bool
+    public static function keysIndexJustPressed(keybindName:String, index:Int = 0):Bool
     {
-        SaveManager.options.data.discordRPC = _discordRPC;
+        var keys:Array<Int> = keybinds[keybindName];
 
-        return discordRPC;
-    }
+        var key:Int = keys[0];
 
-    public static var gpuCaching(get, set):Bool;
+        if (key == -1.0)
+            return false;
 
-    @:noCompletion
-    static function get_gpuCaching():Bool
-    {
-        return #if FEATURE_GPU_CACHING SaveManager.options.data.gpuCaching ??= false #else false #end ;
-    }
-
-    @:noCompletion
-    static function set_gpuCaching(_gpuCaching:Bool):Bool
-    {
-        SaveManager.options.data.gpuCaching = _gpuCaching;
-
-        return gpuCaching;
-    }
-
-    public static var soundStreaming(get, set):Bool;
-
-    @:noCompletion
-    static function get_soundStreaming():Bool
-    {
-        return #if FEATURE_SOUND_STREAMING SaveManager.options.data.soundStreaming ??= false #else false #end ;
-    }
-
-    @:noCompletion
-    static function set_soundStreaming(_soundStreaming:Bool):Bool
-    {
-        SaveManager.options.data.soundStreaming = _soundStreaming;
-
-        return soundStreaming;
+        return FlxG.keys.checkStatus(key, JUST_PRESSED);
     }
 }

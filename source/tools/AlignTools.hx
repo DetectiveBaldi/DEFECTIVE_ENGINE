@@ -10,7 +10,7 @@ import flixel.math.FlxRect;
 import flixel.util.FlxAxes;
 import flixel.util.FlxColor;
 
-class ObjectHelpers
+class AlignTools
 {
     /**
      * Gets a centered object x position.

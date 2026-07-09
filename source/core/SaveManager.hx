@@ -27,55 +27,14 @@ class SaveManager
         highScores.bind(FlxSave.validate("high-scores"));
     }
 
+    /**
+     * Called in `InitState`. This function can be used to migrate outdated options and high score data.
+     */
     public static function mergeData():Void
     {
-        if (Reflect.hasField(FlxG.save.data, "scores"))
-            Reflect.deleteField(FlxG.save.data, "scores");
-        
-        if (Reflect.hasField(FlxG.save.data, "options"))
-        {
-            options.mergeData(FlxG.save.data.options);
+        saveOptions();
 
-            Reflect.deleteField(FlxG.save.data, "options");
-        }
-
-        var data:Dynamic = options.data;
-
-        if (Reflect.hasField(data, "persistentCache"))
-            Reflect.deleteField(data, "persistentCache");
-
-        if (Reflect.hasField(data, "flashing"))
-        {
-            Reflect.setField(data, "flashingLights", Reflect.field(data, "flashing"));
-
-            Reflect.deleteField(data, "flashing");
-        }
-
-        if (Reflect.hasField(data, "middlescroll"))
-            Reflect.deleteField(data, "middlescroll");
-
-        if (Reflect.hasField(data, "automatedInputs"))
-        {
-            Reflect.setField(data, "botplay", Reflect.field(data, "automatedInputs"));
-            
-            Reflect.deleteField(data, "automatedInputs");
-        }
-
-        if (Reflect.hasField(data, "controls"))
-        {
-            var v:Dynamic = Reflect.field(data, "controls");
-
-            // Not porting these.
-            if (Std.isOfType(v, StringMap))
-                Reflect.deleteField(data, "controls");
-        }
-
-        if (Reflect.hasField(FlxG.save.data, "highScores"))
-        {
-            highScores.mergeData(FlxG.save.data.highScores);
-
-            Reflect.deleteField(FlxG.save.data, "highScores");
-        }
+        saveHighScores();
     }
 
     public static function saveOptions():Void

@@ -10,7 +10,7 @@ import data.Chart.NoteKindData;
 import interfaces.IBeatDispatcher;
 import music.Conductor;
 
-using tools.ObjectHelpers;
+using tools.AlignTools;
 
 // TODO: Make this an `flixel.group.FlxSpriteGroup`.
 // Handles animations and basic fields for a `Note` object.
@@ -84,7 +84,9 @@ class Note extends FlxSprite
     @:noCompletion
     function get_strum():Strum
     {
-        var v:Strum = strumline.getStrum(direction);
+        var safeDir:Int = direction % strumline.keyCount;
+
+        var v:Strum = strumline.getStrum(safeDir);
 
         if (v == null)
             v = strumline.getStrum(0);
@@ -120,6 +122,11 @@ class Note extends FlxSprite
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
+
+        var animToPlay:String = strumline.convertDirectionToAnim(direction).toLowerCase();
+
+        if (animation.name != animToPlay)
+            animation.play(animToPlay);
 
         var strumScale:Float = strumline.keyParams.strumScale;
 

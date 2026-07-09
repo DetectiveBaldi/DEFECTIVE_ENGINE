@@ -6,7 +6,7 @@ import haxe.macro.Expr;
 
 using StringTools;
 
-class CompileTime
+class CompilerTools
 {
     public macro static function getDefine(key:String):Expr
 	{

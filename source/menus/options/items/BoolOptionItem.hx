@@ -6,7 +6,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import core.AssetCache;
 import core.Paths;
 
-using tools.ObjectHelpers;
+using tools.AlignTools;
 
 class BoolOptionItem extends VarOptionItem<Bool>
 {
@@ -15,6 +15,8 @@ class BoolOptionItem extends VarOptionItem<Bool>
     public function new(x:Float = 0.0, y:Float = 0.0, title:String, description:String, option:String):Void
     {
         super(x, y, title, description, option);
+
+        type = BOOL;
 
         checkbox = new FlxSprite();
 

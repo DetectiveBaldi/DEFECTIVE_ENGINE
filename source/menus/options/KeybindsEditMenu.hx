@@ -24,15 +24,11 @@ import menus.options.items.NumOptionItem;
 
 using tools.AlignTools;
 
-class OptionsMenu extends FlxState
+class KeybindsEditMenu extends FlxSubState
 {
     public static var selectedIndex:Int = 0;
 
-    public var nextState:NextState;
-
-    public var background:FlxSprite;
-
-    public var bgOverlay:FlxBackdrop;
+    public var background:FlxBackdrop;
 
     public var optionItems:FlxTypedSpriteGroup<BaseOptionItem>;
 
@@ -42,11 +38,9 @@ class OptionsMenu extends FlxState
 
     public var tune:FlxSound;
 
-    public function new(nextState:NextState):Void
+    public function new():Void
     {
-        super();
-
-        this.nextState = nextState;
+        super(FlxColor.BLACK);
     }
 
     override function create():Void
@@ -55,96 +49,87 @@ class OptionsMenu extends FlxState
 
         FlxG.mouse.visible = true;
 
-        background = new FlxSprite(0.0, 0.0, AssetCache.getGraphic("menus/options/OptionsMenu/background"));
+        _bgSprite.alpha = 0.5;
+
+        background = new FlxBackdrop(AssetCache.getGraphic("menus/options/OptionsMenu/bg-overlay"));
+
+        background.velocity.set(10.0, 10.0);
+
+        background.alpha = 0.35;
 
         background.screenCenter();
 
         add(background);
 
-        bgOverlay = new FlxBackdrop(AssetCache.getGraphic("menus/options/OptionsMenu/bg-overlay"));
-
-        bgOverlay.velocity.set(10.0, 10.0);
-
-        bgOverlay.alpha = 0.35;
-
-        bgOverlay.screenCenter();
-
-        add(bgOverlay);
-
         optionItems = new FlxTypedSpriteGroup<BaseOptionItem>();
 
         add(optionItems);
 
-        var item:BaseOptionItem = new BaseOptionItem(0.0, 0.0, "Edit Keybinds...", "");
-
-        item.onToggle.add(() -> openSubState(new KeybindsEditMenu()));
+        var item:HeaderOptionItem = new HeaderOptionItem(0.0, 0.0, "Notes");
 
         addOptionItem(item);
 
-        var item:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Auto Pause", "If checked, the game will freeze when window focus is lost.", "autoPause");
+        var item:BaseOptionItem = new BaseOptionItem(0.0, 0.0, "Press to edit...", "");
 
-        item.onUpdate.add((value:Bool) -> 
-        {
-            FlxG.autoPause = value;
-
-            FlxG.console.autoPause = FlxG.autoPause;
-        });
+        item.onToggle.add(() -> openSubState(new NoteKeybindsEditMenu()));
 
         addOptionItem(item);
 
-        var item:IntOptionItem = new IntOptionItem(0.0, 0.0, "Frame Rate", "How often the game ticks each second.", "frameRate", 30, 240);
-
-        item.onUpdate.add((value:Int) ->
-        {
-            if (value > FlxG.updateFramerate)
-            {
-                FlxG.updateFramerate = value;
-
-                FlxG.drawFramerate = value;
-            }
-            else
-            {
-                FlxG.drawFramerate = value;
-
-                FlxG.updateFramerate = value;
-            }
-        });
+        var item:HeaderOptionItem = new HeaderOptionItem(0.0, 0.0, "UI");
 
         addOptionItem(item);
 
-        var item:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Flashing Lights", "If unchecked, limits the use of screen flashing effects.", "flashingLights");
+        var item:KeybindOptionItem = new KeybindOptionItem(0.0, 0.0, "Left", "ui left");
 
         addOptionItem(item);
 
-        item = new BoolOptionItem(0.0, 0.0, "Shaders", "If unchecked, shaders and screen filters are disabled.", "shaders");
+        item = new KeybindOptionItem(0.0, 0.0, "Right", "ui right");
 
         addOptionItem(item);
 
-        #if FEATURE_GPU_CACHING
-        item = new BoolOptionItem(0.0, 0.0, "GPU Caching", "If checked, bitmap pixel data is disposed from RAM\nwhere possible.", "gpuCaching");
-
-        addOptionItem(item);
-        #end
-
-        #if FEATURE_SOUND_STREAMING
-        item = new BoolOptionItem(0.0, 0.0, "Sound Streaming", "If checked, audio is loaded progressively where applicable.", "soundStreaming");
-
-        addOptionItem(item);
-        #end
-
-        item = new BoolOptionItem(0.0, 0.0, "Downscroll", "If checked, flips the strumlines' vertical position.", "downscroll");
+        item = new KeybindOptionItem(0.0, 0.0, "Up", "ui up");
 
         addOptionItem(item);
 
-        item = new BoolOptionItem(0.0, 0.0, "Middlescroll", "If checked, centers the playable strumline and hides\nthe opponents one.", "middlescroll");
+        item = new KeybindOptionItem(0.0, 0.0, "Down", "ui down");
 
         addOptionItem(item);
 
-        item = new BoolOptionItem(0.0, 0.0, "Ghost Tapping", "If unchecked, pressing an input with no notes on screen\nwill cause damage.", "ghostTapping");
+        item = new KeybindOptionItem(0.0, 0.0, "Back", "ui back");
 
         addOptionItem(item);
 
-        item = new BoolOptionItem(0.0, 0.0, "Botplay", "If checked, note inputs will be processed automatically.", "botplay");
+        item = new KeybindOptionItem(0.0, 0.0, "Accept", "ui accept");
+
+        addOptionItem(item);
+
+        var item:HeaderOptionItem = new HeaderOptionItem(0.0, 0.0, "Volume");
+
+        addOptionItem(item);
+
+        var item:KeybindOptionItem = new KeybindOptionItem(0.0, 0.0, "Up", "volume up");
+
+        item.onUpdate.add((value:Array<Int>) -> FlxG.sound.volumeUpKeys = value.copy());
+
+        addOptionItem(item);
+
+        item = new KeybindOptionItem(0.0, 0.0, "Down", "volume down");
+
+        item.onUpdate.add((value:Array<Int>) -> FlxG.sound.volumeDownKeys = value.copy());
+
+        addOptionItem(item);
+
+        item = new KeybindOptionItem(0.0, 0.0, "Mute", "volume mute");
+
+        item.onUpdate.add((value:Array<Int>) -> FlxG.sound.muteKeys = value.copy());
+
+        addOptionItem(item);
+        
+        var item:HeaderOptionItem = new HeaderOptionItem(0.0, 0.0, "Editors");
+
+        addOptionItem(item);
+
+        var item:KeybindOptionItem = new KeybindOptionItem(0.0, 0.0, "Character", "editors character");
 
         addOptionItem(item);
 
@@ -160,13 +145,13 @@ class OptionsMenu extends FlxState
 
         add(descBox);
 
-        descText = new FlxText(0.0, 0.0, 0.0, "", 32);
+        descText = new FlxText(0.0, 0.0, 0.0, 32);
 
         descText.setFormat(Paths.font(Paths.ttf("VCR OSD Mono")), 32, FlxColor.WHITE, CENTER);
         
         add(descText);
 
-        tune = FlxG.sound.load(AssetCache.getMusic("menus/options/OptionsMenu/tune"), 0.0, true);
+        tune = FlxG.sound.load(AssetCache.getMusic("menus/options/OptionsMenu/tune-edit"), 0.0, true);
 
         tune.fadeIn(1.0, 0.0, 1.0);
 
@@ -224,30 +209,18 @@ class OptionsMenu extends FlxState
         descBox.centerTo(descText);
 
         if (FlxG.keys.justPressed.ESCAPE && item.status != LOCKED)
-            FlxG.switchState(nextState);
+            close();
     }
 
-    override function openSubState(subState:FlxSubState):Void
+    override function close():Void
     {
-        super.openSubState(subState);
-
-        tune.pause();
-    }
-
-    override function closeSubState():Void
-    {
-        super.closeSubState();
-
-        tune.resume();
-    }
-
-    override function destroy():Void
-    {
-        super.destroy();
+        super.close();
 
         SaveManager.saveOptions();
 
-        FlxG.mouse.visible = false;
+        tune.stop();
+
+        playCancelSound();
     }
 
     public function addOptionItem(item:BaseOptionItem):Void
@@ -291,6 +264,13 @@ class OptionsMenu extends FlxState
         playScrollSound();
 
         return value;
+    }
+
+    public function playCancelSound():Void
+    {
+        var cancelSound:FlxSound = FlxG.sound.play(AssetCache.getSound("ui/cancel"));
+
+        cancelSound.onComplete = cancelSound.kill;
     }
 
     public function playScrollSound():Void

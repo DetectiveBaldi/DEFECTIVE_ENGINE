@@ -18,6 +18,8 @@ class VarOptionItem<T> extends BaseOptionItem
     {
         super(x, y, title, description);
 
+        type = VAR;
+
         this.option = option;
 
         value = getValue();
@@ -37,14 +39,14 @@ class VarOptionItem<T> extends BaseOptionItem
         return Reflect.getProperty(Options, option);
     }
 
-    public function setValue(value:T):Void
+    public function setValue(v:T):T
     {
-        this.value = value;
+        value = v;
 
-        Reflect.setProperty(Options, option, value);
+        Reflect.setProperty(Options, option, v);
 
-        SaveManager.saveOptions();
+        onUpdate.dispatch(v);
 
-        onUpdate.dispatch(value);
+        return v;
     }
 }

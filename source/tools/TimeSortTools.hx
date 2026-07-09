@@ -1,10 +1,10 @@
-package util;
+package tools;
 
 import haxe.ds.ArraySort;
 
 import flixel.util.FlxSort;
 
-class TimingUtil
+class TimeSortTools
 {
     public static function sortTimed<T:TimedObject>(v:Array<T>):Void
     {

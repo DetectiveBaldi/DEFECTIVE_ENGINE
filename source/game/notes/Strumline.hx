@@ -33,7 +33,7 @@ import music.Conductor;
 using StringTools;
 
 using util.ArrayUtil;
-using tools.ObjectHelpers;
+using tools.AlignTools;
 
 class Strumline extends FlxGroup
 {
@@ -141,8 +141,7 @@ class Strumline extends FlxGroup
 
         keysHeld = new Array<Bool>();
 
-        for (i in 0 ... keyCount)
-            keysHeld.push(false);
+        getKeysHeld();
 
         strums = new FlxTypedSpriteGroup<Strum>();
 
@@ -357,6 +356,8 @@ class Strumline extends FlxGroup
 
     public function convertDirectionToAnimIndex(direction:Int, base4:Bool = false):Int
     {
+        direction %= keyCount;
+
         var i:Int = Note.DIRECTIONS.indexOf(keyParams.keys[direction]);
 
         if (base4)
@@ -374,7 +375,7 @@ class Strumline extends FlxGroup
     {
         keysToCheck.clear();
 
-        var controls:Array<Array<Int>> = Options.controls.exists(keyCount) ? Options.controls[keyCount] : keyParams.controls;
+        var controls:Array<Array<Int>> = Options.noteKeybinds.exists(keyCount) ? Options.noteKeybinds[keyCount] : keyParams.controls;
 
         for (i in 0 ... controls.length)
         {
@@ -388,6 +389,16 @@ class Strumline extends FlxGroup
         }
 
         return keysToCheck;
+    }
+
+    public function getKeysHeld():Array<Bool>
+    {
+        keysHeld.resize(0);
+
+        for (i in 0 ... keyCount)
+            keysHeld.push(false);
+
+        return keysHeld;
     }
 
     public function strumFactory():Strum
@@ -413,7 +424,12 @@ class Strumline extends FlxGroup
 
     public function setStrumActive(direction:Int, active:Bool):Void
     {
+        direction %= keyCount;
+
         var strum:Strum = getStrum(direction);
+
+        if (strum == null)
+            strum = getStrum(0);
 
         strum.active = active;
 
@@ -641,6 +657,11 @@ class Strumline extends FlxGroup
         }
     }
 
+    public function splashFactory():NoteSplash
+    {
+        return new NoteSplash();
+    }
+
     public function playSplash(note:Note):Void
     {
         var splash:NoteSplash = null;
@@ -671,18 +692,15 @@ class Strumline extends FlxGroup
             splash.frames = splash.getSplashFrames();
 
             splash.addAnimations();
-
-            var strumScale:Float = keyParams.strumScale;
-
-            @:bypassAccessor
-            {
-                splash.scale.x = strumScale;
-
-                splash.scale.y = strumScale;
-            }
-
-            splash.updateHitbox();
         }
+
+        var strumScale:Float = keyParams.strumScale;
+
+        splash.scale.x = strumScale;
+
+        splash.scale.y = strumScale;
+
+        splash.updateHitbox();
 
         splash.reset(FlxG.width, FlxG.height);
 
@@ -691,10 +709,6 @@ class Strumline extends FlxGroup
         splash.play(convertDirectionToAnimIndex(note.direction), note.isSustain);
     }
 
-    public function splashFactory():NoteSplash
-    {
-        return new NoteSplash();
-    }
 
     public function getCharList(note:Note):Array<Character>
     {

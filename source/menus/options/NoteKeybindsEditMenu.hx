@@ -20,6 +20,8 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 
+import flixel.addons.display.FlxBackdrop;
+
 import core.AssetCache;
 import core.Options;
 import core.Paths;
@@ -28,21 +30,23 @@ import data.KeyParams;
 import game.notes.Strum;
 import game.notes.Strumline;
 import interfaces.ISequenceHandler;
-import tools.ObjectHelpers;
+import tools.AlignTools;
 import ui.EventButton;
 
 using StringTools;
 
 using flixel.util.FlxArrayUtil;
 
-using tools.ObjectHelpers;
+using tools.AlignTools;
 using util.ArrayUtil;
 
-class ControlsEditMenu extends FlxSubState implements ISequenceHandler
+class NoteKeybindsEditMenu extends FlxSubState implements ISequenceHandler
 {
     public var tweens:FlxTweenManager;
 
     public var timers:FlxTimerManager;
+
+    public var background:FlxBackdrop;
 
     public var fileFilter:FileFilter;
 
@@ -73,7 +77,7 @@ class ControlsEditMenu extends FlxSubState implements ISequenceHandler
     @:noCompletion
     function get_strumIndex():Int
     {
-        return strumline.strums.members.indexOf(hoverStrum);
+        return hoverStrum.direction;
     }
 
     public var keybinds:Array<Array<Int>>;
@@ -87,8 +91,6 @@ class ControlsEditMenu extends FlxSubState implements ISequenceHandler
     public var tipText:FlxText;
 
     public var resetTipTimer:FlxTimer;
-
-    public var tune:FlxSound;
 
     public function new():Void
     {
@@ -108,6 +110,16 @@ class ControlsEditMenu extends FlxSubState implements ISequenceHandler
         timers = new FlxTimerManager();
 
         add(timers);
+
+        background = new FlxBackdrop(AssetCache.getGraphic("menus/options/OptionsMenu/bg-overlay"));
+
+        background.velocity.set(10.0, 10.0);
+
+        background.alpha = 0.35;
+
+        background.screenCenter();
+
+        add(background);
 
         fileFilter = new FileFilter("Open", "*.json");
 
@@ -160,12 +172,6 @@ class ControlsEditMenu extends FlxSubState implements ISequenceHandler
         resetTipTimer = new FlxTimer(timers);
 
         setState(SELECTING_STRUM);
-
-        tune = FlxG.sound.load(AssetCache.getMusic("menus/options/KeybindsMenu/tune"), 0.0, true);
-
-        tune.fadeIn(1.0, 0.0, 0.5);
-
-        tune.play();
         
         playScrollSound();
     }
@@ -239,7 +245,7 @@ class ControlsEditMenu extends FlxSubState implements ISequenceHandler
 
             case SELECTING_KEY:
             {
-                var key = FlxG.keys.firstPressed();
+                var key:Int = FlxG.keys.firstPressed();
 
                 if (key != -1.0)
                     holdTime += elapsed;
@@ -393,8 +399,6 @@ class ControlsEditMenu extends FlxSubState implements ISequenceHandler
     {
         super.close();
 
-        tune.stop();
-
         playCancelSound();
     }
 
@@ -469,6 +473,8 @@ class ControlsEditMenu extends FlxSubState implements ISequenceHandler
 
         setKeyCount(Std.parseInt(path.file.replace("k", "")));
 
+        setState(SELECTING_STRUM);
+
         playScrollSound();
     }
 
@@ -489,8 +495,8 @@ class ControlsEditMenu extends FlxSubState implements ISequenceHandler
     {
         keybinds.resize(0);
 
-        var controls:Array<Array<Int>> = Options.controls.exists(keyCount) ?
-            Options.controls[keyCount] : strumline.keyParams.controls;
+        var controls:Array<Array<Int>> = Options.noteKeybinds.exists(keyCount) ?
+            Options.noteKeybinds[keyCount] : strumline.keyParams.controls;
 
         for (i in 0 ... controls.length)
         {
@@ -506,7 +512,7 @@ class ControlsEditMenu extends FlxSubState implements ISequenceHandler
 
     public function setKeybinds():Void
     {
-        var controls:Array<Array<Int>> = Options.controls[keyCount] ??= new Array<Array<Int>>();
+        var controls:Array<Array<Int>> = Options.noteKeybinds[keyCount] ??= new Array<Array<Int>>();
 
         controls.resize(0);
 
@@ -517,7 +523,7 @@ class ControlsEditMenu extends FlxSubState implements ISequenceHandler
             controls.push(keys.copy());
         }
 
-        Options.controls = Options.controls;
+        Options.noteKeybinds = Options.noteKeybinds;
 
         SaveManager.saveOptions();
 

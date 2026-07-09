@@ -9,8 +9,8 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 import data.Chart.TimingPointData;
 import interfaces.IBeatDispatcher;
 
-using util.ArrayUtil;
-using util.TimingUtil;
+using tools.ArrayTools;
+using tools.TimeSortTools;
 
 class Conductor extends FlxBasic
 {

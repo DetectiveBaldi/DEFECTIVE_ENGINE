@@ -9,16 +9,12 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
-
 import flixel.animation.FlxAnimation;
-
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
-
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.util.typeLimit.NextState;
@@ -27,39 +23,32 @@ import flixel.addons.display.FlxBackdrop;
 import flixel.addons.display.FlxGridOverlay;
 
 import haxe.ui.ComponentBuilder;
-
 import haxe.ui.components.Button;
 import haxe.ui.components.CheckBox;
 import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.TextArea;
 import haxe.ui.components.TextField;
-
 import haxe.ui.containers.Box;
 import haxe.ui.containers.TabView;
-
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
-
 import haxe.ui.focus.FocusManager;
 
 import core.AssetCache;
 import core.Paths;
-
 import data.AnimationData;
 import data.AxisData;
 import data.CharacterData;
-
 import game.Character;
 import game.HealthIcon;
 import game.PlayState;
-
 import ui.ProgressBar;
 
 using StringTools;
 
-using util.ArrayUtil;
-using tools.ObjectHelpers;
+using tools.AlignTools;
+using tools.ArrayTools;
 
 class CharacterEditMenu extends FlxState
 {

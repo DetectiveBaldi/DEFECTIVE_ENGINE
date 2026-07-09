@@ -7,7 +7,7 @@ import flixel.math.FlxMath;
 import game.notes.Note.NoteStatus;
 import music.Conductor;
 
-using tools.ObjectHelpers;
+using tools.AlignTools;
 
 class Sustain extends FlxSprite
 {
@@ -39,6 +39,11 @@ class Sustain extends FlxSprite
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
+
+        var animToPlay:String = '${note.animation.name}HoldPiece';
+
+        if (animation.name != animToPlay)
+            animation.play(animToPlay);
 
         var length:Float = note.length;
 

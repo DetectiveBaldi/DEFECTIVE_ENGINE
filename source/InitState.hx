@@ -18,7 +18,7 @@ import data.WeekData;
 import game.HighScore;
 import game.PlayState;
 import plugins.FullscreenPlugin;
-import tools.CompileTime;
+import tools.CompilerTools;
 
 using StringTools;
 
@@ -83,22 +83,28 @@ class InitState extends FlxState
 
         FlxG.plugins.drawOnTop = true;
 
-        AssetCache.init();
-
-        Playlist.init();
-
         fullscreenPlugin = new FullscreenPlugin();
 
         FlxG.plugins.addPlugin(fullscreenPlugin);
 
-        var definedWeek:String = CompileTime.getDefine("WEEK");
+        FlxG.sound.volumeUpKeys = Options.keybinds["volume up"].copy();
 
-        var definedLevel:String = CompileTime.getDefine("LEVEL");
+        FlxG.sound.volumeDownKeys = Options.keybinds["volume down"].copy();
+
+        FlxG.sound.muteKeys = Options.keybinds["volume mute"].copy();
+
+        AssetCache.init();
+
+        Playlist.init();
+
+        var definedWeek:String = CompilerTools.getDefine("WEEK");
+
+        var definedLevel:String = CompilerTools.getDefine("LEVEL");
 
         if (definedWeek == "" && definedLevel == "")
-            throw "No week or level was configured to launch. Use `-D WEEK=Week:Name` or `-D LEVEL=Level:Name` in the command line to continue.";
+            throw "No week or level was configured to launch. Use `-D WEEK=\"Week Name\" or `-D LEVEL=\"Level Name\" when compiling to continue.";
 
-        var difficulty:String = CompileTime.getDefine("DIFFICULTY");
+        var difficulty:String = CompilerTools.getDefine("DIFFICULTY");
 
         if (difficulty == "")
             difficulty = "Normal";

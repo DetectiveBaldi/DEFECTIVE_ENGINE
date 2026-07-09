@@ -3,7 +3,7 @@ package game.notes;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFrame;
 
-using tools.ObjectHelpers;
+using tools.AlignTools;
 
 class SustainTrail extends FlxSprite
 {
@@ -35,6 +35,11 @@ class SustainTrail extends FlxSprite
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
+
+        var animToPlay:String = '${note.animation.name}HoldTail';
+
+        if (animation.name != animToPlay)
+            animation.play(animToPlay);
 
         scale.x = note.scale.x;
 

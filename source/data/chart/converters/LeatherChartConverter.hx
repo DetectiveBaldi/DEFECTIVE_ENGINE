@@ -7,8 +7,7 @@ import openfl.utils.Assets;
 import core.Paths;
 import data.Chart;
 import data.chart.NoteTypeSwaps;
-
-import util.TimingUtil;
+import tools.TimeSortTools;
 
 using StringTools;
 

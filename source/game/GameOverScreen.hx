@@ -19,7 +19,7 @@ import interfaces.IBeatDispatcher;
 import interfaces.ISequenceHandler;
 import music.Conductor;
 
-using tools.ObjectHelpers;
+using tools.AlignTools;
 
 class GameOverScreen extends FlxSubState implements ISequenceHandler implements IBeatDispatcher
 {

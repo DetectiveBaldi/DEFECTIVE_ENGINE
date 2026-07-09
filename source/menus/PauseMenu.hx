@@ -5,21 +5,31 @@ import flixel.FlxSubState;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.sound.FlxSound;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 
 import core.AssetCache;
+import core.Options;
 import core.Paths;
 import game.PlayState;
+import interfaces.ISequenceHandler;
+import menus.options.OptionsMenu;
 
 import ui.AtlasText;
 
-class PauseMenu extends FlxSubState
+class PauseMenu extends FlxSubState implements ISequenceHandler
 {
     public static var selectedIndex:Int = 0;
 
     public var game:PlayState;
 
-    public var items:FlxTypedSpriteGroup<AtlasText>;
+    public var tweens:FlxTweenManager;
+
+    public var timers:FlxTimerManager;
+
+    public var optionItems:FlxTypedSpriteGroup<AtlasText>;
 
     public function new(game:PlayState):Void
     {
@@ -34,13 +44,25 @@ class PauseMenu extends FlxSubState
 
         _bgSprite.alpha = 0.5;
 
-        items = new FlxTypedSpriteGroup<AtlasText>();
+        tweens = new FlxTweenManager();
 
-        add(items);
+        add(tweens);
 
-        addItem("Resume");
+        timers = new FlxTimerManager();
 
-        addItem("Restart");
+        add(timers);
+
+        optionItems = new FlxTypedSpriteGroup<AtlasText>();
+
+        add(optionItems);
+
+        addOptionItem("Resume");
+
+        addOptionItem("Restart");
+
+        addOptionItem("Options");
+
+        changeSelected(0);
 
         playScrollSound();
     }
@@ -49,38 +71,15 @@ class PauseMenu extends FlxSubState
     {
         super.update(elapsed);
 
-        if (FlxG.mouse.wheel == -1 || FlxG.keys.justPressed.DOWN)
+        if (FlxG.mouse.wheel == -1.0 || Options.keysJustPressed("ui down"))
+            changeSelected(1);
+
+        if (FlxG.mouse.wheel == 1.0 || Options.keysJustPressed("ui up"))
+            changeSelected(-1);
+
+        if (Options.keysJustPressed("ui accept"))
         {
-            selectedIndex++;
-
-            playScrollSound();
-        }
-
-        if (FlxG.mouse.wheel == 1 || FlxG.keys.justPressed.UP)
-        {
-            selectedIndex--;
-
-            playScrollSound();
-        }
-
-        selectedIndex = FlxMath.wrap(selectedIndex, 0, items.members.length - 1);
-
-        for (i in 0 ... items.members.length)
-        {
-            var isSelected:Bool = selectedIndex == i;
-
-            var item:AtlasText = items.members[i];
-
-            var lerp:Float = FlxMath.getElapsedLerp(0.15, elapsed);
-
-            item.setPosition(FlxMath.lerp(item.x, 90.0 + (90 * i) + (isSelected ? 45.0 : 0.0), lerp), FlxMath.lerp(item.y, 320.0 + (120.0 * i), lerp));
-
-            item.alpha = isSelected ? 1.0 : 0.5;
-        }
-
-        if (FlxG.keys.justPressed.ENTER)
-        {
-            var item:AtlasText = items.members[selectedIndex];
+            var item:AtlasText = optionItems.members[selectedIndex];
 
             switch (item.text:String)
             {
@@ -89,19 +88,57 @@ class PauseMenu extends FlxSubState
 
                 case "Restart":
                     pressRestart();
+
+                case "Options":
+                    pressOptions();
             }
+        }
+
+        if (Options.keysJustPressed("ui back"))
+        {
+            game.resume();
+
+            close();
         }
     }
 
-    public function addItem(text:String):AtlasText
+    public function addOptionItem(text:String):AtlasText
     {
-        var item:AtlasText = new AtlasText(45.0, 160.0, text);
+        var item:AtlasText = new AtlasText(110.0, 30.0 + optionItems.members.length * 70.0, text);
 
         item.font = BOLD;
 
-        items.add(item);
+        optionItems.add(item);
 
         return item;
+    }
+
+    public function changeSelected(value:Int):Int
+    {
+        selectedIndex = FlxMath.wrap(selectedIndex + value, 0, optionItems.members.length - 1);
+
+        for (i in 0 ... optionItems.members.length)
+        {
+            var isSelected:Bool = selectedIndex == i;
+
+            var item:AtlasText = optionItems.members[i];
+
+            item.alpha = isSelected ? 1.0 : 0.65;
+
+            var range:Float = FlxMath.remapToRange((i - selectedIndex), 0.0, 1.0, 0.0, 1.35);
+
+            var x:Float = 120.0 + range * 35.0;
+
+            var y:Float = camera.height * 0.4 + range * 100.0;
+
+            tweens.cancelTweensOf(item);
+
+            tweens.tween(item, {x: x, y: y}, 0.35, {ease: FlxEase.quartOut});
+        }
+
+        playScrollSound();
+        
+        return value;
     }
 
     public function pressResume():Void
@@ -114,6 +151,11 @@ class PauseMenu extends FlxSubState
         selectedIndex = 0;
 
         FlxG.resetState();
+    }
+
+    public function pressOptions():Void
+    {
+        FlxG.switchState(() -> new OptionsMenu(() -> PlayState.getClassFromLevel()));
     }
 
     public function playScrollSound():Void

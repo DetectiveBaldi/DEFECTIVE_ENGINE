@@ -41,17 +41,18 @@ import game.events.SetCamZoomEvent;
 import game.stages.Stage;
 import interfaces.IBeatDispatcher;
 import interfaces.ISequenceHandler;
+import menus.CharacterEditMenu;
 import menus.PauseMenu;
 import menus.options.OptionsMenu;
 import music.Conductor;
-import tools.CompileTime;
+import tools.CompilerTools;
 import ui.Countdown;
 
 using StringTools;
 
-using util.ArrayUtil;
-using tools.ObjectHelpers;
-using util.TimingUtil;
+using tools.AlignTools;
+using tools.ArrayTools;
+using tools.TimeSortTools;
 
 class PlayState extends FlxState implements IBeatDispatcher implements ISequenceHandler
 {
@@ -93,7 +94,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
                 trace("Falling back to `game.levels.LevelL`!");
 
-                c = LevelL;
+                return new LevelL();
             }
         }
 
@@ -418,16 +419,11 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         gameCamera.zoom = FlxMath.lerp(gameCamera.zoom, gameCameraZoom, FlxMath.getElapsedLerp(0.15, elapsed));
 
-        if (FlxG.keys.justPressed.ESCAPE)
+        if (Options.keysJustPressed("ui back"))
             pause();
 
-        if (FlxG.keys.justPressed.SEVEN)
-            FlxG.switchState(() -> new OptionsMenu(() -> getClassFromLevel()));
-
-        #if FLX_DEBUG
-        if (FlxG.keys.justPressed.EIGHT)
-            FlxG.switchState(() -> new menus.CharacterEditMenu(() -> PlayState.getClassFromLevel()));
-        #end
+        if (Options.keysJustPressed("editors character"))
+            FlxG.switchState(() -> new CharacterEditMenu(() -> getClassFromLevel()));
     }
 
     override function destroy():Void
@@ -692,7 +688,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
     public function updateHealthBar():Void
     {
-        var playAsWho:Int = Std.parseInt(CompileTime.getDefine("PLAY_AS_WHO")) ?? 1;
+        var playAsWho:Int = Std.parseInt(CompilerTools.getDefine("PLAY_AS_WHO")) ?? 1;
 
         var playAsOpponent:Bool = playAsWho == 0;
 

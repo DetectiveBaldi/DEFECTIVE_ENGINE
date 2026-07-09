@@ -68,12 +68,14 @@
 
 	<source path="source" />
 
-	<!-- Automatically compiles all of the level classes with a macro. -->
+	<!-- Automatically compiles all of the level classes. -->
 	<haxeflag name="--macro" value="include('game.levels')" />
 
 	<!-- _____________________________ Resources ____________________________ -->
 
 	<icon path="resources/icon-64.png" size="64" />
+
+	<icon path="resources/icon-512.png" size="512" />
 
 	<icon path="resources/icon-1024.png" />
 </project>

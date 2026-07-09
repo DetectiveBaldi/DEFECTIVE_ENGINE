@@ -115,7 +115,7 @@ class Character extends FlxSprite
         {
             holdTimer += elapsed;
 
-            var singTimeSec:Float = singDuration * (conductor.beatLength * 0.25 * 0.001);
+            var singTimeSec:Float = singDuration * (conductor.stepLength * 0.001);
 
             if ((animation.name ?? "").endsWith("MISS"))
                 singTimeSec *= 2.0;

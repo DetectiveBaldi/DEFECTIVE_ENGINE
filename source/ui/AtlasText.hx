@@ -47,6 +47,46 @@ class AtlasText extends FlxSpriteGroup
         return font;
     }
 
+    public var fontData(get, never):AtlasTextFontData;
+
+    @:noCompletion
+    function get_fontData():AtlasTextFontData
+    {
+        return font == null ? AtlasTextFontData.DEFAULT_FONT : font == DEFAULT ? AtlasTextFontData.DEFAULT_FONT : AtlasTextFontData.BOLD_FONT;
+    }
+
+    public var minWidth(get, never):Float;
+
+    @:noCompletion
+    function get_minWidth():Float
+    {
+        return fontData.minWidth;
+    }
+
+    public var maxWidth(get, never):Float;
+
+    @:noCompletion
+    function get_maxWidth():Float
+    {
+        return fontData.maxWidth;
+    }
+
+    public var minHeight(get, never):Float;
+
+    @:noCompletion
+    function get_minHeight():Float
+    {
+        return fontData.minHeight;
+    }
+
+    public var maxHeight(get, never):Float;
+
+    @:noCompletion
+    function get_maxHeight():Float
+    {
+        return fontData.maxHeight;
+    }
+
     public function new(x:Float = 0.0, y:Float = 0.0, text:String):Void
     {
         super(x, y);
@@ -70,20 +110,6 @@ class AtlasText extends FlxSpriteGroup
 
     function _regenerate():Void
     {
-        var font:AtlasTextFont = font;
-
-        if (font == null)
-            font = DEFAULT;
-        
-        var fontData:AtlasTextFontData = switch (font:AtlasTextFont)
-        {
-            case BOLD:
-                AtlasTextFontData.BOLD_FONT;
-            
-            default:
-                AtlasTextFontData.DEFAULT_FONT;
-        }
-
         var textToRender:String = text;
 
         if (fontData.forceCase != ALL_CASES)
@@ -100,6 +126,9 @@ class AtlasText extends FlxSpriteGroup
 
             char.kill();
         }
+
+        if (textToRender == "")
+            return;
 
         var xx:Float = x;
 
@@ -235,6 +264,12 @@ class AtlasTextFontData
 
     public var atlas:FlxAtlasFrames;
 
+    public var minWidth:Float;
+
+    public var maxWidth:Float;
+
+    public var minHeight:Float;
+
     public var maxHeight:Float;
 
     public var forceCase:FlxInputTextCase;
@@ -244,6 +279,12 @@ class AtlasTextFontData
         atlas = FlxAtlasFrames.fromSparrow(AssetCache.getGraphic(Paths.font(Paths.png(name))), Paths.font(Paths.xml(name)));
 
         atlas.parent.incrementUseCount();
+
+        minWidth = 0.0;
+
+        maxWidth = 0.0;
+
+        minHeight = 0.0;
 
         maxHeight = 0.0;
 
@@ -255,7 +296,17 @@ class AtlasTextFontData
         {
             var frame:FlxFrame = atlas.frames[i];
 
-            maxHeight = Math.max(maxHeight, frame.frame.height);
+            var frameWidth:Float = frame.frame.width;
+
+            var frameHeight:Float = frame.frame.height;
+
+            minWidth = Math.min(minWidth, frameWidth);
+
+            maxWidth = Math.max(maxWidth, frameWidth);
+
+            minHeight = Math.min(minHeight, frameHeight);
+
+            maxHeight = Math.max(maxHeight, frameHeight);
 
             if (!upperCaseChars.match(frame.name) && !lowerCaseChars.match(frame.name))
                 continue;

@@ -2,7 +2,7 @@ package game.levels;
 
 import game.stages.StageS;
 
-using tools.ObjectHelpers;
+using tools.AlignTools;
 
 class LevelL extends PlayState
 {

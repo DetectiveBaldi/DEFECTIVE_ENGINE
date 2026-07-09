@@ -29,9 +29,9 @@ import core.Paths;
 import interfaces.IBeatDispatcher;
 import interfaces.ISequenceHandler;
 import music.Conductor;
-import tools.CompileTime;
+import tools.CompilerTools;
 
-using tools.ObjectHelpers;
+using tools.AlignTools;
 
 class PlayField extends FlxGroup
 {
@@ -55,13 +55,13 @@ class PlayField extends FlxGroup
 
     public var playStats:PlayStats;
 
-    public var scoreText:FlxText;
-
-    public var healthBar:HealthBar;
-
     public var timeGauge:FlxRadialGauge;
 
     public var timeText:FlxText;
+
+    public var scoreText:FlxText;
+
+    public var healthBar:HealthBar;
 
     public var noteSpawner:NoteSpawner;
 
@@ -87,6 +87,32 @@ class PlayField extends FlxGroup
 
         playStats = {score: 0, hits: 0, misses: 0, bonus: 0.0}
 
+        timeGauge = new FlxRadialGauge();
+
+        timeGauge.active = false;
+
+        timeGauge.antialiasing = true;
+
+        timeGauge.makeShapeGraphic(CIRCLE, 56, 0, FlxColor.WHITE);
+
+        timeGauge.setPosition(timeGauge.getCenterX(), Options.downscroll ? 108.0 : FlxG.height - timeGauge.height - 108.0);
+
+        add(timeGauge);
+
+        timeText = new FlxText(0.0, 0.0, timeGauge.width, "-:--", 36);
+
+        timeText.antialiasing = true;
+
+        timeText.font = Paths.ttf("assets/fonts/VCR OSD Mono");
+
+        timeText.alignment = CENTER;
+
+        timeText.setBorderStyle(OUTLINE, FlxColor.BLACK, 2.2);
+
+        timeText.centerTo(timeGauge);
+
+        add(timeText);
+
         scoreText = new FlxText(0.0, 0.0, FlxG.width, "", 20);
 
         scoreText.antialiasing = true;
@@ -110,34 +136,6 @@ class PlayField extends FlxGroup
 
         add(healthBar);
 
-        timeGauge = new FlxRadialGauge();
-
-        timeGauge.active = false;
-
-        timeGauge.antialiasing = true;
-
-        timeGauge.amount = 0.0;
-
-        timeGauge.makeShapeGraphic(CIRCLE, 56, 0, FlxColor.WHITE);
-
-        timeGauge.setPosition(timeGauge.getCenterX(), Options.downscroll ? FlxG.height - timeGauge.height - 96.0 : 96.0);
-
-        add(timeGauge);
-
-        timeText = new FlxText(0.0, 0.0, timeGauge.width, "-:--", 36);
-
-        timeText.antialiasing = true;
-
-        timeText.font = Paths.ttf("assets/fonts/VCR OSD Mono");
-
-        timeText.alignment = CENTER;
-
-        timeText.setBorderStyle(OUTLINE, FlxColor.BLACK, 2.2);
-
-        timeText.centerTo(timeGauge);
-
-        add(timeText);
-
         noteSpawner = new NoteSpawner(beatDispatcher, chart.notes, null);
 
         add(noteSpawner);
@@ -154,6 +152,8 @@ class PlayField extends FlxGroup
 
         opponentStrumline = new Strumline(beatDispatcher, keyCount);
 
+        opponentStrumline.visible = !Options.middlescroll;
+
         opponentStrumline.scrollSpeed = scrollSpeed;
 
         strumlines.add(opponentStrumline);
@@ -164,9 +164,9 @@ class PlayField extends FlxGroup
 
         strumlines.add(playerStrumline);
 
-        placeOppStrumline(keyCount);
+        placeOpponentStrumline(keyCount);
 
-        placePlrStrumline(keyCount);
+        placePlayerStrumline(keyCount);
 
         for (i in 0 ... strumlines.members.length)
         {
@@ -175,7 +175,7 @@ class PlayField extends FlxGroup
             strumline.botplay = true;
         }
 
-        var playAsWho:Int = Std.parseInt(CompileTime.getDefine("PLAY_AS_WHO")) ?? 1;
+        var playAsWho:Int = Std.parseInt(CompilerTools.getDefine("PLAY_AS_WHO")) ?? 1;
 
         var strumline:Strumline = strumlines.members[playAsWho];
 
@@ -196,9 +196,13 @@ class PlayField extends FlxGroup
     {
         super.update(elapsed);
 
-        timeGauge.amount = getSongTime() / getSongLength();
-            
-        timeText.text = FlxStringUtil.formatTime(getSongTime() * 0.001);
+        var time:Float = getSongTime();
+
+        var length:Float = getSongLength();
+
+        timeGauge.amount = time / length;
+
+        timeText.text = FlxStringUtil.formatTime(time * 0.001);
     }
 
     override function destroy():Void
@@ -215,7 +219,7 @@ class PlayField extends FlxGroup
             scoreText.text = "Score: 0";
 
             if (!Options.botplay)
-                scoreText.text += " | Misses: 0 | Accuracy: 0%";
+                scoreText.text += " | Misses: 0 | Accuracy: 100%";
 
             return;
         }
@@ -315,15 +319,14 @@ class PlayField extends FlxGroup
         playerStrumline.scrollSpeed = scrollSpeed;
     }
 
-    public function placeOppStrumline(keyCount:Int):Void
+    public function placeOpponentStrumline(keyCount:Int):Void
     {
-        opponentStrumline.strums.setPosition(160.0 / keyCount, opponentStrumline.downscroll ?
-            FlxG.height - opponentStrumline.strums.height - 40.0 : 40.0);
+        opponentStrumline.strums.setPosition(160.0 / keyCount, opponentStrumline.downscroll ? FlxG.height - opponentStrumline.strums.height - 40.0 : 40.0);
     }
 
-    public function placePlrStrumline(keyCount:Int):Void
+    public function placePlayerStrumline(keyCount:Int):Void
     {
-        playerStrumline.strums.setPosition(FlxG.width - playerStrumline.strums.width - 160.0 / keyCount, playerStrumline.downscroll ?
-            FlxG.height - playerStrumline.strums.height - 40.0 : 40.0);
+        playerStrumline.strums.setPosition(Options.middlescroll ? playerStrumline.strums.getCenterX() : FlxG.width - playerStrumline.strums.width - 160.0 / keyCount,
+            playerStrumline.downscroll ? FlxG.height - playerStrumline.strums.height - 40.0 : 40.0);
     }
 }
