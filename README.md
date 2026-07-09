@@ -11,8 +11,8 @@ Organized source code with many powerful tools:
 - Chart conversion for multiple engines
 
 Several optimizations:
-- Notes, sustains, sustain tails, and note splashes are all recycled, which avoids creating tons of new instances
-- Sustains are now rendered as 2 sprites (the "piece" and the "tail") instead of dozens of separated sprites
+- Notes, sustains, sustain tails, and note splashes are all recycled, which avoids creating tons of new instances.
+- Sustains are now rendered as 2 sprites (the "piece" and the "tail") instead of dozens of separated ones.
 
 Other:
 - Multiple opponents, players, and spectators
