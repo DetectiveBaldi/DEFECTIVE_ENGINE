@@ -11,8 +11,6 @@ import tools.TimeSortTools;
 
 using StringTools;
 
-using util.ArrayUtil;
-
 class LeatherChartConverter
 {
     static var _noteTypeSwaps:Map<String, String> = null;

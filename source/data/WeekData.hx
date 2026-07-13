@@ -2,8 +2,6 @@ package data;
 
 import game.HighScore;
 
-using util.ArrayUtil;
-
 @:structInit
 class WeekData
 {

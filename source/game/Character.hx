@@ -25,7 +25,7 @@ import music.Conductor;
 
 using StringTools;
 
-using util.ArrayUtil;
+using tools.ArrayTools;
 
 class Character extends FlxSprite
 {

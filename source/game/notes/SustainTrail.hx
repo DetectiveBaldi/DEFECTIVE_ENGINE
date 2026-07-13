@@ -68,7 +68,7 @@ class SustainTrail extends FlxSprite
         {
             var direction:String = Note.DIRECTIONS[i].toLowerCase();
             
-            animation.addByPrefix('${direction}HoldTail', shortPrefix ? "holdTail0" : '${direction}HoldTail0', 24.0, false);
+            animation.addByPrefix('${direction}HoldTail', shortPrefix ? "holdTail0" : '${direction}HoldTail0', 24.0);
         }
     }
 }

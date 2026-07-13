@@ -63,8 +63,6 @@ class PauseMenu extends FlxSubState implements ISequenceHandler
         addOptionItem("Options");
 
         changeSelected(0);
-
-        playScrollSound();
     }
 
     override function update(elapsed:Float):Void
@@ -95,11 +93,7 @@ class PauseMenu extends FlxSubState implements ISequenceHandler
         }
 
         if (Options.keysJustPressed("ui back"))
-        {
-            game.resume();
-
-            close();
-        }
+            pressResume();
     }
 
     public function addOptionItem(text:String):AtlasText
@@ -155,6 +149,8 @@ class PauseMenu extends FlxSubState implements ISequenceHandler
 
     public function pressOptions():Void
     {
+        selectedIndex = 0;
+
         FlxG.switchState(() -> new OptionsMenu(() -> PlayState.getClassFromLevel()));
     }
 

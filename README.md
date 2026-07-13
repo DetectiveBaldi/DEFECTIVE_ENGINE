@@ -4,6 +4,13 @@
 ## What is Defective Engine?
 Defective Engine is a custom Friday Night Funkin' engine that offers an efficient source code modding experience.
 
+## Credits
+- [Detective Baldi](https://x.com/DetectiveBaldi): Programming
+- [KayipKux](https://x.com/KayipKux): Artist and composer
+- [Berry](https://x.com/berryreal_): Artist and composer
+- [Sword352](https://github.com/Sword352): Tons of optimizations
+- [The Funkin' Crew Inc.](https://github.com/FunkinCrew): Created the original game
+
 ## Features
 Organized source code with many powerful tools:
 - Simple week and level loading
@@ -35,12 +42,7 @@ Follow these steps to build the game:
    - `haxeui-flixel`: `haxelib git haxeui-flixel https://github.com/haxeui/haxeui-flixel`
 3. Build the game by running the following command in a command prompt (replace :target: with a specific target, like cpp, hl, or html5): `haxelib run lime build :target:`
 
-## Credits
-- [Detective Baldi](https://x.com/DetectiveBaldi): Programming
-- [KayipKux](https://x.com/KayipKux): Artist and composer
-- [Berry](https://x.com/berryreal_): Artist and composer
-- [Sword352](https://github.com/Sword352): Tons of optimizations
-- [The Funkin' Crew Inc.](https://github.com/FunkinCrew): Created the original game
+## Contributing
 
 ## Notice
 Defective Engine is still in early development. The engine is already very capable, although, if you plan to develop a mod, there are a couple of things to take into consideration:

@@ -11,6 +11,7 @@ import flixel.util.FlxTimer;
 import flixel.tweens.FlxTween;
 
 import core.AssetCache;
+import core.Options;
 import core.Paths;
 import data.CharacterData;
 import data.Chart;
@@ -119,8 +120,8 @@ class GameOverScreen extends FlxSubState implements ISequenceHandler implements 
 
         conductor.updateSteps();
 
-        if ((FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE) && deadCharacter.animation.name != "end")
-            pressEnter();
+        if (Options.keysJustPressed("ui accept") && deadCharacter.animation.name != "end")
+            pressAccept();
     }
 
     public function stepHit(step:Int):Void
@@ -143,7 +144,7 @@ class GameOverScreen extends FlxSubState implements ISequenceHandler implements 
 
     }
 
-    public function pressEnter():Void
+    public function pressAccept():Void
     {
         gameCamera.fade(FlxColor.BLACK, conductor.beatLength * 0.001 * 6.0, false, FlxG.resetState);
 

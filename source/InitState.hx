@@ -22,7 +22,7 @@ import tools.CompilerTools;
 
 using StringTools;
 
-using util.ArrayUtil;
+using tools.ArrayTools;
 
 class InitState extends FlxState
 {

@@ -36,6 +36,7 @@ import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
 
 import core.AssetCache;
+import core.Options;
 import core.Paths;
 import data.AnimationData;
 import data.AxisData;
@@ -335,44 +336,44 @@ class CharacterEditMenu extends FlxState
 
         if (FocusManager.instance.focus == null)
         {
-            if (FlxG.keys.justPressed.W)
+            if (FlxG.keys.justPressed.LBRACKET)
                 animationIndex = FlxMath.wrap(animationIndex - 1, 0, character.config.animations.length - 1);
 
-            if (FlxG.keys.justPressed.S)
+            if (FlxG.keys.justPressed.RBRACKET)
                 animationIndex = FlxMath.wrap(animationIndex + 1, 0, character.config.animations.length - 1);
 
-            if (FlxG.keys.justPressed.UP)
-                addAnimationOffset(0.0, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0);
-
-            if (FlxG.keys.justPressed.LEFT)
+            if (Options.keysIndexJustPressed("ui left", 0))
                 addAnimationOffset(FlxG.keys.pressed.SHIFT ? -10.0 : -1.0, 0.0);
 
-            if (FlxG.keys.justPressed.DOWN)
-                addAnimationOffset(0.0, FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
-
-            if (FlxG.keys.justPressed.RIGHT)
+             if (Options.keysIndexJustPressed("ui right", 0))
                 addAnimationOffset(FlxG.keys.pressed.SHIFT ? 10.0 : 1.0, 0.0);
+
+            if (Options.keysIndexJustPressed("ui up", 0))
+                addAnimationOffset(0.0, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0);
+
+            if (Options.keysIndexJustPressed("ui down", 0))
+                addAnimationOffset(0.0, FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
 
             var animData:AnimationData = getCurrentAnimation();
 
-            if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S || FlxG.keys.justPressed.SPACE)
+            if (FlxG.keys.justPressed.LBRACKET || FlxG.keys.justPressed.RBRACKET || FlxG.keys.justPressed.SPACE)
             {
                 character.animation.play(animData.name, true);
 
                 updateAnimationsTab();
             }
 
-            if (FlxG.keys.justPressed.I)
-                updateCameraPoint(0.0, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0);
-
-            if (FlxG.keys.justPressed.J)
+            if (Options.keysIndexJustPressed("ui left", 1))
                 updateCameraPoint(FlxG.keys.pressed.SHIFT ? -10.0 : -1.0, 0.0);
 
-            if (FlxG.keys.justPressed.K)
-                updateCameraPoint(0.0, FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
-
-            if (FlxG.keys.justPressed.L)
+            if (Options.keysIndexJustPressed("ui right", 1))
                 updateCameraPoint(FlxG.keys.pressed.SHIFT ? 10.0 : 1.0, 0.0);
+
+            if (Options.keysIndexJustPressed("ui up", 1))
+                updateCameraPoint(0.0, FlxG.keys.pressed.SHIFT ? -10.0 : -1.0);
+
+            if (Options.keysIndexJustPressed("ui down", 1))
+                updateCameraPoint(0.0, FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
 
             if (FlxG.keys.pressed.CONTROL)
             {
@@ -391,7 +392,7 @@ class CharacterEditMenu extends FlxState
                 }
             }
 
-            if (FlxG.keys.justPressed.ESCAPE)
+            if (Options.keysJustPressed("ui back"))
                 FlxG.switchState(nextState);
         }
     }
@@ -581,8 +582,6 @@ class CharacterEditMenu extends FlxState
         offsets.x = x;
 
         offsets.y = y;
-
-        var animation:AnimationData = getCurrentAnimation();
 
         updateOffsetLabel();
     }

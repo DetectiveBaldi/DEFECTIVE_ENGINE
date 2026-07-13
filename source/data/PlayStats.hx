@@ -1,16 +1,16 @@
 package data;
 
-using util.ArrayUtil;
-
 @:structInit
 class PlayStats
 {
     public static function empty():PlayStats
     {
-        return {score: 0, hits: 0, misses: 0, bonus: 0.0}
+        return {score: 0, combo: 0, hits: 0, misses: 0, bonus: 0.0}
     }
     
     public var score:Int;
+
+    public var combo:Int;
 
     public var hits:Int;
 
@@ -35,6 +35,8 @@ class PlayStats
     {
         score += stats.score;
 
+        combo += stats.combo;
+
         hits += stats.hits;
 
         misses += stats.misses;
@@ -44,7 +46,7 @@ class PlayStats
 
     public function copy():PlayStats
     {
-        return {score: score, hits: hits, misses: misses, bonus: bonus}
+        return {score: score, combo: combo, hits: hits, misses: misses, bonus: bonus}
     }
 
     public function toString():String

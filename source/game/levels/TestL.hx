@@ -72,7 +72,7 @@ class TestL extends LevelL
 
         oppStrumline.regenStrums();
 
-        playField.placeOpponentStrumline(keyCount);
+        playField.setOppStrumlinePos(keyCount);
 
         plrStrumline.setKeyCount(keyCount);
 
@@ -82,7 +82,7 @@ class TestL extends LevelL
 
         plrStrumline.getKeysHeld();
 
-        playField.placePlayerStrumline(keyCount);
+        playField.setPlrStrumlinePos(keyCount);
         
         return keyCount;
     }

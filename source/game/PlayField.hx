@@ -45,9 +45,23 @@ class PlayField extends FlxGroup
         return beatDispatcher.conductor;
     }
 
-    public var tweens:FlxTweenManager;
+    public var sequenceHandler:ISequenceHandler;
 
-    public var timers:FlxTimerManager;
+    public var tweens(get, never):FlxTweenManager;
+
+    @:noCompletion
+    function get_tweens():FlxTweenManager
+    {
+        return sequenceHandler.tweens;
+    }
+
+    public var timers(get, never):FlxTimerManager;
+
+    @:noCompletion
+    function get_timers():FlxTimerManager
+    {
+        return sequenceHandler.timers;
+    }
 
     public var getSongTime:()->Float;
 
@@ -60,6 +74,8 @@ class PlayField extends FlxGroup
     public var timeText:FlxText;
 
     public var scoreText:FlxText;
+
+    public var scorePopup:ScorePopup;
 
     public var healthBar:HealthBar;
 
@@ -81,11 +97,9 @@ class PlayField extends FlxGroup
 
         this.beatDispatcher = beatDispatcher;
 
-        tweens = sequenceHandler.tweens;
+        this.sequenceHandler = sequenceHandler;
 
-        timers = sequenceHandler.timers;
-
-        playStats = {score: 0, hits: 0, misses: 0, bonus: 0.0}
+        playStats = {score: 0, combo: 0, hits: 0, misses: 0, bonus: 0.0}
 
         timeGauge = new FlxRadialGauge();
 
@@ -127,6 +141,10 @@ class PlayField extends FlxGroup
 
         add(scoreText);
 
+        scorePopup = new ScorePopup();
+        
+        add(scorePopup);
+
         updateScoreText();
 
         healthBar = new HealthBar(0.0, 0.0, beatDispatcher);
@@ -164,9 +182,9 @@ class PlayField extends FlxGroup
 
         strumlines.add(playerStrumline);
 
-        placeOpponentStrumline(keyCount);
+        setOppStrumlinePos(keyCount);
 
-        placePlayerStrumline(keyCount);
+        setPlrStrumlinePos(keyCount);
 
         for (i in 0 ... strumlines.members.length)
         {
@@ -219,7 +237,7 @@ class PlayField extends FlxGroup
             scoreText.text = "Score: 0";
 
             if (!Options.botplay)
-                scoreText.text += " | Misses: 0 | Accuracy: 100%";
+                scoreText.text += " | Misses: 0 | Accuracy: N/A";
 
             return;
         }
@@ -242,7 +260,7 @@ class PlayField extends FlxGroup
 
         var timeDiff:Float = Math.abs(note.time - conductor.time);
 
-        var rating:Rating = Rating.fromTiming(timeDiff);
+        var rating:Rating = Rating.fromTime(timeDiff);
 
         if (note.skipHit || rating != Rating.list[0])
             event.playSplash = false;
@@ -259,6 +277,8 @@ class PlayField extends FlxGroup
             playStats.score -= Math.floor(timeDiff / 5.0) * 5;
         }
 
+        playStats.combo++;
+
         playStats.hits++;
 
         playStats.bonus += rating.bonus;
@@ -267,12 +287,24 @@ class PlayField extends FlxGroup
 
         updateScoreText();
 
+        if (!strumline.botplay)
+        {
+            scorePopup.showRating(rating);
+
+            scorePopup.showCombo(playStats.combo);
+        }
+
         healthBar.value += event.note.hitHealth;
     }
 
     public function noteMiss(note:Note):Void
     {
+        if (note.skipHit)
+            return;
+        
         playStats.score -= 500;
+
+        playStats.combo = 0;
 
         playStats.misses++;
 
@@ -319,12 +351,12 @@ class PlayField extends FlxGroup
         playerStrumline.scrollSpeed = scrollSpeed;
     }
 
-    public function placeOpponentStrumline(keyCount:Int):Void
+    public function setOppStrumlinePos(keyCount:Int):Void
     {
         opponentStrumline.strums.setPosition(160.0 / keyCount, opponentStrumline.downscroll ? FlxG.height - opponentStrumline.strums.height - 40.0 : 40.0);
     }
 
-    public function placePlayerStrumline(keyCount:Int):Void
+    public function setPlrStrumlinePos(keyCount:Int):Void
     {
         playerStrumline.strums.setPosition(Options.middlescroll ? playerStrumline.strums.getCenterX() : FlxG.width - playerStrumline.strums.width - 160.0 / keyCount,
             playerStrumline.downscroll ? FlxG.height - playerStrumline.strums.height - 40.0 : 40.0);

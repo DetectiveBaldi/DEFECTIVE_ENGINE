@@ -10,8 +10,6 @@ import data.chart.NoteTypeSwaps;
 
 using StringTools;
 
-using util.ArrayUtil;
-
 class FNFChartCoverter
 {
     static var _noteTypeSwaps:Map<String, String> = null;

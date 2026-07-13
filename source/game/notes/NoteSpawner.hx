@@ -9,11 +9,12 @@ import core.AssetCache;
 import core.Paths;
 import data.Chart;
 import interfaces.IBeatDispatcher;
+import game.notes.types.CautionNote;
+import game.notes.types.DeathNote;
+import game.notes.types.HurtNote;
 import music.Conductor;
 
 using StringTools;
-
-using util.ArrayUtil;
 
 class NoteSpawner extends FlxBasic
 {
@@ -70,7 +71,9 @@ class NoteSpawner extends FlxBasic
 
             var strumline:Strumline = strumlines.members[noteData.lane];
 
-            if (noteData.time > conductor.time + getSpawnDistance(strumline))
+            var spawnDistanceMs:Float = camera.height / 0.45 / Math.max(1.0, strumline.scrollSpeed);
+
+            if (noteData.time > conductor.time + spawnDistanceMs)
                 break;
 
             var note:Note = null;
@@ -87,37 +90,16 @@ class NoteSpawner extends FlxBasic
                 }
             }
 
-            var needNewType:Bool = false;
-
             if (note == null)
-            {
-                note = notes.recycle(null, noteFactory, false, false);
+                note = noteFactory();
 
-                needNewType = true;
-            }
+            note.data = noteData;
 
-            note.reset(FlxG.width, FlxG.height);
-
-            note.visible = true;
-        
-            note.time = noteData.time;
-
-            note.direction = noteData.direction;
-
-            note.length = noteData.length;
-
-            note.lane = noteData.lane;
-
-            note.kind = noteData.kind;
-
-            if (needNewType)
-            {
-                note.frames = note.getNoteFrames();
-
-                note.addAnimations();
-            }
+            note.revive();
 
             note.strumline = strumline;
+
+            notes.remove(note, true);
             
             notes.add(note);
 
@@ -141,27 +123,18 @@ class NoteSpawner extends FlxBasic
                     }
                 }
 
-                needNewType = false;
-
                 if (sustain == null)
-                {
-                    sustain = sustains.recycle(null, sustainFactory, false, false);
+                    sustain = sustains.recycle(null, sustainFactory);
 
-                    needNewType = true;
-                }
+                sustain.frames = note.frames;
 
-                sustain.reset(FlxG.width, FlxG.height);
+                sustain.addAnimations();
 
-                if (needNewType)
-                {
-                    sustain.frames = note.frames;
-
-                    sustain.addAnimations();
-                }
-
-                sustain.flipY = strumline.downscroll;
+                sustain.revive();
 
                 sustain.note = note;
+
+                sustains.remove(sustain, true);
 
                 sustains.add(sustain);
 
@@ -183,27 +156,20 @@ class NoteSpawner extends FlxBasic
                     }
                 }
 
-                needNewType = false;
-
                 if (trail == null)
-                {
-                    trail = trails.recycle(null, trailFactory, false, false);
+                    trail = trails.recycle(null, trailFactory);
 
-                    needNewType = true;
-                }
+                trail.frames = sustain.frames;
 
-                trail.reset(FlxG.width, FlxG.height);
+                trail.addAnimations();
 
-                if (needNewType)
-                {
-                    trail.frames = sustain.frames;
-
-                    trail.addAnimations();
-                }
+                trail.revive();
 
                 trail.flipY = strumline.downscroll;
 
                 trail.note = note;
+
+                trails.remove(trail, true);
 
                 trails.add(trail);
 
@@ -212,20 +178,48 @@ class NoteSpawner extends FlxBasic
                 note.trail = trail;
             }
 
-            setNoteType(note);
-
             noteIndex++;
         }
     }
 
-    public function getSpawnDistance(strumline:Strumline):Float
+    public function resolveNoteClass(noteData:NoteData):Class<Note>
     {
-        return FlxG.height / 0.45 / Math.max(1.0, strumline.scrollSpeed);
+        return switch (noteData.kind.type:String)
+        {
+            case "caution":
+                CautionNote;
+
+            case "death":
+                DeathNote;
+
+            case "hurt":
+                HurtNote;
+
+            default:
+                Note;
+        }
     }
 
     public function noteFactory():Note
     {
-        return new Note(beatDispatcher);
+        var noteData:NoteData = noteParams[noteIndex];
+
+        var noteClass:Class<Note> = resolveNoteClass(noteData);
+
+        return switch (noteClass:Class<Note>)
+        {
+            case CautionNote:
+                new CautionNote(beatDispatcher, noteData);
+
+            case DeathNote:
+                new DeathNote(beatDispatcher, noteData);
+            
+            case HurtNote:
+                new HurtNote(beatDispatcher, noteData);
+
+            default:
+                new Note(beatDispatcher, noteData);
+        }
     }
 
     public function sustainFactory():Sustain
@@ -236,33 +230,5 @@ class NoteSpawner extends FlxBasic
     public function trailFactory():SustainTrail
     {
         return new SustainTrail();
-    }
-
-    public function setNoteType(note:Note):Void
-    {
-        switch (note.kind.type:String)
-        {
-            case "caution":
-                note.missHealth = 50.0;
-
-            case "death":
-            {
-                note.hitHealth = -100.0;
-
-                note.skipHit = true;
-            }
-
-            case "hurt":
-            {
-                note.hitHealth = -50.0;
-
-                note.skipHit = true;
-            }
-
-            default:
-            {
-                
-            }
-        }
     }
 }

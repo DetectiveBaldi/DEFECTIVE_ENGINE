@@ -1,23 +1,19 @@
 package core;
 
 import openfl.display.BitmapData;
-
 import openfl.media.Sound;
-
 import openfl.utils.Assets;
 
 import flixel.FlxG;
 import flixel.FlxState;
-
 import flixel.graphics.FlxGraphic;
-
 import flixel.sound.FlxSound;
 
 import core.Options;
 
 using StringTools;
 
-using util.ArrayUtil;
+using tools.ArrayTools;
 
 class AssetCache
 {

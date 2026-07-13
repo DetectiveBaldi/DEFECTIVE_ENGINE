@@ -47,8 +47,6 @@ class KeybindsEditMenu extends FlxSubState
     {
         super.create();
 
-        FlxG.mouse.visible = true;
-
         _bgSprite.alpha = 0.5;
 
         background = new FlxBackdrop(AssetCache.getGraphic("menus/options/OptionsMenu/bg-overlay"));
@@ -200,7 +198,7 @@ class KeybindsEditMenu extends FlxSubState
 
         descText.visible = descBox.visible;
 
-        descText.setPosition(descText.getCenterX(), FlxG.height - 96.0);
+        descText.setPosition(descText.getCenterX(), FlxG.height - descText.height - 50.0);
 
         descBox.setGraphicSize(descText.width + 25.0, descText.height + 25.0);
 
@@ -234,15 +232,17 @@ class KeybindsEditMenu extends FlxSubState
     {
         var item:BaseOptionItem = optionItems.members[selectedIndex];
 
+        if (item.status == LOCKED)
+            return -1;
+
+        playScrollSound();
+
         if (value == 0.0)
         {
             item.status = ENABLED;
 
             return -1;
         }
-
-        if (item.status == LOCKED)
-            return -1;
 
         item.status = DEFAULT;
 
@@ -260,8 +260,6 @@ class KeybindsEditMenu extends FlxSubState
         }
 
         item.status = ENABLED;
-
-        playScrollSound();
 
         return value;
     }

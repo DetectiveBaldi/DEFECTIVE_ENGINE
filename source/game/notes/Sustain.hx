@@ -45,10 +45,10 @@ class Sustain extends FlxSprite
         if (animation.name != animToPlay)
             animation.play(animToPlay);
 
-        var length:Float = note.length;
+        var length:Float = note.renderLength;
 
         if (note.status == HIT)
-            length -= note.strumline.conductor.time - note.time;
+            length -= conductor.time - note.renderTime;
 
         var newHeight:Float = Math.max(0.0, length * 0.45 * note.strumline.scrollSpeed);
 
@@ -63,24 +63,28 @@ class Sustain extends FlxSprite
 
         var status:NoteStatus = note.status;
 
-        switch (status:NoteStatus)
+        if (note.skipHit)
+            alpha = 1.0;
         {
-            case IDLE:
+            if (status == IDLE || status == HIT)
+                alpha = 1.0;
+
+            switch (status:NoteStatus)
             {
-                alpha = 1.0;
+                case IDLE:
+                {
+                    if (conductor.time > note.time)
+                        alpha = FlxMath.remapToRange(conductor.time - note.time, 0.0, Rating.latestTiming, 1.0, 0.5);
+                }
 
-                if (!note.skipHit && conductor.time > note.time)
-                    alpha = FlxMath.remapToRange(conductor.time - note.time, 0.0, Rating.latestTiming, 1.0, 0.5);
+                case FAILING:
+                    alpha = FlxMath.remapToRange(note.unholdTime, 0.0, Rating.latestTiming, 1.0, 0.5);
+
+                case MISS:
+                    alpha = 0.5;
+
+                default:
             }
-
-            case HIT:
-                alpha = 1.0;
-
-            case FAILING:
-                alpha = FlxMath.remapToRange(note.unholdTime, 0.0, Rating.latestTiming, 1.0, 0.5);
-
-            case MISS:
-                alpha = 0.5;
         }
     }
 
@@ -97,7 +101,7 @@ class Sustain extends FlxSprite
         {
             var direction:String = Note.DIRECTIONS[i].toLowerCase();
             
-            animation.addByPrefix('${direction}HoldPiece', shortPrefix ? "holdPiece0" : '${direction}HoldPiece0', 24.0, false);
+            animation.addByPrefix('${direction}HoldPiece', shortPrefix ? "holdPiece0" : '${direction}HoldPiece0', 24.0);
         }
     }
 }

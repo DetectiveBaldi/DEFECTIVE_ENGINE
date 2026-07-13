@@ -132,6 +132,16 @@ class OptionsMenu extends FlxState
         addOptionItem(item);
         #end
 
+        var item:BaseOptionItem = new BaseOptionItem(0.0, 0.0, "Edit Score Popup Offset...", "");
+
+        item.onToggle.add(() -> openSubState(new ScorePopupEditMenu()));
+
+        addOptionItem(item);
+
+        var item:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Stack Score Popups", "If unchecked, rating and combo pop-ups will be cleared every\nnote hit, increasing performance at the cost of\nnicer visuals.", "stackScorePopups");
+
+        addOptionItem(item);
+
         item = new BoolOptionItem(0.0, 0.0, "Downscroll", "If checked, flips the strumlines' vertical position.", "downscroll");
 
         addOptionItem(item);
@@ -215,7 +225,7 @@ class OptionsMenu extends FlxState
 
         descText.visible = descBox.visible;
 
-        descText.setPosition(descText.getCenterX(), FlxG.height - 96.0);
+        descText.setPosition(descText.getCenterX(), FlxG.height - descText.height - 50.0);
 
         descBox.setGraphicSize(descText.width + 25.0, descText.height + 25.0);
 
@@ -237,6 +247,8 @@ class OptionsMenu extends FlxState
     override function closeSubState():Void
     {
         super.closeSubState();
+
+        changeSelected(0);
 
         tune.resume();
     }
@@ -261,15 +273,17 @@ class OptionsMenu extends FlxState
     {
         var item:BaseOptionItem = optionItems.members[selectedIndex];
 
+        if (item.status == LOCKED)
+            return -1;
+
+        playScrollSound();
+
         if (value == 0.0)
         {
             item.status = ENABLED;
 
             return -1;
         }
-
-        if (item.status == LOCKED)
-            return -1;
 
         item.status = DEFAULT;
 
@@ -287,8 +301,6 @@ class OptionsMenu extends FlxState
         }
 
         item.status = ENABLED;
-
-        playScrollSound();
 
         return value;
     }

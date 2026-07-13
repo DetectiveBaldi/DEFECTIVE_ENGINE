@@ -5,14 +5,11 @@ import haxe.Json;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
-
 import flixel.graphics.frames.FlxAtlasFrames;
-
 import flixel.math.FlxPoint;
 
 import core.AssetCache;
 import core.Paths;
-
 import data.AnimationData;
 
 using StringTools;

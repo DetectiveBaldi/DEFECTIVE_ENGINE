@@ -38,7 +38,7 @@ using StringTools;
 using flixel.util.FlxArrayUtil;
 
 using tools.AlignTools;
-using util.ArrayUtil;
+using tools.ArrayTools;
 
 class NoteKeybindsEditMenu extends FlxSubState implements ISequenceHandler
 {
@@ -320,7 +320,7 @@ class NoteKeybindsEditMenu extends FlxSubState implements ISequenceHandler
                 {
                     if (holdTime >= 1.0)
                     {
-                        var periods:Int = 1 + Math.floor(holdTime * 3000.0 / 1000.0) % 3;
+                        var periods:Int = Math.floor(holdTime * 4000.0 / 1000.0) % 4;
 
                         var tip:String = "";
 
@@ -417,12 +417,9 @@ class NoteKeybindsEditMenu extends FlxSubState implements ISequenceHandler
         {
             case SELECTING_STRUM:
             {
-                if (button.y != 450.0)
-                {
-                    tweens.cancelTweensOf(button);
+                tweens.cancelTweensOf(button);
 
-                    tweens.tween(button, { y: 450.0 }, 0.5, {ease: FlxEase.cubeOut});
-                }
+                tweens.tween(button, {y: 450.0}, 0.5, {ease: FlxEase.cubeOut});
             
                 button.enabled = true;
 
@@ -538,7 +535,7 @@ class NoteKeybindsEditMenu extends FlxSubState implements ISequenceHandler
 
         tipText.visible = tipBox.visible;
 
-        tipText.setPosition(tipText.getCenterX(), FlxG.height - 96.0);
+        tipText.setPosition(tipText.getCenterX(), FlxG.height - tipText.height - 50.0);
 
         tipBox.setGraphicSize(tipText.width + 25.0, tipText.height + 25.0);
 

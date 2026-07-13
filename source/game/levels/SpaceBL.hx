@@ -1,7 +1,6 @@
 package game.levels;
 
 import game.Character;
-import game.levels.LevelL;
 
 class SpaceBL extends LevelL
 {

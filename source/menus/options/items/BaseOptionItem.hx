@@ -47,7 +47,7 @@ class BaseOptionItem extends FlxSpriteGroup
     {
         super.update(elapsed);
 
-        if ((FlxG.mouse.justPressed && FlxG.mouse.overlaps(this, camera)) || (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE) && status == ENABLED)
+        if (((FlxG.mouse.justPressed && FlxG.mouse.overlaps(this, camera)) || FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE) && status == ENABLED)
             toggle();
     }
 

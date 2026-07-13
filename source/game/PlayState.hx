@@ -372,9 +372,9 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
     {
         super.update(elapsed);
 
-        while (eventIndex < chart.events.length)
+        for (i in eventIndex ... chart.events.length)
         {
-            var event:EventData = chart.events[eventIndex];
+            var event:EventData = chart.events[i];
 
             if (conductor.time < event.time)
                 break;
@@ -453,32 +453,7 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         chart = ChartBuilder.buildFromLevel(level);
 
         ArraySort.sort(chart.notes, sortNotes);
-
-        #if NOTE_SHUFFLE
-        var keyCount:Int = chart.keyCount;
-
-        #if NOTE_SHUFFLE_FAST
-        for (i in 0 ... chart.notes.length)
-        {
-            var note:NoteData = chart.notes[i];
-
-            note.direction = FlxG.random.int(0, keyCount - 1);
-        }
-        #else
-        var directions:Array<Int> = new Array<Int>();
-
-        for (i in 0 ... chart.keyCount)
-            directions.push(FlxG.random.int(0, keyCount - 1, directions));
-
-        for (i in 0 ... chart.notes.length)
-        {
-            var note:NoteData = chart.notes[i];
-
-            note.direction = directions[note.direction];
-        }
-        #end
-        #end
-
+        
         chart.events.sortTimed();
 
         chart.timingPoints.sortTimed();

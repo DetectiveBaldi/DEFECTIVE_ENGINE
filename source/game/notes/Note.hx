@@ -6,15 +6,14 @@ import flixel.graphics.frames.FlxFrame;
 
 import core.AssetCache;
 import core.Paths;
-import data.Chart.NoteKindData;
+import data.Chart;
 import interfaces.IBeatDispatcher;
 import music.Conductor;
 
 using tools.AlignTools;
 
-// TODO: Make this an `flixel.group.FlxSpriteGroup`.
 // Handles animations and basic fields for a `Note` object.
-// To create a custom note type, look at `game.notes.NoteSpawner.setNoteType`.
+// To create a custom note type, look at `game.notes.NoteSpawner` and add your type to `resolveNoteClass` and `noteFactory`.
 class Note extends FlxSprite
 {
     public static var DIRECTIONS:Array<String> = ["left", "down", "up", "right", "circle"];
@@ -31,20 +30,46 @@ class Note extends FlxSprite
         return beatDispatcher.conductor;
     }
 
-    public var time:Float;
+    public var data:NoteData;
 
-    public var direction:Int;
-
-    public var length(default, set):Float;
+    public var time(get, never):Float;
 
     @:noCompletion
-    function set_length(length:Float):Float
+    function get_time():Float
     {
-        length = Math.max(0.0, length);
+        return data.time;
+    }
 
-        this.length = length;
+    public var direction(get, never):Int;
 
-        return length;
+    @:noCompletion
+    function get_direction():Int
+    {
+        return data.direction;
+    }
+
+    public var length(get, never):Float;
+
+    @:noCompletion
+    function get_length():Float
+    {
+        return data.length;
+    }
+
+    public var lane(get, never):Int;
+
+    @:noCompletion
+    function get_lane():Int
+    {
+        return data.lane;
+    }
+
+    public var kind(get, never):NoteKindData;
+
+    @:noCompletion
+    function get_kind():NoteKindData
+    {
+        return data.kind;
     }
 
     public var isSustain(get, never):Bool;
@@ -52,47 +77,26 @@ class Note extends FlxSprite
     @:noCompletion
     function get_isSustain():Bool
     {
-        return sustain != null;
+        return length != 0.0;
     }
 
-    public var lane:Int;
+    public var renderTime:Float;
 
-    public var kind:NoteKindData;
+    public var renderLength(default, set):Float;
+
+    @:noCompletion
+    function set_renderLength(v:Float):Float
+    {
+        renderLength = Math.max(0.0, v);
+
+        return renderLength;
+    }
 
     public var status:NoteStatus;
 
     public var playSplash:Bool;
 
     public var unholdTime:Float;
-
-    public var sustain:Sustain;
-
-    public var trail:SustainTrail;
-
-    public var strumline:Strumline;
-
-    public var downscroll(get, never):Bool;
-
-    @:noCompletion
-    function get_downscroll():Bool
-    {
-        return strumline.downscroll;
-    }
-
-    public var strum(get, never):Strum;
-
-    @:noCompletion
-    function get_strum():Strum
-    {
-        var safeDir:Int = direction % strumline.keyCount;
-
-        var v:Strum = strumline.getStrum(safeDir);
-
-        if (v == null)
-            v = strumline.getStrum(0);
-
-        return v;
-    }
 
     public var hitHealth:Float;
 
@@ -108,7 +112,29 @@ class Note extends FlxSprite
         return skipHit ? Rating.earliestTiming : Rating.latestTiming;
     }
 
-    public function new(beatDispatcher:IBeatDispatcher):Void
+    public var sustain:Sustain;
+
+    public var trail:SustainTrail;
+
+    public var strumline:Strumline;
+
+    public var strum(get, never):Strum;
+
+    @:noCompletion
+    function get_strum():Strum
+    {
+        return strumline.getStrum(direction);
+    }
+
+    public var downscroll(get, never):Bool;
+
+    @:noCompletion
+    function get_downscroll():Bool
+    {
+        return strumline.downscroll;
+    }
+
+    public function new(beatDispatcher:IBeatDispatcher, data:NoteData):Void
     {
         super();
 
@@ -116,7 +142,27 @@ class Note extends FlxSprite
 
         this.beatDispatcher = beatDispatcher;
 
-        reset(0.0, 0.0);
+        this.data = data;
+
+        frames = getNoteFrames();
+
+        addAnimations();
+
+        renderTime = data.time;
+
+        renderLength = data.length;
+
+        status = IDLE;
+
+        playSplash = false;
+
+        unholdTime = 0.0;
+
+        hitHealth = 2.0;
+
+        missHealth = 5.0;
+
+        skipHit = false;
     }
 
     override function update(elapsed:Float):Void
@@ -145,22 +191,16 @@ class Note extends FlxSprite
         y = strum.y;
 
         if (status != HIT || length <= 0.0)
-            y += (time - strumline.conductor.time) * (downscroll ? -1.0 : 1.0) * strumline.scrollSpeed * 0.45;
+            y += (renderTime - conductor.time) * (downscroll ? -1.0 : 1.0) * strumline.scrollSpeed * 0.45;
     }
 
-    override function reset(x:Float, y:Float):Void
+    override function revive():Void
     {
-        super.reset(x, y);
+        super.revive();
 
-        time = 0.0;
+        renderTime = data.time;
 
-        direction = 0;
-
-        length = 0.0;
-
-        lane = 0;
-
-        kind = null;
+        renderLength = data.length;
 
         status = IDLE;
 
@@ -173,12 +213,6 @@ class Note extends FlxSprite
         trail = null;
 
         strumline = null;
-
-        hitHealth = 2.0;
-
-        missHealth = 5.0;
-
-        skipHit = false;
     }
 
     public function getNoteFrames():FlxAtlasFrames
@@ -206,7 +240,7 @@ class Note extends FlxSprite
         {
             var direction:String = DIRECTIONS[i].toLowerCase();
             
-            animation.addByPrefix(direction, shortPrefix ? "0" : '${direction}0', 24.0, false);
+            animation.addByPrefix(direction, shortPrefix ? "0" : '${direction}0', 24.0);
         }
     }
 
@@ -215,12 +249,10 @@ class Note extends FlxSprite
         if (status != IDLE)
             return false;
 
-        var botplay:Bool = strumline.botplay;
+        if (strumline.botplay)
+            return time <= conductor.time;
 
-        if (botplay)
-            return time <= strumline.conductor.time;
-
-        return Math.abs(time - strumline.conductor.time) <= hitWindow;
+        return Math.abs(time - conductor.time) <= hitWindow;
     }
 }
 

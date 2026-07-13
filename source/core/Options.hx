@@ -1,5 +1,7 @@
 package core;
 
+import data.AxisData;
+
 import flixel.FlxG;
 
 class Options
@@ -179,6 +181,52 @@ class Options
         return soundStreaming;
     }
 
+    public static var ratingPopupOffset(get, set):AxisData;
+
+    @:noCompletion
+    static function get_ratingPopupOffset():AxisData
+    {
+        return SaveManager.options.data.ratingPopupOffset ?? {x: 0.0, y: 0.0}
+    }
+
+    static function set_ratingPopupOffset(v:AxisData):AxisData
+    {
+        SaveManager.options.data.ratingPopupOffset = v;
+
+        return ratingPopupOffset;
+    }
+
+    public static var comboPopupOffset(get, set):AxisData;
+
+    @:noCompletion
+    static function get_comboPopupOffset():AxisData
+    {
+        return SaveManager.options.data.comboPopupOffset ?? {x: 0.0, y: 0.0}
+    }
+
+    static function set_comboPopupOffset(v:AxisData):AxisData
+    {
+        SaveManager.options.data.comboPopupOffset = v;
+
+        return comboPopupOffset;
+    }
+
+    public static var stackScorePopups(get, set):Bool;
+
+    @:noCompletion
+    static function get_stackScorePopups():Bool
+    {
+        return SaveManager.options.data.stackScorePopups ??= true;
+    }
+
+    @:noCompletion
+    static function set_stackScorePopups(v:Bool):Bool
+    {
+        SaveManager.options.data.stackScorePopups = v;
+
+        return stackScorePopups;
+    }
+
     public static var downscroll(get, set):Bool;
 
     @:noCompletion
@@ -243,9 +291,9 @@ class Options
         return botplay;
     }
 
-    public static function keysJustPressed(keybindName:String):Bool
+    public static function keysJustPressed(name:String):Bool
     {
-        var keys:Array<Int> = keybinds[keybindName];
+        var keys:Array<Int> = keybinds[name];
 
         for (i in 0 ... keys.length)
         {
@@ -261,15 +309,63 @@ class Options
         return false;
     }
 
-    public static function keysIndexJustPressed(keybindName:String, index:Int = 0):Bool
+    public static function keysPressed(name:String):Bool
     {
-        var keys:Array<Int> = keybinds[keybindName];
+        var keys:Array<Int> = keybinds[name];
 
-        var key:Int = keys[0];
+        for (i in 0 ... keys.length)
+        {
+            var key:Int = keys[i];
+
+            if (key == -1.0)
+                continue;
+
+            if (FlxG.keys.checkStatus(key, PRESSED))
+                return true;
+        }
+
+        return false;
+    }
+
+    public static function keysJustReleased(name:String):Bool
+    {
+        var keys:Array<Int> = keybinds[name];
+
+        for (i in 0 ... keys.length)
+        {
+            var key:Int = keys[i];
+
+            if (key == -1.0)
+                continue;
+
+            if (FlxG.keys.checkStatus(key, JUST_RELEASED))
+                return true;
+        }
+
+        return false;
+    }
+
+    public static function keysIndexJustPressed(name:String, index:Int = 0):Bool
+    {
+        var keys:Array<Int> = keybinds[name];
+
+        var key:Int = keys[index];
 
         if (key == -1.0)
             return false;
 
         return FlxG.keys.checkStatus(key, JUST_PRESSED);
+    }
+
+    public static function keysIndexPressed(name:String, index:Int = 0):Bool
+    {
+        var keys:Array<Int> = keybinds[name];
+
+        var key:Int = keys[index];
+
+        if (key == -1.0)
+            return false;
+
+        return FlxG.keys.checkStatus(key, PRESSED);
     }
 }

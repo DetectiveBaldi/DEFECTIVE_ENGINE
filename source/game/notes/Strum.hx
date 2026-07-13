@@ -22,13 +22,6 @@ class Strum extends FlxSprite
         reset(x, y);
     }
 
-    override function reset(x:Float, y:Float):Void
-    {
-        super.reset(x, y);
-
-        direction = -1;
-    }
-
     public function getStrumFrames():FlxAtlasFrames
     {
         return FlxAtlasFrames.fromSparrow(AssetCache.getGraphic("game/notes/Strum/default", false),

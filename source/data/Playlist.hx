@@ -1,7 +1,5 @@
 package data;
 
-using util.ArrayUtil;
-
 // Use this class to add all levels and weeks to their respective lists. If a level or week isn't in `data.LevelData.list` / `data.WeekData.list`, it will not load!
 class Playlist
 {
@@ -24,6 +22,8 @@ class Playlist
         LevelData.list.push({week: null, name: "Final Destination"});
 
         LevelData.list.push({week: null, name: "Final Destination Mystery Inc Mix"});
+
+        LevelData.list.push({week: null, name: "Final Destination Mystery Inc Mix God"});
 
         LevelData.list.push({week: null, name: "Game Over"});
 

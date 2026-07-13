@@ -32,8 +32,8 @@ import music.Conductor;
 
 using StringTools;
 
-using util.ArrayUtil;
 using tools.AlignTools;
+using tools.ArrayTools;
 
 class Strumline extends FlxGroup
 {
@@ -271,7 +271,7 @@ class Strumline extends FlxGroup
 
             var hasMissed:Bool = conductor.time > note.time + Rating.latestTiming;
 
-            if ((note.status == IDLE || note.status == FAILING) && !note.skipHit && hasMissed)
+            if ((note.status == IDLE || note.status == FAILING) && hasMissed)
                 noteMiss(note);
 
             var hasExpired:Bool = conductor.time > note.time + note.length + Rating.latestTiming;
@@ -419,17 +419,19 @@ class Strumline extends FlxGroup
 
     public function getStrum(direction:Int):Strum
     {
-        return strums.members.first((strum:Strum) -> strum.direction == direction);
+        direction %= keyCount;
+
+        var value:Strum = strums.members.first((strum:Strum) -> strum.direction == direction);
+
+        if (value == null)
+            value = strums.members[0];
+
+        return value;
     }
 
     public function setStrumActive(direction:Int, active:Bool):Void
     {
-        direction %= keyCount;
-
         var strum:Strum = getStrum(direction);
-
-        if (strum == null)
-            strum = getStrum(0);
 
         strum.active = active;
 
@@ -456,7 +458,7 @@ class Strumline extends FlxGroup
         {
             var strum:Strum = strums.members[i];
 
-            strum.reset(0.0, 0.0);
+            strum.direction = -1;
 
             strum.kill();
         }
@@ -512,10 +514,13 @@ class Strumline extends FlxGroup
         note.status = HIT;
 
         note.playSplash = noteHitEvent.playSplash;
-
-        var strum:Strum = note.strum;
         
-        strum.animation.play('${convertDirectionToAnim(note.direction).toLowerCase()}Confirm', true);
+        if (!botplay)
+        {
+            var strum:Strum = note.strum;
+
+            strum.animation.play('${convertDirectionToAnim(note.direction).toLowerCase()}Confirm', true);
+        }
 
         if (note.isSustain)
             resizeSustainNote(note);
@@ -539,6 +544,9 @@ class Strumline extends FlxGroup
         onNoteMiss.dispatch(note);
 
         note.status = MISS;
+
+        if (note.skipHit)
+            return;
 
         playCharSingAnims(note, note.direction, true, false);
 
@@ -578,9 +586,9 @@ class Strumline extends FlxGroup
 
     public function resizeSustainNote(note:Note):Void
     {
-        note.length += note.time - conductor.time;
+        note.renderLength += note.renderTime - conductor.time;
 
-        note.time = conductor.time;
+        note.renderTime = conductor.time;
 
         if (!note.isSustain)
             finishSustainNote(note);
@@ -603,11 +611,14 @@ class Strumline extends FlxGroup
 
         onSustainHold.dispatch(sustainHoldEvent);
 
-        var strum:Strum = note.strum;
-
-        strum.animation.play('${convertDirectionToAnim(note.direction).toLowerCase()}Confirm', true);
-            
-        setStrumActive(note.direction, false);
+        if (!botplay)
+        {
+            var strum:Strum = note.strum;
+        
+            strum.animation.play('${convertDirectionToAnim(note.direction).toLowerCase()}Confirm', true);
+                
+            setStrumActive(note.direction, false);
+        }
         
         note.status = HIT;
 
@@ -694,6 +705,8 @@ class Strumline extends FlxGroup
             splash.addAnimations();
         }
 
+        splash.revive();
+
         var strumScale:Float = keyParams.strumScale;
 
         splash.scale.x = strumScale;
@@ -701,8 +714,6 @@ class Strumline extends FlxGroup
         splash.scale.y = strumScale;
 
         splash.updateHitbox();
-
-        splash.reset(FlxG.width, FlxG.height);
 
         splash.centerTo(note.strum);
 
