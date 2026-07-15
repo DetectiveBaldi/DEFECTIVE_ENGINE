@@ -1,16 +1,5 @@
 package data;
 
-typedef KeyParamsData =
-{
-    public var keys:Array<String>;
-
-    public var controls:Array<Array<Int>>;
-
-    public var strumScale:Float;
-
-    public var strumSpacing:Float;
-}
-
 @:structInit
 class KeyParams
 {
@@ -28,4 +17,15 @@ class KeyParams
     public var strumSpacing:Float;
 
     public var controls:Array<Array<Int>>;
+}
+
+typedef KeyParamsData =
+{
+    public var keys:Array<String>;
+
+    public var controls:Array<Array<Int>>;
+
+    public var strumScale:Float;
+
+    public var strumSpacing:Float;
 }

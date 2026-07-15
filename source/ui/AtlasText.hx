@@ -12,7 +12,9 @@ import core.Paths;
 
 using StringTools;
 
-// This class uses `FlxSprite`s to display a sequence of characters, rather than a `flixel.text.FlxText`.
+/**
+ * This class uses `flixel.FlxSprite`s to display a sequence of characters, rather than a `flixel.text.FlxText`.
+ */
 class AtlasText extends FlxSpriteGroup
 {
     var _needsRegen:Bool;
@@ -27,7 +29,7 @@ class AtlasText extends FlxSpriteGroup
         text = v;
 
         if (text != lastText)
-            _regenerate();
+            regenerate();
 
         return text;
     }
@@ -42,7 +44,7 @@ class AtlasText extends FlxSpriteGroup
         font = v;
 
         if (font != lastFont)
-            _regenerate();
+            regenerate();
 
         return font;
     }
@@ -108,7 +110,7 @@ class AtlasText extends FlxSpriteGroup
         }
     }
 
-    function _regenerate():Void
+    function regenerate():Void
     {
         var textToRender:String = text;
 
@@ -156,7 +158,7 @@ class AtlasText extends FlxSpriteGroup
 
                 default:
                 {
-                    var sprite:FlxSprite = recycle(FlxSprite, spriteFactory);
+                    var sprite:FlxSprite = recycle(null, spriteFactory);
 
                     sprite.antialiasing = true;
 

@@ -4,7 +4,10 @@ import haxe.Json;
 
 import openfl.utils.Assets;
 
-// Allows conversion of custom note types to Defective Engine ones through the use of a .json file.
+/**
+ * Allows conversion of custom note types to Defective Engine ones through the use of a .json file.
+ * Might delete this.
+ */
 class NoteTypeSwaps
 {
     public static function buildFromFile(path:String):Map<String, String>

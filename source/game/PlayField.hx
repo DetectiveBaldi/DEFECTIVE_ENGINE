@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
+import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -63,9 +64,9 @@ class PlayField extends FlxGroup
         return sequenceHandler.timers;
     }
 
-    public var getSongTime:()->Float;
+    public var chart:Chart;
 
-    public var getSongLength:()->Float;
+    public var song:FlxSound;
 
     public var playStats:PlayStats;
 
@@ -83,21 +84,21 @@ class PlayField extends FlxGroup
 
     public var strumlines:FlxTypedGroup<Strumline>;
 
-    public var scrollSpeed:Float;
-
     public var opponentStrumline:Strumline;
 
     public var playerStrumline:Strumline;
 
-    public var onUpdateScore:FlxTypedSignal<(playStats:PlayStats)->Void>;
-
-    public function new(beatDispatcher:IBeatDispatcher, sequenceHandler:ISequenceHandler, chart:Chart):Void
+    public function new(beatDispatcher:IBeatDispatcher, sequenceHandler:ISequenceHandler, chart:Chart, song:FlxSound):Void
     {
         super();
 
         this.beatDispatcher = beatDispatcher;
 
         this.sequenceHandler = sequenceHandler;
+
+        this.chart = chart;
+
+        this.song = song;
 
         playStats = {score: 0, combo: 0, hits: 0, misses: 0, bonus: 0.0}
 
@@ -114,8 +115,6 @@ class PlayField extends FlxGroup
         add(timeGauge);
 
         timeText = new FlxText(0.0, 0.0, timeGauge.width, "-:--", 36);
-
-        timeText.antialiasing = true;
 
         timeText.font = Paths.ttf("assets/fonts/VCR OSD Mono");
 
@@ -137,7 +136,7 @@ class PlayField extends FlxGroup
 
         scoreText.setBorderStyle(OUTLINE, FlxColor.BLACK, 2.2);
 
-        scoreText.setPosition((FlxG.width - scoreText.width) * 0.5, Options.downscroll ? 25.0 : (FlxG.height - scoreText.height) - 25.0);
+        scoreText.setPosition(scoreText.getCenterX(), Options.downscroll ? 25.0 : (FlxG.height - scoreText.height) - 25.0);
 
         add(scoreText);
 
@@ -149,12 +148,11 @@ class PlayField extends FlxGroup
 
         healthBar = new HealthBar(0.0, 0.0, beatDispatcher);
 
-        healthBar.setPosition(healthBar.getCenterX(),
-            Options.downscroll ? (FlxG.height - healthBar.height) - 620.0 : 620.0);
+        healthBar.setPosition(healthBar.getCenterX(), Options.downscroll ? (FlxG.height - healthBar.height) - 620.0 : 620.0);
 
         add(healthBar);
 
-        noteSpawner = new NoteSpawner(beatDispatcher, chart.notes, null);
+        noteSpawner = new NoteSpawner(beatDispatcher, chart.notes);
 
         add(noteSpawner);
 
@@ -162,9 +160,7 @@ class PlayField extends FlxGroup
 
         add(strumlines);
 
-        scrollSpeed = chart.scrollSpeed;
-
-        noteSpawner.strumlines = strumlines;
+        strumlines.memberAdded.add(onAddStrumline);
 
         var keyCount:Int = chart.keyCount;
 
@@ -172,26 +168,15 @@ class PlayField extends FlxGroup
 
         opponentStrumline.visible = !Options.middlescroll;
 
-        opponentStrumline.scrollSpeed = scrollSpeed;
+        setOppStrumlinePos(keyCount);
 
         strumlines.add(opponentStrumline);
 
         playerStrumline = new Strumline(beatDispatcher, keyCount);
 
-        playerStrumline.scrollSpeed = scrollSpeed;
-
-        strumlines.add(playerStrumline);
-
-        setOppStrumlinePos(keyCount);
-
         setPlrStrumlinePos(keyCount);
 
-        for (i in 0 ... strumlines.members.length)
-        {
-            var strumline:Strumline = strumlines.members[i];
-
-            strumline.botplay = true;
-        }
+        strumlines.add(playerStrumline);
 
         var playAsWho:Int = Std.parseInt(CompilerTools.getDefine("PLAY_AS_WHO")) ?? 1;
 
@@ -206,28 +191,19 @@ class PlayField extends FlxGroup
         strumline.onSustainHold.add(sustainHold);
 
         strumline.onGhostTap.add(ghostTap);
-
-        onUpdateScore = new FlxTypedSignal<(playStats:PlayStats)->Void>();
     }
 
     override function update(elapsed:Float):Void
     {
         super.update(elapsed);
 
-        var time:Float = getSongTime();
+        var time:Float = song.time;
 
-        var length:Float = getSongLength();
+        var length:Float = song.length;
 
         timeGauge.amount = time / length;
 
         timeText.text = FlxStringUtil.formatTime(time * 0.001);
-    }
-
-    override function destroy():Void
-    {
-        super.destroy();
-
-        onUpdateScore = cast FlxDestroyUtil.destroy(onUpdateScore);
     }
 
     public function updateScoreText():Void
@@ -254,26 +230,33 @@ class PlayField extends FlxGroup
             scoreText.text += ' | Misses: ${misses} | Accuracy: ${accuracy}%';
     }
 
-    public function noteHit(event:NoteHitEvent):Void
+    public function onAddStrumline(strumline:Strumline):Void
     {
-        var note:Note = event.note;
+        noteSpawner.strumlines.push(strumline);
+        
+        strumline.scrollSpeed = chart.scrollSpeed;
+    }
+
+    public function noteHit(ev:NoteHitEvent):Void
+    {
+        var note:Note = ev.note;
 
         var timeDiff:Float = Math.abs(note.time - conductor.time);
 
         var rating:Rating = Rating.fromTime(timeDiff);
 
         if (note.skipHit || rating != Rating.list[0])
-            event.playSplash = false;
+            ev.playSplash = false;
         
         playStats.score += 500;
 
         var strumline:Strumline = note.strumline;
 
-        // Even botplay is usually off by a few milliseconds, so we hide the score difference to match expected behavior.
+        // Even botplay is usually off by a few ms, so we hide the score difference to match expected behavior.
         if (!strumline.botplay)
         {
-            // -5 score for every 5 milliseconds away from a perfect hit. This rounds down, so for example
-                // a 4ms difference would result in no score loss, a 13ms difference would result in 10 score loss, etc.
+            // -5 for every 5 ms away you were from a perfect hit. This rounds down, so for example,
+            // a 4 ms difference would result in no decrement, a 13ms difference would result in a 10 decrement, etc.
             playStats.score -= Math.floor(timeDiff / 5.0) * 5;
         }
 
@@ -282,8 +265,6 @@ class PlayField extends FlxGroup
         playStats.hits++;
 
         playStats.bonus += rating.bonus;
-
-        onUpdateScore.dispatch(playStats);
 
         updateScoreText();
 
@@ -294,7 +275,7 @@ class PlayField extends FlxGroup
             scorePopup.showCombo(playStats.combo);
         }
 
-        healthBar.value += event.note.hitHealth;
+        healthBar.value += note.hitHealth;
     }
 
     public function noteMiss(note:Note):Void
@@ -308,8 +289,6 @@ class PlayField extends FlxGroup
 
         playStats.misses++;
 
-        onUpdateScore.dispatch(playStats);
-
         healthBar.value -= note.missHealth;
 
         updateScoreText();
@@ -318,8 +297,6 @@ class PlayField extends FlxGroup
     public function sustainHold(ev:SustainHoldEvent):Void
     {
         playStats.score += Math.ceil(250.0 * FlxG.elapsed / 5.0) * 5;
-
-        onUpdateScore.dispatch(playStats);
 
         updateScoreText();
 
@@ -335,20 +312,9 @@ class PlayField extends FlxGroup
 
         playStats.misses++;
 
-        onUpdateScore.dispatch(playStats);
-
         healthBar.value -= 2.0;
 
         updateScoreText();
-    }
-
-    public function setScrollSpeed(v:Float):Void
-    {
-        scrollSpeed = v;
-
-        opponentStrumline.scrollSpeed = scrollSpeed;
-
-        playerStrumline.scrollSpeed = scrollSpeed;
     }
 
     public function setOppStrumlinePos(keyCount:Int):Void

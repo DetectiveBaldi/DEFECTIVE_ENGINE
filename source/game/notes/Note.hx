@@ -12,8 +12,10 @@ import music.Conductor;
 
 using tools.AlignTools;
 
-// Handles animations and basic fields for a `Note` object.
-// To create a custom note type, look at `game.notes.NoteSpawner` and add your type to `resolveNoteClass` and `noteFactory`.
+/**
+ * Handles functionality for a basic note.
+ * To create a custom note type, look at `game.notes.NoteSpawner` and add your type to `resolveNoteClass` and `noteFactory`.
+ */
 class Note extends FlxSprite
 {
     public static var DIRECTIONS:Array<String> = ["left", "down", "up", "right", "circle"];

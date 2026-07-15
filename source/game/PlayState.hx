@@ -311,21 +311,11 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         player = new Character(this, 0.0, 0.0, Character.getConfig(chart.player));
 
-        playField = new PlayField(this, this, chart);
+        playField = new PlayField(this, this, chart, instrumental);
 
         playField.camera = hudCamera;
 
         add(playField);
-
-        FlxG.watch.add(playField.playStats, "score", "Score");
-
-        FlxG.watch.add(playField.playStats, "misses", "Misses");
-
-        FlxG.watch.add(playField.playStats, "accuracy", "Accuracy (%)");
-
-        playField.getSongTime = getSongTime;
-
-        playField.getSongLength = getSongLength;
 
         #if !debug
         var healthBar:HealthBar = playField.healthBar;
@@ -448,11 +438,28 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         gameCamera.zoom += gameCamBopStrength;
     }
 
+    public function sortNoteData(a:NoteData, b:NoteData):Int
+    {
+        if (a.time < b.time)
+            return -1;
+
+        if (a.time > b.time)
+            return 1;
+
+        if (a.direction < b.direction)
+            return -1;
+
+        if (a.direction > b.direction)
+            return 1;
+
+        return 0;
+    }
+    
     public function loadChart():Void
     {
         chart = ChartBuilder.buildFromLevel(level);
 
-        ArraySort.sort(chart.notes, sortNotes);
+        ArraySort.sort(chart.notes, sortNoteData);
         
         chart.events.sortTimed();
 
@@ -635,16 +642,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
         
         FlxG.resetState();
     }
-    
-    public function getSongTime():Float
-    {
-        return instrumental.time;
-    }
-
-    public function getSongLength():Float
-    {
-        return instrumental.length;
-    }
 
     public function getSpectator(name:String):Character
     {
@@ -805,23 +802,6 @@ class PlayState extends FlxState implements IBeatDispatcher implements ISequence
 
         if (playerVocals != null)
             playerVocals.time = instrumental.time;
-    }
-
-    public function sortNotes(a:NoteData, b:NoteData):Int
-    {
-        if (a.time < b.time)
-            return -1;
-
-        if (a.time > b.time)
-            return 1;
-
-        if (a.direction < b.direction)
-            return -1;
-
-        if (a.direction > b.direction)
-            return 1;
-
-        return 0;
     }
 }
 

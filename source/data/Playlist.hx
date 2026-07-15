@@ -1,6 +1,8 @@
 package data;
 
-// Use this class to add all levels and weeks to their respective lists. If a level or week isn't in `data.LevelData.list` / `data.WeekData.list`, it will not load!
+/**
+ * Use this class to add all levels and weeks to their respective lists. If a level or week isn't in `data.LevelData.list` / `data.WeekData.list`, it will not load!
+ */
 class Playlist
 {
     public static function init():Void

@@ -87,6 +87,3 @@ class IntOptionItem extends VarOptionItem<Int>
         return v;
     }
 }
-
-// TODO: Make this work
-typedef FloatOptionItem = IntOptionItem

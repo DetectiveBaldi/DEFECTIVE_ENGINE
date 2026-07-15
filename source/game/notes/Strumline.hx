@@ -193,7 +193,7 @@ class Strumline extends FlxGroup
 
         scrollSpeed = 1.0;
 
-        botplay = false;
+        botplay = true;
 
         vocals = new Array<FlxSound>();
     }

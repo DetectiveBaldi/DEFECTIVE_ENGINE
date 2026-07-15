@@ -64,9 +64,11 @@ class FNFChartCoverter
 
                 var duration:Float = ev.v.duration ?? 4.0;
 
-                var ease:String = ev.v.ease ?? "CLASSIC";
+                var ease:String = ev.v.ease ?? "linear";
 
-                ease = concatenateEase(ease, ev.v.easeDir);
+                var easeDir:String = ev.v.easeDir ?? "In";
+
+                ease = getEaseFromDirection(ease, easeDir);
 
                 if (ease == "INSTANT")
                     duration = 0.0;
@@ -86,13 +88,14 @@ class FNFChartCoverter
 
                 var mode:String = ev.v.mode ?? "direct";
 
-                var ease:String = concatenateEase(ev.v.ease, ev.v.easeDir);
+                var ease:String = ev.v.ease ?? "linear";
+
+                var easeDir:String = ev.v.easeDir ?? "In";
+
+                ease = getEaseFromDirection(ease, easeDir);
 
                 if (ease == "INSTANT")
                     duration = 0.0;
-
-                // I'm going to be honest, the way FNF' does this event is really stupid so there's several components of
-                    // this event that just aren't parsed.
 
                 output.events.push({time: ev.t, name: "SetCamZoom", value: {zoom: zoom, duration: duration, mode: mode, ease: ease}});
             }
@@ -137,20 +140,16 @@ class FNFChartCoverter
         return output;
     }
 
-    public static function concatenateEase(ease:String, easeDir:String):String
+    /**
+     * Gets a full ease type ("quartOut", for example) from a basic ease ("quart") and a direction ("Out"). This concept is stupid but FNF' forces it for some reason!
+     * @param ease Starting ease
+     * @param direction Direction to append
+     * @return String
+     */
+    static function getEaseFromDirection(ease:String, direction:String):String
     {
-        ease ??= "linear";
-
-        if (ease == "linear" || ease.contains("In") || ease.contains("Out") || ease.contains("InOut"))
-        {
-            // Ignore easeDir
-        }
-        else
-        {
-            easeDir ??= "In";
-
-            ease += easeDir;
-        }
+        if (ease != "linear" && !ease.contains("In") && !ease.contains("Out") && !ease.contains("InOut"))
+            ease += direction;
 
         return ease;
     }

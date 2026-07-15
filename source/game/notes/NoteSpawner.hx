@@ -28,9 +28,9 @@ class NoteSpawner extends FlxBasic
         return beatDispatcher?.conductor;
     }
 
-    public var noteParams:Array<NoteData>;
+    public var noteData:Array<NoteData>;
 
-    public var strumlines:FlxTypedGroup<Strumline>;
+    public var strumlines:Array<Strumline>;
 
     public var notes:FlxTypedGroup<Note>;
 
@@ -40,7 +40,7 @@ class NoteSpawner extends FlxBasic
 
     public var noteIndex:Int;
 
-    public function new(beatDispatcher:IBeatDispatcher, noteParams:Array<NoteData>, strumlines:FlxTypedGroup<Strumline>):Void
+    public function new(beatDispatcher:IBeatDispatcher, noteData:Array<NoteData>):Void
     {
         super();
 
@@ -48,9 +48,9 @@ class NoteSpawner extends FlxBasic
 
         this.beatDispatcher = beatDispatcher;
         
-        this.noteParams = noteParams;
+        this.noteData = noteData;
 
-        this.strumlines = strumlines;
+        strumlines = new Array<Strumline>();
 
         notes = new FlxTypedGroup<Note>();
 
@@ -65,15 +65,15 @@ class NoteSpawner extends FlxBasic
     {
         super.update(elapsed);
 
-        while (noteIndex < noteParams.length)
+        while (noteIndex < noteData.length)
         {
-            var noteData:NoteData = noteParams[noteIndex];
+            var customNoteData:NoteData = noteData[noteIndex];
 
-            var strumline:Strumline = strumlines.members[noteData.lane];
+            var strumline:Strumline = strumlines[customNoteData.lane];
 
             var spawnDistanceMs:Float = camera.height / 0.45 / Math.max(1.0, strumline.scrollSpeed);
 
-            if (noteData.time > conductor.time + spawnDistanceMs)
+            if (customNoteData.time > conductor.time + spawnDistanceMs)
                 break;
 
             var note:Note = null;
@@ -82,7 +82,7 @@ class NoteSpawner extends FlxBasic
             {
                 var loopNote:Note = notes.members[i];
 
-                if (!loopNote.exists && noteData.kind.type == loopNote.kind.type)
+                if (!loopNote.exists && customNoteData.kind.type == loopNote.kind.type)
                 {
                     note = loopNote;
 
@@ -93,13 +93,13 @@ class NoteSpawner extends FlxBasic
             if (note == null)
                 note = noteFactory();
 
-            note.data = noteData;
+            note.data = customNoteData;
 
             note.revive();
+            
+            note.setPosition(FlxG.width, FlxG.height);
 
             note.strumline = strumline;
-
-            notes.remove(note, true);
             
             notes.add(note);
 
@@ -132,9 +132,9 @@ class NoteSpawner extends FlxBasic
 
                 sustain.revive();
 
-                sustain.note = note;
+                sustain.setPosition(FlxG.width, FlxG.height);
 
-                sustains.remove(sustain, true);
+                sustain.note = note;
 
                 sustains.add(sustain);
 
@@ -165,11 +165,11 @@ class NoteSpawner extends FlxBasic
 
                 trail.revive();
 
+                trail.setPosition(FlxG.width, FlxG.height);
+
                 trail.flipY = strumline.downscroll;
 
                 trail.note = note;
-
-                trails.remove(trail, true);
 
                 trails.add(trail);
 
@@ -182,6 +182,27 @@ class NoteSpawner extends FlxBasic
         }
     }
 
+    override function destroy():Void
+    {
+        super.destroy();
+
+        noteData = null;
+
+        strumlines = null;
+
+        notes.destroy();
+
+        sustains.destroy();
+        
+        trails.destroy();
+    }
+
+    /**
+     * Returns the note type class associated with the specified `NoteData`.
+     * If you're creating a custom note type, make sure to add a case for it here!
+     * @param noteData The `NoteData` instance to resolve the class for.
+     * @return `Class<Note>`
+     */
     public function resolveNoteClass(noteData:NoteData):Class<Note>
     {
         return switch (noteData.kind.type:String)
@@ -200,9 +221,14 @@ class NoteSpawner extends FlxBasic
         }
     }
 
+    /**
+     * Creates a note object. Used when `this` `NoteSpawner` doesn't have any available `Note`s when pooling.
+     * If you're creating a custom note type, make sure to add a case for it here!
+     * @return `Note`
+     */
     public function noteFactory():Note
     {
-        var noteData:NoteData = noteParams[noteIndex];
+        var noteData:NoteData = noteData[noteIndex];
 
         var noteClass:Class<Note> = resolveNoteClass(noteData);
 

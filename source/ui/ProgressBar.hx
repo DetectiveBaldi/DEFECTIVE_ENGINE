@@ -24,9 +24,9 @@ class ProgressBar extends FlxSpriteGroup
     }
 
     @:noCompletion
-    function set_percent(_percent:Float):Float
+    function set_percent(v:Float):Float
     {
-        value = (range / max) * _percent;
+        value = (range / max) * v;
 
         return percent;
     }
@@ -68,13 +68,13 @@ class ProgressBar extends FlxSpriteGroup
     public var fillDirection(default, set):ProgressBarFillDirection;
 
     @:noCompletion
-    function set_fillDirection(_fillDirection:ProgressBarFillDirection):ProgressBarFillDirection
+    function set_fillDirection(v:ProgressBarFillDirection):ProgressBarFillDirection
     {
-        fillDirection = _fillDirection;
+        fillDirection = v;
 
         updateClipping();
 
-        return fillDirection;
+        return v;
     }
 
     public var emptiedSide:ProgressBarSideSprite;
@@ -256,14 +256,17 @@ class ProgressBar extends FlxSpriteGroup
     }
 }
 
+/**
+ * Custom `flixel.FlxSprite` that overrides `clipRect` to avoid rounding.
+ */
 class ProgressBarSideSprite extends FlxSprite
 {
     @:noCompletion
-    override function set_clipRect(clipRect:FlxRect):FlxRect
+    override function set_clipRect(v:FlxRect):FlxRect
     {
-        this.clipRect = clipRect;
+        clipRect = v;
 
-        return clipRect;
+        return v;
     }
 }
 
