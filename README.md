@@ -40,7 +40,7 @@ Follow these steps to build the game:
    - `flixel-addons`: `haxelib install flixel-addons`
    - `haxeui-core`: `haxelib git haxeui-core https://github.com/haxeui/haxeui-core`
    - `haxeui-flixel`: `haxelib git haxeui-flixel https://github.com/haxeui/haxeui-flixel`
-3. Build the game by running the following command in a command prompt (replace :target: with a specific target, like cpp, hl, or html5): `haxelib run lime build :target:`
+3. Build the game by running the following command in a command prompt: `haxelib run lime build target` (replace "target" with your desired target, like cpp, hl, or html5).
 
 ## Contributing
 Bug reports and feature requests through the issues tab are welcomed! Pull requests are fine too, however preferably they are small in size (bug fixes or quick optimizations). Otherwise, please create your proposal as an issue to gather feedback.

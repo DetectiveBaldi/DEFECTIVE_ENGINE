@@ -92,7 +92,7 @@ class OptionsMenu extends FlxState
 
         addOptionItem(item);
 
-        var item:IntOptionItem = new IntOptionItem(0.0, 0.0, "Frame Rate", "How often the game ticks each second.", "frameRate", 30, 240);
+        var item:IntOptionItem = new IntOptionItem(0.0, 0.0, "Frame Rate", "How often the game ticks each second.", "frameRate", 30, 240, 1, "", "", DEFAULT);
 
         item.onUpdate.add((value:Int) ->
         {
@@ -150,7 +150,11 @@ class OptionsMenu extends FlxState
 
         addOptionItem(item);
 
-        item = new BoolOptionItem(0.0, 0.0, "Ghost Tapping", "If unchecked, pressing an input with no notes on screen\nwill cause damage.", "ghostTapping");
+        var item:FloatOptionItem = new FloatOptionItem(0.0, 0.0, "Note Splash Opacity", "How opaque should the note splashes when a note is hit\nappear?", "noteSplashOpacity", 0.0, 1.0, 0.1, "Off", "", PERCENT);
+
+        addOptionItem(item);
+
+        var item:BoolOptionItem = new BoolOptionItem(0.0, 0.0, "Ghost Tapping", "If unchecked, pressing an input with no notes on screen\nwill cause damage.", "ghostTapping");
 
         addOptionItem(item);
 

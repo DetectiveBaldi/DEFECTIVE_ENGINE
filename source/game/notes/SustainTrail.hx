@@ -55,13 +55,6 @@ class SustainTrail extends FlxSprite
         alpha = sustain.alpha;
     }
 
-    override function revive():Void
-    {
-        super.revive();
-
-        note = null;
-    }
-
     public function addAnimations():Void
     {
         var frames:Array<FlxFrame> = new Array<FlxFrame>();

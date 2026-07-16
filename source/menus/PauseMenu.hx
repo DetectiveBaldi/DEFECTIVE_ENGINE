@@ -79,6 +79,8 @@ class PauseMenu extends FlxSubState implements ISequenceHandler
         {
             var item:AtlasText = optionItems.members[selectedIndex];
 
+            selectedIndex = 0;
+
             switch (item.text:String)
             {
                 case "Resume":
@@ -142,15 +144,11 @@ class PauseMenu extends FlxSubState implements ISequenceHandler
 
     public function pressRestart():Void
     {
-        selectedIndex = 0;
-
         FlxG.resetState();
     }
 
     public function pressOptions():Void
     {
-        selectedIndex = 0;
-
         FlxG.switchState(() -> new OptionsMenu(() -> PlayState.getClassFromLevel()));
     }
 

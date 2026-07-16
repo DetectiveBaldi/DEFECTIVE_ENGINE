@@ -108,5 +108,7 @@ enum OptionItemType
 
     INT;
 
+    FLOAT;
+
     VAR;
 }

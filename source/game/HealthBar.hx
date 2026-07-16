@@ -21,17 +21,17 @@ class HealthBar extends ProgressBar
     }
 
     @:noCompletion
-    override function set_fillDirection(_fillDirection:ProgressBarFillDirection):ProgressBarFillDirection
+    override function set_fillDirection(v:ProgressBarFillDirection):ProgressBarFillDirection
     {
-        super.set_fillDirection(_fillDirection);
+        super.set_fillDirection(v);
 
         if (opponentIcon != null)
-            opponentIcon.flipX = fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM;
+            opponentIcon.flipX = v == LEFT_TO_RIGHT || v == TOP_TO_BOTTOM;
 
         if (playerIcon != null)
-            playerIcon.flipX = !(fillDirection == LEFT_TO_RIGHT || fillDirection == TOP_TO_BOTTOM);
+            playerIcon.flipX = !(v == LEFT_TO_RIGHT || v == TOP_TO_BOTTOM);
 
-        return fillDirection;
+        return v;
     }
 
     public var opponentIcon:HealthIcon;
@@ -73,9 +73,9 @@ class HealthBar extends ProgressBar
 
         updateIconsAnimation();
 
-        scaleIcons(elapsed);
+        lerpIconScales(elapsed);
 
-        positionIcons();
+        setIconPositions();
     }
 
     override function destroy():Void
@@ -95,7 +95,7 @@ class HealthBar extends ProgressBar
 
         playerIcon.updateHitbox();
 
-        positionIcons();
+        setIconPositions();
     }
 
     public function updateIconsAnimation():Void
@@ -105,7 +105,7 @@ class HealthBar extends ProgressBar
         opponentIcon.animation.curAnim.curFrame = (percent > 80.0) ? 1 : 0;
     }
 
-    public function scaleIcons(elapsed:Float):Void
+    public function lerpIconScales(elapsed:Float):Void
     {
         var scale:Float = FlxMath.lerp(opponentIcon.width, 150.0, FlxMath.getElapsedLerp(0.15, elapsed));
 
@@ -120,7 +120,7 @@ class HealthBar extends ProgressBar
         playerIcon.updateHitbox();
     }
 
-    public function positionIcons():Void
+    public function setIconPositions():Void
     {
         switch (fillDirection:ProgressBarFillDirection)
         {

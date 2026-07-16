@@ -213,8 +213,6 @@ class Note extends FlxSprite
         sustain = null;
 
         trail = null;
-
-        strumline = null;
     }
 
     public function getNoteFrames():FlxAtlasFrames

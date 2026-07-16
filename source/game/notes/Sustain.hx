@@ -61,38 +61,29 @@ class Sustain extends FlxSprite
         if (downscroll)
             y -= newHeight;
 
-        var status:NoteStatus = note.status;
-
-        if (note.skipHit)
-            alpha = 1.0;
+        alpha = 1.0;
+        
+        if (!note.skipHit)
         {
-            if (status == IDLE || status == HIT)
-                alpha = 1.0;
+            var status:NoteStatus = note.status;
 
             switch (status:NoteStatus)
             {
                 case IDLE:
-                {
-                    if (conductor.time > note.time)
-                        alpha = FlxMath.remapToRange(conductor.time - note.time, 0.0, Rating.latestTiming, 1.0, 0.5);
-                }
+                    alpha = (conductor.time > note.time) ? FlxMath.remapToRange(conductor.time - note.time, 0.0, Rating.latestTiming, 1.0, 0.5) : 1.0;
 
-                case FAILING:
-                    alpha = FlxMath.remapToRange(note.unholdTime, 0.0, Rating.latestTiming, 1.0, 0.5);
+                case HIT:
+                    alpha = 1.0;
 
                 case MISS:
                     alpha = 0.5;
 
+                case FAILING:
+                    alpha = FlxMath.remapToRange(note.unholdTime, 0.0, Rating.latestTiming, 1.0, 0.5);
+
                 default:
             }
         }
-    }
-
-    override function revive():Void
-    {
-        super.revive();
-
-        note = null;
     }
 
     public function addAnimations():Void

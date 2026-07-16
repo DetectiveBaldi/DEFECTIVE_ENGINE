@@ -8,20 +8,24 @@ using StringTools;
 
 class HealthIcon extends FlxSprite
 {
-    public var characterId:String;
+    public var character:String;
 
-    public var isPixel:Bool;
+    /**
+     * Returns true if an `game.HealthIcon.character` ends in "-pixel". In that case, `game.HealthIcon.width`/`height` return `32`/`32` instead of `150`/`150` and
+     * `game.HealthIcon.antialiasing` is set to `false`.
+     */
+    public var isPixel(default, null):Bool;
 
-    public function new(char:String):Void
+    public function new(character:String):Void
     {
         super(0.0, 0.0);
 
-        setCharacter(char);
+        setCharacter(character);
     }
 
     public function setCharacter(char:String):Void
     {
-        characterId = char;
+        character = char;
 
         isPixel = char.contains("-pixel");
 

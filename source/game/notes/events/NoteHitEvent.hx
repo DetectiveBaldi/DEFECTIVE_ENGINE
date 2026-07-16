@@ -1,5 +1,7 @@
 package game.notes.events;
 
+import core.Options;
+
 class NoteHitEvent
 {
     public var note:Note;
@@ -15,6 +17,6 @@ class NoteHitEvent
     {
         this.note = note;
 
-        playSplash = !note.strumline.botplay;
+        playSplash = Options.noteSplashOpacity != 0.0 && !note.strumline.botplay;
     }
 }

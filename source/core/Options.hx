@@ -259,6 +259,22 @@ class Options
         return middlescroll;
     }
 
+    public static var noteSplashOpacity(get, set):Float;
+
+    @:noCompletion
+    static function get_noteSplashOpacity():Float
+    {
+        return SaveManager.options.data.noteSplashOpacity ??= 0.7;
+    }
+
+    @:noCompletion
+    static function set_noteSplashOpacity(v:Float):Float
+    {
+        SaveManager.options.data.noteSplashOpacity = v;
+
+        return noteSplashOpacity;
+    }
+
     public static var ghostTapping(get, set):Bool;
 
     @:noCompletion

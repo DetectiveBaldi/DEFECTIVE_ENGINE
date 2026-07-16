@@ -185,9 +185,12 @@ class Strumline extends FlxGroup
 
         ghostTapEvent = new GhostTapEvent();
 
-        noteSplashes = new FlxTypedGroup<NoteSplash>();
+        if (Options.noteSplashOpacity != 0.0)
+        {
+            noteSplashes = new FlxTypedGroup<NoteSplash>();
 
-        add(noteSplashes);
+            add(noteSplashes);
+        }
 
         charList = new Array<Character>();
 
@@ -706,6 +709,8 @@ class Strumline extends FlxGroup
         }
 
         splash.revive();
+
+        splash.alpha = Options.noteSplashOpacity;
 
         var strumScale:Float = keyParams.strumScale;
 
